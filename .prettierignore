@@ -1,0 +1,29 @@
+# Package Managers
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+bun.lockb
+skills-lock.json
+
+# Miscellaneous
+/static/
+tools/oxlint/
+
+# Agent tooling
+.agents/
+.convex/
+.claude/
+.cursor/
+
+# Generated code and registry-owned shadcn components
+src/convex/_generated/
+src/convex/betterAuth/component/_generated/
+src/components/ui/*
+!src/components/ui/custom-components/
+!src/components/ui/custom-components/**
+!src/components/ui/native-components/
+!src/components/ui/native-components/**
+
+# Intentionally wrapped generic aliases that remain clearer than the formatter output
+src/hooks/useCachedConvexQuery.svelte.ts

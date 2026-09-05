@@ -1,0 +1,212 @@
+<script lang="ts" generics="Mutation extends FunctionReference<'mutation' | 'action'>">
+	// COMPONENTS
+	import CaptchaField from '@/features/captcha/components/captcha-field.svelte';
+	import FormCheckbox from './form-checkbox.svelte';
+	import FormSwitch from './form-switch.svelte';
+	import FormField from './form-field.svelte';
+	import FormInput from './form-input.svelte';
+	import FormSection from './form-section.svelte';
+	import FormSelect from './form-select.svelte';
+	import FormTextarea from './form-textarea.svelte';
+	import FormUploadFile from './form-upload-file.svelte';
+	import { m } from '@/lib/paraglide/messages';
+
+	// HOOKS
+	import { useCaptcha } from '@/features/captcha/hooks/useCaptcha.svelte';
+	import { useForm } from './useForm.svelte.js';
+
+	// UTILS
+	import { cn, type WithElementRef } from '@/utils/utils.js';
+
+	// TYPES
+	import type { HTMLAttributes } from 'svelte/elements';
+	import type { Snippet } from 'svelte';
+	import type { FunctionReference, FunctionReturnType } from 'convex/server';
+	import type {
+		FieldConfig,
+		FormFieldContext,
+		FormValue,
+		MutationValues,
+		PreparedMutationArgs,
+		SafeParseSchema,
+		UploadPrepareContext
+	} from './formTypes.js';
+	import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
+
+	type ExtraFieldsContext = FormFieldContext<FormValue<Mutation>>;
+	type Props = Omit<WithElementRef<HTMLAttributes<HTMLFormElement>>, 'onsubmit'> & {
+		function: Mutation;
+		functionType?: 'mutation' | 'action';
+		captchaAction?: string;
+		fields?: FieldConfig[];
+		extraFields?: Snippet<[ExtraFieldsContext]>;
+		onSuccess?: (result: FunctionReturnType<Mutation>) => void | Promise<void>;
+		successMessage?: string;
+		errorMessage?: string;
+		uploadErrorMessage?: string;
+		uploadCancelledMessage?: string;
+		resetOnSuccess?: boolean;
+		uploadFiles?: PreviewFile[];
+		uploadNamespace?: string;
+		prepareArgs?: (context: UploadPrepareContext<Mutation>) => PreparedMutationArgs<Mutation>;
+		schema?: SafeParseSchema<PreparedMutationArgs<Mutation>>;
+		values?: MutationValues<Mutation>;
+		submitting?: boolean;
+		children?: Snippet;
+	};
+
+	let {
+		function: convexFunction,
+		functionType = 'mutation',
+		captchaAction,
+		fields = [],
+		extraFields,
+		onSuccess,
+		successMessage = m['Components.Form.savedSuccessfully'](),
+		errorMessage = m['Components.Form.somethingWentWrong'](),
+		uploadErrorMessage = m['Components.Form.uploadFailed'](),
+		uploadCancelledMessage = m['Components.Form.uploadCancelled'](),
+		resetOnSuccess = true,
+		uploadFiles = $bindable<PreviewFile[]>([]),
+		uploadNamespace,
+		prepareArgs,
+		schema,
+		values = $bindable<MutationValues<Mutation>>({}),
+		submitting = $bindable(false),
+		id,
+		class: className,
+		children,
+		...restProps
+	}: Props = $props();
+
+	const captcha = useCaptcha();
+	const form = useForm({
+		function: () => convexFunction,
+		functionType: () => functionType,
+		captchaAction: () => captchaAction,
+		captchaToken: () => captcha.token,
+		executeCaptcha: captcha.execute,
+		resetCaptcha: captcha.reset,
+		fields: () => fields,
+		bindings: {
+			get values() {
+				return values;
+			},
+			set values(nextValues) {
+				values = nextValues;
+			},
+			get uploadFiles() {
+				return uploadFiles;
+			},
+			set uploadFiles(nextFiles) {
+				uploadFiles = nextFiles;
+			},
+			get submitting() {
+				return submitting;
+			},
+			set submitting(nextSubmitting) {
+				submitting = nextSubmitting;
+			}
+		},
+		uploadNamespace: () => uploadNamespace,
+		prepareArgs: () => prepareArgs,
+		schema: () => schema,
+		onSuccess: () => onSuccess,
+		successMessage: () => successMessage,
+		errorMessage: () => errorMessage,
+		uploadErrorMessage: () => uploadErrorMessage,
+		uploadCancelledMessage: () => uploadCancelledMessage,
+		resetOnSuccess: () => resetOnSuccess
+	});
+	const handleCaptchaToken = (token: string) => {
+		captcha.setToken(token);
+		if (token) form.resumeAfterCaptcha();
+	};
+
+	const fieldKey = (field: FieldConfig, index: number) =>
+		field.kind === 'section' ? 'section-' + index : field.name;
+</script>
+
+{#snippet renderLocalField(field: FieldConfig)}
+	{#if field.kind === 'input'}
+		<FormInput
+			{field}
+			value={form.inputValue(field.name)}
+			disabled={submitting || field.disabled}
+			error={form.errors[field.name]}
+			onValueChange={(value) => form.setValue(field.name, value)}
+		/>
+	{:else if field.kind === 'textarea'}
+		<FormTextarea
+			{field}
+			value={form.inputValue(field.name)}
+			disabled={submitting || field.disabled}
+			error={form.errors[field.name]}
+			onValueChange={(value) => form.setValue(field.name, value)}
+		/>
+	{:else if field.kind === 'select'}
+		<FormSelect
+			{field}
+			value={form.inputValue(field.name)}
+			disabled={submitting || field.disabled}
+			error={form.errors[field.name]}
+			onValueChange={(value) => form.setValue(field.name, value)}
+		/>
+	{:else if field.kind === 'checkbox'}
+		<FormCheckbox
+			{field}
+			checked={form.checkboxValue(field.name)}
+			disabled={submitting || field.disabled}
+			onCheckedChange={(checked) => form.setValue(field.name, checked)}
+		/>
+	{:else if field.kind === 'switch'}
+		<FormSwitch
+			{field}
+			checked={form.checkboxValue(field.name)}
+			disabled={submitting || field.disabled}
+			error={form.errors[field.name]}
+			onCheckedChange={(checked) => form.setValue(field.name, checked)}
+		/>
+	{:else if field.kind === 'upload'}
+		<FormUploadFile
+			{field}
+			bind:uploadFiles
+			{submitting}
+			uploadProgress={form.uploadProgress}
+			preparingUpload={form.preparingUpload}
+		/>
+	{:else if field.kind === 'section'}
+		<FormSection {field} renderField={renderLocalField} />
+	{:else if field.kind === 'custom'}
+		<FormField {field} disabled={submitting || field.disabled}>
+			{@render field.render(form.customFieldContext(field))}
+		</FormField>
+	{/if}
+{/snippet}
+
+<form
+	{id}
+	class={cn('flex flex-col gap-6', className)}
+	{...restProps}
+	novalidate
+	onsubmit={form.submit}
+	aria-busy={submitting}
+>
+	{#each fields as field, index (fieldKey(field, index))}
+		{@render renderLocalField(field)}
+	{/each}
+
+	{@render extraFields?.(form.fieldContext)}
+
+	{#if captchaAction}
+		<CaptchaField
+			action={captchaAction}
+			executeOnDemand
+			onToken={handleCaptchaToken}
+			onReset={captcha.registerReset}
+			onExecute={captcha.registerExecute}
+		/>
+	{/if}
+
+	{@render children?.()}
+</form>

@@ -1,0 +1,22 @@
+// SVELTEKIT IMPORTS
+import { resolve } from '$app/paths';
+
+export const UNPROTECTED_PAGE_ENDPOINTS = {
+	ROOT: resolve('/'),
+	SIGN_IN: resolve('/sign-in'),
+	SIGN_UP: resolve('/sign-up'),
+	VERIFY_EMAIL: resolve('/verify-email'),
+	FORGOT_PASSWORD: resolve('/forgot-password'),
+	AUTH_ERROR: resolve('/auth/error'),
+	CHECKOUT: resolve('/checkout')
+	//PRODUCT: (slug: string) => resolve('/(app)/(unprotected)/product/[slug]', { slug }),
+};
+
+export const ADMIN_PAGE_ENDPOINTS = {
+	PRODUCTS: resolve('/admin/products'),
+	ADD_PRODUCT: resolve('/admin/products/add-product'),
+	EDIT_PRODUCT: (id: string) => resolve('/admin/products/edit-product/[id]', { id }),
+	CATEGORIES: resolve('/admin/categories'),
+	ADD_CATEGORY: resolve('/admin/categories/add-category'),
+	EDIT_CATEGORY: (id: string) => resolve('/admin/categories/edit-category/[id]', { id })
+};

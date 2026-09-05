@@ -1,0 +1,633 @@
+{
+	"$schema": "https://inlang.com/schema/inlang-message-format",
+	"example_message": "Hello world {username}",
+	"AuthFeature": {
+		"AuthData": {
+			"indefinitely": "Indefinitely",
+			"oneDay": "1 day",
+			"sevenDays": "7 days",
+			"thirtyDays": "30 days"
+		},
+		"ForgotPasswordForm": {
+			"forgotYourPassword": "Forgot your password?",
+			"emailResetDescription": "Enter your email and we'll send you a code to reset your password.",
+			"setNewPassword": "Set a new password",
+			"resetCodeDescription": "Enter the code we emailed you, then choose a new password.",
+			"email": "Email",
+			"verificationCode": "Verification code",
+			"newPassword": "New password",
+			"passwordLengthDescription": "Must be at least 8 characters long.",
+			"confirmPassword": "Confirm password",
+			"sendResetCode": "Send reset code",
+			"resetPassword": "Reset password",
+			"backToSignIn": "Back to sign in"
+		},
+		"LogoutButton": {
+			"signedOutSuccessfully": "Signed out successfully",
+			"signingOut": "Signing out",
+			"signingOutEllipsis": "Signing out..."
+		},
+		"SignInForm": {
+			"welcomeBack": "Welcome back",
+			"loginDescription": "Enter your email below to login to your account",
+			"email": "Email",
+			"password": "Password",
+			"rememberSession": "Remember your session.",
+			"forgotYourPassword": "Forgot your password?",
+			"signIn": "Sign In",
+			"continueWithGoogle": "Continue with Google",
+			"noAccount": "Don't have an account?",
+			"signUp": "Sign up"
+		},
+		"SignUpForm": {
+			"createAccount": "Create an account",
+			"createAccountDescription": "Enter your information below to create your account",
+			"fullName": "Full Name",
+			"fullNamePlaceholder": "John Doe",
+			"email": "Email",
+			"emailDescription": "We'll use this to contact you. We will not share your email with anyone else.",
+			"password": "Password",
+			"passwordLengthDescription": "Must be at least 8 characters long.",
+			"confirmPassword": "Confirm Password",
+			"confirmPasswordDescription": "Please confirm your password.",
+			"continueWithGoogle": "Continue with Google",
+			"alreadyHaveAccount": "Already have an account?",
+			"signIn": "Sign in",
+			"verificationCodeToast": "Check your email for a verification code."
+		},
+		"VerifyEmailForm": {
+			"verifyYourEmail": "Verify your email",
+			"verifyEmailDescription": "We sent a 6-digit code to your inbox. Enter it below to finish signing up.",
+			"email": "Email",
+			"emailPlaceholder": "m@example.com",
+			"verificationCode": "Verification code",
+			"verifyEmail": "Verify email",
+			"didntReceiveCode": "Didn't receive the code?",
+			"resendCodeIn": "Resend code in {seconds}s",
+			"resendCode": "Resend code",
+			"anotherVerificationCode": "We sent you another verification code.",
+			"backToSignIn": "Back to sign in"
+		}
+	},
+	"SearchFeature": {
+		"SearchInput": {
+			"searchPlaceholder": "Search...",
+			"clearSearch": "Clear search"
+		}
+	},
+	"CategoriesFeature": {
+		"CategoryOptions": {
+			"category": "Category",
+			"allCategories": "All categories"
+		}
+	},
+	"UploadFileFeature": {
+		"UploadFileDropzone": {
+			"clickOrDragAndDrop": "Click or drag & drop",
+			"addOneOrMoreImages": "Add one or more images",
+			"addOneImage": "Add one image"
+		},
+		"UploadFilePreviewItem": {
+			"uploadedImage": "Uploaded image",
+			"coverImage": "Cover image",
+			"setAsCover": "Set as cover",
+			"cover": "Cover",
+			"remove": "Remove",
+			"moveLeft": "Move left",
+			"moveRight": "Move right"
+		}
+	},
+	"CartFeature": {
+		"Cart": {
+			"addToCart": "Add to cart",
+			"saveError": "Couldn't save your cart. Please try again or allow browser storage.",
+			"title": "Cart",
+			"openCart": "Open shopping cart",
+			"emptyTitle": "Your cart is empty",
+			"emptyDescription": "Items you add will appear here.",
+			"maxItemsReached": "Your cart can contain up to {maxItems} items. Remove an item before adding more.",
+			"loading": "Loading cart",
+			"loadError": "Couldn't load cart items.",
+			"unavailableItemsRemoved": "Some products are no longer available and have been removed from your cart.",
+			"remove": "Remove",
+			"increaseQuantity": "Increase quantity",
+			"decreaseQuantity": "Decrease quantity",
+			"each": "each",
+			"addSuccess": "{name} added to cart successfully",
+			"total": "Total",
+			"goToCheckout": "Go to Checkout",
+			"removeSuccess": "Product {name} has successfully been removed from the cart"
+		}
+	},
+	"ShopPage": {
+		"pageTitle": "Shop",
+		"description": "Browse our products and find your next favourite.",
+		"products": "Products",
+		"found": "found",
+		"filtered": "Filtered",
+		"loadingCount": "Loading product count",
+		"loadingProducts": "Loading products",
+		"searchLabel": "Search products",
+		"searchPlaceholder": "Search by product name...",
+		"imagesLabel": "Product photos",
+		"allImages": "All products",
+		"withImages": "With photos",
+		"withoutImages": "Without photos",
+		"addedLabel": "Date added",
+		"anyTime": "Any time",
+		"last30Days": "Last 30 days",
+		"clearFilters": "Clear filters",
+		"emptyTitle": "No products yet",
+		"emptyDescription": "Our collection is on its way. Check back soon.",
+		"noMatches": "No matching products",
+		"noMatchesDescription": "Try a different name or clear your filters to browse all products.",
+		"noPageMatches": "No matches on this page",
+		"noPageMatchesDescription": "Continue to the next page or adjust your filters.",
+		"loadError": "Couldn't load products. Please try again.",
+		"noImage": "Photo coming soon",
+		"addProduct": "Add {name} to cart"
+	},
+	"AuthErrorPage": {
+		"accountBannedTitle": "Account banned",
+		"authenticationErrorTitle": "Authentication error",
+		"accessBlocked": "Access blocked",
+		"yourAccountIsBanned": "Your account is banned",
+		"bannedDescription": "You have been banned from this application. Please contact support if you believe this is an error.",
+		"genericDescription": "Something went wrong. Please try again.",
+		"remaining": "Remaining: {time}.",
+		"banEnds": "Ban ends: {date}.",
+		"banDoesNotExpire": "This ban does not expire.",
+		"tryAgain": "Try again",
+		"goHome": "Go home"
+	},
+	"ErrorPage": {
+		"somethingWentWrong": "Something went wrong.",
+		"tryAgain": "Try again",
+		"goHome": "Go home"
+	},
+	"AddProductPage": {
+		"pageTitle": "Add product | Admin",
+		"adminLabel": "Admin",
+		"title": "Add product",
+		"pageDescription": "Add the product details, versions, prices, and stock.",
+		"detailsTitle": "Product details",
+		"detailsDescription": "Add the customer-facing name, description, and images.",
+		"name": "Name",
+		"namePlaceholder": "Product name",
+		"price": "Price",
+		"pricePlaceholder": "0.00",
+		"description": "Description",
+		"descriptionPlaceholder": "Describe the product",
+		"images": "Images",
+		"categories": "Category",
+		"categoriesDescription": "Place this product in a storefront category.",
+		"ProductCategorySelector": {
+			"searchLabel": "Search product categories",
+			"searchPlaceholder": "Search categories...",
+			"categoriesLoading": "Loading categories...",
+			"searchError": "Couldn't load categories.",
+			"noMatchingCategories": "No matching categories.",
+			"archivedCategory": "Archived"
+		},
+		"productAdded": "Product added.",
+		"addError": "Couldn't add this product.",
+		"cancel": "Cancel",
+		"addProduct": "Add product",
+		"draftHint": "Saved as a draft, not visible in the store.",
+		"activeHint": "Visible in the store after saving.",
+		"statusActive": "Active",
+		"statusDescription": "Turn off to save as a draft, hidden from the store."
+	},
+	"AdminProductsPage": {
+		"pageTitle": "Products | Admin",
+		"searchPlaceholder": "Search products...",
+		"productColumn": "Product",
+		"categoryColumn": "Category",
+		"createdColumn": "Created",
+		"actionsColumn": "Actions",
+		"loadError": "Couldn't load products.",
+		"noMatchingProducts": "No matching products",
+		"noProductsYet": "No products yet",
+		"searchEmptyDescription": "Nothing matches \"{term}\".",
+		"emptyDescription": "Create the first product for your catalog.",
+		"addProduct": "Add product",
+		"AdminProductsTableItem": {
+			"openProductActions": "Open actions for {name}",
+			"editProduct": "Edit product",
+			"deleteProduct": "Delete product",
+			"deleteConfirmationTitle": "Are you sure?",
+			"deleteConfirmationDescription": "This permanently deletes {name} and its images.",
+			"productDeleted": "Product deleted.",
+			"deleteError": "Couldn't delete this product.",
+			"cancel": "Cancel"
+		},
+		"AdminProductsHeader": {
+			"adminLabel": "Admin",
+			"productsFound": "Products - {count} found",
+			"productsLabel": "Products",
+			"foundLabel": "found",
+			"filteredLabel": "Products - Search results",
+			"description": "Manage product content, categories, and images.",
+			"addProduct": "Add product"
+		}
+	},
+	"AdminEditProductPage": {
+		"pageTitle": "Edit product | Admin",
+		"adminLabel": "Admin",
+		"heading": "Edit product",
+		"description": "Update {name}'s catalog details.",
+		"loadError": "Couldn't load this product.",
+		"productUpdated": "Product updated.",
+		"updateError": "Couldn't update this product.",
+		"cancel": "Cancel",
+		"saveChanges": "Save changes"
+	},
+	"AddCategoryPage": {
+		"pageTitle": "Add category | Admin",
+		"title": "Add category",
+		"pageDescription": "Create a category to organize products in the storefront.",
+		"detailsTitle": "Category details",
+		"detailsDescription": "Use a clear customer-facing name. The URL slug is generated automatically.",
+		"name": "Name",
+		"namePlaceholder": "Category name",
+		"image": "Image",
+		"imageDescription": "Optional. Upload one image for this category.",
+		"status": "Status",
+		"statusActive": "Active",
+		"statusArchived": "Archived",
+		"statusDescription": "Archived categories are hidden from the storefront but keep product assignments.",
+		"categoryAdded": "Category added.",
+		"addError": "Couldn't add this category.",
+		"cancel": "Cancel",
+		"addCategory": "Add category",
+		"AdminCategoryFormHeader": {
+			"adminLabel": "Admin"
+		}
+	},
+	"AdminCategoriesPage": {
+		"pageTitle": "Categories | Admin",
+		"searchPlaceholder": "Search categories...",
+		"nameColumn": "Category",
+		"slugColumn": "Slug",
+		"statusColumn": "Status",
+		"actionsColumn": "Actions",
+		"loadError": "Couldn't load categories.",
+		"noMatchingCategories": "No matching categories",
+		"noCategoriesYet": "No categories yet",
+		"searchEmptyDescription": "Nothing matches \"{term}\".",
+		"emptyDescription": "Create the first category for your catalog.",
+		"addCategory": "Add category",
+		"AdminCategoriesTableItem": {
+			"active": "Active",
+			"archived": "Archived",
+			"openCategoryActions": "Open actions for {name}",
+			"editCategory": "Edit category",
+			"deleteCategory": "Delete category",
+			"deleteConfirmationTitle": "Delete category?",
+			"deleteConfirmationDescription": "This permanently deletes {name} and its image. Products are not affected, but the category must not be assigned to any products.",
+			"categoryDeleted": "Category deleted.",
+			"deleteError": "Couldn't delete this category.",
+			"cancel": "Cancel"
+		},
+		"AdminCategoriesHeader": {
+			"adminLabel": "Admin",
+			"categoriesFound": "Categories - {count} found",
+			"categoriesLabel": "Categories",
+			"foundLabel": "found",
+			"filteredLabel": "Categories - Search results",
+			"description": "Organize products into reusable storefront categories.",
+			"addCategory": "Add category"
+		}
+	},
+	"AdminEditCategoryPage": {
+		"pageTitle": "Edit category | Admin",
+		"heading": "Edit category",
+		"description": "Update {name}'s storefront organization and visibility.",
+		"loadError": "Couldn't load this category.",
+		"AdminCategoryFormHeader": {
+			"adminLabel": "Admin"
+		},
+		"AdminEditCategoryForm": {
+			"detailsTitle": "Category details",
+			"detailsDescription": "Use a clear customer-facing name. The URL slug updates automatically.",
+			"name": "Name",
+			"namePlaceholder": "Category name",
+			"image": "Image",
+			"imageDescription": "Optional. Upload one image for this category.",
+			"status": "Status",
+			"statusActive": "Active",
+			"statusArchived": "Archived",
+			"statusDescription": "Archived categories are hidden from the storefront but keep product assignments.",
+			"categoryUpdated": "Category updated.",
+			"updateError": "Couldn't update this category.",
+			"cancel": "Cancel",
+			"saveChanges": "Save changes"
+		}
+	},
+	"AdminUsersPage": {
+		"pageTitle": "Users | Admin",
+		"searchPlaceholder": "Search names or emails...",
+		"clearFilters": "Clear filters ({count})",
+		"userColumn": "User",
+		"roleColumn": "Role",
+		"statusColumn": "Status",
+		"joinedColumn": "Joined",
+		"loadError": "Couldn't load users.",
+		"noMatchingUsers": "No matching users",
+		"noUsersYet": "No users yet",
+		"searchEmptyDescription": "Nothing matches \"{term}\".",
+		"filtersEmptyDescription": "Nothing matches these filters.",
+		"emptyDescription": "There are no accounts to display.",
+		"AdminUsersHeader": {
+			"adminLabel": "Admin",
+			"usersFound": "Users - {count} found",
+			"usersLabel": "Users",
+			"foundLabel": "found",
+			"filteredLabel": "Users - Filtered",
+			"description": "Review accounts, roles, and verification status."
+		},
+		"AdminUsersTableItem": {
+			"suspended": "Suspended",
+			"verified": "Verified",
+			"unverified": "Unverified"
+		}
+	},
+	"AdminUserPage": {
+		"pageTitle": "User | Admin",
+		"AdminUserHeader": {
+			"backToUsers": "Back to users"
+		},
+		"AdminUserTabs": {
+			"userDetails": "User details",
+			"profile": "Profile",
+			"settings": "Settings",
+			"sessions": "Sessions",
+			"logs": "Logs"
+		},
+		"AdminUserTabsProfile": {
+			"loadError": "Couldn't load this user's profile.",
+			"userNotFound": "User not found",
+			"userNotFoundDescription": "This account may have been removed or the link is invalid."
+		},
+		"AdminUserTabsProfileBanned": {
+			"accountBanned": "This account is banned",
+			"expires": "Expires",
+			"noExpirationSet": "No expiration set",
+			"reason": "Reason"
+		},
+		"AdminUserTabsProfileData": {
+			"verified": "Verified",
+			"unverified": "Unverified",
+			"banned": "Banned",
+			"active": "Active",
+			"id": "ID",
+			"copyUserId": "Copy user ID",
+			"appId": "App ID",
+			"copyAppUserId": "Copy app user ID"
+		},
+		"AdminUserTabsProfileLifecycle": {
+			"lifecycle": "Lifecycle",
+			"created": "Created",
+			"lastUpdated": "Last updated"
+		},
+		"AdminUserTabsSessions": {
+			"sessions": "Sessions",
+			"description": "Sign-in sessions recorded for this user.",
+			"loadError": "Couldn't load this user's sessions.",
+			"noSessions": "No sessions",
+			"noSessionsDescription": "No sign-in sessions are recorded for this user."
+		},
+		"AdminUserTabsSessionsItem": {
+			"active": "Active",
+			"expired": "Expired",
+			"impersonated": "Impersonated",
+			"ipUnavailable": "IP unavailable",
+			"userAgentUnavailable": "User agent unavailable",
+			"impersonatedBy": "by {user}",
+			"started": "Started",
+			"lastActive": "Last active",
+			"expires": "Expires"
+		},
+		"AdminUserTabsLogs": {
+			"logs": "Logs",
+			"description": "Audit activity recorded for this user.",
+			"loadError": "Couldn't load this user's audit logs.",
+			"noActivity": "No activity yet",
+			"noActivityDescription": "No audit logs are recorded for this user."
+		},
+		"AdminUserTabsLogsItem": {
+			"resource": "Resource",
+			"resourceWithId": "{type} {id}"
+		},
+		"AdminUserTabsSettings": {
+			"loadError": "Couldn't load this user's settings.",
+			"userNotFound": "User not found",
+			"userNotFoundDescription": "This account may have been removed or the link is invalid."
+		},
+		"AdminUserTabsSettingsAccess": {
+			"userRole": "User",
+			"adminRole": "Admin",
+			"access": "Access",
+			"description": "Manage this user's role and account access.",
+			"role": "Role",
+			"pendingRoleChange": "Pending — save to change the role to {role}.",
+			"adminsCanManage": "Admins can manage users from this area.",
+			"accountAccess": "Account access",
+			"banned": "Banned",
+			"active": "Active",
+			"accessBlockedUntil": "Access blocked until {date}.",
+			"accessBlockedNoExpiration": "Access is blocked with no expiration set.",
+			"userCanSignIn": "The user can sign in normally."
+		},
+		"AdminUserTabsSettingsDangerZone": {
+			"userDeleted": "User deleted.",
+			"deleteError": "Couldn't delete this user.",
+			"dangerZone": "Danger zone",
+			"description": "Permanent account actions. These actions cannot be undone.",
+			"deleteAccount": "Delete account",
+			"deleteDescription": "Removes the account, sessions, and linked authentication accounts.",
+			"deleteConfirmationTitle": "Delete {name}?",
+			"deleteConfirmationDescription": "This permanently removes the account and all of its sessions and linked accounts.",
+			"typeToConfirm": "Type {email} to confirm",
+			"cancel": "Cancel"
+		},
+		"BanUserDialog": {
+			"userBanned": "User banned.",
+			"banError": "Couldn't ban this user.",
+			"banUser": "Ban user",
+			"banTitle": "Ban {name}?",
+			"banDescription": "Banning the user immediately ends their active sessions.",
+			"reason": "Reason",
+			"reasonPlaceholder": "Optional reason for the audit trail",
+			"duration": "Duration",
+			"cancel": "Cancel"
+		},
+		"SaveRoleButton": {
+			"roleUpdateError": "Couldn't update this user's role.",
+			"roleUpdated": "User role updated.",
+			"saveRole": "Save role"
+		},
+		"UnbanUserButton": {
+			"unbanError": "Couldn't unban this user.",
+			"userUnbanned": "User unbanned.",
+			"unbanUser": "Unban user"
+		}
+	},
+	"AdminLogsPage": {
+		"pageTitle": "Logs | Admin",
+		"adminLabel": "Admin",
+		"auditLogs": "Audit logs",
+		"description": "Review activity recorded across the application.",
+		"eventColumn": "Event",
+		"severityColumn": "Severity",
+		"actorColumn": "Actor",
+		"resourceColumn": "Resource",
+		"timeColumn": "Time",
+		"actor": "Actor: {actor}",
+		"system": "System",
+		"resource": "Resource",
+		"resourceWithId": "{type} {id}",
+		"none": "None",
+		"loadError": "Couldn't load audit logs.",
+		"noActivity": "No activity yet",
+		"noActivityDescription": "No audit logs have been recorded."
+	},
+	"Components": {
+		"DataTable": {
+			"emptyTitle": "No items yet",
+			"emptyDescription": "There is nothing to show yet."
+		},
+		"DataList": {
+			"emptyTitle": "No items yet",
+			"emptyDescription": "There is nothing to show yet."
+		},
+		"ErrorComponent": {
+			"somethingWentWrong": "Something went wrong.",
+			"retry": "Retry"
+		},
+		"PaginatedData": {
+			"page": "Page {page}",
+			"pageWithTotal": "Page {page} / {total}",
+			"previousPage": "Previous page",
+			"nextPage": "Next page"
+		},
+		"DataTableItem": {
+			"selectRow": "Select row"
+		},
+		"DataTableSelectionBar": {
+			"selected": "Selected",
+			"item": "item",
+			"items": "items",
+			"clearSelection": "Clear selection",
+			"clear": "Clear"
+		},
+		"InfiniteScroll": {
+			"error": "Unable to load more items.",
+			"loading": "Loading more items...",
+			"loadMore": "Load more",
+			"retry": "Try again",
+			"end": "No more items."
+		},
+		"PasswordInput": {
+			"hidePassword": "Hide password",
+			"showPassword": "Show password"
+		},
+		"NativeSelect": {
+			"select": "Select…"
+		},
+		"ImageGallery": {
+			"carouselLabel": "Product images",
+			"previousImage": "Previous image",
+			"nextImage": "Next image",
+			"thumbnailLabel": "Product image thumbnails",
+			"selectImage": "View image {index}",
+			"noImages": "No images available"
+		},
+		"NativeSheet": {
+			"close": "Close",
+			"fallbackError": "This browser cannot render the native sheet, and its fallback could not be loaded."
+		},
+		"NativeDialog": {
+			"close": "Close"
+		},
+		"NativeSheetFallback": {
+			"open": "Open sheet",
+			"description": "Displays the sheet content."
+		},
+		"NativeTooltip": {
+			"fallbackError": "This browser cannot render the native tooltip, and its fallback could not be loaded."
+		},
+		"NativeSidebar": {
+			"label": "Sidebar",
+			"mobileNavigation": "Mobile navigation"
+		},
+		"NativeSidebarUser": {
+			"user": "User",
+			"openAccountMenu": "Open account menu",
+			"logOut": "Log out"
+		},
+		"NativeSidebarPageHeader": {
+			"title": "Workspace",
+			"openNavigation": "Open navigation"
+		},
+		"CopyValue": {
+			"copy": "Copy {label}",
+			"copied": "{label} copied"
+		},
+		"Form": {
+			"savedSuccessfully": "Saved successfully.",
+			"somethingWentWrong": "Something went wrong.",
+			"fixHighlightedFields": "Please fix the highlighted fields.",
+			"uploadFailed": "Failed to upload file.",
+			"uploadCancelled": "File upload was cancelled."
+		},
+		"FormUploadFile": {
+			"preparingFiles": "Preparing files...",
+			"uploadingFiles": "Uploading files",
+			"uploadProgress": "File upload progress"
+		},
+		"Header": {
+			"signOut": "Sign out",
+			"signIn": "Sign in"
+		},
+		"SvelteHead": {
+			"home": "Home"
+		}
+	},
+	"ValidationMessages": {
+		"fallback": "Please check this field.",
+		"requiredValue": "Please enter a value.",
+		"requiredField": "Please fill this in.",
+		"validValue": "Please enter a valid value.",
+		"passwordsDoNotMatch": "Passwords do not match.",
+		"invalidEmail": "Please enter a valid email address.",
+		"passwordTooShort": "Password must be at least 8 characters long.",
+		"userAlreadyExists": "An account with this email already exists.",
+		"invalidOtp": "That code is incorrect. Check it and try again.",
+		"otpExpired": "That code has expired. Request a new one.",
+		"tooManyAttempts": "Too many attempts. Try again in a few minutes.",
+		"somethingWentWrong": "Something went wrong. Please try again."
+	},
+	"BackendMessages": {
+		"rateLimitSingle": "You hit the rate limit. Try again in 1 second.",
+		"rateLimitMultiple": "You hit the rate limit. Try again in {seconds} seconds.",
+		"unauthenticated": "Please sign in and try again.",
+		"forbidden": "You do not have permission to do that.",
+		"captchaFailed": "Please complete the security check and try again.",
+		"invalidProductData": "Please check the product details and try again.",
+		"productSlugTaken": "A product with this URL already exists. Choose a different product name.",
+		"productDeleteRestricted": "Only draft products can be permanently deleted.",
+		"productNotFound": "This product could not be found.",
+		"invalidCategoryData": "Please check the category details and try again.",
+		"categoryNotFound": "This category could not be found.",
+		"categorySlugTaken": "That category slug is already in use.",
+		"categoryHasProducts": "This category cannot be deleted because it is assigned to {productCount} product(s): {productNames}. Remove the category from those products first.",
+		"invalidRetainedImage": "One of the selected images is no longer valid.",
+		"duplicateRetainedImage": "The same image cannot be selected more than once.",
+		"duplicateUploadKey": "The same upload cannot be submitted more than once.",
+		"uploadNotFound": "The upload could not be found.",
+		"invalidUploadNamespace": "The upload location is invalid.",
+		"invalidUpload": "The selected file is invalid.",
+		"tooManyFiles": "You can upload at most {maxFiles} files."
+	}
+}
