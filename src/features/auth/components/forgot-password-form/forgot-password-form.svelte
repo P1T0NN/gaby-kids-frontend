@@ -16,6 +16,7 @@
 	import PasswordInput from '@/components/ui/custom-components/password-input/password-input.svelte';
 	import { Spinner } from '@/components/ui/spinner/index.js';
 	import CaptchaField from '@/features/captcha/components/captcha-field.svelte';
+	import Link from '@/components/ui/custom-components/link/link.svelte';
 
 	// DATA
 	import { ERROR_MESSAGE_KEYS } from '@/shared/features/auth/data/authData';
@@ -149,8 +150,8 @@
 
 	<Card.Footer class="flex justify-center">
 		<Field.Description>
-			<a href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN} class="text-sm font-medium"
-				>{m['AuthFeature.ForgotPasswordForm.backToSignIn']()}</a
+			<Link href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN} class="text-sm font-medium"
+				>{m['AuthFeature.ForgotPasswordForm.backToSignIn']()}</Link
 			>
 		</Field.Description>
 	</Card.Footer>

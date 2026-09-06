@@ -16,6 +16,7 @@
 	import { Input } from '@/components/ui/input/index.js';
 	import { Spinner } from '@/components/ui/spinner/index.js';
 	import CaptchaField from '@/features/captcha/components/captcha-field.svelte';
+	import Link from '@/components/ui/custom-components/link/link.svelte';
 
 	// DATA
 	import { ERROR_MESSAGE_KEYS } from '@/shared/features/auth/data/authData';
@@ -138,7 +139,7 @@
 
 						<Field.Description class="px-6 text-center">
 							{m['AuthFeature.SignUpForm.alreadyHaveAccount']()}
-							<a href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN}>{m['AuthFeature.SignUpForm.signIn']()}</a
+							<Link href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN}>{m['AuthFeature.SignUpForm.signIn']()}</Link
 							>
 						</Field.Description>
 					</Field.Field>

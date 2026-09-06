@@ -1,6 +1,6 @@
 <script lang="ts">
 	// SVELTEKIT IMPORTS
-	import { goto } from '$app/navigation';
+	import { gotoParaglide } from '@/utils/gotoParaglide.js';
 
 	// LIBRARIES
 	import { api } from '@convex/_generated/api';
@@ -14,6 +14,7 @@
 	import AdminAddProductHeader from '@/components/pages/admin/add-product/admin-add-product-header.svelte';
 	import ProductCategorySelector from '@/features/categories/components/product-category-selector.svelte';
 	import { Button } from '@/components/ui/button/index.js';
+	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Form from '@/components/ui/custom-components/form/form.svelte';
 	import SvelteHead from '@/components/ui/custom-components/svelte-head/svelte-head.svelte';
 	import { Spinner } from '@/components/ui/spinner/index.js';
@@ -120,7 +121,7 @@
 			status: values.active ? ('active' as const) : ('draft' as const)
 		})}
 		bind:submitting
-		onSuccess={() => goto(ADMIN_PAGE_ENDPOINTS.PRODUCTS)}
+		onSuccess={() => gotoParaglide(ADMIN_PAGE_ENDPOINTS.PRODUCTS)}
 		successMessage={m['AddProductPage.productAdded']()}
 		errorMessage={m['AddProductPage.addError']()}
 	>
@@ -128,9 +129,9 @@
 			<p class="mr-auto text-sm text-muted-foreground">
 				{values.active ? m['AddProductPage.activeHint']() : m['AddProductPage.draftHint']()}
 			</p>
-			<Button href={ADMIN_PAGE_ENDPOINTS.PRODUCTS} variant="outline">
+			<ButtonLink href={ADMIN_PAGE_ENDPOINTS.PRODUCTS} variant="outline">
 				{m['AddProductPage.cancel']()}
-			</Button>
+			</ButtonLink>
 			<Button type="submit" disabled={submitting}>
 				{#if submitting}
 					<Spinner />

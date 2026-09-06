@@ -1,6 +1,46 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"example_message": "Hello world {username}",
+	"CheckoutPage": {
+		"title": "Checkout",
+		"description": "Your details, your delivery, then online payment.",
+		"back": "Continue shopping",
+		"contact": "Contact details",
+		"contactHint": "We'll use these details for your order confirmation and updates.",
+		"firstName": "First name",
+		"lastName": "Last name",
+		"email": "Email address",
+		"phone": "Phone number",
+		"fulfillment": "How would you like your order?",
+		"delivery": "Delivery",
+		"deliveryHint": "Send it to your address",
+		"pickup": "Pick up",
+		"pickupHint": "Collect it yourself",
+		"address": "Delivery details",
+		"street": "Street address",
+		"apartment": "Apartment, suite, etc. (optional)",
+		"postalCode": "Postal code",
+		"city": "City",
+		"country": "Country",
+		"pickupInfo": "No delivery address needed. Pickup location and collection details will be available before payment.",
+		"summary": "Order summary",
+		"quantity": "Qty {quantity}",
+		"subtotal": "Subtotal",
+		"deliveryPending": "Confirmed before payment",
+		"total": "Total",
+		"estimatedTotal": "Total before delivery",
+		"payment": "Online payment",
+		"paymentHint": "Pay online for both delivery and pickup.",
+		"continue": "Continue to payment",
+		"creatingOrder": "Creating order...",
+		"orderCreated": "Order created successfully.",
+		"orderReference": "Order reference: {id}",
+		"orderCreateError": "Couldn't create your order.",
+		"paymentUnavailable": "Payment is not connected yet. This creates a pending order and no payment is taken.",
+		"loading": "Loading your order summary",
+		"unavailable": "Some items are no longer available. Remove them to review your updated total.",
+		"removeUnavailable": "Remove unavailable items"
+	},
 	"AuthFeature": {
 		"AuthData": {
 			"indefinitely": "Indefinitely",
@@ -119,6 +159,18 @@
 			"removeSuccess": "Product {name} has successfully been removed from the cart"
 		}
 	},
+	"OrdersFeature": {
+		"OrdersPaymentStatusBadge": {
+			"pending": "Pending",
+			"paid": "Paid",
+			"refundPending": "Refund pending",
+			"refunded": "Refunded"
+		},
+		"OrdersFulfillmentStatusBadge": {
+			"unfulfilled": "Unfulfilled",
+			"fulfilled": "Fulfilled"
+		}
+	},
 	"ShopPage": {
 		"pageTitle": "Shop",
 		"description": "Browse our products and find your next favourite.",
@@ -144,8 +196,10 @@
 		"noPageMatches": "No matches on this page",
 		"noPageMatchesDescription": "Continue to the next page or adjust your filters.",
 		"loadError": "Couldn't load products. Please try again.",
-		"noImage": "Photo coming soon",
-		"addProduct": "Add {name} to cart"
+		"ShopProductItem": {
+			"noImage": "Photo coming soon",
+			"addProduct": "Add {name} to cart"
+		}
 	},
 	"AuthErrorPage": {
 		"accountBannedTitle": "Account banned",
@@ -492,6 +546,94 @@
 		"noActivity": "No activity yet",
 		"noActivityDescription": "No audit logs have been recorded."
 	},
+	"AdminOrdersPage": {
+		"pageTitle": "Orders | Admin",
+		"loadError": "Couldn't load orders.",
+		"noOrders": "No orders yet",
+		"noOrdersDescription": "New checkout orders will appear here.",
+		"noMatchingOrders": "No matching orders",
+		"filtersEmptyDescription": "No orders match the selected filters.",
+		"paymentFilterLabel": "Payment Status",
+		"allPaymentStatuses": "All statuses",
+		"fulfillmentFilterLabel": "Fulfillment Status",
+		"allFulfillmentStatuses": "All statuses",
+		"methodFilterLabel": "Fulfillment method",
+		"allMethods": "All methods",
+		"clearFilters": "Clear filters ({count})",
+		"orderColumn": "Order",
+		"customerColumn": "Customer",
+		"totalColumn": "Total",
+		"paymentColumn": "Payment",
+		"fulfillmentColumn": "Fulfillment",
+		"createdColumn": "Created",
+		"actionsColumn": "Actions",
+		"AdminOrdersHeader": {
+			"adminLabel": "Admin",
+			"heading": "Orders",
+			"description": "Review customer orders, payment state, and fulfillment."
+		},
+		"AdminOrdersTableItem": {
+			"openOrderActions": "Open actions for order {reference}",
+			"manageOrder": "Manage order",
+			"pending": "Pending",
+			"paid": "Paid",
+			"refundPending": "Refund pending",
+			"refunded": "Refunded",
+			"unfulfilled": "Unfulfilled",
+			"fulfilled": "Fulfilled",
+			"cancelled": "Cancelled",
+			"delivery": "Delivery",
+			"pickup": "Pickup"
+		}
+	},
+	"AdminEditOrderPage": {
+		"pageTitle": "Order | Admin",
+		"loadError": "Couldn't load this order.",
+		"AdminEditOrderHeader": {
+			"back": "Back to orders",
+			"heading": "Order {id}",
+			"description": "Review the order snapshot and manage fulfillment.",
+			"adminLabel": "Admin"
+		},
+		"AdminEditOrderSummary": {
+			"customer": "Customer",
+			"name": "Name",
+			"email": "Email",
+			"phone": "Phone",
+			"fulfillment": "Fulfillment",
+			"delivery": "Delivery",
+			"pickup": "Pickup",
+			"shippingAddress": "Shipping address",
+			"items": "Items",
+			"quantity": "Qty {quantity}",
+			"subtotal": "Subtotal",
+			"total": "Total"
+		},
+		"AdminEditOrderActions": {
+			"management": "Order actions",
+			"managementDescription": "Cancel and refund are separate actions. Cancellation never refunds a payment.",
+			"paymentStatus": "Payment status",
+			"fulfillmentStatus": "Fulfillment status",
+			"cancelled": "Cancelled",
+			"markFulfilled": "Mark fulfilled",
+			"markUnfulfilled": "Mark unfulfilled",
+			"cancelOrder": "Cancel order",
+			"restoreOrder": "Restore order",
+			"refundOrder": "Refund order",
+			"confirmationTitle": "Are you sure?",
+			"fulfillConfirmation": "Mark this order as fulfilled?",
+			"unfulfillConfirmation": "Move this order back to unfulfilled?",
+			"cancelConfirmation": "This will mark the order as cancelled and stop it from being fulfilled.",
+			"cancelNoRefund": "Cancelling will not refund the user.",
+			"cancelRefundInstruction": "If you intend to refund the user, choose the “Refund order” button first. Refund processing is not connected yet.",
+			"restoreConfirmation": "Restore this order?",
+			"refundConfirmation": "This records a separate refund request as pending until payment integration processes it.",
+			"keepCurrentStatus": "Keep current status",
+			"updated": "Order updated.",
+			"updateError": "Couldn't update this order.",
+			"processing": "Processing..."
+		}
+	},
 	"Components": {
 		"DataTable": {
 			"emptyTitle": "No items yet",
@@ -588,7 +730,8 @@
 		},
 		"Header": {
 			"signOut": "Sign out",
-			"signIn": "Sign in"
+			"signIn": "Sign in",
+			"adminDashboard": "Admin Dashboard"
 		},
 		"SvelteHead": {
 			"home": "Home"
@@ -618,6 +761,13 @@
 		"productSlugTaken": "A product with this URL already exists. Choose a different product name.",
 		"productDeleteRestricted": "Only draft products can be permanently deleted.",
 		"productNotFound": "This product could not be found.",
+		"invalidOrderData": "Please check the order details and try again.",
+		"orderProductUnavailable": "One or more products are no longer available.",
+		"orderRetryConflict": "This checkout attempt no longer matches your cart. Please try again.",
+		"orderNotFound": "This order could not be found.",
+		"orderPaymentRequired": "The order must be paid before it can be fulfilled.",
+		"orderRefundUnavailable": "This order cannot be refunded in its current payment state.",
+		"orderCancelled": "A cancelled order cannot be fulfilled.",
 		"invalidCategoryData": "Please check the category details and try again.",
 		"categoryNotFound": "This category could not be found.",
 		"categorySlugTaken": "That category slug is already in use.",

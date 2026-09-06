@@ -1,6 +1,6 @@
 <script lang="ts">
 	// SVELTEKIT IMPORTS
-	import { goto } from '$app/navigation';
+	import { gotoParaglide } from '@/utils/gotoParaglide.js';
 
 	// CONVEX
 	import { api } from '@convex/_generated/api';
@@ -14,6 +14,7 @@
 	// COMPONENTS
 	import AdminCategoryFormHeader from '@/components/pages/admin/categories/admin-category-form-header.svelte';
 	import { Button } from '@/components/ui/button/index.js';
+	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Form from '@/components/ui/custom-components/form/form.svelte';
 	import SvelteHead from '@/components/ui/custom-components/svelte-head/svelte-head.svelte';
 	import { Spinner } from '@/components/ui/spinner/index.js';
@@ -88,14 +89,14 @@
 			status: values.status === 'archived' ? ('archived' as const) : ('active' as const)
 		})}
 		bind:submitting
-		onSuccess={() => goto(ADMIN_PAGE_ENDPOINTS.CATEGORIES)}
+		onSuccess={() => gotoParaglide(ADMIN_PAGE_ENDPOINTS.CATEGORIES)}
 		successMessage={m['AddCategoryPage.categoryAdded']()}
 		errorMessage={m['AddCategoryPage.addError']()}
 	>
 		<div class="flex flex-wrap justify-end gap-2">
-			<Button href={ADMIN_PAGE_ENDPOINTS.CATEGORIES} variant="outline">
+			<ButtonLink href={ADMIN_PAGE_ENDPOINTS.CATEGORIES} variant="outline">
 				{m['AddCategoryPage.cancel']()}
-			</Button>
+			</ButtonLink>
 			<Button type="submit" disabled={submitting}>
 				{#if submitting}<Spinner />{/if}
 				{m['AddCategoryPage.addCategory']()}

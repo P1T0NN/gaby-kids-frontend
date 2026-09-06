@@ -1,6 +1,6 @@
 <script lang="ts">
 	// SVELTEKIT IMPORTS
-	import { goto } from '$app/navigation';
+	import { gotoParaglide } from '@/utils/gotoParaglide.js';
 
 	// LIBRARIES
 	import { authClient } from '@/features/auth/lib/authClient';
@@ -35,7 +35,7 @@
 			await authClient.signOut();
 			convexQueryCache.clear();
 			toast.success(m['AuthFeature.LogoutButton.signedOutSuccessfully']());
-			await goto(UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN);
+			await gotoParaglide(UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN);
 		} finally {
 			isLoggingOut = false;
 		}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	// SVELTEKIT IMPORTS
-	import { goto } from '$app/navigation';
+	import { gotoParaglide } from '@/utils/gotoParaglide.js';
 	import { untrack } from 'svelte';
 
 	// LIBRARIES
@@ -12,6 +12,7 @@
 
 	// COMPONENTS
 	import { Button } from '@/components/ui/button/index.js';
+	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Form from '@/components/ui/custom-components/form/form.svelte';
 	import { Spinner } from '@/components/ui/spinner/index.js';
 
@@ -113,14 +114,14 @@
 		name: String(values.name ?? ''),
 		status: values.status === 'archived' ? ('archived' as const) : ('active' as const)
 	})}
-	onSuccess={() => goto(ADMIN_PAGE_ENDPOINTS.CATEGORIES)}
+	onSuccess={() => gotoParaglide(ADMIN_PAGE_ENDPOINTS.CATEGORIES)}
 	successMessage={m['AdminEditCategoryPage.AdminEditCategoryForm.categoryUpdated']()}
 	errorMessage={m['AdminEditCategoryPage.AdminEditCategoryForm.updateError']()}
 >
 	<div class="flex flex-wrap justify-end gap-2">
-		<Button href={ADMIN_PAGE_ENDPOINTS.CATEGORIES} variant="outline">
+		<ButtonLink href={ADMIN_PAGE_ENDPOINTS.CATEGORIES} variant="outline">
 			{m['AdminEditCategoryPage.AdminEditCategoryForm.cancel']()}
-		</Button>
+		</ButtonLink>
 		<Button type="submit" disabled={submitting}>
 			{#if submitting}<Spinner />{/if}
 			{m['AdminEditCategoryPage.AdminEditCategoryForm.saveChanges']()}

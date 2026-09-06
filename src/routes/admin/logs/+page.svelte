@@ -20,6 +20,7 @@
 	import ErrorComponent from '@/components/ui/custom-components/error-component/error-component.svelte';
 	import SvelteHead from '@/components/ui/custom-components/svelte-head/svelte-head.svelte';
 	import { TableCell, TableHead } from '@/components/ui/table';
+	import Link from '@/components/ui/custom-components/link/link.svelte';
 
 	// HOOKS
 	import { useConvexPagination } from '@/features/pagination/hooks/useConvexPagination.svelte.js';
@@ -97,12 +98,12 @@
 			</TableCell>
 			<TableCell class="hidden max-w-48 md:table-cell">
 				{#if log.actorId}
-					<a
+					<Link
 						href={resolve('/admin/users/[id]', { id: log.actorId })}
 						class="block truncate font-mono text-xs hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
 					>
 						{log.actorId}
-					</a>
+					</Link>
 				{:else}
 					<span class="text-muted-foreground">{m['AdminLogsPage.system']()}</span>
 				{/if}

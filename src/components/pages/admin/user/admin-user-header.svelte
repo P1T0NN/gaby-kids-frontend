@@ -1,12 +1,12 @@
 <script lang="ts">
 	// COMPONENTS
-	import { Button } from '@/components/ui/button';
+	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import { m } from '@/lib/paraglide/messages';
 </script>
 
 <div class="flex items-center">
-	<Button href="/admin/users" variant="ghost" size="sm">
+	<ButtonLink href="/admin/users" variant="ghost" size="sm">
 		<span class="icon-[lucide--arrow-left] size-4" aria-hidden="true"></span>
 		{m['AdminUserPage.AdminUserHeader.backToUsers']()}
-	</Button>
+	</ButtonLink>
 </div>

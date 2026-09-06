@@ -1,6 +1,7 @@
 <script lang="ts">
 	// COMPONENTS
-	import { Button } from '@/components/ui/button';
+	import { Button } from '@/components/ui/button/index.js';
+	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import * as Card from '@/components/ui/card/index.js';
 	import {
 		Empty,
@@ -58,10 +59,17 @@
 		</EmptyHeader>
 		{#if action}
 			<EmptyContent>
-				<Button variant="outline" size="sm" href={action.href} onclick={action.onclick}>
-					<span class="icon-[lucide--plus] size-4" data-icon="inline-start"></span>
-					{action.label}
-				</Button>
+				{#if action.href}
+					<ButtonLink variant="outline" size="sm" href={action.href}>
+						<span class="icon-[lucide--plus] size-4" data-icon="inline-start"></span>
+						{action.label}
+					</ButtonLink>
+				{:else}
+					<Button variant="outline" size="sm" onclick={action.onclick}>
+						<span class="icon-[lucide--plus] size-4" data-icon="inline-start"></span>
+						{action.label}
+					</Button>
+				{/if}
 			</EmptyContent>
 		{/if}
 	</Empty>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	// SVELTEKIT IMPORTS
-	import { goto, invalidateAll } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
+	import { gotoParaglide } from '@/utils/gotoParaglide.js';
 	import { page } from '$app/state';
 	import { m } from '@/lib/paraglide/messages';
 
@@ -16,7 +17,7 @@
 	<h1 class="text-lg font-medium">{m['ErrorPage.somethingWentWrong']()}</h1>
 	<div class="flex items-center gap-2">
 		<Button onclick={invalidateAll}>{m['ErrorPage.tryAgain']()}</Button>
-		<Button variant="outline" onclick={() => goto(UNPROTECTED_PAGE_ENDPOINTS.ROOT)}>
+		<Button variant="outline" onclick={() => gotoParaglide(UNPROTECTED_PAGE_ENDPOINTS.ROOT)}>
 			{m['ErrorPage.goHome']()}
 		</Button>
 	</div>

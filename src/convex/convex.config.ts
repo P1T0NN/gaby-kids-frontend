@@ -18,6 +18,7 @@ app.use(rateLimiter);
 app.use(analytics);
 app.use(aggregate, { name: 'productsAggregate' });
 app.use(aggregate, { name: 'categoriesAggregate' });
+app.use(aggregate, { name: 'ordersAggregate' });
 app.use(r2);
 app.use(auditLog);
 

@@ -1,5 +1,5 @@
 // SVELTEKIT IMPORTS
-import { goto } from '$app/navigation';
+import { gotoParaglide } from '@/utils/gotoParaglide.js';
 
 // LIBRARIES
 import { authClient } from '../lib/authClient';
@@ -54,14 +54,14 @@ export function useAuth() {
 					const params = new URLSearchParams({ error: 'BANNED_USER' });
 					if (result.error.message) params.set('error_description', result.error.message);
 					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					await goto(`${UNPROTECTED_PAGE_ENDPOINTS.AUTH_ERROR}?${params}`);
+					await gotoParaglide(`${UNPROTECTED_PAGE_ENDPOINTS.AUTH_ERROR}?${params}`);
 					return;
 				}
 
 				setErrorFrom(result.error.message);
 			} else {
 				// Endpoints that return a redirect url navigate themselves via the redirect
-				// plugin; the OTP flows don't, so callers can pass an onSuccess (e.g. goto).
+				// plugin; the OTP flows don't, so callers can pass an onSuccess (e.g. gotoParaglide).
 				onSuccess?.();
 			}
 		} finally {
@@ -110,7 +110,7 @@ export function useAuth() {
 					// which would drop the toast.
 					toast.success(successMessage);
 					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					goto(`${UNPROTECTED_PAGE_ENDPOINTS.VERIFY_EMAIL}?email=${encodeURIComponent(email)}`);
+					gotoParaglide(`${UNPROTECTED_PAGE_ENDPOINTS.VERIFY_EMAIL}?email=${encodeURIComponent(email)}`);
 				}
 			);
 		},
@@ -126,7 +126,7 @@ export function useAuth() {
 		verifyEmail(email: string, otp: string, captchaToken: string) {
 			return run(
 				() => authClient.emailOtp.verifyEmail({ ...captchaFetchOptions(captchaToken), email, otp }),
-				() => goto(UNPROTECTED_PAGE_ENDPOINTS.ROOT)
+				() => gotoParaglide(UNPROTECTED_PAGE_ENDPOINTS.ROOT)
 			);
 		},
 		requestPasswordReset(email: string, captchaToken: string) {
@@ -143,7 +143,7 @@ export function useAuth() {
 						otp,
 						password
 					}),
-				() => goto(UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN)
+				() => gotoParaglide(UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN)
 			);
 		},
 		signInWithGoogle(captchaToken: string) {

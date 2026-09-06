@@ -11,6 +11,7 @@
 
 	// COMPONENTS
 	import { Button } from '@/components/ui/button';
+	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import SvelteHead from '@/components/ui/custom-components/svelte-head/svelte-head.svelte';
 
 	// UTILS
@@ -86,10 +87,10 @@
 		{/if}
 
 		<div class="flex flex-wrap justify-center gap-3">
-			<Button href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN} variant="outline">
+			<ButtonLink href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN} variant="outline">
 				{m['AuthErrorPage.tryAgain']()}
-			</Button>
-			<Button href={UNPROTECTED_PAGE_ENDPOINTS.ROOT}>{m['AuthErrorPage.goHome']()}</Button>
+			</ButtonLink>
+			<ButtonLink href={UNPROTECTED_PAGE_ENDPOINTS.ROOT}>{m['AuthErrorPage.goHome']()}</ButtonLink>
 		</div>
 	</section>
 </main>

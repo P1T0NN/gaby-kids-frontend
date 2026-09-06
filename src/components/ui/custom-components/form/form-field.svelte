@@ -35,25 +35,32 @@
 </script>
 
 <Field
-	class={cn(labelPosition === 'after' && 'flex-row items-center gap-2', field.class, className)}
+	orientation={labelPosition === 'after' ? 'horizontal' : 'vertical'}
+	class={cn(labelPosition === 'after' && 'gap-2', field.class, className)}
 	data-disabled={disabled}
 	data-invalid={Boolean(error)}
 >
-	{#if labelPosition === 'before' && field.label}
-		<FieldLabel for={field.name}>
-			{field.label}{#if field.required}<span class="text-destructive"> *</span>{/if}
-		</FieldLabel>
-	{/if}
-
-	<FieldContent>
+	{#if labelPosition === 'after'}
 		{@render children?.()}
-		{#if field.description}<FieldDescription>{field.description}</FieldDescription>{/if}
-		{#if error}<FieldError id={`${field.name}-error`}>{error}</FieldError>{/if}
-	</FieldContent>
-
-	{#if labelPosition === 'after' && field.label}
-		<FieldLabel for={field.name}>
-			{field.label}{#if field.required}<span class="text-destructive"> *</span>{/if}
-		</FieldLabel>
+		<FieldContent>
+			{#if field.label}
+				<FieldLabel for={field.name}>
+					{field.label}{#if field.required}<span class="text-destructive"> *</span>{/if}
+				</FieldLabel>
+			{/if}
+			{#if field.description}<FieldDescription>{field.description}</FieldDescription>{/if}
+			{#if error}<FieldError id={`${field.name}-error`}>{error}</FieldError>{/if}
+		</FieldContent>
+	{:else}
+		{#if field.label}
+			<FieldLabel for={field.name}>
+				{field.label}{#if field.required}<span class="text-destructive"> *</span>{/if}
+			</FieldLabel>
+		{/if}
+		<FieldContent>
+			{@render children?.()}
+			{#if field.description}<FieldDescription>{field.description}</FieldDescription>{/if}
+			{#if error}<FieldError id={`${field.name}-error`}>{error}</FieldError>{/if}
+		</FieldContent>
 	{/if}
 </Field>

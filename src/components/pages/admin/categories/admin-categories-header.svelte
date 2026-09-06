@@ -3,7 +3,7 @@
 	import { ADMIN_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
 
 	// COMPONENTS
-	import { Button } from '@/components/ui/button/index.js';
+	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import { m } from '@/lib/paraglide/messages';
 
 	let { total, showTotal = true }: { total?: number | null; showTotal?: boolean } = $props();
@@ -28,8 +28,8 @@
 		</p>
 	</div>
 
-	<Button href={ADMIN_PAGE_ENDPOINTS.ADD_CATEGORY}>
+	<ButtonLink href={ADMIN_PAGE_ENDPOINTS.ADD_CATEGORY}>
 		<span class="icon-[lucide--plus] size-4" data-icon="inline-start"></span>
 		{m['AdminCategoriesPage.AdminCategoriesHeader.addCategory']()}
-	</Button>
+	</ButtonLink>
 </div>

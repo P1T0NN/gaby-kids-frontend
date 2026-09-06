@@ -29,6 +29,58 @@ export const tables = {
 		.index('by_slug', ['slug'])
 		.index('by_category_id', ['categoryId'])
 		.index('by_status', ['status']),
+	orders: defineTable({
+		customerId: v.optional(v.string()),
+		retryKey: v.string(),
+		lineFingerprint: v.string(),
+		currency: v.string(),
+		firstName: v.string(),
+		lastName: v.string(),
+		email: v.string(),
+		phone: v.string(),
+		fulfillmentMethod: literals('delivery', 'pickup'),
+		shippingAddress: v.optional(
+			v.object({
+				street: v.string(),
+				apartment: v.optional(v.string()),
+				postalCode: v.string(),
+				city: v.string(),
+				country: v.string()
+			})
+		),
+		subtotalInCents: v.number(),
+		totalInCents: v.number(),
+		paymentStatus: literals('pending', 'paid', 'refund_pending', 'refunded'),
+		fulfillmentStatus: literals('unfulfilled', 'fulfilled'),
+		cancelledAt: v.optional(v.number()),
+		internalNote: v.optional(v.string()),
+		updatedAt: v.number()
+	})
+		.index('by_retry_key', ['retryKey'])
+		.index('by_customer_id', ['customerId'])
+		.index('by_payment_status', ['paymentStatus'])
+		.index('by_fulfillment_status', ['fulfillmentStatus'])
+		.index('by_fulfillment_method', ['fulfillmentMethod'])
+		.index('by_payment_status_and_fulfillment_status', ['paymentStatus', 'fulfillmentStatus'])
+		.index('by_payment_status_and_fulfillment_method', ['paymentStatus', 'fulfillmentMethod'])
+		.index('by_fulfillment_status_and_fulfillment_method', [
+			'fulfillmentStatus',
+			'fulfillmentMethod'
+		])
+		.index('by_payment_status_and_fulfillment_status_and_fulfillment_method', [
+			'paymentStatus',
+			'fulfillmentStatus',
+			'fulfillmentMethod'
+		]),
+	orderItems: defineTable({
+		orderId: v.id('orders'),
+		productId: v.id('products'),
+		name: v.string(),
+		unitPriceInCents: v.number(),
+		quantity: v.number()
+	})
+		.index('by_order_id', ['orderId'])
+		.index('by_product_id', ['productId']),
 	storageUploads: defineTable({
 		ownerId: v.string(),
 		key: v.string(),

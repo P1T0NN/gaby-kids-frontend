@@ -6,6 +6,7 @@ import { categoryAggregate } from '../tables/categories/aggregates/categoryAggre
 import { productsByCategoryAggregate } from '../tables/categories/aggregates/productsByCategoryAggregate.js';
 import { productAggregate } from '../tables/products/aggregates/productAggregate.js';
 import { productsByStatusAggregate } from '../tables/products/aggregates/productsByStatusAggregate.js';
+import { orderAggregate } from '../tables/orders/aggregates/orderAggregate.js';
 
 // TYPES
 import type { DataModel } from '../_generated/dataModel.js';
@@ -16,5 +17,6 @@ aggregateTriggers.register('products', productAggregate.idempotentTrigger());
 aggregateTriggers.register('products', productsByStatusAggregate.idempotentTrigger());
 aggregateTriggers.register('products', productsByCategoryAggregate.idempotentTrigger());
 aggregateTriggers.register('categories', categoryAggregate.idempotentTrigger());
+aggregateTriggers.register('orders', orderAggregate.idempotentTrigger());
 
 export { aggregateTriggers };

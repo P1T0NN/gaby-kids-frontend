@@ -1,6 +1,6 @@
 <script lang="ts">
 	// SVELTEKIT
-	import { goto } from '$app/navigation';
+	import { gotoParaglide } from '@/utils/gotoParaglide.js';
 	import { resolve } from '$app/paths';
 
 	// LIBRARIES
@@ -72,7 +72,7 @@
 
 		if (didDelete) {
 			close();
-			await goto(resolve('/admin/users'));
+			await gotoParaglide(resolve('/admin/users'));
 		}
 	}
 </script>

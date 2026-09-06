@@ -1,6 +1,6 @@
 <script lang="ts">
 	// SVELTEKIT IMPORTS
-	import { goto } from '$app/navigation';
+	import { gotoParaglide } from '@/utils/gotoParaglide.js';
 	import { untrack } from 'svelte';
 
 	// LIBRARIES
@@ -12,6 +12,7 @@
 	// COMPONENTS
 	import ProductCategorySelector from '@/features/categories/components/product-category-selector.svelte';
 	import { Button } from '@/components/ui/button/index.js';
+	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Form from '@/components/ui/custom-components/form/form.svelte';
 	import { Spinner } from '@/components/ui/spinner/index.js';
 	import { m } from '@/lib/paraglide/messages';
@@ -144,14 +145,14 @@
 		categoryId: categoryId as Id<'categories'>,
 		status: values.active ? ('active' as const) : ('draft' as const)
 	})}
-	onSuccess={() => goto(ADMIN_PAGE_ENDPOINTS.PRODUCTS)}
+	onSuccess={() => gotoParaglide(ADMIN_PAGE_ENDPOINTS.PRODUCTS)}
 	successMessage={m['AdminEditProductPage.productUpdated']()}
 	errorMessage={m['AdminEditProductPage.updateError']()}
 >
 	<div class="flex flex-wrap justify-end gap-2">
-		<Button href={ADMIN_PAGE_ENDPOINTS.PRODUCTS} variant="outline">
+		<ButtonLink href={ADMIN_PAGE_ENDPOINTS.PRODUCTS} variant="outline">
 			{m['AdminEditProductPage.cancel']()}
-		</Button>
+		</ButtonLink>
 		<Button type="submit" disabled={submitting}>
 			{#if submitting}
 				<Spinner />

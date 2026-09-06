@@ -15,6 +15,7 @@
 	import PasswordInput from '@/components/ui/custom-components/password-input/password-input.svelte';
 	import { Spinner } from '@/components/ui/spinner/index.js';
 	import CaptchaField from '@/features/captcha/components/captcha-field.svelte';
+	import Link from '@/components/ui/custom-components/link/link.svelte';
 
 	// DATA
 	import { ERROR_MESSAGE_KEYS } from '@/shared/features/auth/data/authData';
@@ -72,8 +73,8 @@
 
 					<Field.Description class="flex items-center justify-between">
 						<span>{m['AuthFeature.SignInForm.rememberSession']()}</span>
-						<a href={UNPROTECTED_PAGE_ENDPOINTS.FORGOT_PASSWORD}
-							>{m['AuthFeature.SignInForm.forgotYourPassword']()}</a
+						<Link href={UNPROTECTED_PAGE_ENDPOINTS.FORGOT_PASSWORD}
+							>{m['AuthFeature.SignInForm.forgotYourPassword']()}</Link
 						>
 					</Field.Description>
 				</Field.Field>
@@ -106,7 +107,7 @@
 
 						<Field.Description class="px-6 text-center">
 							{m['AuthFeature.SignInForm.noAccount']()}
-							<a href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_UP}>{m['AuthFeature.SignInForm.signUp']()}</a
+							<Link href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_UP}>{m['AuthFeature.SignInForm.signUp']()}</Link
 							>
 						</Field.Description>
 					</Field.Field>

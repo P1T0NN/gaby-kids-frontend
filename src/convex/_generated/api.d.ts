@@ -73,6 +73,13 @@ import type * as tables_categories_queries_fetchCategoriesSearch from "../tables
 import type * as tables_categories_queries_fetchCategory from "../tables/categories/queries/fetchCategory.js";
 import type * as tables_categories_queries_fetchCategoryOptions from "../tables/categories/queries/fetchCategoryOptions.js";
 import type * as tables_categories_validators_categoryValidators from "../tables/categories/validators/categoryValidators.js";
+import type * as tables_orders_aggregates_orderAggregate from "../tables/orders/aggregates/orderAggregate.js";
+import type * as tables_orders_helpers_getOrderQuery from "../tables/orders/helpers/getOrderQuery.js";
+import type * as tables_orders_mutations_createOrder from "../tables/orders/mutations/createOrder.js";
+import type * as tables_orders_mutations_updateOrderAdmin from "../tables/orders/mutations/updateOrderAdmin.js";
+import type * as tables_orders_queries_fetchAllOrdersAdmin from "../tables/orders/queries/fetchAllOrdersAdmin.js";
+import type * as tables_orders_queries_fetchOrderAdmin from "../tables/orders/queries/fetchOrderAdmin.js";
+import type * as tables_orders_validators_orderValidators from "../tables/orders/validators/orderValidators.js";
 import type * as tables_products_aggregates_productAggregate from "../tables/products/aggregates/productAggregate.js";
 import type * as tables_products_aggregates_productsByStatusAggregate from "../tables/products/aggregates/productsByStatusAggregate.js";
 import type * as tables_products_helpers_getProductPage from "../tables/products/helpers/getProductPage.js";
@@ -166,6 +173,13 @@ declare const fullApi: ApiFromModules<{
   "tables/categories/queries/fetchCategory": typeof tables_categories_queries_fetchCategory;
   "tables/categories/queries/fetchCategoryOptions": typeof tables_categories_queries_fetchCategoryOptions;
   "tables/categories/validators/categoryValidators": typeof tables_categories_validators_categoryValidators;
+  "tables/orders/aggregates/orderAggregate": typeof tables_orders_aggregates_orderAggregate;
+  "tables/orders/helpers/getOrderQuery": typeof tables_orders_helpers_getOrderQuery;
+  "tables/orders/mutations/createOrder": typeof tables_orders_mutations_createOrder;
+  "tables/orders/mutations/updateOrderAdmin": typeof tables_orders_mutations_updateOrderAdmin;
+  "tables/orders/queries/fetchAllOrdersAdmin": typeof tables_orders_queries_fetchAllOrdersAdmin;
+  "tables/orders/queries/fetchOrderAdmin": typeof tables_orders_queries_fetchOrderAdmin;
+  "tables/orders/validators/orderValidators": typeof tables_orders_validators_orderValidators;
   "tables/products/aggregates/productAggregate": typeof tables_products_aggregates_productAggregate;
   "tables/products/aggregates/productsByStatusAggregate": typeof tables_products_aggregates_productsByStatusAggregate;
   "tables/products/helpers/getProductPage": typeof tables_products_helpers_getProductPage;
@@ -221,6 +235,7 @@ export declare const components: {
   analytics: import("@vllnt/convex-analytics/_generated/component.js").ComponentApi<"analytics">;
   productsAggregate: import("@convex-dev/aggregate/_generated/component.js").ComponentApi<"productsAggregate">;
   categoriesAggregate: import("@convex-dev/aggregate/_generated/component.js").ComponentApi<"categoriesAggregate">;
+  ordersAggregate: import("@convex-dev/aggregate/_generated/component.js").ComponentApi<"ordersAggregate">;
   r2: import("@convex-dev/r2/_generated/component.js").ComponentApi<"r2">;
   auditLog: import("convex-audit-log/_generated/component.js").ComponentApi<"auditLog">;
 };

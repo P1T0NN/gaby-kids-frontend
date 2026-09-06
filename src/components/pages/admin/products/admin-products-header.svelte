@@ -3,7 +3,7 @@
 	import { ADMIN_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
 
 	// COMPONENTS
-	import { Button } from '@/components/ui/button/index.js';
+	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Spinner from '@/components/ui/spinner/spinner.svelte';
 	import { m } from '@/lib/paraglide/messages';
 
@@ -34,8 +34,8 @@
 		</p>
 	</div>
 
-	<Button href={ADMIN_PAGE_ENDPOINTS.ADD_PRODUCT}>
+	<ButtonLink href={ADMIN_PAGE_ENDPOINTS.ADD_PRODUCT}>
 		<span class="icon-[lucide--plus] size-4" data-icon="inline-start"></span>
 		{m['AdminProductsPage.AdminProductsHeader.addProduct']()}
-	</Button>
+	</ButtonLink>
 </div>

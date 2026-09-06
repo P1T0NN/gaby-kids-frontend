@@ -1,8 +1,8 @@
 # Orders System Design
 
-Status: simplified proposal, reviewed against local source on 2026-09-05.
-Orders, pricing, inventory, and Stripe integration are not implemented.
-Current products contain details, category, images, and status only. See
+Status: initial order foundation implemented on 2026-09-06.
+Products have server-owned prices; checkout creates pending order and item
+snapshots. Inventory and Stripe integration remain future phases. See
 [CodingRules.md](./CodingRules.md). This replaces the previous orders proposal;
 [ProductSystemDesign.md](./ProductSystemDesign.md) remains historical, not a
 prerequisite implementation plan.

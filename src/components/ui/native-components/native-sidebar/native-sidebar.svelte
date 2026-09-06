@@ -15,6 +15,7 @@
 	let {
 		children,
 		sidebarHeader,
+		navSecondary,
 		sidebarFooter,
 		class: className,
 		label = m['Components.NativeSidebar.label'](),
@@ -23,6 +24,7 @@
 	}: {
 		children: Snippet;
 		sidebarHeader?: Snippet;
+		navSecondary?: Snippet;
 		sidebarFooter?: Snippet;
 		class?: string;
 		label?: string;
@@ -73,8 +75,14 @@
 					{@render children()}
 				</div>
 
+				{#if navSecondary}
+					<div class="shrink-0 p-3">
+						{@render navSecondary()}
+					</div>
+				{/if}
+
 				{#if sidebarFooter}
-					<div class="mt-auto shrink-0 border-t p-3">
+					<div class="shrink-0 border-t p-3">
 						{@render sidebarFooter()}
 					</div>
 				{/if}
@@ -86,7 +94,7 @@
 		aria-label={label}
 		data-side={side}
 		data-hover-suppressed={hoverSuppressed}
-		onpointerdown={suppressHover}
+		onpointerup={suppressHover}
 		onpointerleave={() => (hoverSuppressed = false)}
 		class={cn('pointer-events-auto sticky top-0 z-10 hidden h-screen shrink-0 md:block', className)}
 	>
@@ -117,8 +125,14 @@
 				{@render children()}
 			</div>
 
+			{#if navSecondary}
+				<div data-native-sidebar-secondary class="shrink-0 p-3">
+					{@render navSecondary()}
+				</div>
+			{/if}
+
 			{#if sidebarFooter}
-				<div data-native-sidebar-footer class="mt-auto shrink-0 border-t p-3">
+				<div data-native-sidebar-footer class="shrink-0 border-t p-3">
 					{@render sidebarFooter()}
 				</div>
 			{/if}
@@ -171,7 +185,8 @@
 		transition: opacity 120ms ease-out;
 	}
 
-	[data-native-sidebar-footer] {
+	[data-native-sidebar-footer],
+	[data-native-sidebar-secondary] {
 		transform: translateX(-0.5rem);
 	}
 
@@ -183,7 +198,8 @@
 		transform: translateX(0.125rem);
 	}
 
-	aside[data-side='right'] [data-native-sidebar-footer] {
+	aside[data-side='right'] [data-native-sidebar-footer],
+	aside[data-side='right'] [data-native-sidebar-secondary] {
 		transform: translateX(0.5rem);
 	}
 

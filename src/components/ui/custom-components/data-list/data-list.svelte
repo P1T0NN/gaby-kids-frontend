@@ -102,7 +102,7 @@
 		<PaginatedData
 			page={pagination.page}
 			nextCursor={pagination.nextCursor}
-			total={total ?? pagination.total}
+			total={total !== undefined ? total : pagination.total}
 			pageSize={pagination.pageSize}
 			loading={pagination.loading}
 			onPrev={pagination.onPrev}
@@ -126,7 +126,7 @@
 		<PaginatedData
 			page={pagination.page}
 			nextCursor={pagination.nextCursor}
-			total={total ?? pagination.total}
+			total={total !== undefined ? total : pagination.total}
 			pageSize={pagination.pageSize}
 			loading={pagination.loading}
 			onPrev={pagination.onPrev}

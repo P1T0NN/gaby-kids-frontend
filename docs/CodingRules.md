@@ -223,6 +223,11 @@ never hardcoded user-facing text. Map those codes in `validationsData.ts` to
   `src/utils` or `src/shared/utils`; reuse them before adding equivalents.
 - `COMPANY_DATA` is the branding source for UI, emails, JSON-LD, and links.
   `pageEndpoints.ts` uses `resolve()` so links survive a non-root base path.
+- Use the custom `Link` component for internal website links so `localizeHref`
+  is applied explicitly; use a normal `<a>` for external links.
+- Use `gotoParaglide(...)` from `src/utils/gotoParaglide.ts` for programmatic
+  internal navigation instead of importing `goto` directly from
+  `$app/navigation`.
 
 State choice: local interaction state uses `$state`; computed state uses
 `$derived`; shareable/searchable state uses URL mode; server truth uses a live
@@ -236,7 +241,7 @@ flags or waits on `Promise.all`.
 
 - `categories`: flat storefront taxonomy referenced by required
   `products.categoryId`.
-- `products`: catalog name, slug, description, one category, gallery, and status.
+- `products`: catalog name, slug, description, price, one category, gallery, and status.
   `saveProduct` creates or edits product details in one transaction; new products
   default to draft. Publishing requires an active category.
 - `storageUploads`: owner, object key, `pending`/`uploaded` status, timestamp,
@@ -272,6 +277,8 @@ Current app-facing functions are:
   characters, max seven results);
 - admin users/profile/settings/sessions/logs queries and
   `api.auditLogs.queries.fetchAuditLogsAdmin`.
+- checkout order creation plus admin order list/detail/update functions under
+  `api.tables.orders`.
 
 For list queries, use `fetchOptimizedQuery`: it adds validated pagination,
 search, and symbolic filters, chooses the feature predicate registry, delegates
@@ -282,9 +289,11 @@ The add and edit forms save content/category/images through `saveProduct`.
 Catalog edits use last-save-wins. Product prices are stored as integer cents in
 `products.priceInCents`; stock and customer choices are not implemented.
 
-Future order items must render from immutable purchase snapshots, not live
-catalog joins, so product deletion cannot erase order history. Do not cascade-delete
-orders or their snapshots. Orders and stock obligations are not implemented yet.
+`orders` stores customer, fulfillment, trusted totals, payment/fulfillment state,
+and idempotent checkout input; `orderItems` stores immutable product name, price,
+and quantity snapshots. Never render order history from live catalog joins or
+cascade-delete orders/items with products. Inventory obligations and Stripe are
+not implemented yet.
 
 Counts and side effects already have homes: product and user totals use
 aggregates, and trigger-wrapped mutations keep these projections current.
@@ -365,6 +374,8 @@ are live subscriptions, not SvelteKit stream responses.
   and visible focus styles. Icon-only controls need an accessible label.
 - Keep user-facing messages in the calling component; use `toastMessage` only
   to route success/error presentation and rate-limit timing.
+- Translation keys in page child components use the PageName.ComponentName.key
+  namespace; page-owned route markup uses PageName.key.
 - Group imports with uppercase comments (`// SVELTEKIT IMPORTS`, `// LIBRARIES`,
   `// COMPONENTS`, `// CONFIG`, `// UTILS`, `// TYPES`) and keep framework/
   library imports above local modules. Prefer `.js` suffixes for local TS

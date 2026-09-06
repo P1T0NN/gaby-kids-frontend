@@ -11,6 +11,7 @@
 
 	// COMPONENTS
 	import { Button } from '@/components/ui/button/index.js';
+	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import EmptyData from '@/components/ui/custom-components/empty-data/empty-data.svelte';
 	import NativeSheet from '@/components/ui/native-components/native-sheet/native-sheet.svelte';
 	import CartItems from './cart-items.svelte';
@@ -75,9 +76,13 @@
 				<span>{m['CartFeature.Cart.total']()}</span>
 				<span class="tabular-nums">{formatPrice(totalPriceInCents)}</span>
 			</div>
-			<Button href={UNPROTECTED_PAGE_ENDPOINTS.CHECKOUT} class="w-full">
+			<ButtonLink
+				href={UNPROTECTED_PAGE_ENDPOINTS.CHECKOUT}
+				onclick={() => document.querySelector<HTMLDialogElement>('#cart-sheet')?.close()}
+				class="w-full"
+			>
 				{m['CartFeature.Cart.goToCheckout']()}
-			</Button>
+			</ButtonLink>
 		</footer>
 	{/if}
 {/snippet}

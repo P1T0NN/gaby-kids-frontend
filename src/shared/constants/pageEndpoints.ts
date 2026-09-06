@@ -18,5 +18,8 @@ export const ADMIN_PAGE_ENDPOINTS = {
 	EDIT_PRODUCT: (id: string) => resolve('/admin/products/edit-product/[id]', { id }),
 	CATEGORIES: resolve('/admin/categories'),
 	ADD_CATEGORY: resolve('/admin/categories/add-category'),
-	EDIT_CATEGORY: (id: string) => resolve('/admin/categories/edit-category/[id]', { id })
+	EDIT_CATEGORY: (id: string) => resolve('/admin/categories/edit-category/[id]', { id }),
+	ORDERS: resolve('/admin/orders'),
+	EDIT_ORDER: (id: string) => resolve('/admin/orders/edit-order/[id]', { id }),
+	DASHBOARD: resolve('/admin/dashboard')
 };

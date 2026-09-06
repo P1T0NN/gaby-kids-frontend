@@ -2,6 +2,7 @@
 	// UTILS
 	import { cn } from '@/utils/utils.js';
 	import { usePathname } from '@/hooks/usePathname.svelte';
+	import Link from '@/components/ui/custom-components/link/link.svelte';
 
 	// TYPES
 	import type { Snippet } from 'svelte';
@@ -21,7 +22,7 @@
 </script>
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
-<a
+<Link
 	{href}
 	{...restProps}
 	aria-current={isActive ? 'page' : undefined}
@@ -34,5 +35,5 @@
 	)}
 >
 	{@render children()}
-</a>
+</Link>
 <!-- eslint-enable svelte/no-navigation-without-resolve -->

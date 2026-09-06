@@ -12,6 +12,7 @@
 	import { Badge } from '@/components/ui/badge';
 	import NativeAvatar from '@/components/ui/native-components/native-avatar/native-avatar.svelte';
 	import { TableCell } from '@/components/ui/table';
+	import Link from '@/components/ui/custom-components/link/link.svelte';
 	import { m } from '@/lib/paraglide/messages';
 	import { getLocale } from '@/lib/paraglide/runtime';
 
@@ -26,7 +27,7 @@
 </script>
 
 <TableCell>
-	<a
+	<Link
 		href={resolve('/admin/users/[id]', { id: user.id })}
 		class="group inline-flex max-w-full min-w-0 items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
 	>
@@ -35,7 +36,7 @@
 			<p class="truncate font-medium group-hover:underline">{user.name}</p>
 			<p class="truncate text-xs text-muted-foreground group-hover:underline">{user.email}</p>
 		</div>
-	</a>
+	</Link>
 </TableCell>
 <TableCell>
 	<Badge variant={user.role === 'admin' ? 'default' : 'secondary'} class="capitalize">

@@ -43,17 +43,33 @@
 			<NativeSidebarUser />
 		{/snippet}
 
+		{#snippet navSecondary()}
+			<nav aria-label="Secondary navigation">
+				<NativeSidebarLink href="/" exact>
+					<span class="icon-[lucide--arrow-left] size-4" aria-hidden="true"></span>
+					<span>Back to Shop</span>
+				</NativeSidebarLink>
+			</nav>
+		{/snippet}
+
 		<div class="flex flex-col gap-4 p-3">
 			<nav aria-label="Admin" class="flex flex-col gap-1">
 				<NativeSidebarSection title="General">
+					<NativeSidebarLink href="/admin/dashboard">
+						<span class="icon-[lucide--layout-dashboard] size-4" aria-hidden="true"></span>
+						<span>Dashboard</span>
+					</NativeSidebarLink>
 					<NativeSidebarLink href="/admin/users">
 						<span class="icon-[lucide--users] size-4" aria-hidden="true"></span>
 						<span>Users</span>
 					</NativeSidebarLink>
-					<NativeSidebarLink href="/admin/logs">
-						<span class="icon-[lucide--scroll-text] size-4" aria-hidden="true"></span>
-						<span>Logs</span>
+					<NativeSidebarLink href="/admin/orders">
+						<span class="icon-[lucide--shopping-bag] size-4" aria-hidden="true"></span>
+						<span>Orders</span>
 					</NativeSidebarLink>
+				</NativeSidebarSection>
+
+				<NativeSidebarSection title="Products">
 					<NativeSidebarLink href="/admin/products">
 						<span class="icon-[lucide--package] size-4" aria-hidden="true"></span>
 						<span>Products</span>
@@ -61,6 +77,13 @@
 					<NativeSidebarLink href="/admin/categories">
 						<span class="icon-[lucide--folder-tree] size-4" aria-hidden="true"></span>
 						<span>Categories</span>
+					</NativeSidebarLink>
+				</NativeSidebarSection>
+
+				<NativeSidebarSection title="Security">
+					<NativeSidebarLink href="/admin/logs">
+						<span class="icon-[lucide--scroll-text] size-4" aria-hidden="true"></span>
+						<span>Logs</span>
 					</NativeSidebarLink>
 				</NativeSidebarSection>
 			</nav>

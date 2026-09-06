@@ -12,6 +12,7 @@
 	import NativePopover from '@/components/ui/native-components/native-popover/native-popover.svelte';
 	import { Spinner } from '@/components/ui/spinner/index.js';
 	import { TableCell } from '@/components/ui/table/index.js';
+	import Link from '@/components/ui/custom-components/link/link.svelte';
 	import { m } from '@/lib/paraglide/messages';
 
 	// CONFIG
@@ -57,7 +58,7 @@
 {/snippet}
 
 <TableCell>
-	<a
+	<Link
 		href={ADMIN_PAGE_ENDPOINTS.EDIT_CATEGORY(category._id)}
 		class="group inline-flex min-w-0 items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
 	>
@@ -66,7 +67,7 @@
 		<div class="min-w-0">
 			<p class="truncate font-medium group-hover:underline">{category.name}</p>
 		</div>
-	</a>
+	</Link>
 </TableCell>
 <TableCell class="font-mono text-xs whitespace-nowrap">{category.slug}</TableCell>
 <TableCell>
@@ -86,13 +87,13 @@
 		triggerClass="size-8 justify-center hover:bg-muted [&_svg]:size-4"
 		class="min-w-44"
 	>
-		<a
+		<Link
 			href={ADMIN_PAGE_ENDPOINTS.EDIT_CATEGORY(category._id)}
 			class="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
 		>
 			<span class="icon-[lucide--pencil] size-4" aria-hidden="true"></span>
 			{m['AdminCategoriesPage.AdminCategoriesTableItem.editCategory']()}
-		</a>
+		</Link>
 		<NativeDialog>
 			{#snippet trigger({ open })}
 				<Button
