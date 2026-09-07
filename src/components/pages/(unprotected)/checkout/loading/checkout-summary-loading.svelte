@@ -6,7 +6,7 @@
 </script>
 
 <div role="status" class="flex flex-col gap-5">
-	<span class="sr-only">{m['CheckoutPage.loading']()}</span>
+	<span class="sr-only">{m['CheckoutPage.CheckoutSummaryLoading.loading']()}</span>
 	<div class="flex gap-4" aria-hidden="true">
 		<Skeleton class="size-16 rounded-lg" />
 		<div class="flex flex-1 flex-col gap-3">

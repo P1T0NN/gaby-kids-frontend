@@ -4,42 +4,134 @@
 	"CheckoutPage": {
 		"title": "Checkout",
 		"description": "Your details, your delivery, then online payment.",
+		"CheckoutHeader": {
+			"back": "Continue shopping",
+			"title": "Checkout",
+			"description": "Your details, your delivery, then online payment."
+		},
+		"CheckoutForm": {
+			"contact": "Contact details",
+			"contactHint": "We'll use these details for your order confirmation and updates.",
+			"firstName": "First name",
+			"lastName": "Last name",
+			"email": "Email address",
+			"phone": "Phone number",
+			"fulfillment": "How would you like your order?",
+			"delivery": "Delivery",
+			"deliveryHint": "Send it to your address",
+			"pickup": "Pick up",
+			"pickupHint": "Collect it yourself",
+			"address": "Delivery details",
+			"street": "Street address",
+			"apartment": "Apartment, suite, etc. (optional)",
+			"postalCode": "Postal code",
+			"city": "City",
+			"country": "Country",
+			"pickupInfo": "No delivery address needed. Pickup location and collection details will be available before payment.",
+			"payment": "Online payment",
+			"paymentHint": "Pay online for both delivery and pickup.",
+			"orderCreated": "Order created successfully.",
+			"orderCreateError": "Couldn't create your order."
+		},
+		"CheckoutSummary": {
+			"summary": "Order summary",
+			"delivery": "Delivery",
+			"pickup": "Pick up",
+			"subtotal": "Subtotal",
+			"deliveryPending": "Confirmed before payment",
+			"total": "Total",
+			"estimatedTotal": "Total before delivery",
+			"continue": "Continue to payment",
+			"creatingOrder": "Creating order...",
+			"paymentUnavailable": "Payment is not connected yet. This creates a pending order and no payment is taken.",
+			"unavailable": "Some items are no longer available. Remove them to review your updated total.",
+			"removeUnavailable": "Remove unavailable items"
+		},
+		"CheckoutSummaryItem": {
+			"quantity": "Qty {quantity}"
+		},
+		"CheckoutSummaryLoading": {
+			"loading": "Loading your order summary"
+		}
+	},
+	"CheckoutSuccessPage": {
+		"title": "Order confirmed",
+		"description": "Your order is confirmed. Thank you for shopping with us.",
+		"paymentPendingHint": "Payment is not connected yet, so nothing was charged. We'll follow up with payment details.",
 		"back": "Continue shopping",
-		"contact": "Contact details",
-		"contactHint": "We'll use these details for your order confirmation and updates.",
-		"firstName": "First name",
-		"lastName": "Last name",
-		"email": "Email address",
-		"phone": "Phone number",
-		"fulfillment": "How would you like your order?",
-		"delivery": "Delivery",
-		"deliveryHint": "Send it to your address",
-		"pickup": "Pick up",
-		"pickupHint": "Collect it yourself",
-		"address": "Delivery details",
-		"street": "Street address",
-		"apartment": "Apartment, suite, etc. (optional)",
-		"postalCode": "Postal code",
-		"city": "City",
-		"country": "Country",
-		"pickupInfo": "No delivery address needed. Pickup location and collection details will be available before payment.",
-		"summary": "Order summary",
-		"quantity": "Qty {quantity}",
-		"subtotal": "Subtotal",
-		"deliveryPending": "Confirmed before payment",
-		"total": "Total",
-		"estimatedTotal": "Total before delivery",
-		"payment": "Online payment",
-		"paymentHint": "Pay online for both delivery and pickup.",
-		"continue": "Continue to payment",
-		"creatingOrder": "Creating order...",
-		"orderCreated": "Order created successfully.",
-		"orderReference": "Order reference: {id}",
-		"orderCreateError": "Couldn't create your order.",
-		"paymentUnavailable": "Payment is not connected yet. This creates a pending order and no payment is taken.",
-		"loading": "Loading your order summary",
-		"unavailable": "Some items are no longer available. Remove them to review your updated total.",
-		"removeUnavailable": "Remove unavailable items"
+		"loadError": "Couldn't load your order.",
+		"notFoundTitle": "Order not found",
+		"notFoundDescription": "We couldn't find this order. The link may be invalid or the order may have been removed.",
+		"CheckoutSuccessHeader": {
+			"confirmedTitle": "Thank you, your order is confirmed!",
+			"confirmedDescription": "We've received your order and will keep you updated as it progresses.",
+			"orderReference": "Order reference:",
+			"emailSentTo": "A confirmation email has been sent to {email}."
+		},
+		"CheckoutSuccessOrderSummary": {
+			"summary": "Order summary",
+			"quantity": "Qty {quantity}",
+			"subtotal": "Subtotal",
+			"total": "Total"
+		},
+		"CheckoutSuccessOrderDetails": {
+			"details": "Order details",
+			"email": "Email",
+			"phone": "Phone",
+			"fulfillment": "Fulfillment",
+			"delivery": "Delivery",
+			"pickup": "Pick up",
+			"shippingAddress": "Delivery address"
+		},
+		"CheckoutSuccessLoading": {
+			"loading": "Loading your order"
+		}
+	},
+	"MyOrdersPage": {
+		"pageTitle": "My orders",
+		"pageDescription": "Review your recent orders and their current status.",
+		"loadError": "Couldn't load your orders.",
+		"storageError": "Your saved orders couldn't be read on this device.",
+		"emptyTitle": "No orders yet",
+		"signedInEmptyDescription": "Orders placed while signed in will appear here.",
+		"guestEmptyDescription": "Orders placed on this device will appear here.",
+		"noMatchingOrders": "No matching orders",
+		"filtersEmptyDescription": "No orders match the selected filters.",
+		"paymentFilterLabel": "Payment status",
+		"fulfillmentFilterLabel": "Fulfillment status",
+		"methodFilterLabel": "Fulfillment method",
+		"sortLabel": "Date",
+		"newestFirst": "Newest first",
+		"oldestFirst": "Oldest first",
+		"allPaymentStatuses": "All statuses",
+		"allFulfillmentStatuses": "All statuses",
+		"allMethods": "All methods",
+		"clearFilters": "Clear filters ({count})",
+		"MyOrdersHeader": {
+			"eyebrow": "Order history",
+			"heading": "My orders",
+			"signedInDescription": "Track every order connected to your account.",
+			"guestDescription": "These are the orders saved securely on this device. Sign in to access account orders anywhere."
+		},
+		"MyOrdersItem": {
+			"cancelled": "Cancelled",
+			"delivery": "Delivery",
+			"pickup": "Pick up",
+			"viewOrder": "View order"
+		}
+	},
+	"MyOrderPage": {
+		"pageTitle": "Order {code}",
+		"loadError": "Couldn't load this order.",
+		"storageError": "Your saved order access couldn't be read on this device.",
+		"notFoundTitle": "Order not found",
+		"notFoundDescription": "This order does not belong to your account or this device, or the link is invalid.",
+		"back": "Back to my orders",
+		"MyOrderHeader": {
+			"back": "All orders",
+			"eyebrow": "Order details",
+			"cancelled": "Cancelled"
+		}
 	},
 	"AuthFeature": {
 		"AuthData": {
@@ -731,7 +823,11 @@
 		"Header": {
 			"signOut": "Sign out",
 			"signIn": "Sign in",
-			"adminDashboard": "Admin Dashboard"
+			"adminDashboard": "Admin Dashboard",
+			"myOrders": "My Orders",
+			"home": "Home",
+			"shop": "Shop",
+			"primaryNavigation": "Primary navigation"
 		},
 		"SvelteHead": {
 			"home": "Home"

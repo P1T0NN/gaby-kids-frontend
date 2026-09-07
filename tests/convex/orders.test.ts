@@ -85,6 +85,7 @@ test('keeps order administration private and blocks unpaid fulfillment', async (
 	});
 	const orderId = await t.run((ctx) =>
 		ctx.db.insert('orders', {
+			code: 'ADM001',
 			retryKey: 'admin-order',
 			lineFingerprint: 'line',
 			currency: 'USD',
@@ -138,6 +139,7 @@ test('filters admin orders by payment, fulfillment, and method', async () => {
 
 	await t.run(async (ctx) => {
 		const order = {
+			code: 'FIL001',
 			lineFingerprint: 'line',
 			currency: 'USD',
 			firstName: 'Test',
@@ -157,6 +159,7 @@ test('filters admin orders by payment, fulfillment, and method', async () => {
 		});
 		await ctx.db.insert('orders', {
 			...order,
+			code: 'FIL002',
 			retryKey: 'newer-nonmatching-order',
 			email: 'nonmatching@example.com',
 			paymentStatus: 'paid',

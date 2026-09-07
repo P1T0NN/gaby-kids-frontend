@@ -22,7 +22,9 @@
 	<div class="flex min-w-0 flex-1 flex-col gap-1">
 		<p class="text-sm font-medium wrap-break-word">{item.name}</p>
 		<p class="text-xs text-muted-foreground">
-			{m['CheckoutPage.quantity']({ quantity: item.quantity })} · {formatPrice(item.priceInCents)}
+			{m['CheckoutPage.CheckoutSummaryItem.quantity']({ quantity: item.quantity })} · {formatPrice(
+				item.priceInCents
+			)}
 		</p>
 	</div>
 	<p class="shrink-0 text-sm font-medium tabular-nums">

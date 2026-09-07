@@ -61,8 +61,12 @@ type FetchOptimizedQueryOptions<
 > = {
 	args?: ArgsValidator;
 	returns: ReturnsValidator;
-	count: Aggregate<AggregateKey, AggregateId, AggregateNamespace>;
-	countTotal?: (args: { ctx: QueryCtx; identity: Identity }) => Promise<number>;
+	count?: Aggregate<AggregateKey, AggregateId, AggregateNamespace>;
+	countTotal?: (args: {
+		ctx: QueryCtx;
+		identity: Identity;
+		args: QueryContextArgs<ArgsValidator>;
+	}) => Promise<number>;
 	predicateFor?: (
 		key: string,
 		value: string,
@@ -71,6 +75,7 @@ type FetchOptimizedQueryOptions<
 	fetchPage: (args: {
 		ctx: QueryCtx;
 		identity: Identity;
+		args: QueryContextArgs<ArgsValidator>;
 		paginationOpts: PaginationOptions;
 		search?: string;
 		filters: ConvexFilter[];
@@ -202,6 +207,7 @@ export function fetchOptimizedQuery<
 		const page = await queryOptions.fetchPage({
 			ctx,
 			identity,
+			args: queryArgs,
 			paginationOpts: queryArgs.paginationOpts,
 			search,
 			filters
@@ -210,8 +216,10 @@ export function fetchOptimizedQuery<
 		let total: number | undefined;
 		if (!search && filters.length === 0) {
 			total = queryOptions.countTotal
-				? await queryOptions.countTotal({ ctx, identity })
-				: await getTotalSizeAggregate(ctx, queryOptions.count);
+				? await queryOptions.countTotal({ ctx, identity, args: queryArgs })
+				: queryOptions.count
+					? await getTotalSizeAggregate(ctx, queryOptions.count)
+					: undefined;
 		} else if (queryOptions.filteredTotal === 'exact' && queryOptions.countFiltered) {
 			total = await queryOptions.countFiltered({
 				ctx,

@@ -49,7 +49,8 @@
 	const totalPriceInCents = $derived(
 		cart.items.reduce(
 			(total, item) =>
-				total + (cartProducts.find((product) => product.id === item.id)?.priceInCents ?? 0) * item.quantity,
+				total +
+				(cartProducts.find((product) => product.id === item.id)?.priceInCents ?? 0) * item.quantity,
 			0
 		)
 	);
@@ -119,9 +120,9 @@
 				<CartLoading />
 			{:then data}
 				{@const cartItems = cart.items.flatMap((item) => {
-						const product = data?.find((product) => product.id === item.id);
-						return product ? [{ ...item, ...product }] : [];
-					})}
+					const product = data?.find((product) => product.id === item.id);
+					return product ? [{ ...item, ...product }] : [];
+				})}
 				<CartItems {cartItems} />
 			{:catch}
 				<p role="alert" class="text-sm text-destructive">{m['CartFeature.Cart.loadError']()}</p>

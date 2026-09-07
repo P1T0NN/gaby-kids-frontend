@@ -33,6 +33,12 @@ const orderIdSchema = z
 		return value as Id<'orders'>;
 	});
 
+export const storedOrdersSchema = z
+	.array(
+		z.object({ id: orderIdSchema, retryKey: z.string().trim().min(1).max(MAX_RETRY_KEY_LENGTH) })
+	)
+	.transform((orders) => [...new Map(orders.map((order) => [order.id, order])).values()]);
+
 const optionalTrimmedString = (maxLength: number) =>
 	z
 		.string()

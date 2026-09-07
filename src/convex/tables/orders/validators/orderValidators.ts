@@ -25,6 +25,7 @@ export const orderResult = v.object({
 	_id: v.id('orders'),
 	_creationTime: v.number(),
 	customerId: v.optional(v.string()),
+	code: v.string(),
 	retryKey: v.string(),
 	lineFingerprint: v.string(),
 	currency: v.string(),
@@ -62,3 +63,49 @@ export const orderPage = v.object({
 });
 
 export const orderDetailResult = v.object({ order: orderResult, items: v.array(orderItemResult) });
+
+export const myOrderResult = v.object({
+	_id: v.id('orders'),
+	_creationTime: v.number(),
+	code: v.string(),
+	currency: v.string(),
+	fulfillmentMethod,
+	totalInCents: v.number(),
+	paymentStatus,
+	fulfillmentStatus,
+	cancelledAt: v.optional(v.number())
+});
+
+export const myOrderPage = v.object({
+	items: v.array(myOrderResult),
+	nextCursor: v.union(v.string(), v.null()),
+	hasNextPage: v.boolean(),
+	pageSize: v.number(),
+	total: v.optional(v.number()),
+	invalidOrderIds: v.array(v.string()),
+	syncOrders: v.array(v.object({ id: v.id('orders'), retryKey: v.string() }))
+});
+
+export const customerOrderResult = v.object({
+	_id: v.id('orders'),
+	_creationTime: v.number(),
+	code: v.string(),
+	currency: v.string(),
+	firstName: v.string(),
+	lastName: v.string(),
+	email: v.string(),
+	phone: v.string(),
+	fulfillmentMethod,
+	shippingAddress: v.optional(shippingAddress),
+	subtotalInCents: v.number(),
+	totalInCents: v.number(),
+	paymentStatus,
+	fulfillmentStatus,
+	cancelledAt: v.optional(v.number()),
+	updatedAt: v.number()
+});
+
+export const customerOrderDetailResult = v.object({
+	order: customerOrderResult,
+	items: v.array(orderItemResult)
+});

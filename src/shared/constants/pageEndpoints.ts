@@ -8,7 +8,10 @@ export const UNPROTECTED_PAGE_ENDPOINTS = {
 	VERIFY_EMAIL: resolve('/verify-email'),
 	FORGOT_PASSWORD: resolve('/forgot-password'),
 	AUTH_ERROR: resolve('/auth/error'),
-	CHECKOUT: resolve('/checkout')
+	CHECKOUT: resolve('/checkout'),
+	MY_ORDERS: resolve('/my-orders'),
+	MY_ORDER: (code: string) => resolve('/(app)/(unprotected)/my-orders/[code]', { code }),
+	SHOP: resolve('/shop')
 	//PRODUCT: (slug: string) => resolve('/(app)/(unprotected)/product/[slug]', { slug }),
 };
 

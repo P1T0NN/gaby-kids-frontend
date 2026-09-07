@@ -31,6 +31,7 @@ export const tables = {
 		.index('by_status', ['status']),
 	orders: defineTable({
 		customerId: v.optional(v.string()),
+		code: v.string(),
 		retryKey: v.string(),
 		lineFingerprint: v.string(),
 		currency: v.string(),
@@ -56,6 +57,7 @@ export const tables = {
 		internalNote: v.optional(v.string()),
 		updatedAt: v.number()
 	})
+		.index('by_code', ['code'])
 		.index('by_retry_key', ['retryKey'])
 		.index('by_customer_id', ['customerId'])
 		.index('by_payment_status', ['paymentStatus'])

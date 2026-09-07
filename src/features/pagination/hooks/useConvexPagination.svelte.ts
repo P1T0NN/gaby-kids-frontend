@@ -1,5 +1,6 @@
 // LIBRARIES
 import type { FunctionReference } from 'convex/server';
+import type { UseQueryReturn } from 'convex-svelte';
 
 // BUILDERS
 import { createConvexPaginationQuery } from '@/features/pagination/builders/createConvexPaginationQuery.svelte.js';
@@ -31,7 +32,7 @@ export function useConvexPagination<Query extends FunctionReference<'query'>>(
 	query: Query,
 	args: ConvexPaginationArgs<Query>,
 	options: ConvexPaginationOptions = {}
-): PaginationState<ConvexPaginationItem<Query>> {
+): PaginationState<ConvexPaginationItem<Query>> & { result: UseQueryReturn<Query> } {
 	let session = $state(createPaginationSession(undefined));
 
 	function getActiveSession(key: string): PaginationSession {
@@ -111,6 +112,9 @@ export function useConvexPagination<Query extends FunctionReference<'query'>>(
 		},
 		get total() {
 			return total;
+		},
+		get result() {
+			return result;
 		},
 		onPrev,
 		onNext

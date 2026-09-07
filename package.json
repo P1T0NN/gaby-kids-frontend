@@ -66,6 +66,7 @@
 		"@convex-dev/migrations": "^0.3.6",
 		"@convex-dev/r2": "^0.10.2",
 		"@convex-dev/rate-limiter": "^0.3.2",
+		"@convex-dev/resend": "^0.2.8",
 		"@mmailaender/convex-better-auth-svelte": "^0.8.2",
 		"@vllnt/convex-analytics": "^0.1.0-canary.55667b0",
 		"better-auth": "~1.6.15",

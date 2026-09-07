@@ -17,7 +17,8 @@
 		align = 'end',
 		side = 'bottom',
 		triggerClass,
-		triggerLabel
+		triggerLabel,
+		closeOnClick = false
 	}: {
 		id: string;
 		trigger: Snippet;
@@ -27,7 +28,20 @@
 		side?: 'top' | 'bottom';
 		triggerClass?: string;
 		triggerLabel?: string;
+		closeOnClick?: boolean;
 	} = $props();
+
+	function closeOnSelection(element: HTMLDivElement): void | (() => void) {
+		if (!closeOnClick) return;
+
+		function handleClick(event: MouseEvent): void {
+			if (!(event.target instanceof HTMLElement)) return;
+			if (event.target.closest('a, button')) element.hidePopover();
+		}
+
+		element.addEventListener('click', handleClick);
+		return () => element.removeEventListener('click', handleClick);
+	}
 </script>
 
 <button
@@ -47,6 +61,7 @@
 <div
 	{id}
 	popover="auto"
+	{@attach closeOnSelection}
 	style={`position-anchor: --np-${id}; position-area: ${side} ${align === 'end' ? 'span-left' : 'right'}; justify-self: ${align === 'end' ? 'end' : 'start'}`}
 	class={cn(
 		'inset-auto m-0 min-w-52 rounded-2xl border bg-popover p-1 text-popover-foreground shadow-lg',

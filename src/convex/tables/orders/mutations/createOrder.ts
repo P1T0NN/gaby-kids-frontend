@@ -11,6 +11,9 @@ import { ORDER_CONFIG } from '../../../../shared/features/orders/config.js';
 // VALIDATORS
 import { fulfillmentMethod, shippingAddress } from '../validators/orderValidators.js';
 
+// HELPERS
+import { createOrderCode } from '../helpers/createOrderCode.js';
+
 // SCHEMAS
 import { createOrderSchema } from '../../../../shared/features/orders/schemas/ordersSchemas.js';
 
@@ -89,9 +92,20 @@ export const createOrder = mutation({
 		}
 
 		const identity = await ctx.auth.getUserIdentity();
+		let code = createOrderCode();
+		for (let attempt = 0; attempt < 7; attempt += 1) {
+			const collision = await ctx.db
+				.query('orders')
+				.withIndex('by_code', (query) => query.eq('code', code))
+				.unique();
+			if (!collision) break;
+			code = createOrderCode();
+			if (attempt === 6) throw new Error('Could not allocate a unique order code.');
+		}
 		const now = Date.now();
 		const orderId = await ctx.db.insert('orders', {
 			customerId: identity?.subject,
+			code,
 			retryKey: data.retryKey,
 			lineFingerprint,
 			currency: COMPANY_DATA.CURRENCY,

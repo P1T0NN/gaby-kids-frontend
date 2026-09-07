@@ -2,13 +2,18 @@
 import { browser } from '$app/environment';
 import { onMount } from 'svelte';
 
-export function useLocalStorage<T>(key: string, initialValue: T, parse: (raw: string | null) => T) {
+export function useLocalStorage<T>(
+	key: string,
+	initialValue: T,
+	parse: (raw: string | null) => T,
+	enabled: () => boolean = () => true
+) {
 	let value = $state<T>(initialValue);
 	let loaded = $state(false);
 	let error = $state<unknown>(null);
 
 	function read(): boolean {
-		if (!browser) return false;
+		if (!browser || !enabled()) return false;
 
 		try {
 			value = parse(localStorage.getItem(key));
@@ -21,7 +26,7 @@ export function useLocalStorage<T>(key: string, initialValue: T, parse: (raw: st
 	}
 
 	function set(nextValue: T): boolean {
-		if (!browser) return false;
+		if (!browser || !enabled()) return false;
 
 		try {
 			localStorage.setItem(key, JSON.stringify($state.snapshot(nextValue)));
@@ -36,7 +41,7 @@ export function useLocalStorage<T>(key: string, initialValue: T, parse: (raw: st
 	}
 
 	function remove(): boolean {
-		if (!browser) return false;
+		if (!browser || !enabled()) return false;
 
 		try {
 			localStorage.removeItem(key);
@@ -51,6 +56,10 @@ export function useLocalStorage<T>(key: string, initialValue: T, parse: (raw: st
 	}
 
 	onMount(() => {
+		if (!enabled()) {
+			loaded = true;
+			return;
+		}
 		read();
 		loaded = true;
 

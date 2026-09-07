@@ -278,7 +278,9 @@ Current app-facing functions are:
 - admin users/profile/settings/sessions/logs queries and
   `api.auditLogs.queries.fetchAuditLogsAdmin`.
 - checkout order creation plus admin order list/detail/update functions under
-  `api.tables.orders`.
+  `api.tables.orders`; the post-checkout success page reads its order with
+  `fetchOrderReceipt`, keyed by the client-minted idempotency `retryKey` acting
+  as an unguessable receipt token.
 
 For list queries, use `fetchOptimizedQuery`: it adds validated pagination,
 search, and symbolic filters, chooses the feature predicate registry, delegates
