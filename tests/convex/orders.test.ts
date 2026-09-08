@@ -2,6 +2,7 @@
 
 import aggregateTest from '@convex-dev/aggregate/test';
 import rateLimiterTest from '@convex-dev/rate-limiter/test';
+import resendTest from '@convex-dev/resend/test';
 import { convexTest } from 'convex-test';
 import auditLogTest from 'convex-audit-log/test';
 import { expect, test } from 'vitest';
@@ -17,6 +18,7 @@ function createTestContext() {
 	aggregateTest.register(t, 'categoriesAggregate');
 	aggregateTest.register(t, 'ordersAggregate');
 	rateLimiterTest.register(t);
+	resendTest.register(t);
 	auditLogTest.register(t);
 	return t;
 }

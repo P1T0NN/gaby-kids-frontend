@@ -8,6 +8,8 @@
 
 	// CONFIG
 	import { COMPANY_DATA } from '@/shared/config';
+	import { ADMIN_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
+	import { m } from '@/lib/paraglide/messages';
 
 	// COMPONENTS
 	import NativeSidebar from '@/components/ui/native-components/native-sidebar/native-sidebar.svelte';
@@ -77,6 +79,10 @@
 					<NativeSidebarLink href="/admin/categories">
 						<span class="icon-[lucide--folder-tree] size-4" aria-hidden="true"></span>
 						<span>Categories</span>
+					</NativeSidebarLink>
+					<NativeSidebarLink href={ADMIN_PAGE_ENDPOINTS.UPSELLS}>
+						<span class="icon-[lucide--list-plus] size-4" aria-hidden="true"></span>
+						<span>{m['AdminUpsellsPage.pageTitle']()}</span>
 					</NativeSidebarLink>
 				</NativeSidebarSection>
 

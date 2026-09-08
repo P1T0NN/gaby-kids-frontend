@@ -80,5 +80,5 @@ export const createOrderSchema = z
 
 export const updateOrderAdminSchema = z.object({
 	id: orderIdSchema,
-	action: z.enum(['fulfill', 'unfulfill', 'cancel', 'restore', 'request_refund'])
+	action: z.enum(['fulfill', 'unfulfill', 'cancel', 'request_refund'])
 });

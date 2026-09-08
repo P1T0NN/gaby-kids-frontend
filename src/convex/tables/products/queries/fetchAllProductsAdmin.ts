@@ -14,6 +14,10 @@ export const fetchAllProductsAdmin = fetchOptimizedQuery({
 	auth: 'admin',
 	returns: adminProductPage,
 	count: productAggregate,
+	predicateFor: (key, value) => {
+		if (key === 'upsells' && value === 'with') return { field: 'hasUpsells', eq: true };
+		return undefined;
+	},
 	fetchPage: async ({ ctx, paginationOpts, search, filters }) => {
 		const page = await getProductPage(ctx, paginationOpts, search, filters);
 		return {

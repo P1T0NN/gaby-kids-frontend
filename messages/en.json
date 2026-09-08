@@ -710,7 +710,6 @@
 			"markFulfilled": "Mark fulfilled",
 			"markUnfulfilled": "Mark unfulfilled",
 			"cancelOrder": "Cancel order",
-			"restoreOrder": "Restore order",
 			"refundOrder": "Refund order",
 			"confirmationTitle": "Are you sure?",
 			"fulfillConfirmation": "Mark this order as fulfilled?",
@@ -718,7 +717,6 @@
 			"cancelConfirmation": "This will mark the order as cancelled and stop it from being fulfilled.",
 			"cancelNoRefund": "Cancelling will not refund the user.",
 			"cancelRefundInstruction": "If you intend to refund the user, choose the “Refund order” button first. Refund processing is not connected yet.",
-			"restoreConfirmation": "Restore this order?",
 			"refundConfirmation": "This records a separate refund request as pending until payment integration processes it.",
 			"keepCurrentStatus": "Keep current status",
 			"updated": "Order updated.",
@@ -833,6 +831,46 @@
 			"home": "Home"
 		}
 	},
+	"AdminUpsellsPage": {
+		"pageTitle": "Upsells",
+		"searchPlaceholder": "Find a product with upsells...",
+		"loadError": "We couldn't load these products. Please try again.",
+		"noUpsells": "No upsells yet",
+		"noUpsellsDescription": "Add an upsell to start recommending products together.",
+		"noMatches": "No matching products",
+		"noMatchesDescription": "Try a different product name or clear your search.",
+		"AdminUpsellsHeader": {
+			"adminLabel": "Products",
+			"title": "Upsells",
+			"description": "Manage the products that already have upsells configured."
+		},
+		"AdminUpsellsAddDialog": {
+			"addUpsell": "Add Upsell",
+			"title": "Add upsell"
+		},
+		"AdminUpsellsAddDialogSelectProduct": {
+			"productLabel": "Product name you want to give upsell",
+			"searchPlaceholder": "Search products...",
+			"loading": "Searching products...",
+			"searchError": "We couldn't search products. Please try again.",
+			"noMatches": "No matching products"
+		},
+		"AdminUpsellsAddDialogSelectedProduct": {
+			"change": "Change",
+			"upsellLabel": "Search for products to be upsells",
+			"upsellSearchPlaceholder": "Search products..."
+		},
+		"AdminUpsellsAddDialogSelectedUpsellItem": {
+			"remove": "Remove",
+			"removeLabel": "Remove {name} from upsells"
+		},
+		"AdminUpsellsProductItem": {
+			"upsellCount": "{count} of {max} upsells",
+			"draft": "Draft",
+			"archived": "Archived",
+			"deleted": "Deleted product"
+		}
+	},
 	"ValidationMessages": {
 		"fallback": "Please check this field.",
 		"requiredValue": "Please enter a value.",
@@ -857,6 +895,8 @@
 		"productSlugTaken": "A product with this URL already exists. Choose a different product name.",
 		"productDeleteRestricted": "Only draft products can be permanently deleted.",
 		"productNotFound": "This product could not be found.",
+		"invalidUpsellData": "Choose up to four different products, excluding the source product.",
+		"upsellProductUnavailable": "One of the recommended products is no longer active. Remove it or choose another product.",
 		"invalidOrderData": "Please check the order details and try again.",
 		"orderProductUnavailable": "One or more products are no longer available.",
 		"orderRetryConflict": "This checkout attempt no longer matches your cart. Please try again.",

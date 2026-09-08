@@ -23,6 +23,10 @@ export function getBackendErrorMessage(error: Error): string | undefined {
 			return m['BackendMessages.invalidProductData']();
 		case 'PRODUCT_NOT_FOUND':
 			return m['BackendMessages.productNotFound']();
+		case 'INVALID_UPSELL_DATA':
+			return m['BackendMessages.invalidUpsellData']();
+		case 'UPSELL_PRODUCT_UNAVAILABLE':
+			return m['BackendMessages.upsellProductUnavailable']();
 		case 'PRODUCT_SLUG_TAKEN':
 			return m['BackendMessages.productSlugTaken']();
 		case 'PRODUCT_DELETE_RESTRICTED':

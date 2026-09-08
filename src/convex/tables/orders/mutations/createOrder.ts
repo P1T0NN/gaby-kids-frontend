@@ -14,6 +14,9 @@ import { fulfillmentMethod, shippingAddress } from '../validators/orderValidator
 // HELPERS
 import { createOrderCode } from '../helpers/createOrderCode.js';
 
+// EMAILS
+import { sendOrderCreatedEmails } from '../emails/sendOrderCreatedEmails.js';
+
 // SCHEMAS
 import { createOrderSchema } from '../../../../shared/features/orders/schemas/ordersSchemas.js';
 
@@ -42,16 +45,13 @@ export const createOrder = mutation({
 		const quantities = new Map<Id<'products'>, number>();
 		for (const item of data.items) {
 			const quantity = (quantities.get(item.productId) ?? 0) + item.quantity;
-			if (quantity > ORDER_CONFIG.maxQuantity)
-				throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
+			if (quantity > ORDER_CONFIG.maxQuantity) throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
 			quantities.set(item.productId, quantity);
 		}
 
 		const lines = [...quantities.entries()].sort(([left], [right]) => left.localeCompare(right));
-		const address =
-			data.fulfillmentMethod === 'delivery' && data.shippingAddress
-				? data.shippingAddress
-				: undefined;
+		const address = data.fulfillmentMethod === 'delivery' && data.shippingAddress ? data.shippingAddress : undefined;
+
 		const lineFingerprint = JSON.stringify({
 			lines,
 			firstName: data.firstName,
@@ -61,10 +61,12 @@ export const createOrder = mutation({
 			fulfillmentMethod: data.fulfillmentMethod,
 			address
 		});
+
 		const existing = await ctx.db
 			.query('orders')
 			.withIndex('by_retry_key', (query) => query.eq('retryKey', data.retryKey))
 			.unique();
+
 		if (existing) {
 			if (existing.lineFingerprint !== lineFingerprint)
 				throw new ConvexError<BackendErrorData>({ code: 'ORDER_RETRY_CONFLICT' });
@@ -77,12 +79,16 @@ export const createOrder = mutation({
 			const product = await ctx.db.get(productId);
 			if (!product || product.status !== 'active')
 				throw new ConvexError<BackendErrorData>({ code: 'ORDER_PRODUCT_UNAVAILABLE' });
+
 			if (!Number.isSafeInteger(product.priceInCents) || product.priceInCents < 0)
 				throw new Error('Product price invariant violated.');
+
 			const lineTotal = product.priceInCents * quantity;
 			if (!Number.isSafeInteger(lineTotal) || !Number.isSafeInteger(subtotalInCents + lineTotal))
 				throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
+
 			subtotalInCents += lineTotal;
+
 			snapshots.push({
 				productId,
 				name: product.name,
@@ -93,16 +99,21 @@ export const createOrder = mutation({
 
 		const identity = await ctx.auth.getUserIdentity();
 		let code = createOrderCode();
+
 		for (let attempt = 0; attempt < 7; attempt += 1) {
 			const collision = await ctx.db
 				.query('orders')
 				.withIndex('by_code', (query) => query.eq('code', code))
 				.unique();
+
 			if (!collision) break;
 			code = createOrderCode();
+
 			if (attempt === 6) throw new Error('Could not allocate a unique order code.');
 		}
+
 		const now = Date.now();
+
 		const orderId = await ctx.db.insert('orders', {
 			customerId: identity?.subject,
 			code,
@@ -121,7 +132,24 @@ export const createOrder = mutation({
 			fulfillmentStatus: 'unfulfilled',
 			updatedAt: now
 		});
+
 		for (const snapshot of snapshots) await ctx.db.insert('orderItems', { orderId, ...snapshot });
+
+		await sendOrderCreatedEmails(
+			ctx,
+			{
+				_id: orderId,
+				code,
+				currency: COMPANY_DATA.CURRENCY,
+				email: data.email,
+				firstName: data.firstName,
+				lastName: data.lastName,
+				fulfillmentMethod: data.fulfillmentMethod,
+				retryKey: data.retryKey,
+				totalInCents: subtotalInCents
+			},
+			snapshots
+		);
 		return orderId;
 	}
 });

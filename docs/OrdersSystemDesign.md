@@ -170,6 +170,9 @@ session completion alone never authorizes fulfillment or release.
 Payment racing cancellation uses the same guarded transitions. Payment with
 holds commits them. Payment discovered after release is recorded and routed to
 full refund/review; never fulfill without stock or ignore captured money.
+Cancellation is terminal: do not expose a restore transition. Correct mistakes
+with a replacement order so payment, stock, and notification history remains
+explicit.
 
 Refund first atomically sets refund_pending and blocks fulfillment, then
 schedules the Stripe call with a stable refund key. Confirm the result before

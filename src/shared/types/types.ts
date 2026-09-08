@@ -10,6 +10,8 @@ export const backendErrorDataSchema = z.discriminatedUnion('code', [
 	z.object({ code: z.literal('CAPTCHA_FAILED') }),
 	z.object({ code: z.literal('INVALID_PRODUCT_DATA') }),
 	z.object({ code: z.literal('PRODUCT_NOT_FOUND') }),
+	z.object({ code: z.literal('INVALID_UPSELL_DATA') }),
+	z.object({ code: z.literal('UPSELL_PRODUCT_UNAVAILABLE') }),
 	z.object({ code: z.literal('PRODUCT_SLUG_TAKEN') }),
 	z.object({ code: z.literal('PRODUCT_DELETE_RESTRICTED') }),
 	z.object({ code: z.literal('INVALID_ORDER_DATA') }),

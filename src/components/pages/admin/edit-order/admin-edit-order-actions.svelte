@@ -21,7 +21,7 @@
 	// TYPES
 	import type { Doc } from '@convex/_generated/dataModel';
 
-	type AdminOrderAction = 'fulfill' | 'unfulfill' | 'cancel' | 'restore' | 'request_refund';
+	type AdminOrderAction = 'fulfill' | 'unfulfill' | 'cancel' | 'request_refund';
 
 	let { order }: { order: Doc<'orders'> } = $props();
 	let selectedAction = $state<AdminOrderAction | null>(null);
@@ -123,17 +123,6 @@
 							<span class="icon-[lucide--ban] size-4" aria-hidden="true"></span>
 							{m['AdminEditOrderPage.AdminEditOrderActions.cancelOrder']()}
 						</Button>
-					{:else}
-						<Button
-							type="button"
-							variant="outline"
-							size="sm"
-							onclick={() => chooseAction('restore', open)}
-							disabled={pendingAction !== null}
-						>
-							<span class="icon-[lucide--rotate-ccw] size-4" aria-hidden="true"></span>
-							{m['AdminEditOrderPage.AdminEditOrderActions.restoreOrder']()}
-						</Button>
 					{/if}
 
 					<Button type="button" variant="destructive" size="sm" disabled>
@@ -166,10 +155,6 @@
 							</p>
 							<p class="text-sm text-muted-foreground">
 								{m['AdminEditOrderPage.AdminEditOrderActions.cancelRefundInstruction']()}
-							</p>
-						{:else if selectedAction === 'restore'}
-							<p class="text-sm text-muted-foreground">
-								{m['AdminEditOrderPage.AdminEditOrderActions.restoreConfirmation']()}
 							</p>
 						{:else if selectedAction === 'request_refund'}
 							<p class="text-sm text-muted-foreground">
@@ -206,9 +191,7 @@
 										? m['AdminEditOrderPage.AdminEditOrderActions.markUnfulfilled']()
 										: selectedAction === 'cancel'
 											? m['AdminEditOrderPage.AdminEditOrderActions.cancelOrder']()
-											: selectedAction === 'restore'
-												? m['AdminEditOrderPage.AdminEditOrderActions.restoreOrder']()
-												: m['AdminEditOrderPage.AdminEditOrderActions.refundOrder']()}
+											: m['AdminEditOrderPage.AdminEditOrderActions.refundOrder']()}
 						</Button>
 					</div>
 				</div>

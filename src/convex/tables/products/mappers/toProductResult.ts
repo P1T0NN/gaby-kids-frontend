@@ -18,6 +18,7 @@ export const toProductResult = async (product: Product) => {
 		images: await resolveStoredFileUrls(product.imageKeys ?? product.images),
 		imageKeys: product.imageKeys ?? product.images,
 		storagePrefix: product.storagePrefix,
+		upsellProductIds: product.upsellProductIds ?? [],
 		status: product.status
 	};
 

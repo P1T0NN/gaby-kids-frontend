@@ -16,8 +16,8 @@ const WHATSAPP_NUMBER = '+1 555 555 0100';
 
 export const COMPANY_DATA = {
 	NAME: 'Company Name',
-	EMAIL: 'companyname@gmail.com',
-	RESEND_EMAIL: 'companyname@gmail.com',
+	EMAIL: 'ognjen.tapuskovic@gmail.com',
+	RESEND_EMAIL: 'onboarding@resend.dev',
 	EMAIL_COPY: {
 		FOOTER_NOTICE: 'You are receiving this email because of activity on your account.',
 		IGNORE_NOTICE: 'If you did not request this email, you can safely ignore it.'

@@ -8,7 +8,7 @@ import { COMPANY_DATA } from '../../../shared/config.js';
 import { EMAIL_DATA } from '../../emails/data/emailData.js';
 
 // TYPES
-import type { EmailOTPType, OtpEmailData } from '../../emails/types/emailTypes.js';
+import type { EmailContext, EmailOTPType, OtpEmailData } from '../../emails/types/emailTypes.js';
 
 const OTP_COPY = {
 	'sign-in': {
@@ -40,12 +40,15 @@ const OTP_COPY = {
 	{ subject: string; preview: string; heading: string; instruction: string }
 >;
 
-export async function sendOtpEmail({ email, otp, type }: OtpEmailData): Promise<void> {
+export async function sendOtpEmail(
+	ctx: EmailContext,
+	{ email, otp, type }: OtpEmailData
+): Promise<void> {
 	const copy = OTP_COPY[type];
 	const { COLORS, TYPOGRAPHY } = EMAIL_DATA;
 	const { EMAIL_COPY } = COMPANY_DATA;
 
-	await sendEmail({
+	await sendEmail(ctx, {
 		to: email,
 		subject: copy.subject,
 		previewText: copy.preview,

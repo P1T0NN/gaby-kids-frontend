@@ -18,6 +18,7 @@ export const productResult = v.object({
 	images: v.array(v.string()),
 	imageKeys: v.array(v.string()),
 	storagePrefix: v.string(),
+	upsellProductIds: v.optional(v.array(v.id('products'))),
 	status: productStatus
 });
 

@@ -228,6 +228,14 @@ test('allows only admins to create and list valid products', async () => {
 	expect(page.items).toHaveLength(1);
 	expect(page.items[0]?._id).toBe(created._id);
 	expect(page.items[0]?.categoryOption.name).toBe(category.name);
+	const searchQuery = api.tables.products.queries.fetchProductsSearch.fetchProductsSearch;
+	await expect(user.query(searchQuery, { search: 'Canvas' })).rejects.toMatchObject({
+		data: { code: 'FORBIDDEN' }
+	});
+	expect(
+		(await admin.query(searchQuery, { search: 'Canvas' })).map((product) => product._id)
+	).toEqual([created._id]);
+	expect(await admin.query(searchQuery, { search: 'C' })).toEqual([]);
 	const publicPage = await t.query(
 		api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic,
 		{

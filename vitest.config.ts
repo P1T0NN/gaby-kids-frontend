@@ -11,6 +11,7 @@ export default defineConfig({
 		environment: 'edge-runtime',
 		include: ['tests/**/*.test.ts', 'src/convex/**/*.test.ts'],
 		env: {
+			RESEND_API_KEY: 'test-resend-key',
 			STORAGE_BUCKET_NAME: 'test-bucket',
 			STORAGE_ENDPOINT: 'https://test-account.r2.cloudflarestorage.com',
 			STORAGE_ACCESS_KEY_ID: 'test-access-key',

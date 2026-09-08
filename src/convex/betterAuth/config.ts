@@ -1,5 +1,6 @@
 // LIBRARIES
 import { createClient, type AuthFunctions, type GenericCtx } from '@convex-dev/better-auth';
+import { requireRunMutationCtx } from '@convex-dev/better-auth/utils';
 import { convex } from '@convex-dev/better-auth/plugins';
 import type { BetterAuthPlugin } from 'better-auth';
 import { APIError } from 'better-auth/api';
@@ -26,6 +27,7 @@ import { sendVerificationOTPEmail } from './emails/sendVerificationOTPEmail.js';
 
 // TYPES
 import type { DataModel } from '../_generated/dataModel.js';
+import type { EmailContext } from '../emails/types/emailTypes.js';
 
 const siteUrl = process.env.PUBLIC_ORIGIN!;
 const turnstileSecret = process.env.TURNSTILE_SECRET_KEY!;
@@ -146,8 +148,7 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
 			captcha({
 				provider: 'cloudflare-turnstile',
 				secretKey: turnstileSecret,
-				expectedAction:
-					turnstileSecret === TURNSTILE_ALWAYS_PASS_TEST_SECRET ? undefined : 'auth',
+				expectedAction: turnstileSecret === TURNSTILE_ALWAYS_PASS_TEST_SECRET ? undefined : 'auth',
 				endpoints: [
 					'/sign-up/email',
 					'/sign-in/email',
@@ -164,9 +165,10 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
 				storeOTP: 'hashed',
 				overrideDefaultEmailVerification: true,
 				sendVerificationOTP: async (data) => {
-					await sendVerificationOTPEmail(data).catch((error) => {
-						console.error('[emailOTP] send failed', error);
-					});
+					// SAFETY: both packages expose the same runtime runQuery/runMutation context;
+					// their bundled Convex types disagree only on optional transaction options.
+					const emailCtx = requireRunMutationCtx(ctx) as EmailContext;
+					await sendVerificationOTPEmail(emailCtx, data);
 				}
 			}),
 			// The Convex plugin is required for Convex compatibility.

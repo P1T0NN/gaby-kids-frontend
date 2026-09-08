@@ -8,6 +8,9 @@ import { adminMutation } from '../../../builders/convexFunctionBuilders.js';
 // HELPERS
 import { logAuditEvent } from '../../../auditLogs/helpers/logAuditEvent.js';
 
+// EMAILS
+import { sendOrderStatusEmail } from '../emails/sendOrderStatusEmail.js';
+
 // VALIDATORS
 import { orderAdminAction, orderResult } from '../validators/orderValidators.js';
 
@@ -39,6 +42,8 @@ export const updateOrderAdmin = adminMutation({
 				if (order.cancelledAt !== undefined)
 					throw new ConvexError<BackendErrorData>({ code: 'ORDER_CANCELLED' });
 				await ctx.db.patch(data.id, { fulfillmentStatus: 'fulfilled', updatedAt: now });
+				if (order.fulfillmentStatus !== 'fulfilled')
+					await sendOrderStatusEmail(ctx, order, 'fulfilled', now);
 				break;
 			case 'unfulfill':
 				await ctx.db.patch(data.id, { fulfillmentStatus: 'unfulfilled', updatedAt: now });
@@ -49,13 +54,8 @@ export const updateOrderAdmin = adminMutation({
 					cancelledAt: order.cancelledAt ?? now,
 					updatedAt: now
 				});
-				break;
-			case 'restore':
-				await ctx.db.patch(data.id, {
-					fulfillmentStatus: 'unfulfilled',
-					cancelledAt: undefined,
-					updatedAt: now
-				});
+				if (order.cancelledAt === undefined)
+					await sendOrderStatusEmail(ctx, order, 'cancelled', now);
 				break;
 			case 'request_refund':
 				if (order.paymentStatus === 'refund_pending' || order.paymentStatus === 'refunded')

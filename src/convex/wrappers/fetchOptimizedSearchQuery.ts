@@ -3,6 +3,9 @@ import { type ReturnValueForOptionalValidator } from 'convex/server';
 import { v, type GenericValidator, type ObjectType, type PropertyValidators } from 'convex/values';
 import { query as rawQuery, type QueryCtx } from '../_generated/server.js';
 
+// CONVEX
+import { adminQuery } from '../builders/convexFunctionBuilders.js';
+
 // CONFIG
 import { SEARCH_DROPDOWN_LIMIT, SEARCH_MIN_CHARS } from '../../shared/features/search/config.js';
 
@@ -25,6 +28,7 @@ type FetchOptimizedSearchQueryOptions<
 	T
 > = {
 	args?: ArgsValidator;
+	auth?: 'admin';
 	returns: ReturnsValidator;
 	fetchResults: (args: {
 		ctx: QueryCtx;
@@ -34,7 +38,7 @@ type FetchOptimizedSearchQueryOptions<
 	}) => T[] | Promise<T[]>;
 };
 
-/** Register a public Convex search query with normalized, bounded suggestions. */
+/** Register a public or admin Convex search query with normalized, bounded suggestions. */
 export function fetchOptimizedSearchQuery<
 	ArgsValidator extends PropertyValidators = EmptyArgsValidator,
 	ReturnsValidator extends RequiredValidator = RequiredValidator,
@@ -67,6 +71,20 @@ export function fetchOptimizedSearchQuery<
 		) as ReturnValueForOptionalValidator<ReturnsValidator>;
 	};
 
+	const handler = (
+		ctx: QueryCtx,
+		handlerArgs: ObjectType<CombinedArgsValidator<ArgsValidator>>
+	) => {
+		// SAFETY: Convex validates the merged validators before the handler runs.
+		const queryArgs = handlerArgs as SearchQueryArgs<ArgsValidator>;
+		// SAFETY: `run` returns the value validated by the configured return validator.
+		return run(ctx, queryArgs) as ReturnValueForOptionalValidator<ReturnsValidator>;
+	};
+
+	if (options.auth === 'admin') {
+		return adminQuery({ args, returns: options.returns, handler });
+	}
+
 	return rawQuery<
 		CombinedArgsValidator<ArgsValidator>,
 		ReturnsValidator,
@@ -75,11 +93,6 @@ export function fetchOptimizedSearchQuery<
 	>({
 		args,
 		returns: options.returns,
-		handler: (ctx, handlerArgs) => {
-			// SAFETY: Convex validates the merged validators before the handler runs.
-			const queryArgs = handlerArgs as SearchQueryArgs<ArgsValidator>;
-			// SAFETY: `run` returns the value validated by the configured return validator.
-			return run(ctx, queryArgs) as ReturnValueForOptionalValidator<ReturnsValidator>;
-		}
+		handler
 	});
 }

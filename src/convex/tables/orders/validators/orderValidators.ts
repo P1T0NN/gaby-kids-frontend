@@ -5,13 +5,7 @@ import { v } from 'convex/values';
 export const paymentStatus = literals('pending', 'paid', 'refund_pending', 'refunded');
 export const fulfillmentStatus = literals('unfulfilled', 'fulfilled');
 export const fulfillmentMethod = literals('delivery', 'pickup');
-export const orderAdminAction = literals(
-	'fulfill',
-	'unfulfill',
-	'cancel',
-	'restore',
-	'request_refund'
-);
+export const orderAdminAction = literals('fulfill', 'unfulfill', 'cancel', 'request_refund');
 
 export const shippingAddress = v.object({
 	street: v.string(),

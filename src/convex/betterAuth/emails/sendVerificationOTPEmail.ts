@@ -2,8 +2,8 @@
 import { sendOtpEmail } from '../helpers/sendOtpEmail.js';
 
 // TYPES
-import type { OtpEmailData } from '../../emails/types/emailTypes.js';
+import type { EmailContext, OtpEmailData } from '../../emails/types/emailTypes.js';
 
-export function sendVerificationOTPEmail(data: OtpEmailData): Promise<void> {
-	return sendOtpEmail(data);
+export function sendVerificationOTPEmail(ctx: EmailContext, data: OtpEmailData): Promise<void> {
+	return sendOtpEmail(ctx, data);
 }

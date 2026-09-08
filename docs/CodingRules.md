@@ -244,6 +244,12 @@ flags or waits on `Promise.all`.
 - `products`: catalog name, slug, description, price, one category, gallery, and status.
   `saveProduct` creates or edits product details in one transaction; new products
   default to draft. Publishing requires an active category.
+- Upsells use an optional, ordered `products.upsellProductIds` array (maximum four).
+  `/admin/upsells` manages recommendations through `tables/upsells` admin queries
+  and `saveProductUpsells`; the public query returns only active recommendations
+  for active source products. Shared config and validation live in
+  `src/shared/features/upsells`. Saving updates only recommendations and logs the
+  admin action, without sending email. See `UpsellsSystemDesign.md`.
 - `storageUploads`: owner, object key, `pending`/`uploaded` status, timestamp,
   and key/created-at indexes. It tracks uploads until a mutation claims them.
 - Better Auth owns its component tables (`user`, `session`, `account`,
