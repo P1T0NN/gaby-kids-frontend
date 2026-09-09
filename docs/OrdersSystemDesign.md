@@ -2,7 +2,9 @@
 
 Status: initial order foundation implemented on 2026-09-06.
 Products have server-owned prices; checkout creates pending order and item
-snapshots. Inventory and Stripe integration remain future phases. See
+snapshots. Stripe-hosted Checkout and payment synchronization are the next
+implementation phase; inventory remains a later prerequisite before tracked
+stock is sold. See
 [CodingRules.md](./CodingRules.md). This replaces the previous orders proposal;
 [ProductSystemDesign.md](./ProductSystemDesign.md) remains historical, not a
 prerequisite implementation plan.
@@ -115,6 +117,24 @@ Use one small synchronization path for webhooks and recovery. Verify signatures
 against the raw body, retrieve Stripe state as needed, and validate environment,
 order metadata, session/payment identity, and commercial details. Only internal
 mutations update payment state.
+
+Subscribe the Stripe webhook endpoint only to events this workflow handles:
+
+- `checkout.session.completed`
+- `checkout.session.async_payment_succeeded`
+- `checkout.session.async_payment_failed`
+- `checkout.session.expired`
+- `refund.created`
+- `refund.updated`
+- `refund.failed`
+
+The asynchronous Checkout events support delayed payment methods. They may remain
+enabled even while the store initially offers only immediate methods. Session
+expiry closes abandoned pending checkouts and releases any future stock hold.
+Refund events keep app state correct whether a refund begins in the app or in the
+Stripe Dashboard. Do not also subscribe to broad `payment_intent.*` or `charge.*`
+families unless a concrete handler is added; overlapping events must not create
+multiple competing state-transition paths.
 
 Transitions check allowed source states. Duplicate or reordered events cannot
 repeat stock movement or regress payment state. An early webhook can bind a

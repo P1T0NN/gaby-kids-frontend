@@ -116,27 +116,42 @@ pending order must never be treated as revenue.
 
 Implement the prerequisites in this order:
 
-1. Integrate Stripe checkout and verified Stripe webhooks. A successful payment event marks the
-   matching order as paid, while refund events update its refund state and amount. These updates
-   must be idempotent because Stripe may deliver the same webhook more than once. Admin actions
-   must not be able to invent a successful payment.
-2. Extend orders with the financial facts required for reporting: `paidAt`, `refundedAt`, and
+1. Establish the universal Stripe foundation before connecting the checkout UI:
+   - Keep Stripe calls server-side through the installed Stripe SDK; do not add a payment-provider
+     abstraction or a custom card form.
+   - Store `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` in each Convex deployment's environment,
+     with separate test and live credentials. `.env.local` alone does not configure deployed
+     Convex functions. Prefer a restricted Stripe key with only the required permissions when the
+     integration has been verified with it.
+   - Create one shared server-side Stripe client/configuration with a deliberate API version.
+   - Register one HTTP webhook endpoint that verifies the signature against the unmodified request
+     body before processing any event.
+   - Use one idempotent payment-synchronization path shared by webhooks and reconciliation. Never
+     log credentials, webhook signatures, or unnecessary customer data.
+   - Subscribe only to handled events: `checkout.session.completed`,
+     `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`,
+     `checkout.session.expired`, `refund.created`, `refund.updated`, and `refund.failed`.
+2. Integrate Stripe-hosted Checkout. A successful verified payment event marks the matching order
+   as paid, while verified refund events update its refund state and amount. Repeated or reordered
+   events must not repeat side effects or regress order state. Admin actions and success-page
+   redirects must not be able to invent a successful payment.
+3. Extend orders with the financial facts required for reporting: `paidAt`, `refundedAt`, and
    `refundedAmountInCents`. Use Stripe event data to populate them. `_creationTime` describes when
    an order was created and `updatedAt` describes its latest change; neither is an accurate
    substitute for when money was received or refunded.
-3. Extend the existing order aggregate so eligible orders are keyed by `paidAt` and contribute
+4. Extend the existing order aggregate so eligible orders are keyed by `paidAt` and contribute
    `totalInCents - refundedAmountInCents` as their summed revenue value. The same aggregate range can
    provide paid-order counts and revenue totals efficiently. Average order value is derived from
    revenue divided by the paid-order count.
-4. Add status-based aggregate projections for the actionable order groups: pending payment, paid
+5. Add status-based aggregate projections for the actionable order groups: pending payment, paid
    but unfulfilled, refund pending, and any formally defined cancellation state that requires
    intervention. Every mutation or webhook that changes an order must update these projections in
    the same transaction.
-5. Create one admin-only dashboard query accepting `from` and `to`. It validates that the selected
+6. Create one admin-only dashboard query accepting `from` and `to`. It validates that the selected
    range is no longer than 366 days, derives the immediately preceding equal-duration comparison
    range, and returns the summary metrics, attention counts, and revenue trend together. Missing
    chart intervals are returned as zero-value points.
-6. Build the dashboard UI against that single query. Store the selected timeframe in URL
+7. Build the dashboard UI against that single query. Store the selected timeframe in URL
    parameters so it is explicit, refresh-safe, and shareable.
 
 Until Stripe provides a trusted `paidAt` and refund history, revenue, paid-order count, average

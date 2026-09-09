@@ -1,5 +1,6 @@
 // LIBRARIES
 import { defineApp } from 'convex/server';
+import { v } from 'convex/values';
 import aggregate from '@convex-dev/aggregate/convex.config';
 import migrations from '@convex-dev/migrations/convex.config';
 import rateLimiter from '@convex-dev/rate-limiter/convex.config';
@@ -11,7 +12,12 @@ import auditLog from 'convex-audit-log/convex.config.js';
 // COMPONENTS
 import betterAuth from './betterAuth/component/convex.config.js';
 
-const app = defineApp();
+const app = defineApp({
+	env: {
+		STRIPE_SECRET_KEY: v.string(),
+		STRIPE_WEBHOOK_SECRET: v.string()
+	}
+});
 
 app.use(betterAuth);
 app.use(migrations);

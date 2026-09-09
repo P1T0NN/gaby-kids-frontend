@@ -62,6 +62,8 @@ import type * as migrations_types_migrationTypes from "../migrations/types/migra
 import type * as rateLimits_helpers_enforceRateLimit from "../rateLimits/helpers/enforceRateLimit.js";
 import type * as rateLimits_types_rateLimitTypes from "../rateLimits/types/rateLimitTypes.js";
 import type * as storage_r2 from "../storage/r2.js";
+import type * as stripe_actions_verifyStripeWebhook from "../stripe/actions/verifyStripeWebhook.js";
+import type * as stripe_http_stripeWebhook from "../stripe/http/stripeWebhook.js";
 import type * as tables_categories_aggregates_categoryAggregate from "../tables/categories/aggregates/categoryAggregate.js";
 import type * as tables_categories_aggregates_productsByCategoryAggregate from "../tables/categories/aggregates/productsByCategoryAggregate.js";
 import type * as tables_categories_helpers_getCategoryImageKey from "../tables/categories/helpers/getCategoryImageKey.js";
@@ -183,6 +185,8 @@ declare const fullApi: ApiFromModules<{
   "rateLimits/helpers/enforceRateLimit": typeof rateLimits_helpers_enforceRateLimit;
   "rateLimits/types/rateLimitTypes": typeof rateLimits_types_rateLimitTypes;
   "storage/r2": typeof storage_r2;
+  "stripe/actions/verifyStripeWebhook": typeof stripe_actions_verifyStripeWebhook;
+  "stripe/http/stripeWebhook": typeof stripe_http_stripeWebhook;
   "tables/categories/aggregates/categoryAggregate": typeof tables_categories_aggregates_categoryAggregate;
   "tables/categories/aggregates/productsByCategoryAggregate": typeof tables_categories_aggregates_productsByCategoryAggregate;
   "tables/categories/helpers/getCategoryImageKey": typeof tables_categories_helpers_getCategoryImageKey;
