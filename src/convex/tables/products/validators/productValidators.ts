@@ -28,6 +28,18 @@ export const adminProductDetailResult = adminProductResult;
 
 export const storefrontProductResult = productResult;
 
+export const storefrontUpsellResult = productResult.pick(
+	'_id',
+	'name',
+	'slug',
+	'priceInCents',
+	'images'
+);
+
+export const storefrontProductDetailResult = storefrontProductResult.extend({
+	upsells: v.array(storefrontUpsellResult)
+});
+
 export const productPage = v.object({
 	items: v.array(productResult),
 	nextCursor: v.union(v.string(), v.null()),

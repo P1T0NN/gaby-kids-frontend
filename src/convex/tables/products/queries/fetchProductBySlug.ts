@@ -8,11 +8,14 @@ import { query } from '../../../_generated/server.js';
 import { toProductResult } from '../mappers/toProductResult.js';
 
 // VALIDATORS
-import { storefrontProductResult } from '../validators/productValidators.js';
+import { storefrontProductDetailResult } from '../validators/productValidators.js';
+
+// HELPERS
+import { getStorefrontUpsells } from '../../upsells/helpers/getStorefrontUpsells.js';
 
 export const fetchProductBySlug = query({
 	args: { slug: v.string() },
-	returns: v.union(storefrontProductResult, v.null()),
+	returns: v.union(storefrontProductDetailResult, v.null()),
 	handler: async (ctx, args) => {
 		const product = await ctx.db
 			.query('products')
@@ -20,6 +23,10 @@ export const fetchProductBySlug = query({
 			.unique();
 		if (!product || product.status !== 'active') return null;
 
-		return toProductResult(product);
+		const [details, upsells] = await Promise.all([
+			toProductResult(product),
+			getStorefrontUpsells(ctx, product)
+		]);
+		return { ...details, upsells };
 	}
 });

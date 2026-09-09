@@ -22,7 +22,7 @@ export function useCart() {
 		return items.reduce((total, item) => total + item.quantity, 0);
 	}
 
-	function addItem(item: Omit<CartItem, 'quantity'>): boolean {
+	function addItem(item: Omit<CartItem, 'quantity'>, toasterId?: string): boolean {
 		if (!item.id.trim()) return false;
 		if (!localStorage.read()) return false;
 
@@ -31,7 +31,8 @@ export function useCart() {
 			toastMessage({
 				type: 'error',
 				error: new Error(),
-				message: m['CartFeature.Cart.maxItemsReached']({ maxItems: CART_CONFIG.maxItems })
+				message: m['CartFeature.Cart.maxItemsReached']({ maxItems: CART_CONFIG.maxItems }),
+				toasterId
 			});
 			return false;
 		}

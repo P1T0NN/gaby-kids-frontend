@@ -1,7 +1,7 @@
 <script lang="ts">
 	// COMPONENTS
-	import AdminUpsellsAddDialogSelectedUpsellItem from './admin-upsells-add-dialog-selected-upsell-item.svelte';
-	import AdminUpsellsAddDialogSelectProduct from './admin-upsells-add-dialog-select-product.svelte';
+	import ManageUpsellsDialogSelectedUpsellItem from './manage-upsells-dialog-selected-upsell-item.svelte';
+	import ManageUpsellsDialogSelectProduct from './manage-upsells-dialog-select-product.svelte';
 	import { Button } from '@/components/ui/button/index.js';
 
 	// TRANSLATIONS
@@ -18,13 +18,16 @@
 
 	let {
 		product,
-		onChange
+		onChange,
+		upsellProducts = $bindable(),
+		showChange = true
 	}: {
 		product: Doc<'products'>;
 		onChange: () => void;
+		upsellProducts: Doc<'products'>[];
+		showChange?: boolean;
 	} = $props();
 
-	let upsellProducts = $state.raw<Doc<'products'>[]>([]);
 	const canAddUpsell = $derived(upsellProducts.length < UPSELLS_CONFIG.maxProducts);
 	const excludedProductIds = $derived([
 		product._id,
@@ -66,19 +69,20 @@
 				</p>
 			</div>
 		</div>
-		<Button type="button" variant="outline" size="sm" onclick={onChange}>
-			{m['AdminUpsellsPage.AdminUpsellsAddDialogSelectedProduct.change']()}
-		</Button>
+		{#if showChange}
+			<Button type="button" variant="outline" size="sm" onclick={onChange}>
+				{m['UpsellsFeature.ManageUpsellsDialogSelectedProduct.change']()}
+			</Button>
+		{/if}
 	</div>
 
 	{#if canAddUpsell}
-		<AdminUpsellsAddDialogSelectProduct
-			label={m['AdminUpsellsPage.AdminUpsellsAddDialogSelectedProduct.upsellLabel']()}
-			placeholder={m[
-				'AdminUpsellsPage.AdminUpsellsAddDialogSelectedProduct.upsellSearchPlaceholder'
-			]()}
+		<ManageUpsellsDialogSelectProduct
+			label={m['UpsellsFeature.ManageUpsellsDialogSelectedProduct.upsellLabel']()}
+			placeholder={m['UpsellsFeature.ManageUpsellsDialogSelectedProduct.upsellSearchPlaceholder']()}
 			{excludedProductIds}
-				onSelect={addUpsell}
+			activeOnly
+			onSelect={addUpsell}
 		/>
 	{/if}
 
@@ -86,12 +90,19 @@
 		<ul class="divide-y rounded-xl border px-3">
 			{#each upsellProducts as upsellProduct (upsellProduct._id)}
 				<li>
-					<AdminUpsellsAddDialogSelectedUpsellItem
+					<ManageUpsellsDialogSelectedUpsellItem
 						product={upsellProduct}
 						onRemove={() => removeUpsell(upsellProduct._id)}
 					/>
 				</li>
 			{/each}
 		</ul>
+	{:else}
+		<p
+			class="rounded-xl border border-destructive bg-destructive/5 p-3 text-sm text-destructive"
+			role="alert"
+		>
+			{m['UpsellsFeature.ManageUpsellsDialogSelectedProduct.minimumUpsells']()}
+		</p>
 	{/if}
 </div>

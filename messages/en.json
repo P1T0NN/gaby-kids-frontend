@@ -1,6 +1,26 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"example_message": "Hello world {username}",
+	"ProductPage": {
+		"pageTitle": "Product details",
+		"backToShop": "Back to shop",
+		"loadError": "We couldn't load this product. Please try again.",
+		"notFoundTitle": "Product unavailable",
+		"notFoundDescription": "This product may have been removed or is no longer available. Head back to the shop to explore the collection.",
+		"ProductDetails": {
+			"addProduct": "Add {name} to cart",
+			"cartHint": "You can adjust quantities in your cart.",
+			"description": "About this product",
+			"upsells": "Pairs well with"
+		},
+		"ProductUpsellItem": {
+			"add": "Add",
+			"addProduct": "Add {name} to cart"
+		},
+		"ProductLoading": {
+			"loading": "Loading product details"
+		}
+	},
 	"CheckoutPage": {
 		"title": "Checkout",
 		"description": "Your details, your delivery, then online payment.",
@@ -831,6 +851,65 @@
 			"home": "Home"
 		}
 	},
+	"UpsellsFeature": {
+		"UpsellsDialog": {
+			"open": "Open product recommendations",
+			"title": "Added to your cart",
+			"heading": "Pairs well with your purchase",
+			"description": "Optional extras for {name}. Add any you like, or go straight to your cart.",
+			"allAdded": "Everything recommended is now in your cart.",
+			"keepShopping": "Keep shopping",
+			"viewCart": "View cart"
+		},
+		"UpsellsDialogItem": {
+			"add": "Add",
+			"addProduct": "Add {name} to cart"
+		},
+		"ManageUpsellsDialog": {
+			"addUpsell": "Add Upsell",
+			"title": "Add upsell",
+			"editUpsells": "Edit Upsells",
+			"editTitle": "Edit upsells",
+			"cancel": "Cancel",
+			"addUpsells": "Add Upsells",
+			"saveUpsells": "Save Upsells",
+			"addingUpsells": "Adding Upsells...",
+			"savingUpsells": "Saving Upsells...",
+			"upsellsAdded": "Upsells added.",
+			"upsellsUpdated": "Upsells updated.",
+			"loadError": "We couldn't load these upsells.",
+			"addError": "Couldn't add these upsells.",
+			"updateError": "Couldn't update these upsells."
+		},
+		"ManageUpsellsDialogSelectProduct": {
+			"productLabel": "Product name you want to give upsell",
+			"searchPlaceholder": "Search products...",
+			"loading": "Searching products...",
+			"searchError": "We couldn't search products. Please try again.",
+			"noMatches": "No matching products"
+		},
+		"ManageUpsellsDialogSelectedProduct": {
+			"change": "Change",
+			"upsellLabel": "Search for products to be upsells",
+			"upsellSearchPlaceholder": "Search products...",
+			"minimumUpsells": "Choose at least one upsell product before saving."
+		},
+		"ManageUpsellsDialogSelectedUpsellItem": {
+			"remove": "Remove",
+			"removeLabel": "Remove {name} from upsells"
+		},
+		"DeleteUpsellsDialog": {
+			"deleteUpsell": "Delete Upsell",
+			"title": "Are you sure?",
+			"description": "This will remove every upsell configured for {name}.",
+			"editInstead": "Want to remove only individual upsells? Cancel and choose Edit Upsells instead.",
+			"cancel": "Cancel",
+			"delete": "Delete",
+			"deleting": "Deleting...",
+			"upsellsDeleted": "Upsells deleted.",
+			"deleteError": "Couldn't delete these upsells."
+		}
+	},
 	"AdminUpsellsPage": {
 		"pageTitle": "Upsells",
 		"searchPlaceholder": "Find a product with upsells...",
@@ -844,28 +923,10 @@
 			"title": "Upsells",
 			"description": "Manage the products that already have upsells configured."
 		},
-		"AdminUpsellsAddDialog": {
-			"addUpsell": "Add Upsell",
-			"title": "Add upsell"
-		},
-		"AdminUpsellsAddDialogSelectProduct": {
-			"productLabel": "Product name you want to give upsell",
-			"searchPlaceholder": "Search products...",
-			"loading": "Searching products...",
-			"searchError": "We couldn't search products. Please try again.",
-			"noMatches": "No matching products"
-		},
-		"AdminUpsellsAddDialogSelectedProduct": {
-			"change": "Change",
-			"upsellLabel": "Search for products to be upsells",
-			"upsellSearchPlaceholder": "Search products..."
-		},
-		"AdminUpsellsAddDialogSelectedUpsellItem": {
-			"remove": "Remove",
-			"removeLabel": "Remove {name} from upsells"
-		},
 		"AdminUpsellsProductItem": {
-			"upsellCount": "{count} of {max} upsells",
+			"mainProduct": "Main product",
+			"upsellProducts": "Upsell products",
+			"loadError": "We couldn't load these upsell products.",
 			"draft": "Draft",
 			"archived": "Archived",
 			"deleted": "Deleted product"

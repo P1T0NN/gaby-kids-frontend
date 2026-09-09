@@ -1,5 +1,7 @@
 <script lang="ts">
 	// LIBRARIES
+	import { onMount } from 'svelte';
+	import { on } from 'svelte/events';
 	import { m } from '@/lib/paraglide/messages';
 	import { useConvexClient } from 'convex-svelte';
 	import { api } from '@convex/_generated/api';
@@ -53,6 +55,10 @@
 				(cartProducts.find((product) => product.id === item.id)?.priceInCents ?? 0) * item.quantity,
 			0
 		)
+	);
+
+	onMount(() =>
+		on(window, 'cart:open', () => document.getElementById('cart-sheet-trigger')?.click())
 	);
 </script>
 

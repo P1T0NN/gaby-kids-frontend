@@ -11,7 +11,6 @@ import { normalizePageSize } from '../../../../shared/features/pagination/utils/
 // MAPPERS
 import { toProductResult } from '../mappers/toProductResult.js';
 import { applyProductFilters } from '../utils/applyProductFilters.js';
-import type { ProductQuery } from '../../../../shared/features/products/types/productsTypes.js';
 
 // TYPES
 import type { Doc } from '../../../_generated/dataModel.js';
@@ -19,6 +18,7 @@ import type { QueryCtx } from '../../../_generated/server.js';
 import type { ConvexFilter } from '../../../../shared/features/filters/types/filterTypesConvex.js';
 import type { ConvexPaginatedPage } from '../../../../shared/features/pagination/types/paginationTypesConvex.js';
 import type { PaginationOptions } from 'convex/server';
+import type { ProductQuery } from '../../../../shared/features/products/types/productsTypes.js';
 
 type Product = Doc<'products'>;
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	// COMPONENTS
-	import AdminUpsellsAddDialog from './admin-upsells-add-dialog/admin-upsells-add-dialog.svelte';
+	import ManageUpsellsDialog from '@/features/upsells/components/manage-upsells-dialog/manage-upsells-dialog.svelte';
 
 	// TRANSLATIONS
 	import { m } from '@/lib/paraglide/messages';
@@ -19,5 +19,5 @@
 		</p>
 	</div>
 
-	<AdminUpsellsAddDialog />
+	<ManageUpsellsDialog />
 </header>

@@ -10,6 +10,7 @@
 	import type { Snippet } from 'svelte';
 
 	let {
+		id,
 		trigger,
 		children,
 		footer,
@@ -18,6 +19,7 @@
 		triggerLabel,
 		onOpen
 	}: {
+		id: string;
 		trigger?: Snippet;
 		children: Snippet;
 		footer?: Snippet;
@@ -35,13 +37,14 @@
 >
 	{#if trigger}
 		<Sheet.Trigger
+			id={`${id}-trigger`}
 			aria-label={triggerLabel ?? m['Components.NativeSheetFallback.open']()}
 			class="inline-flex cursor-pointer items-center justify-center rounded-md p-2 transition-colors outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/40"
 		>
 			{@render trigger()}
 		</Sheet.Trigger>
 	{:else}
-		<Sheet.Trigger aria-label={m['Components.NativeSheetFallback.open']()}>
+		<Sheet.Trigger id={`${id}-trigger`} aria-label={m['Components.NativeSheetFallback.open']()}>
 			{m['Components.NativeSheetFallback.open']()}
 		</Sheet.Trigger>
 	{/if}

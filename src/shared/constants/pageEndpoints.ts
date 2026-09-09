@@ -11,8 +11,8 @@ export const UNPROTECTED_PAGE_ENDPOINTS = {
 	CHECKOUT: resolve('/checkout'),
 	MY_ORDERS: resolve('/my-orders'),
 	MY_ORDER: (code: string) => resolve('/(app)/(unprotected)/my-orders/[code]', { code }),
-	SHOP: resolve('/shop')
-	//PRODUCT: (slug: string) => resolve('/(app)/(unprotected)/product/[slug]', { slug }),
+	SHOP: resolve('/shop'),
+	PRODUCT: (slug: string) => resolve('/(app)/(unprotected)/product/[slug]', { slug })
 };
 
 export const ADMIN_PAGE_ENDPOINTS = {

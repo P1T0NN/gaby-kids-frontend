@@ -18,9 +18,9 @@
 	import { useSearch } from '@/features/search/hooks/useSearch.svelte.js';
 
 	const search = useSearch({ mode: 'state' });
-	const products = useConvexPagination(
-		api.tables.products.queries.fetchAllProductsAdmin.fetchAllProductsAdmin,
-		() => ({ search: search.term || undefined, filters: { upsells: 'with' } }),
+	const upsells = useConvexPagination(
+		api.tables.upsells.queries.fetchUpsellsAdmin.fetchUpsellsAdmin,
+		() => ({ search: search.term || undefined }),
 		{ resetKey: () => search.term }
 	);
 </script>
@@ -29,15 +29,15 @@
 
 <div class="flex w-full min-w-0 flex-col gap-6">
 	<AdminUpsellsHeader />
-	
+
 	<DataList
-		pagination={products}
-		total={search.isActive ? null : products.total}
-		key={(product) => product._id}
-		class="divide-y"
+		pagination={upsells}
+		total={search.isActive ? null : upsells.total}
+		key={(item) => item.product._id}
+		class="gap-3"
 	>
 		{#snippet header()}
-			{#if products.data.length > 0 || search.isActive}
+			{#if upsells.data.length > 0 || search.isActive}
 				<SearchInput
 					bind:value={search.value}
 					placeholder={m['AdminUpsellsPage.searchPlaceholder']()}
@@ -46,18 +46,16 @@
 			{/if}
 		{/snippet}
 
-		{#snippet children(product)}
-			<AdminUpsellsProductItem {product} />
+		{#snippet children(item)}
+			<AdminUpsellsProductItem product={item.product} upsells={item.upsells} />
 		{/snippet}
-		
+
 		{#snippet loadingSnippet()}
 			<AdminUpsellsLoading />
 		{/snippet}
 
 		{#snippet errorSnippet()}
-			<ErrorComponent
-				message={m['AdminUpsellsPage.loadError']()}
-			/>
+			<ErrorComponent message={m['AdminUpsellsPage.loadError']()} />
 		{/snippet}
 
 		{#snippet empty()}

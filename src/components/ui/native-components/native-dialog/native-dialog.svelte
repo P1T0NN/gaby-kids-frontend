@@ -17,12 +17,16 @@
 	let {
 		trigger,
 		children,
+		'aria-labelledby': labelledBy,
 		closeLabel = m['Components.NativeDialog.close'](),
+		onClose,
 		class: className
 	}: {
 		trigger?: Snippet<[{ open: () => void }]>;
 		children: Snippet<[{ close: () => void }]>;
+		'aria-labelledby'?: string;
 		closeLabel?: string;
+		onClose?: () => void;
 		class?: string;
 	} = $props();
 
@@ -32,8 +36,8 @@
 		dialogEl = element;
 	}
 
-	const open = () => dialogEl?.showModal();
-	const close = () => dialogEl?.close();
+	export const open = () => dialogEl?.showModal();
+	export const close = () => dialogEl?.close();
 </script>
 
 {#if trigger}
@@ -41,10 +45,12 @@
 {/if}
 
 <dialog
+	aria-labelledby={labelledBy}
 	{@attach setDialogElement}
 	oncancel={(e) => e.preventDefault()}
+	onclose={onClose}
 	class={cn(
-		'm-auto box-border max-h-[calc(100dvh-2rem)] w-full max-w-[min(28rem,calc(100dvw-2rem))] overflow-x-hidden overflow-y-auto rounded-2xl border bg-popover p-0 text-start whitespace-normal text-popover-foreground shadow-lg wrap-anywhere backdrop:bg-black/50 backdrop:backdrop-blur-sm',
+		'm-auto box-border max-h-[calc(100dvh-2rem)] w-full max-w-[min(28rem,calc(100dvw-2rem))] overflow-x-hidden overflow-y-auto rounded-2xl border bg-popover p-0 text-start wrap-anywhere whitespace-normal text-popover-foreground shadow-lg backdrop:bg-black/50 backdrop:backdrop-blur-sm',
 		className
 	)}
 >

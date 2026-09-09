@@ -13,29 +13,25 @@ import { productResult } from '../../products/validators/productValidators.js';
 // TYPES
 import type { BackendErrorData } from '../../../../shared/types/types.js';
 
-export const fetchProductUpsellsAdmin = adminQuery({
+export const fetchUpsellForEdit = adminQuery({
 	args: { productId: v.id('products') },
-	returns: v.object({
-		product: productResult,
-		upsells: v.array(
-			v.object({ productId: v.id('products'), product: v.union(productResult, v.null()) })
-		)
-	}),
+	returns: v.object({ product: productResult, upsells: v.array(productResult) }),
 	handler: async (ctx, { productId }) => {
 		const product = await ctx.db.get('products', productId);
 		if (!product) throw new ConvexError<BackendErrorData>({ code: 'PRODUCT_NOT_FOUND' });
 
 		const upsells = await Promise.all(
-			(product.upsellProductIds ?? []).map(async (id) => {
-				const recommendation = await ctx.db.get('products', id);
-
-				return {
-					productId: id,
-					product: recommendation ? await toProductResult(recommendation) : null
-				};
-			})
+			(product.upsellProductIds ?? []).map((id) => ctx.db.get('products', id))
 		);
 		
-		return { product: await toProductResult(product), upsells };
+		const activeUpsells = upsells.filter(
+			(upsell): upsell is NonNullable<(typeof upsells)[number]> =>
+				upsell !== null && upsell.status === 'active'
+		);
+
+		return {
+			product: await toProductResult(product),
+			upsells: await Promise.all(activeUpsells.map(toProductResult))
+		};
 	}
 });

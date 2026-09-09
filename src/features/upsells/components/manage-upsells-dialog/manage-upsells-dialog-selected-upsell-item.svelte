@@ -45,10 +45,10 @@
 		variant="destructive"
 		size="sm"
 		onclick={onRemove}
-		aria-label={m['AdminUpsellsPage.AdminUpsellsAddDialogSelectedUpsellItem.removeLabel']({
+		aria-label={m['UpsellsFeature.ManageUpsellsDialogSelectedUpsellItem.removeLabel']({
 			name: product.name
 		})}
 	>
-		{m['AdminUpsellsPage.AdminUpsellsAddDialogSelectedUpsellItem.remove']()}
+		{m['UpsellsFeature.ManageUpsellsDialogSelectedUpsellItem.remove']()}
 	</Button>
 </div>

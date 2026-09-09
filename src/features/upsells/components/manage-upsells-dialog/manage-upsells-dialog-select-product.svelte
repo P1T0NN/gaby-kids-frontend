@@ -21,14 +21,16 @@
 
 	let {
 		onSelect,
-		label = m['AdminUpsellsPage.AdminUpsellsAddDialogSelectProduct.productLabel'](),
-		placeholder = m['AdminUpsellsPage.AdminUpsellsAddDialogSelectProduct.searchPlaceholder'](),
-		excludedProductIds = []
+		label = m['UpsellsFeature.ManageUpsellsDialogSelectProduct.productLabel'](),
+		placeholder = m['UpsellsFeature.ManageUpsellsDialogSelectProduct.searchPlaceholder'](),
+		excludedProductIds = [],
+		activeOnly = false
 	}: {
 		onSelect: (product: Doc<'products'>) => void;
 		label?: string;
 		placeholder?: string;
 		excludedProductIds?: Id<'products'>[];
+		activeOnly?: boolean;
 	} = $props();
 
 	const componentId = $props.id();
@@ -39,11 +41,15 @@
 		() => (search.isActive ? { search: search.term } : 'skip')
 	);
 	const availableProducts = $derived(
-		(products.data ?? []).filter((product) => !excludedProductIds.includes(product._id))
+		(products.data ?? []).filter(
+			(product) =>
+				(!activeOnly || product.status === 'active') && !excludedProductIds.includes(product._id)
+		)
 	);
 
 	function selectProduct(product: Doc<'products'>): void {
-		if (excludedProductIds.includes(product._id)) return;
+		if ((activeOnly && product.status !== 'active') || excludedProductIds.includes(product._id))
+			return;
 		onSelect(product);
 		search.clear();
 	}
@@ -65,11 +71,11 @@
 			{#if products.isLoading}
 				<div class="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
 					<Spinner />
-					{m['AdminUpsellsPage.AdminUpsellsAddDialogSelectProduct.loading']()}
+					{m['UpsellsFeature.ManageUpsellsDialogSelectProduct.loading']()}
 				</div>
 			{:else if products.error}
 				<p class="px-3 py-2 text-sm text-destructive" role="alert">
-					{m['AdminUpsellsPage.AdminUpsellsAddDialogSelectProduct.searchError']()}
+					{m['UpsellsFeature.ManageUpsellsDialogSelectProduct.searchError']()}
 				</p>
 			{:else}
 				{#each availableProducts as product (product._id)}
@@ -104,7 +110,7 @@
 					</button>
 				{:else}
 					<p class="px-3 py-2 text-sm text-muted-foreground">
-						{m['AdminUpsellsPage.AdminUpsellsAddDialogSelectProduct.noMatches']()}
+						{m['UpsellsFeature.ManageUpsellsDialogSelectProduct.noMatches']()}
 					</p>
 				{/each}
 			{/if}

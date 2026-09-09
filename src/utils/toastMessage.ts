@@ -18,6 +18,7 @@ type ToastErrorMessage<ErrorValue> = {
 	type: 'error';
 	error: ErrorValue;
 	message: string;
+	toasterId?: string;
 };
 
 type ToastMessageRequest<ErrorValue> = ToastSuccessMessage | ToastErrorMessage<ErrorValue>;
@@ -37,13 +38,15 @@ export function toastMessage<ErrorValue>(request: ToastMessageRequest<ErrorValue
 		toast.error(
 			seconds === 1
 				? m['BackendMessages.rateLimitSingle']()
-				: m['BackendMessages.rateLimitMultiple']({ seconds })
+				: m['BackendMessages.rateLimitMultiple']({ seconds }),
+			request.toasterId ? { toasterId: request.toasterId } : undefined
 		);
 		return;
 	}
 
 	toast.error(
 		(request.error instanceof Error ? getBackendErrorMessage(request.error) : undefined) ??
-			request.message
+			request.message,
+		request.toasterId ? { toasterId: request.toasterId } : undefined
 	);
 }

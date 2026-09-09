@@ -113,6 +113,7 @@
 {#if nativeSupported !== false}
 	{#if trigger}
 		<button
+			id={`${id}-trigger`}
 			type="button"
 			commandfor={id}
 			command="show-modal"
@@ -153,7 +154,7 @@
 {:else if fallbackComponent}
 	{@const NativeSheetFallback = fallbackComponent}
 
-	<NativeSheetFallback {trigger} {triggerLabel} {label} {onOpen} {footer} class={className}>
+	<NativeSheetFallback {id} {trigger} {triggerLabel} {label} {onOpen} {footer} class={className}>
 		{@render children()}
 	</NativeSheetFallback>
 {:else if fallbackError}
