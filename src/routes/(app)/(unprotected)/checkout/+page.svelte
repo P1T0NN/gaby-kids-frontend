@@ -13,9 +13,10 @@
 	// TYPES
 	import type { MutationValues } from '@/components/ui/custom-components/form/formTypes.js';
 
-	type CreateOrderMutation = typeof api.tables.orders.mutations.createOrder.createOrder;
+	type CreateStripeCheckoutAction =
+		typeof api.stripe.actions.createStripeCheckout.createStripeCheckout;
 
-	let values = $state<MutationValues<CreateOrderMutation>>({
+	let values = $state<MutationValues<CreateStripeCheckoutAction>>({
 		fulfillmentMethod: 'delivery'
 	});
 

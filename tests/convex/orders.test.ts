@@ -5,10 +5,12 @@ import rateLimiterTest from '@convex-dev/rate-limiter/test';
 import resendTest from '@convex-dev/resend/test';
 import { convexTest } from 'convex-test';
 import auditLogTest from 'convex-audit-log/test';
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
+import Stripe from 'stripe';
 
-import { api } from '../../src/convex/_generated/api';
+import { api, internal } from '../../src/convex/_generated/api';
 import schema from '../../src/convex/schema';
+import * as emailService from '../../src/convex/emails/sendEmail';
 
 const modules = import.meta.glob('../../src/convex/**/*.ts');
 
@@ -23,58 +25,323 @@ function createTestContext() {
 	return t;
 }
 
-test('creates one server-priced snapshot and deduplicates checkout retries', async () => {
+test('prepares checkout without orders, then creates one paid snapshot with protected access', async () => {
 	const t = createTestContext();
-	const productId = await t.run(async (ctx) => {
-		const categoryId = await ctx.db.insert('categories', {
-			name: 'Orders',
-			slug: 'orders',
-			status: 'active'
-		});
-		return ctx.db.insert('products', {
+	const owner = t.withIdentity({ subject: 'buyer', tokenIdentifier: 'issuer|buyer' });
+	const productId = await t.run(async (ctx) =>
+		ctx.db.insert('products', {
 			name: 'Snapshot product',
 			slug: 'snapshot-product',
 			description: 'Original details',
 			priceInCents: 1299,
-			categoryId,
+			categoryId: await ctx.db.insert('categories', {
+				name: 'Orders',
+				slug: 'orders',
+				status: 'active'
+			}),
 			images: [],
 			imageKeys: [],
 			storagePrefix: 'products',
 			status: 'active'
-		});
-	});
+		})
+	);
 	const input = {
-		retryKey: 'stable-checkout-key',
-		items: [{ productId, quantity: 2 }],
+		receiptToken: 'test-receipt-token',
+		items: [
+			{ productId, quantity: 1 },
+			{ productId, quantity: 1 }
+		],
 		firstName: 'Ada',
 		lastName: 'Lovelace',
 		email: 'ada@example.com',
 		phone: '+1 555 0100',
 		fulfillmentMethod: 'pickup' as const
 	};
-	const orderId = await t.mutation(api.tables.orders.mutations.createOrder.createOrder, input);
-	expect(await t.mutation(api.tables.orders.mutations.createOrder.createOrder, input)).toBe(
-		orderId
-	);
-
-	const snapshot = await t.run(async (ctx) => ({
-		order: await ctx.db.get(orderId),
-		items: await ctx.db
-			.query('orderItems')
-			.withIndex('by_order_id', (query) => query.eq('orderId', orderId))
-			.collect()
-	}));
-	expect(snapshot.order).toMatchObject({ subtotalInCents: 2598, totalInCents: 2598 });
-	expect(snapshot.items).toEqual([
-		expect.objectContaining({ name: 'Snapshot product', unitPriceInCents: 1299, quantity: 2 })
-	]);
-
+	const prepare = internal.tables.orders.queries.fetchCheckoutOrder.fetchCheckoutOrder;
+	const checkout = await owner.query(prepare, input);
+	expect(checkout).toMatchObject({
+		customerId: 'buyer',
+		totalInCents: 2598,
+		items: [{ name: 'Snapshot product', unitPriceInCents: 1299, quantity: 2 }]
+	});
+	expect(await t.run((ctx) => ctx.db.query('orders').collect())).toEqual([]);
+	expect(await t.run((ctx) => ctx.db.query('orderItems').collect())).toEqual([]);
 	await expect(
-		t.mutation(api.tables.orders.mutations.createOrder.createOrder, {
+		owner.query(prepare, {
 			...input,
-			items: [{ productId, quantity: 3 }]
+			items: [
+				{ productId, quantity: 99 },
+				{ productId, quantity: 1 }
+			]
 		})
-	).rejects.toMatchObject({ data: { code: 'ORDER_RETRY_CONFLICT' } });
+	).rejects.toMatchObject({ data: { code: 'INVALID_ORDER_DATA' } });
+
+	const result = { receiptToken: input.receiptToken };
+	expect(
+		await t.query(api.tables.orders.queries.fetchOrderReceipt.fetchOrderReceipt, {
+			receiptToken: result.receiptToken
+		})
+	).toBeNull();
+
+	const create = internal.tables.orders.mutations.createOrder.createOrder;
+	const payment = {
+		eventType: 'checkout.session.completed' as const,
+		eventCreatedAt: 2000,
+		stripeCheckoutSessionId: 'cs_paid',
+		stripePaymentIntentId: 'pi_paid',
+		checkoutStatus: 'complete' as const,
+		paymentStatus: 'paid' as const,
+		currency: checkout.currency.toLowerCase(),
+		totalInCents: 2598
+	};
+	const paid = { checkout: { ...checkout, receiptToken: result.receiptToken }, payment };
+	expect(
+		await t.mutation(create, { ...paid, payment: { ...payment, paymentStatus: 'unpaid' } })
+	).toBeNull();
+	expect(await t.run((ctx) => ctx.db.query('orders').collect())).toEqual([]);
+	await expect(
+		t.mutation(create, { ...paid, payment: { ...payment, totalInCents: 1 } })
+	).rejects.toThrow();
+	await t.run((ctx) =>
+		ctx.db.patch(productId, { name: 'Changed', priceInCents: 9999, status: 'archived' })
+	);
+	const [orderId, duplicate] = await Promise.all([
+		t.mutation(create, paid),
+		t.mutation(create, paid)
+	]);
+	expect(duplicate).toBe(orderId);
+	if (!orderId) throw new Error('Expected a paid order.');
+	expect(await t.run((ctx) => ctx.db.query('orders').collect())).toHaveLength(1);
+	expect(await t.run((ctx) => ctx.db.query('orderItems').collect())).toMatchObject([
+		{ name: 'Snapshot product', unitPriceInCents: 1299, quantity: 2 }
+	]);
+	const order = await t.run((ctx) => ctx.db.get(orderId));
+	expect(order).toMatchObject({
+		paymentStatus: 'paid',
+		paidAt: 2000000,
+		totalInCents: 2598,
+		customerId: 'buyer'
+	});
+	const getOrder = api.tables.orders.queries.fetchMyOrder.fetchMyOrder;
+	const code = order!.code;
+	expect(await t.query(getOrder, { code })).toBeNull();
+	expect(await t.withIdentity({ subject: 'other' }).query(getOrder, { code })).toBeNull();
+	expect(await owner.query(getOrder, { code })).not.toBeNull();
+	expect(
+		await t.query(getOrder, { code, guestOrders: [{ id: orderId, receiptToken: result.receiptToken }] })
+	).not.toBeNull();
+	await t.run((ctx) => ctx.db.patch(orderId, { customerId: undefined }));
+	expect(await t.query(getOrder, { code })).toBeNull();
+	expect(
+		await t.query(getOrder, { code, guestOrders: [{ id: orderId, receiptToken: 'wrong' }] })
+	).toBeNull();
+	await t.run((ctx) => ctx.db.patch(orderId, { paymentStatus: 'refunded' }));
+	expect(await t.mutation(create, paid)).toBe(orderId);
+	expect((await t.run((ctx) => ctx.db.get(orderId)))?.paymentStatus).toBe('refunded');
+	await expect(
+		t.mutation(create, { ...paid, payment: { ...payment, stripePaymentIntentId: 'pi_other' } })
+	).rejects.toThrow();
+});
+
+test('verified webhook creates an order only after payment and queues emails once', async () => {
+	const emails = vi.spyOn(emailService, 'sendEmail');
+	vi.stubEnv('STRIPE_SECRET_KEY', 'sk_test_local');
+	vi.stubEnv('STRIPE_WEBHOOK_SECRET', 'whsec_local');
+	const { stripe } = await import('../../src/convex/stripe/stripe.config');
+	const t = createTestContext();
+	const productId = await t.run(async (ctx) =>
+		ctx.db.insert('products', {
+			name: 'Paid product',
+			slug: 'paid',
+			description: 'Test',
+			priceInCents: 1200,
+			categoryId: await ctx.db.insert('categories', {
+				name: 'Test',
+				slug: 'test',
+				status: 'active'
+			}),
+			images: [],
+			imageKeys: [],
+			storagePrefix: 'products',
+			status: 'active'
+		})
+	);
+	const checkout = await t.query(
+		internal.tables.orders.queries.fetchCheckoutOrder.fetchCheckoutOrder,
+		{
+			receiptToken: 'test-webhook-receipt-token',
+			items: [{ productId, quantity: 2 }],
+			firstName: 'Ada',
+			lastName: 'Lovelace',
+			email: 'ada@example.com',
+			phone: '123',
+			fulfillmentMethod: 'delivery',
+			shippingAddress: { street: 'Street', city: 'City', postalCode: '123', country: 'US' }
+		}
+	);
+	vi.stubEnv('PUBLIC_ORIGIN', 'https://shop.test');
+	// SAFETY: this mock only supplies the Session fields read by the checkout action.
+	const openSession = {
+		id: 'cs_open',
+		status: 'open',
+		url: 'https://checkout.stripe.test/session'
+	} as Stripe.Response<Stripe.Checkout.Session>;
+	const createSession = vi.spyOn(stripe.checkout.sessions, 'create').mockResolvedValue(openSession);
+	const {
+		receiptToken: _receiptToken,
+		customerId: _customerId,
+		currency: _currency,
+		totalInCents: _total,
+		...input
+	} = checkout;
+	const buyer = t.withIdentity({ subject: 'buyer', tokenIdentifier: 'issuer|buyer' });
+	// Submit the same cart twice: both requests create a fresh Session, with no order writes.
+	const action = api.stripe.actions.createStripeCheckout.createStripeCheckout;
+	await buyer.action(action, {
+		...input,
+		items: input.items.map(({ productId, quantity }) => ({ productId, quantity }))
+	});
+	await buyer.action(action, {
+		...input,
+		items: input.items.map(({ productId, quantity }) => ({ productId, quantity }))
+	});
+	expect(createSession).toHaveBeenCalledTimes(2);
+	expect(createSession.mock.calls[0]).toHaveLength(1);
+	const metadata = createSession.mock.calls[0][0]!.metadata!;
+	const receiptToken = String(metadata.receiptToken);
+	expect(createSession.mock.calls[1][0]!.metadata!.receiptToken).not.toBe(receiptToken);
+	expect(await t.run((ctx) => ctx.db.query('orders').collect())).toEqual([]);
+	createSession.mockRestore();
+	const session = {
+		id: 'cs_webhook',
+		object: 'checkout.session',
+		mode: 'payment',
+		livemode: false,
+		status: 'complete',
+		payment_status: 'paid',
+		payment_intent: 'pi_webhook',
+		amount_total: 2400,
+		currency: checkout.currency.toLowerCase(),
+		metadata
+	};
+	const lines: Stripe.Response<Stripe.ApiList<Stripe.LineItem>> = {
+		object: 'list',
+		lastResponse: { headers: {}, requestId: 'req_test', statusCode: 200 },
+		has_more: false,
+		url: '/line_items',
+		data: [
+			{
+				id: 'li_test',
+				object: 'item',
+				adjustable_quantity: null,
+				amount_discount: 0,
+				amount_subtotal: 2400,
+				amount_tax: 0,
+				metadata: {},
+				description: 'Paid product',
+				quantity: 2,
+				amount_total: 2400,
+				currency: session.currency,
+				price: {
+					id: 'price_test',
+					object: 'price',
+					active: true,
+					billing_scheme: 'per_unit',
+					created: 1000,
+					custom_unit_amount: null,
+					livemode: false,
+					lookup_key: null,
+					metadata: {},
+					nickname: null,
+					recurring: null,
+					tax_behavior: null,
+					tiers_mode: null,
+					transform_quantity: null,
+					type: 'one_time',
+					unit_amount_decimal: null,
+					unit_amount: 1200,
+					currency: session.currency,
+					product: {
+						id: 'prod_test',
+						object: 'product',
+						active: true,
+						created: 1000,
+						description: null,
+						images: [],
+						livemode: false,
+						marketing_features: [],
+						metadata: { productId },
+						name: 'Paid product',
+						package_dimensions: null,
+						shippable: null,
+						type: 'good',
+						updated: 1000,
+						url: null
+					}
+				}
+			}
+		]
+	};
+	const list = vi.spyOn(stripe.checkout.sessions, 'listLineItems').mockResolvedValue(lines);
+	async function send(type: string, object = session, valid = true) {
+		const payload = JSON.stringify({
+			id: 'evt_test',
+			type,
+			livemode: false,
+			created: 2000,
+			data: { object }
+		});
+		const signature = stripe.webhooks.generateTestHeaderString({
+			payload,
+			secret: valid ? 'whsec_local' : 'wrong'
+		});
+		return t.action(internal.stripe.actions.verifyStripeWebhook.verifyStripeWebhook, {
+			payload,
+			signature
+		});
+	}
+	try {
+		expect(await send('checkout.session.completed', session, false)).toBe(false);
+		await send('checkout.session.expired', {
+			...session,
+			status: 'expired',
+			payment_status: 'unpaid'
+		});
+		await send('checkout.session.completed', { ...session, payment_status: 'unpaid' });
+		await send('checkout.session.async_payment_failed', { ...session, payment_status: 'unpaid' });
+		expect(list).not.toHaveBeenCalled();
+		expect(emails).not.toHaveBeenCalled();
+		expect(await t.run((ctx) => ctx.db.query('orders').collect())).toEqual([]);
+		await expect(
+			send('checkout.session.completed', { ...session, amount_total: 1 })
+		).rejects.toThrow();
+		await expect(
+			send('checkout.session.completed', { ...session, livemode: true })
+		).rejects.toThrow();
+		await expect(
+			send('checkout.session.async_payment_succeeded', { ...session, payment_status: 'unpaid' })
+		).rejects.toThrow();
+		await expect(send('checkout.session.async_payment_failed')).rejects.toThrow();
+		await send('checkout.session.async_payment_succeeded');
+		await send('checkout.session.completed');
+		await send('checkout.session.async_payment_failed', { ...session, payment_status: 'unpaid' });
+		const receipt = await t.query(api.tables.orders.queries.fetchOrderReceipt.fetchOrderReceipt, {
+			receiptToken
+		});
+		expect(receipt?.order).toMatchObject({
+			paymentStatus: 'paid',
+			totalInCents: 2400,
+			shippingAddress: { street: 'Street', city: 'City' }
+		});
+		expect(await t.run((ctx) => ctx.db.query('orders').collect())).toHaveLength(1);
+		expect(await t.run((ctx) => ctx.db.query('orderItems').collect())).toHaveLength(1);
+		expect(emails).toHaveBeenCalledTimes(2);
+		expect(new Set(emails.mock.calls.map(([, message]) => message.idempotencyKey)).size).toBe(2);
+	} finally {
+		emails.mockRestore();
+		list.mockRestore();
+		vi.unstubAllEnvs();
+	}
 });
 
 test('keeps order administration private and blocks unpaid fulfillment', async () => {
@@ -88,7 +355,7 @@ test('keeps order administration private and blocks unpaid fulfillment', async (
 	const orderId = await t.run((ctx) =>
 		ctx.db.insert('orders', {
 			code: 'ADM001',
-			retryKey: 'admin-order',
+			receiptToken: 'admin-order',
 			lineFingerprint: 'line',
 			currency: 'USD',
 			firstName: 'Grace',
@@ -153,7 +420,7 @@ test('filters admin orders by payment, fulfillment, and method', async () => {
 		};
 		await ctx.db.insert('orders', {
 			...order,
-			retryKey: 'matching-order',
+			receiptToken: 'matching-order',
 			email: 'matching@example.com',
 			paymentStatus: 'paid',
 			fulfillmentStatus: 'fulfilled',
@@ -162,7 +429,7 @@ test('filters admin orders by payment, fulfillment, and method', async () => {
 		await ctx.db.insert('orders', {
 			...order,
 			code: 'FIL002',
-			retryKey: 'newer-nonmatching-order',
+			receiptToken: 'newer-nonmatching-order',
 			email: 'nonmatching@example.com',
 			paymentStatus: 'paid',
 			fulfillmentStatus: 'unfulfilled',

@@ -62,8 +62,15 @@ import type * as migrations_types_migrationTypes from "../migrations/types/migra
 import type * as rateLimits_helpers_enforceRateLimit from "../rateLimits/helpers/enforceRateLimit.js";
 import type * as rateLimits_types_rateLimitTypes from "../rateLimits/types/rateLimitTypes.js";
 import type * as storage_r2 from "../storage/r2.js";
+import type * as stripe_actions_createStripeCheckout from "../stripe/actions/createStripeCheckout.js";
 import type * as stripe_actions_verifyStripeWebhook from "../stripe/actions/verifyStripeWebhook.js";
+import type * as stripe_helpers_applyStripeCheckoutEvent from "../stripe/helpers/applyStripeCheckoutEvent.js";
+import type * as stripe_helpers_readPaidCheckout from "../stripe/helpers/readPaidCheckout.js";
 import type * as stripe_http_stripeWebhook from "../stripe/http/stripeWebhook.js";
+import type * as stripe_utils_buildCheckoutLineItems from "../stripe/utils/buildCheckoutLineItems.js";
+import type * as stripe_utils_hasInvalidStripeOrderPayment from "../stripe/utils/hasInvalidStripeOrderPayment.js";
+import type * as stripe_utils_hasInvalidStripeSessions from "../stripe/utils/hasInvalidStripeSessions.js";
+import type * as stripe_validators_stripeValidators from "../stripe/validators/stripeValidators.js";
 import type * as tables_categories_aggregates_categoryAggregate from "../tables/categories/aggregates/categoryAggregate.js";
 import type * as tables_categories_aggregates_productsByCategoryAggregate from "../tables/categories/aggregates/productsByCategoryAggregate.js";
 import type * as tables_categories_helpers_getCategoryImageKey from "../tables/categories/helpers/getCategoryImageKey.js";
@@ -89,6 +96,7 @@ import type * as tables_orders_helpers_toCustomerOrder from "../tables/orders/he
 import type * as tables_orders_mutations_createOrder from "../tables/orders/mutations/createOrder.js";
 import type * as tables_orders_mutations_updateOrderAdmin from "../tables/orders/mutations/updateOrderAdmin.js";
 import type * as tables_orders_queries_fetchAllOrdersAdmin from "../tables/orders/queries/fetchAllOrdersAdmin.js";
+import type * as tables_orders_queries_fetchCheckoutOrder from "../tables/orders/queries/fetchCheckoutOrder.js";
 import type * as tables_orders_queries_fetchMyOrder from "../tables/orders/queries/fetchMyOrder.js";
 import type * as tables_orders_queries_fetchMyOrders from "../tables/orders/queries/fetchMyOrders.js";
 import type * as tables_orders_queries_fetchOrderAdmin from "../tables/orders/queries/fetchOrderAdmin.js";
@@ -185,8 +193,15 @@ declare const fullApi: ApiFromModules<{
   "rateLimits/helpers/enforceRateLimit": typeof rateLimits_helpers_enforceRateLimit;
   "rateLimits/types/rateLimitTypes": typeof rateLimits_types_rateLimitTypes;
   "storage/r2": typeof storage_r2;
+  "stripe/actions/createStripeCheckout": typeof stripe_actions_createStripeCheckout;
   "stripe/actions/verifyStripeWebhook": typeof stripe_actions_verifyStripeWebhook;
+  "stripe/helpers/applyStripeCheckoutEvent": typeof stripe_helpers_applyStripeCheckoutEvent;
+  "stripe/helpers/readPaidCheckout": typeof stripe_helpers_readPaidCheckout;
   "stripe/http/stripeWebhook": typeof stripe_http_stripeWebhook;
+  "stripe/utils/buildCheckoutLineItems": typeof stripe_utils_buildCheckoutLineItems;
+  "stripe/utils/hasInvalidStripeOrderPayment": typeof stripe_utils_hasInvalidStripeOrderPayment;
+  "stripe/utils/hasInvalidStripeSessions": typeof stripe_utils_hasInvalidStripeSessions;
+  "stripe/validators/stripeValidators": typeof stripe_validators_stripeValidators;
   "tables/categories/aggregates/categoryAggregate": typeof tables_categories_aggregates_categoryAggregate;
   "tables/categories/aggregates/productsByCategoryAggregate": typeof tables_categories_aggregates_productsByCategoryAggregate;
   "tables/categories/helpers/getCategoryImageKey": typeof tables_categories_helpers_getCategoryImageKey;
@@ -212,6 +227,7 @@ declare const fullApi: ApiFromModules<{
   "tables/orders/mutations/createOrder": typeof tables_orders_mutations_createOrder;
   "tables/orders/mutations/updateOrderAdmin": typeof tables_orders_mutations_updateOrderAdmin;
   "tables/orders/queries/fetchAllOrdersAdmin": typeof tables_orders_queries_fetchAllOrdersAdmin;
+  "tables/orders/queries/fetchCheckoutOrder": typeof tables_orders_queries_fetchCheckoutOrder;
   "tables/orders/queries/fetchMyOrder": typeof tables_orders_queries_fetchMyOrder;
   "tables/orders/queries/fetchMyOrders": typeof tables_orders_queries_fetchMyOrders;
   "tables/orders/queries/fetchOrderAdmin": typeof tables_orders_queries_fetchOrderAdmin;

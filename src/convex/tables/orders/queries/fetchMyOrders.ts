@@ -24,7 +24,7 @@ import type { Doc, Id } from '../../../_generated/dataModel.js';
 
 // The stored id is client-supplied and can be an arbitrary string, so it is validated leniently
 // here and resolved with `normalizeId` in the handler rather than with `v.id('orders')`.
-const guestOrder = v.object({ id: v.string(), retryKey: v.string() });
+const guestOrder = v.object({ id: v.string(), receiptToken: v.string() });
 
 function summarize(order: Doc<'orders'>) {
 	return {
@@ -54,7 +54,7 @@ function matchesOrder(order: Doc<'orders'>, filters: ConvexFilter[]): boolean {
 type MyOrderItem = NonNullable<ReturnType<typeof summarize>>;
 type MyOrdersPage = ConvexPaginatedPage<MyOrderItem> & {
 	invalidOrderIds: string[];
-	syncOrders: { id: Id<'orders'>; retryKey: string }[];
+	syncOrders: { id: Id<'orders'>; receiptToken: string }[];
 };
 
 export const fetchMyOrders = fetchOptimizedQuery({
@@ -82,7 +82,7 @@ export const fetchMyOrders = fetchOptimizedQuery({
 				...page,
 				items: page.items.map(summarize).filter((order) => order !== null),
 				invalidOrderIds: [],
-				syncOrders: syncOrders.map((order) => ({ id: order._id, retryKey: order.retryKey }))
+				syncOrders: syncOrders.map((order) => ({ id: order._id, receiptToken: order.receiptToken }))
 			};
 			return result;
 		}
@@ -93,7 +93,7 @@ export const fetchMyOrders = fetchOptimizedQuery({
 			const id = ctx.db.normalizeId('orders', access.id);
 			const order = id ? await ctx.db.get(id) : null;
 
-			if (!order || order.retryKey !== access.retryKey) {
+			if (!order || order.receiptToken !== access.receiptToken) {
 				invalidOrderIds.push(access.id);
 				continue;
 			}

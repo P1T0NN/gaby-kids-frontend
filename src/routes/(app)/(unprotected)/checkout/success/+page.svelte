@@ -4,6 +4,7 @@
 
 	// LIBRARIES
 	import { useQuery } from 'convex-svelte';
+	import { untrack } from 'svelte';
 	import { api } from '@convex/_generated/api';
 	import { m } from '@/lib/paraglide/messages';
 
@@ -21,11 +22,29 @@
 	import Section from '@/components/ui/custom-components/section/section.svelte';
 	import SvelteHead from '@/components/ui/custom-components/svelte-head/svelte-head.svelte';
 
-	const retryKey = $derived(page.url.searchParams.get('key') ?? '');
+	// HOOKS
+	import { useCart } from '@/features/cart/hooks/useCart.svelte.js';
+	import { useOrdersLocal } from '@/features/orders/hooks/useOrdersLocal.svelte.js';
+
+	const cart = useCart();
+	const localOrders = useOrdersLocal();
+	const receiptToken = $derived(page.url.searchParams.get('key') ?? '');
+	const returnedFromStripe = $derived(!!page.url.searchParams.get('session_id'));
 
 	const order = useQuery(api.tables.orders.queries.fetchOrderReceipt.fetchOrderReceipt, () =>
-		retryKey ? { retryKey } : 'skip'
+		receiptToken ? { receiptToken } : 'skip'
 	);
+
+	// Persist access when the paid receipt mounts, including receipts opened from email.
+	function saveReceipt(): void {
+		const receipt = order.data;
+		const key = receiptToken;
+		if (!receipt || receipt.order.paymentStatus === 'pending') return;
+		untrack(() => {
+			const firstVisit = localOrders.addOrderLocal(receipt.order._id, key);
+			if (firstVisit && returnedFromStripe) cart.replaceItems([]);
+		});
+	}
 </script>
 
 <SvelteHead
@@ -49,28 +68,32 @@
 {/snippet}
 
 <Section as="main" size="sm" width="wide" containerClass="flex flex-col gap-8">
-	{#if !retryKey || order.data === null}
+	{#if !receiptToken}
 		{@render notFound()}
 	{:else if order.error}
 		<ErrorComponent message={m['CheckoutSuccessPage.loadError']()} card />
 	{:else if order.isLoading || !order.data}
-		<CheckoutSuccessLoading />
+		{#if order.data === null && !returnedFromStripe}
+			{@render notFound()}
+		{:else}
+			<CheckoutSuccessLoading />
+			<p role="status" class="text-center text-muted-foreground">
+				{m['CheckoutSuccessPage.paymentPendingHint']()}
+			</p>
+			<ButtonLink href={UNPROTECTED_PAGE_ENDPOINTS.SHOP}>
+				{m['CheckoutSuccessPage.back']()}
+			</ButtonLink>
+		{/if}
+	{:else if order.data.order.paymentStatus === 'pending'}
+		<p role="status">{m['CheckoutSuccessPage.paymentPendingHint']()}</p>
 	{:else}
 		<CheckoutSuccessHeader order={order.data.order} />
-
-		<p
-			class="flex items-start gap-2 rounded-xl border bg-muted/40 p-4 text-sm leading-relaxed text-muted-foreground"
-			role="note"
-		>
-			<span class="mt-0.5 icon-[lucide--info] size-4 shrink-0" aria-hidden="true"></span>
-			{m['CheckoutSuccessPage.paymentPendingHint']()}
-		</p>
 
 		<CheckoutSuccessOrderSummary order={order.data.order} items={order.data.items} />
 
 		<CheckoutSuccessOrderDetails order={order.data.order} />
 
-		<div class="flex justify-center">
+		<div class="flex justify-center" {@attach saveReceipt}>
 			<ButtonLink href={UNPROTECTED_PAGE_ENDPOINTS.SHOP}>
 				<span class="icon-[lucide--arrow-left] size-4" aria-hidden="true"></span>
 				{m['CheckoutSuccessPage.back']()}

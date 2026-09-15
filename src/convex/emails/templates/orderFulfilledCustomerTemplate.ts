@@ -13,7 +13,7 @@ export function renderOrderFulfilledCustomerTemplate(
 	const { COLORS } = EMAIL_DATA;
 
 	const orderUrl = new URL('/checkout/success', EMAIL_DATA.BRAND.URL);
-	orderUrl.searchParams.set('key', order.retryKey);
+	orderUrl.searchParams.set('key', order.receiptToken);
 
 	const message =
 		order.fulfillmentMethod === 'pickup'

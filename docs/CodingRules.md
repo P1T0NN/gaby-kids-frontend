@@ -84,11 +84,11 @@ For `DataList` and `DataTable` headers:
   getter functions. Destructuring a returned getter or a reactive prop freezes
   the value.
 - `$effect` is exceptional. It remains deliberately in
-  `useCachedConvexQuery.svelte.ts` and `useConvexPagination.svelte.ts` only to
-  write fresh, non-stale results to the external bounded LRU cache; that is an
-  external synchronization with no `useQuery` success callback, not derived
-  state. Do not use effects for calculations, debouncing, URL writes, or state
-  mirroring when an event handler, `$derived`, `onMount`, or attachment works.
+  `useCachedConvexQuery.svelte.ts`, `useConvexPagination.svelte.ts`, the My Orders
+  page only for external synchronization without
+  a `useQuery` success callback, not derived state. Do not use effects for
+  calculations, debouncing, URL writes, or state mirroring when an event handler,
+  `$derived`, `onMount`, or attachment works.
 - Use `$state.snapshot` before passing a deeply reactive proxy to code that
   expects plain data (the form-change hook does this). Do not export a directly
   reassigned `$state` binding from a module; expose an object or functions.
@@ -106,25 +106,25 @@ the namespace (`* as Card`, `* as Dialog`). `components.json` is the source of
 truth: aliases are `@/components`, `@/utils`, and `@/hooks`, the theme CSS is
 `src/routes/layout.css`, and the icon library is Lucide.
 
-| Family                        | Parts / use                                                                                                                                  |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Avatar                        | `Avatar`, `AvatarImage`, `AvatarFallback`, `AvatarBadge`, `AvatarGroup`, `AvatarGroupCount` — faces and identity fallback                    |
-| Badge / Button                | statuses, compact actions, links, and variants                                                                                               |
-| Breadcrumb                    | `Breadcrumb`, `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbPage`, `BreadcrumbSeparator`, `BreadcrumbEllipsis`            |
-| Card                          | `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`, `CardAction`                                              |
-| Field / Label                 | labelled form controls, descriptions, errors, sets, legends, and field groups                                                                |
-| Input / Textarea / Checkbox   | native text, multiline, and boolean controls                                                                                                 |
-| InputGroup                    | `InputGroup`, `InputGroupInput`, `InputGroupTextarea`, `InputGroupAddon`, `InputGroupButton`, `InputGroupText` — controls with icons/actions |
-| InputOTP                      | `InputOTP`, `InputOTPGroup`, `InputOTPSlot`, `InputOTPSeparator` — verification codes                                                        |
-| Select                        | grouped custom select, labels, items, scroll buttons, portals                                                                                |
-| Pagination                    | pagination root/content/items/links/previous/next/ellipsis primitives                                                                        |
-| Drawer / Sheet                | modal bottom-sheet and side-panel composition                                                                                                |
-| Sidebar                       | full shadcn sidebar provider/root/content/menu/group/trigger pieces; used as native-sidebar fallback                                         |
-| Tabs                          | `Tabs`, `TabsList`, `TabsTrigger`, `TabsContent`                                                                                             |
-| Table                         | `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`, `TableFooter`, `TableCaption`                                     |
-| Empty / Separator             | structured empty states and visual separators                                                                                                |
-| Skeleton / Spinner / Progress | loading placeholders, pending actions, progress indicators                                                                                   |
-| Tooltip / Sonner              | tooltip composition and the single app-wide toast mount                                                                                      |
+| Family                                   | Parts / use                                                                                                                                  |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Avatar                                   | `Avatar`, `AvatarImage`, `AvatarFallback`, `AvatarBadge`, `AvatarGroup`, `AvatarGroupCount` — faces and identity fallback                    |
+| Badge / Button                           | statuses, compact actions, links, and variants                                                                                               |
+| Breadcrumb                               | `Breadcrumb`, `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbPage`, `BreadcrumbSeparator`, `BreadcrumbEllipsis`            |
+| Card                                     | `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`, `CardAction`                                              |
+| Field / Label                            | labelled form controls, descriptions, errors, sets, legends, and field groups                                                                |
+| Input / Textarea / Checkbox / RadioGroup | native text, multiline, boolean, and single-choice controls                                                                                  |
+| InputGroup                               | `InputGroup`, `InputGroupInput`, `InputGroupTextarea`, `InputGroupAddon`, `InputGroupButton`, `InputGroupText` — controls with icons/actions |
+| InputOTP                                 | `InputOTP`, `InputOTPGroup`, `InputOTPSlot`, `InputOTPSeparator` — verification codes                                                        |
+| Select                                   | grouped custom select, labels, items, scroll buttons, portals                                                                                |
+| Pagination                               | pagination root/content/items/links/previous/next/ellipsis primitives                                                                        |
+| Drawer / Sheet                           | modal bottom-sheet and side-panel composition                                                                                                |
+| Sidebar                                  | full shadcn sidebar provider/root/content/menu/group/trigger pieces; used as native-sidebar fallback                                         |
+| Tabs                                     | `Tabs`, `TabsList`, `TabsTrigger`, `TabsContent`                                                                                             |
+| Table                                    | `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`, `TableFooter`, `TableCaption`                                     |
+| Empty / Separator                        | structured empty states and visual separators                                                                                                |
+| Skeleton / Spinner / Progress            | loading placeholders, pending actions, progress indicators                                                                                   |
+| Tooltip / Sonner                         | tooltip composition and the single app-wide toast mount                                                                                      |
 
 Use semantic tokens (`bg-background`, `text-muted-foreground`,
 `text-destructive`) and built-in variants before custom colors. Use `cn()` for
@@ -283,10 +283,15 @@ Current app-facing functions are:
   characters, max seven results);
 - admin users/profile/settings/sessions/logs queries and
   `api.auditLogs.queries.fetchAuditLogsAdmin`.
-- checkout order creation plus admin order list/detail/update functions under
-  `api.tables.orders`; the post-checkout success page reads its order with
-  `fetchOrderReceipt`, keyed by the client-minted idempotency `retryKey` acting
-  as an unguessable receipt token.
+- Checkout opens Stripe through `api.stripe.actions.createStripeCheckout`.
+  Its internal preparation query validates products and prices without writing
+  an order or draft. Stripe stores customer metadata and immutable line prices;
+  only the verified paid webhook calls the internal `createOrder` mutation.
+  Session and Payment Intent indexes prevent duplicate orders from webhook retries.
+  Each submission creates a fresh Stripe Session, without checkout retry tracking.
+  The receipt uses a server-generated random `receiptToken` solely as a guest access token.
+  Mounting a paid receipt saves guest access; the first return from Stripe clears
+  the current cart. No pre-payment cart snapshot is stored.
 
 For list queries, use `fetchOptimizedQuery`: it adds validated pagination,
 search, and symbolic filters, chooses the feature predicate registry, delegates
@@ -298,10 +303,10 @@ Catalog edits use last-save-wins. Product prices are stored as integer cents in
 `products.priceInCents`; stock and customer choices are not implemented.
 
 `orders` stores customer, fulfillment, trusted totals, payment/fulfillment state,
-and idempotent checkout input; `orderItems` stores immutable product name, price,
+and guest receipt access; `orderItems` stores immutable product name, price,
 and quantity snapshots. Never render order history from live catalog joins or
-cascade-delete orders/items with products. Inventory obligations and Stripe are
-not implemented yet.
+cascade-delete orders/items with products. Stripe Checkout payment state comes
+only from verified webhook events; inventory obligations are not implemented yet.
 
 Counts and side effects already have homes: product and user totals use
 aggregates, and trigger-wrapped mutations keep these projections current.

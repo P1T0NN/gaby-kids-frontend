@@ -14,6 +14,7 @@ import betterAuth from './betterAuth/component/convex.config.js';
 
 const app = defineApp({
 	env: {
+		PUBLIC_ORIGIN: v.string(),
 		STRIPE_SECRET_KEY: v.string(),
 		STRIPE_WEBHOOK_SECRET: v.string()
 	}

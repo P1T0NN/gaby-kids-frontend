@@ -32,7 +32,7 @@ export type OrderEmailData = Pick<
 	| 'firstName'
 	| 'lastName'
 	| 'fulfillmentMethod'
-	| 'retryKey'
+	| 'receiptToken'
 	| 'totalInCents'
 >;
 

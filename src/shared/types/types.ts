@@ -18,6 +18,7 @@ export const backendErrorDataSchema = z.discriminatedUnion('code', [
 	z.object({ code: z.literal('ORDER_PRODUCT_UNAVAILABLE') }),
 	z.object({ code: z.literal('ORDER_RETRY_CONFLICT') }),
 	z.object({ code: z.literal('ORDER_NOT_FOUND') }),
+	z.object({ code: z.literal('ORDER_PAYMENT_UNAVAILABLE') }),
 	z.object({ code: z.literal('ORDER_PAYMENT_REQUIRED') }),
 	z.object({ code: z.literal('ORDER_REFUND_UNAVAILABLE') }),
 	z.object({ code: z.literal('ORDER_CANCELLED') }),

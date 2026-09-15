@@ -33,7 +33,7 @@ export const tables = {
 	orders: defineTable({
 		customerId: v.optional(v.string()),
 		code: v.string(),
-		retryKey: v.string(),
+		receiptToken: v.string(),
 		lineFingerprint: v.string(),
 		currency: v.string(),
 		firstName: v.string(),
@@ -53,13 +53,21 @@ export const tables = {
 		subtotalInCents: v.number(),
 		totalInCents: v.number(),
 		paymentStatus: literals('pending', 'paid', 'refund_pending', 'refunded'),
+		stripeCheckoutSessionId: v.optional(v.string()),
+		stripePaymentIntentId: v.optional(v.string()),
+		checkoutStatus: v.optional(literals('open', 'complete', 'expired')),
+		paidAt: v.optional(v.number()),
+		refundedAt: v.optional(v.number()),
+		refundedAmountInCents: v.optional(v.number()),
 		fulfillmentStatus: literals('unfulfilled', 'fulfilled'),
 		cancelledAt: v.optional(v.number()),
 		internalNote: v.optional(v.string()),
 		updatedAt: v.number()
 	})
 		.index('by_code', ['code'])
-		.index('by_retry_key', ['retryKey'])
+		.index('by_receiptToken', ['receiptToken'])
+		.index('by_stripeCheckoutSessionId', ['stripeCheckoutSessionId'])
+		.index('by_stripePaymentIntentId', ['stripePaymentIntentId'])
 		.index('by_customer_id', ['customerId'])
 		.index('by_payment_status', ['paymentStatus'])
 		.index('by_fulfillment_status', ['fulfillmentStatus'])

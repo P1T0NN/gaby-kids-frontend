@@ -1,155 +1,123 @@
 // LIBRARIES
-import { ConvexError, v } from 'convex/values';
+import { v } from 'convex/values';
 
 // BUILDERS
-import { mutation } from '../../../builders/convexFunctionBuilders.js';
+import { internalMutation } from '../../../builders/convexFunctionBuilders.js';
 
 // CONFIG
-import { COMPANY_DATA } from '../../../../shared/config.js';
 import { ORDER_CONFIG } from '../../../../shared/features/orders/config.js';
 
 // VALIDATORS
-import { fulfillmentMethod, shippingAddress } from '../validators/orderValidators.js';
+import { paidOrderArgs } from '../../../stripe/validators/stripeValidators.js';
+import { createOrderSchema } from '../../../../shared/features/orders/schemas/ordersSchemas.js';
 
 // HELPERS
 import { createOrderCode } from '../helpers/createOrderCode.js';
+import { applyStripeCheckoutEvent } from '../../../stripe/helpers/applyStripeCheckoutEvent.js';
+
+// UTILS
+import { calculateOrderTotalInCents } from '../../../../shared/features/orders/utils/calculateOrders.js';
+import { hasInvalidOrderItems } from '../../../../shared/features/orders/utils/hasInvalidOrderItems.js';
+import { hasInvalidStripeOrderPayment } from '../../../stripe/utils/hasInvalidStripeOrderPayment.js';
 
 // EMAILS
 import { sendOrderCreatedEmails } from '../emails/sendOrderCreatedEmails.js';
 
-// SCHEMAS
-import { createOrderSchema } from '../../../../shared/features/orders/schemas/ordersSchemas.js';
+// Only the verified Stripe webhook supplies these snapshots, never the browser.
+export const createOrder = internalMutation({
+	args: paidOrderArgs.fields,
+	returns: v.union(v.id('orders'), v.null()),
+	handler: async (ctx, { checkout, payment: event }) => {
+		const payment = applyStripeCheckoutEvent(event);
+		if (!payment) return null;
 
-// TYPES
-import type { BackendErrorData } from '../../../../shared/types/types.js';
-import type { Id } from '../../../_generated/dataModel.js';
-
-export const createOrder = mutation({
-	rateLimit: { name: 'orders:create', scope: 'global' },
-	args: {
-		retryKey: v.string(),
-		items: v.array(v.object({ productId: v.id('products'), quantity: v.number() })),
-		firstName: v.string(),
-		lastName: v.string(),
-		email: v.string(),
-		phone: v.string(),
-		fulfillmentMethod,
-		shippingAddress: v.optional(shippingAddress)
-	},
-	returns: v.id('orders'),
-	handler: async (ctx, args) => {
-		const parsed = createOrderSchema.safeParse(args);
-		if (!parsed.success) throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
-		const data = parsed.data;
-
-		const quantities = new Map<Id<'products'>, number>();
-		for (const item of data.items) {
-			const quantity = (quantities.get(item.productId) ?? 0) + item.quantity;
-			if (quantity > ORDER_CONFIG.maxQuantity) throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
-			quantities.set(item.productId, quantity);
-		}
-
-		const lines = [...quantities.entries()].sort(([left], [right]) => left.localeCompare(right));
-		const address = data.fulfillmentMethod === 'delivery' && data.shippingAddress ? data.shippingAddress : undefined;
-
-		const lineFingerprint = JSON.stringify({
-			lines,
-			firstName: data.firstName,
-			lastName: data.lastName,
-			email: data.email,
-			phone: data.phone,
-			fulfillmentMethod: data.fulfillmentMethod,
-			address
-		});
+		const data = createOrderSchema.parse(checkout);
+		const total = calculateOrderTotalInCents(checkout.items);
+		const hasInvalidSnapshot =
+			hasInvalidOrderItems(checkout.items) ||
+			!Number.isSafeInteger(total) ||
+			total <= 0 ||
+			total !== checkout.totalInCents ||
+			new Set(checkout.items.map((item) => item.productId)).size !== checkout.items.length ||
+			checkout.items.some((item) => !item.name.trim() || item.quantity > ORDER_CONFIG.maxQuantity);
+		if (hasInvalidSnapshot) throw new Error('Stripe order snapshot invariant violated.');
+		if (
+			hasInvalidStripeOrderPayment(
+				{
+					stripeCheckoutSessionId: event.stripeCheckoutSessionId,
+					currency: checkout.currency,
+					totalInCents: total
+				},
+				event
+			)
+		)
+			throw new Error('Stripe Checkout Session invariant violated.');
 
 		const existing = await ctx.db
 			.query('orders')
-			.withIndex('by_retry_key', (query) => query.eq('retryKey', data.retryKey))
+			.withIndex('by_stripeCheckoutSessionId', (q) =>
+				q.eq('stripeCheckoutSessionId', event.stripeCheckoutSessionId)
+			)
 			.unique();
-
 		if (existing) {
-			if (existing.lineFingerprint !== lineFingerprint)
-				throw new ConvexError<BackendErrorData>({ code: 'ORDER_RETRY_CONFLICT' });
+			const hasConflictingPayment =
+				existing.stripePaymentIntentId !== payment.stripePaymentIntentId ||
+				existing.totalInCents !== total ||
+				existing.currency !== checkout.currency;
+			if (hasConflictingPayment) throw new Error('Order already has different payment details.');
 			return existing._id;
 		}
+		const samePayment = await ctx.db
+			.query('orders')
+			.withIndex('by_stripePaymentIntentId', (q) =>
+				q.eq('stripePaymentIntentId', payment.stripePaymentIntentId)
+			)
+			.unique();
+		if (samePayment) throw new Error('Payment already belongs to another order.');
+		const sameReceipt = await ctx.db
+			.query('orders')
+			.withIndex('by_receiptToken', (q) => q.eq('receiptToken', data.receiptToken))
+			.unique();
+		if (sameReceipt) throw new Error('Receipt already belongs to another order.');
 
-		const snapshots = [];
-		let subtotalInCents = 0;
-		for (const [productId, quantity] of lines) {
-			const product = await ctx.db.get(productId);
-			if (!product || product.status !== 'active')
-				throw new ConvexError<BackendErrorData>({ code: 'ORDER_PRODUCT_UNAVAILABLE' });
-
-			if (!Number.isSafeInteger(product.priceInCents) || product.priceInCents < 0)
-				throw new Error('Product price invariant violated.');
-
-			const lineTotal = product.priceInCents * quantity;
-			if (!Number.isSafeInteger(lineTotal) || !Number.isSafeInteger(subtotalInCents + lineTotal))
-				throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
-
-			subtotalInCents += lineTotal;
-
-			snapshots.push({
-				productId,
-				name: product.name,
-				unitPriceInCents: product.priceInCents,
-				quantity
-			});
-		}
-
-		const identity = await ctx.auth.getUserIdentity();
 		let code = createOrderCode();
-
 		for (let attempt = 0; attempt < 7; attempt += 1) {
 			const collision = await ctx.db
 				.query('orders')
-				.withIndex('by_code', (query) => query.eq('code', code))
+				.withIndex('by_code', (q) => q.eq('code', code))
 				.unique();
-
 			if (!collision) break;
-			code = createOrderCode();
-
 			if (attempt === 6) throw new Error('Could not allocate a unique order code.');
+			code = createOrderCode();
 		}
 
-		const now = Date.now();
-
-		const orderId = await ctx.db.insert('orders', {
-			customerId: identity?.subject,
+		const { items: _items, ...customer } = data;
+		const order = {
+			...customer,
+			customerId: checkout.customerId,
 			code,
-			retryKey: data.retryKey,
-			lineFingerprint,
-			currency: COMPANY_DATA.CURRENCY,
-			firstName: data.firstName,
-			lastName: data.lastName,
-			email: data.email,
-			phone: data.phone,
-			fulfillmentMethod: data.fulfillmentMethod,
-			shippingAddress: address,
-			subtotalInCents,
-			totalInCents: subtotalInCents,
-			paymentStatus: 'pending',
-			fulfillmentStatus: 'unfulfilled',
-			updatedAt: now
-		});
-
-		for (const snapshot of snapshots) await ctx.db.insert('orderItems', { orderId, ...snapshot });
-
-		await sendOrderCreatedEmails(
-			ctx,
-			{
-				_id: orderId,
-				code,
-				currency: COMPANY_DATA.CURRENCY,
-				email: data.email,
-				firstName: data.firstName,
-				lastName: data.lastName,
-				fulfillmentMethod: data.fulfillmentMethod,
-				retryKey: data.retryKey,
-				totalInCents: subtotalInCents
-			},
-			snapshots
-		);
+			lineFingerprint: JSON.stringify(checkout.items),
+			currency: checkout.currency,
+			subtotalInCents: total,
+			totalInCents: total,
+			paymentStatus: 'paid' as const,
+			fulfillmentStatus: 'unfulfilled' as const,
+			stripeCheckoutSessionId: event.stripeCheckoutSessionId,
+			checkoutStatus: 'complete' as const,
+			...payment,
+			updatedAt: Date.now()
+		};
+		const orderId = await ctx.db.insert('orders', order);
+		for (const item of checkout.items) {
+			const orderItem = {
+				productId: item.productId,
+				name: item.name,
+				unitPriceInCents: item.unitPriceInCents,
+				quantity: item.quantity
+			};
+			await ctx.db.insert('orderItems', { orderId, ...orderItem });
+		}
+		await sendOrderCreatedEmails(ctx, { ...order, _id: orderId }, checkout.items);
 		return orderId;
 	}
 });

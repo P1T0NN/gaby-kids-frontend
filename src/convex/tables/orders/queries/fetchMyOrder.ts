@@ -18,7 +18,7 @@ export const fetchMyOrder = query({
 		code: v.string(),
 		// The stored id is client-supplied and can be an arbitrary string, so it is validated
 		// leniently here and resolved with `normalizeId` in the handler.
-		guestOrders: v.optional(v.array(v.object({ id: v.string(), retryKey: v.string() })))
+		guestOrders: v.optional(v.array(v.object({ id: v.string(), receiptToken: v.string() })))
 	},
 	returns: v.union(customerOrderDetailResult, v.null()),
 	handler: async (ctx, args) => {
@@ -29,10 +29,10 @@ export const fetchMyOrder = query({
 		if (!order?.code) return null;
 
 		const identity = await ctx.auth.getUserIdentity();
-		const ownsOrder = identity?.subject === order.customerId;
+		const ownsOrder = !!identity && identity.subject === order.customerId;
 		const hasGuestAccess = args.guestOrders?.some((access) => {
 			const id = ctx.db.normalizeId('orders', access.id);
-			return id !== null && id === order._id && access.retryKey === order.retryKey;
+			return id !== null && id === order._id && access.receiptToken === order.receiptToken;
 		});
 		if (!ownsOrder && !hasGuestAccess) return null;
 

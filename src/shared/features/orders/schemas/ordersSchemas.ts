@@ -7,7 +7,7 @@ import { ORDER_CONFIG } from '../config.js';
 // TYPES
 import type { Id } from '../../../../convex/_generated/dataModel.js';
 
-const MAX_RETRY_KEY_LENGTH = 100;
+const MAX_RECEIPT_TOKEN_LENGTH = 100;
 const MAX_NAME_LENGTH = 100;
 const MAX_EMAIL_LENGTH = 320;
 const MAX_PHONE_LENGTH = 50;
@@ -35,7 +35,10 @@ const orderIdSchema = z
 
 export const storedOrdersSchema = z
 	.array(
-		z.object({ id: orderIdSchema, retryKey: z.string().trim().min(1).max(MAX_RETRY_KEY_LENGTH) })
+		z.object({
+			id: orderIdSchema,
+			receiptToken: z.string().trim().min(1).max(MAX_RECEIPT_TOKEN_LENGTH)
+		})
 	)
 	.transform((orders) => [...new Map(orders.map((order) => [order.id, order])).values()]);
 
@@ -55,9 +58,8 @@ const shippingAddressSchema = z.object({
 	country: z.string().trim().min(1).max(MAX_COUNTRY_LENGTH)
 });
 
-export const createOrderSchema = z
+export const checkoutSchema = z
 	.object({
-		retryKey: z.string().trim().min(1).max(MAX_RETRY_KEY_LENGTH),
 		items: z
 			.array(
 				z.object({
@@ -77,6 +79,10 @@ export const createOrderSchema = z
 	.refine((value) => value.fulfillmentMethod !== 'delivery' || value.shippingAddress, {
 		path: ['shippingAddress']
 	});
+
+export const createOrderSchema = checkoutSchema.safeExtend({
+	receiptToken: z.string().trim().min(1).max(MAX_RECEIPT_TOKEN_LENGTH)
+});
 
 export const updateOrderAdminSchema = z.object({
 	id: orderIdSchema,

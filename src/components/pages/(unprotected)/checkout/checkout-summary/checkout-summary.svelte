@@ -15,16 +15,17 @@
 	import { useCart } from '@/features/cart/hooks/useCart.svelte.js';
 
 	// UTILS
-	import { calculateCartTotal } from '@/shared/features/cart/utils/calculateCartTotal.js';
 	import { formatPrice } from '@/shared/features/cart/utils/formatPrice.js';
+	import { calculateOrderTotalInCents } from '@/shared/features/orders/utils/calculateOrders.js';
 
 	// TYPES
 	import type { MutationValues } from '@/components/ui/custom-components/form/formTypes.js';
 
-	type CreateOrderMutation = typeof api.tables.orders.mutations.createOrder.createOrder;
+	type CreateStripeCheckoutAction =
+		typeof api.stripe.actions.createStripeCheckout.createStripeCheckout;
 
 	type Props = {
-		values: MutationValues<CreateOrderMutation>;
+		values: MutationValues<CreateStripeCheckoutAction>;
 		submitting: boolean;
 	};
 
@@ -48,10 +49,9 @@
 	);
 
 	const total = $derived(
-		calculateCartTotal(
+		calculateOrderTotalInCents(
 			items.map((item) => ({
-				price: item.priceInCents,
-				discount: 0,
+				unitPriceInCents: item.priceInCents,
 				quantity: item.quantity
 			}))
 		)

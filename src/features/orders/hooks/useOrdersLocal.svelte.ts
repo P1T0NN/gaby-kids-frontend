@@ -10,9 +10,9 @@ import { storedOrdersSchema } from '@/shared/features/orders/schemas/ordersSchem
 // TYPES
 import type { Id } from '@convex/_generated/dataModel.js';
 
-export type StoredOrder = { id: Id<'orders'>; retryKey: string };
+type StoredOrder = { id: Id<'orders'>; receiptToken: string };
 
-function parseOrders(raw: string | null): StoredOrder[] {
+function parseOrdersLocal(raw: string | null): StoredOrder[] {
 	if (!raw) return [];
 
 	try {
@@ -23,22 +23,22 @@ function parseOrders(raw: string | null): StoredOrder[] {
 	}
 }
 
-export function useOrders(enabled: () => boolean = () => true) {
+export function useOrdersLocal(enabled: () => boolean = () => true) {
 	const localStorage = useLocalStorage<StoredOrder[]>(
 		ORDER_CONFIG.localStorageKey,
 		[],
-		parseOrders,
+		parseOrdersLocal,
 		enabled
 	);
 
-	function addOrder(id: Id<'orders'>, retryKey: string): boolean {
+	function addOrderLocal(id: Id<'orders'>, receiptToken: string): boolean {
 		if (!localStorage.read() || localStorage.value.some((order) => order.id === id)) return false;
 		return localStorage.set(
-			[...localStorage.value, { id, retryKey }].slice(-ORDER_CONFIG.maxStoredOrders)
+			[...localStorage.value, { id, receiptToken }].slice(-ORDER_CONFIG.maxStoredOrders)
 		);
 	}
 
-	function removeOrders(ids: string[]): boolean {
+	function removeOrdersLocal(ids: string[]): boolean {
 		if (ids.length === 0 || !localStorage.read()) return false;
 		const nextItems = localStorage.value.filter((order) => !ids.includes(order.id));
 		if (nextItems.length === localStorage.value.length) return false;
@@ -46,16 +46,16 @@ export function useOrders(enabled: () => boolean = () => true) {
 	}
 
 	return {
-		get orders() {
+		get ordersLocal() {
 			return localStorage.value;
 		},
-		get loaded() {
+		get loadedLocal() {
 			return localStorage.loaded;
 		},
-		get error() {
+		get errorLocal() {
 			return localStorage.error;
 		},
-		addOrder,
-		removeOrders
+		addOrderLocal,
+		removeOrdersLocal
 	};
 }

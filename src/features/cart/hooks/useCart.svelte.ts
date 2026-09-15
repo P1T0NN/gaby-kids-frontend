@@ -1,8 +1,8 @@
-// CONFIG
-import { CART_CONFIG } from '@/shared/features/cart/config.js';
-
 // LIBRARIES
 import { m } from '@/lib/paraglide/messages';
+
+// CONFIG
+import { CART_CONFIG } from '@/shared/features/cart/config.js';
 
 // HOOKS
 import { useLocalStorage } from '@/hooks/useLocalStorage.svelte.js';
@@ -82,9 +82,6 @@ export function useCart() {
 		},
 		get totalItems() {
 			return getTotalQuantity(localStorage.value);
-		},
-		get checkoutItems() {
-			return localStorage.value.map((item) => ({ ...item }));
 		},
 		addItem,
 		setItemQuantity,

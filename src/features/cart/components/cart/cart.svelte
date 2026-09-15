@@ -24,6 +24,7 @@
 
 	// UTILS
 	import { formatPrice } from '@/shared/features/cart/utils/formatPrice.js';
+	import { calculateOrderTotalInCents } from '@/shared/features/orders/utils/calculateOrders.js';
 
 	// TYPES
 	import type { CartProduct } from '@/shared/features/cart/types/cartTypes.js';
@@ -49,11 +50,11 @@
 	}
 	const badgeLabel = $derived(cart.totalItems > 9 ? '9+' : String(cart.totalItems));
 	const totalPriceInCents = $derived(
-		cart.items.reduce(
-			(total, item) =>
-				total +
-				(cartProducts.find((product) => product.id === item.id)?.priceInCents ?? 0) * item.quantity,
-			0
+		calculateOrderTotalInCents(
+			cart.items.map((item) => ({
+				unitPriceInCents: cartProducts.find((product) => product.id === item.id)?.priceInCents ?? 0,
+				quantity: item.quantity
+			}))
 		)
 	);
 

@@ -22,7 +22,7 @@
 
 	// HOOKS
 	import { useCachedConvexQuery } from '@/hooks/useCachedConvexQuery.svelte.js';
-	import { useOrders } from '@/features/orders/hooks/useOrders.svelte.js';
+	import { useOrdersLocal } from '@/features/orders/hooks/useOrdersLocal.svelte.js';
 
 	// TYPES
 	import type { PageProps } from './$types';
@@ -31,12 +31,12 @@
 
 	const authenticated = $derived(data.authState.isAuthenticated);
 	const code = $derived((page.params.code ?? '').toUpperCase());
-	
-	const localOrders = useOrders(() => !authenticated);
-	const ready = $derived(authenticated || localOrders.loaded);
+
+	const localOrders = useOrdersLocal(() => !authenticated);
+	const ready = $derived(authenticated || localOrders.loadedLocal);
 
 	const order = useCachedConvexQuery(api.tables.orders.queries.fetchMyOrder.fetchMyOrder, () =>
-		ready ? { code, guestOrders: authenticated ? undefined : localOrders.orders } : 'skip'
+		ready ? { code, guestOrders: authenticated ? undefined : localOrders.ordersLocal } : 'skip'
 	);
 </script>
 
@@ -45,7 +45,7 @@
 <Section as="main" size="md" width="wide">
 	{#if !ready || order.isLoading}
 		<MyOrderLoading />
-	{:else if localOrders.error && !authenticated}
+	{:else if localOrders.errorLocal && !authenticated}
 		<ErrorComponent message={m['MyOrderPage.storageError']()} card />
 	{:else if order.error}
 		<ErrorComponent message={m['MyOrderPage.loadError']()} card />

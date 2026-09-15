@@ -13,16 +13,14 @@ import { customerOrderDetailResult } from '../validators/orderValidators.js';
 // HELPERS
 import { toCustomerOrder } from '../helpers/toCustomerOrder.js';
 
-// The client passes the idempotency `retryKey` it minted at checkout as an
-// unguessable receipt token. Possessing the key proves the caller is the one who
-// created the order, so it is never treated as authorization input beyond that.
+// The unguessable receipt token grants guest access to this order.
 export const fetchOrderReceipt = query({
-	args: { retryKey: v.string() },
+	args: { receiptToken: v.string() },
 	returns: v.union(customerOrderDetailResult, v.null()),
 	handler: async (ctx, args) => {
 		const order = await ctx.db
 			.query('orders')
-			.withIndex('by_retry_key', (query) => query.eq('retryKey', args.retryKey))
+			.withIndex('by_receiptToken', (query) => query.eq('receiptToken', args.receiptToken))
 			.unique();
 		if (!order) return null;
 

@@ -50,8 +50,9 @@
 			"pickupInfo": "No delivery address needed. Pickup location and collection details will be available before payment.",
 			"payment": "Online payment",
 			"paymentHint": "Pay online for both delivery and pickup.",
-			"orderCreated": "Order created successfully.",
-			"orderCreateError": "Couldn't create your order."
+			"orderCreated": "Starting secure payment.",
+			"orderCreateError": "Couldn't start secure payment. Please try again.",
+			"checkoutSessionError": "We couldn't start secure payment. Your cart is still available."
 		},
 		"CheckoutSummary": {
 			"summary": "Order summary",
@@ -62,8 +63,8 @@
 			"total": "Total",
 			"estimatedTotal": "Total before delivery",
 			"continue": "Continue to payment",
-			"creatingOrder": "Creating order...",
-			"paymentUnavailable": "Payment is not connected yet. This creates a pending order and no payment is taken.",
+			"creatingOrder": "Preparing payment...",
+			"paymentUnavailable": "You'll continue to Stripe to complete payment securely.",
 			"unavailable": "Some items are no longer available. Remove them to review your updated total.",
 			"removeUnavailable": "Remove unavailable items"
 		},
@@ -75,9 +76,9 @@
 		}
 	},
 	"CheckoutSuccessPage": {
-		"title": "Order confirmed",
-		"description": "Your order is confirmed. Thank you for shopping with us.",
-		"paymentPendingHint": "Payment is not connected yet, so nothing was charged. We'll follow up with payment details.",
+		"title": "Your checkout",
+		"description": "Check your payment and order confirmation.",
+		"paymentPendingHint": "We're waiting for payment confirmation. Your order will appear here automatically once payment succeeds. Some payment methods take longer. You can safely leave this page; we'll email you when your order is confirmed.",
 		"back": "Continue shopping",
 		"loadError": "Couldn't load your order.",
 		"notFoundTitle": "Order not found",
@@ -962,6 +963,7 @@
 		"orderProductUnavailable": "One or more products are no longer available.",
 		"orderRetryConflict": "This checkout attempt no longer matches your cart. Please try again.",
 		"orderNotFound": "This order could not be found.",
+		"orderPaymentUnavailable": "This order cannot be paid in its current state.",
 		"orderPaymentRequired": "The order must be paid before it can be fulfilled.",
 		"orderRefundUnavailable": "This order cannot be refunded in its current payment state.",
 		"orderCancelled": "A cancelled order cannot be fulfilled.",

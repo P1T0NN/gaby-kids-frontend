@@ -3,6 +3,7 @@ import { literals } from 'convex-helpers/validators';
 import { v } from 'convex/values';
 
 export const paymentStatus = literals('pending', 'paid', 'refund_pending', 'refunded');
+export const checkoutStatus = literals('open', 'complete', 'expired');
 export const fulfillmentStatus = literals('unfulfilled', 'fulfilled');
 export const fulfillmentMethod = literals('delivery', 'pickup');
 export const orderAdminAction = literals('fulfill', 'unfulfill', 'cancel', 'request_refund');
@@ -15,12 +16,23 @@ export const shippingAddress = v.object({
 	country: v.string()
 });
 
+export const createOrderArgs = v.object({
+	receiptToken: v.string(),
+	items: v.array(v.object({ productId: v.id('products'), quantity: v.number() })),
+	firstName: v.string(),
+	lastName: v.string(),
+	email: v.string(),
+	phone: v.string(),
+	fulfillmentMethod,
+	shippingAddress: v.optional(shippingAddress)
+});
+
 export const orderResult = v.object({
 	_id: v.id('orders'),
 	_creationTime: v.number(),
 	customerId: v.optional(v.string()),
 	code: v.string(),
-	retryKey: v.string(),
+	receiptToken: v.string(),
 	lineFingerprint: v.string(),
 	currency: v.string(),
 	firstName: v.string(),
@@ -32,6 +44,12 @@ export const orderResult = v.object({
 	subtotalInCents: v.number(),
 	totalInCents: v.number(),
 	paymentStatus,
+	stripeCheckoutSessionId: v.optional(v.string()),
+	stripePaymentIntentId: v.optional(v.string()),
+	checkoutStatus: v.optional(checkoutStatus),
+	paidAt: v.optional(v.number()),
+	refundedAt: v.optional(v.number()),
+	refundedAmountInCents: v.optional(v.number()),
 	fulfillmentStatus,
 	cancelledAt: v.optional(v.number()),
 	internalNote: v.optional(v.string()),
@@ -77,7 +95,7 @@ export const myOrderPage = v.object({
 	pageSize: v.number(),
 	total: v.optional(v.number()),
 	invalidOrderIds: v.array(v.string()),
-	syncOrders: v.array(v.object({ id: v.id('orders'), retryKey: v.string() }))
+	syncOrders: v.array(v.object({ id: v.id('orders'), receiptToken: v.string() }))
 });
 
 export const customerOrderResult = v.object({

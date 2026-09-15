@@ -39,6 +39,8 @@ export function getBackendErrorMessage(error: Error): string | undefined {
 			return m['BackendMessages.orderRetryConflict']();
 		case 'ORDER_NOT_FOUND':
 			return m['BackendMessages.orderNotFound']();
+		case 'ORDER_PAYMENT_UNAVAILABLE':
+			return m['BackendMessages.orderPaymentUnavailable']();
 		case 'ORDER_PAYMENT_REQUIRED':
 			return m['BackendMessages.orderPaymentRequired']();
 		case 'ORDER_REFUND_UNAVAILABLE':

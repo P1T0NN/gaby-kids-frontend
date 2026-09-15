@@ -13,7 +13,7 @@ export function renderOrderCancelledCustomerTemplate(
 	const { COLORS } = EMAIL_DATA;
 
 	const orderUrl = new URL('/checkout/success', EMAIL_DATA.BRAND.URL);
-	orderUrl.searchParams.set('key', order.retryKey);
+	orderUrl.searchParams.set('key', order.receiptToken);
 
 	const message = `Order ${order.code} has been cancelled.`;
 

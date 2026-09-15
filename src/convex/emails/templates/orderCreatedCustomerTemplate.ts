@@ -16,7 +16,7 @@ export function renderOrderCreatedCustomerTemplate(
 
 	const total = formatPrice(order.totalInCents, order.currency, 'en');
 	const orderUrl = new URL('/checkout/success', EMAIL_DATA.BRAND.URL);
-	orderUrl.searchParams.set('key', order.retryKey);
+	orderUrl.searchParams.set('key', order.receiptToken);
 
 	const lines = items.map((item) => `${item.quantity} x ${item.name}`).join('\n');
 	const itemRows = items

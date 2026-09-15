@@ -20,7 +20,7 @@
 	// HOOKS
 	import { useConvexPagination } from '@/features/pagination/hooks/useConvexPagination.svelte.js';
 	import { useFilters } from '@/features/filters/hooks/useFilters.svelte.js';
-	import { useOrders } from '@/features/orders/hooks/useOrders.svelte.js';
+	import { useOrdersLocal } from '@/features/orders/hooks/useOrdersLocal.svelte.js';
 
 	// DATA
 	import { MY_ORDERS_FILTER_DEFS } from '@/features/filters/data/myOrdersFilterDefs.js';
@@ -31,12 +31,15 @@
 	let { data }: PageProps = $props();
 
 	const authenticated = $derived(data.authState.isAuthenticated);
-	const localOrders = useOrders();
+	const localOrders = useOrdersLocal();
 	const filters = useFilters({ mode: 'state', defs: MY_ORDERS_FILTER_DEFS });
 
 	const orders = useConvexPagination(
 		api.tables.orders.queries.fetchMyOrders.fetchMyOrders,
-		() => ({ guestOrders: authenticated ? undefined : localOrders.orders, filters: filters.active }),
+		() => ({
+			guestOrders: authenticated ? undefined : localOrders.ordersLocal,
+			filters: filters.active
+		}),
 		{
 			pageSize: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE,
 			resetKey: () => filters.identity
@@ -46,8 +49,8 @@
 	// Deliberate `$effect`: this is external synchronization, not derived state. The reactive
 	// query result drives localStorage both ways — signed-in users mirror their server orders in,
 	// guests remove ids the server reports as stale — and `useQuery` has no success callback, so
-	// an effect is the only way to react. The writes run inside `untrack` because `addOrder`/
-	// `removeOrders` read and write `localOrders` through `useLocalStorage.read()`, which would
+	// an effect is the only way to react. The writes run inside `untrack` because `addOrderLocal`/
+	// `removeOrdersLocal` read and write `localOrders` through `useLocalStorage.read()`, which would
 	// otherwise make the effect read and write the same state and loop forever.
 	$effect(() => {
 		const page = orders.result.data;
@@ -56,12 +59,12 @@
 		if (authenticated) {
 			const syncOrders = page.syncOrders;
 			untrack(() => {
-				for (const access of syncOrders) localOrders.addOrder(access.id, access.retryKey);
+				for (const access of syncOrders) localOrders.addOrderLocal(access.id, access.receiptToken);
 			});
 		} else {
 			const invalidOrderIds = page.invalidOrderIds;
 			untrack(() => {
-				if (invalidOrderIds.length) localOrders.removeOrders(invalidOrderIds);
+				if (invalidOrderIds.length) localOrders.removeOrdersLocal(invalidOrderIds);
 			});
 		}
 	});
@@ -77,9 +80,9 @@
 	<MyOrdersHeader {authenticated} {filters} />
 
 	<div class="rounded-2xl border bg-card p-5 shadow-sm sm:p-7">
-		{#if !authenticated && !localOrders.loaded}
+		{#if !authenticated && !localOrders.loadedLocal}
 			<MyOrdersLoading />
-		{:else if !authenticated && localOrders.error}
+		{:else if !authenticated && localOrders.errorLocal}
 			<ErrorComponent message={m['MyOrdersPage.storageError']()} />
 		{:else}
 			<DataList pagination={orders} key={(order) => order._id} showPagination={false} class="gap-4">

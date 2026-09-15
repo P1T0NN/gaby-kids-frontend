@@ -31,7 +31,7 @@ export type SafeParseSchema<Value extends object> = {
 		| {
 				success: false;
 				error: { issues: readonly { path: readonly PropertyKey[]; message: string }[] };
-			};
+		  };
 };
 
 export type FormFieldContext<Value = FormFieldValue> = {
@@ -103,7 +103,8 @@ export type UploadField = BaseField & {
 	accept?: string;
 };
 
-export type FormControlField = InputField | TextareaField | SelectField | CheckboxField | SwitchField;
+export type FormControlField =
+	InputField | TextareaField | SelectField | CheckboxField | SwitchField;
 export type FieldConfig = FormControlField | FormSection | UploadField | CustomField;
 
 export type ExtraFields<Value = FormFieldValue> = Snippet<[FormFieldContext<Value>]>;
