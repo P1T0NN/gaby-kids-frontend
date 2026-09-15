@@ -22,13 +22,18 @@
 	// TYPES
 	import type { Doc, Id } from '@convex/_generated/dataModel.js';
 
-	type Upsell = Pick<Doc<'products'>, '_id' | 'name' | 'slug' | 'priceInCents' | 'images'>;
+	type Upsell = Pick<
+		Doc<'products'>,
+		'_id' | 'name' | 'slug' | 'priceInCents' | 'compareAtPriceInCents' | 'images'
+	>;
 
 	const titleId = $props.id();
 
 	const client = useConvexClient();
 	const analytics = useAnalytics();
-	const trackUpsellEvent = useMutation(api.tables.upsells.mutations.trackUpsellEvent.trackUpsellEvent);
+	const trackUpsellEvent = useMutation(
+		api.tables.upsells.mutations.trackUpsellEvent.trackUpsellEvent
+	);
 
 	let dialog: NativeDialog;
 	let latestRequest = 0;

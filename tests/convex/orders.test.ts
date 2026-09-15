@@ -128,7 +128,10 @@ test('prepares checkout without orders, then creates one paid snapshot with prot
 	expect(await t.withIdentity({ subject: 'other' }).query(getOrder, { code })).toBeNull();
 	expect(await owner.query(getOrder, { code })).not.toBeNull();
 	expect(
-		await t.query(getOrder, { code, guestOrders: [{ id: orderId, receiptToken: result.receiptToken }] })
+		await t.query(getOrder, {
+			code,
+			guestOrders: [{ id: orderId, receiptToken: result.receiptToken }]
+		})
 	).not.toBeNull();
 	await t.run((ctx) => ctx.db.patch(orderId, { customerId: undefined }));
 	expect(await t.query(getOrder, { code })).toBeNull();
@@ -388,13 +391,100 @@ test('keeps order administration private and blocks unpaid fulfillment', async (
 	});
 	await admin.mutation(api.tables.orders.mutations.updateOrderAdmin.updateOrderAdmin, {
 		id: orderId,
-		action: 'request_refund'
+		action: 'unfulfill'
 	});
 
 	expect(await t.run((ctx) => ctx.db.get(orderId))).toMatchObject({
-		paymentStatus: 'refund_pending',
-		fulfillmentStatus: 'fulfilled'
+		paymentStatus: 'paid',
+		fulfillmentStatus: 'unfulfilled'
 	});
+	await expect(
+		admin.action(api.stripe.actions.refundOrder.refundOrder, { id: orderId })
+	).rejects.toMatchObject({ data: { code: 'ORDER_REFUND_UNAVAILABLE' } });
+});
+
+test('admin refunds use Stripe idempotency and webhook state transitions', async () => {
+	vi.stubEnv('STRIPE_SECRET_KEY', 'sk_test_local');
+	vi.stubEnv('STRIPE_WEBHOOK_SECRET', 'whsec_local');
+	const { stripe } = await import('../../src/convex/stripe/stripe.config');
+	const t = createTestContext();
+	const admin = t.withIdentity({
+		tokenIdentifier: 'refund-admin',
+		subject: 'refund-admin',
+		role: 'admin'
+	});
+	const orderId = await t.run((ctx) =>
+		ctx.db.insert('orders', {
+			code: 'REF001',
+			receiptToken: 'refund-order',
+			lineFingerprint: 'line',
+			currency: 'USD',
+			firstName: 'Ada',
+			lastName: 'Lovelace',
+			email: 'ada@example.com',
+			phone: '+1 555 0103',
+			fulfillmentMethod: 'pickup',
+			subtotalInCents: 2400,
+			totalInCents: 2400,
+			paymentStatus: 'paid',
+			stripePaymentIntentId: 'pi_refund',
+			fulfillmentStatus: 'fulfilled',
+			updatedAt: Date.now()
+		})
+	);
+	// SAFETY: this mock only supplies the Refund fields used by the refund action and webhook.
+	const pendingRefund = {
+		id: 're_refund',
+		object: 'refund',
+		amount: 2400,
+		currency: 'usd',
+		created: 3000,
+		payment_intent: 'pi_refund',
+		status: 'pending'
+	} as Stripe.Response<Stripe.Refund>;
+	const createRefund = vi.spyOn(stripe.refunds, 'create').mockResolvedValue(pendingRefund);
+	async function sendRefund(type: string, eventObject: Stripe.Event.Data.Object, created: number) {
+		const payload = JSON.stringify({
+			id: 'evt_refund',
+			type,
+			livemode: false,
+			created,
+			data: { object: eventObject }
+		});
+		const signature = stripe.webhooks.generateTestHeaderString({
+			payload,
+			secret: 'whsec_local'
+		});
+		return t.action(internal.stripe.actions.verifyStripeWebhook.verifyStripeWebhook, {
+			payload,
+			signature
+		});
+	}
+	try {
+		await admin.action(api.stripe.actions.refundOrder.refundOrder, { id: orderId });
+		expect(createRefund).toHaveBeenCalledWith(
+			{ payment_intent: 'pi_refund', amount: 2400 },
+			{ idempotencyKey: `order-refund:${orderId}` }
+		);
+		expect(await t.run((ctx) => ctx.db.get(orderId))).toMatchObject({
+			paymentStatus: 'refund_pending'
+		});
+
+		await sendRefund('refund.updated', { ...pendingRefund, status: 'succeeded' }, 4000);
+		expect(await t.run((ctx) => ctx.db.get(orderId))).toMatchObject({
+			paymentStatus: 'refunded',
+			refundedAt: 4000000,
+			refundedAmountInCents: 2400
+		});
+
+		await sendRefund('refund.failed', { ...pendingRefund, status: 'failed' }, 5000);
+		expect((await t.run((ctx) => ctx.db.get(orderId)))?.paymentStatus).toBe('refunded');
+		await admin.action(api.stripe.actions.refundOrder.refundOrder, { id: orderId });
+		expect(createRefund).toHaveBeenCalledTimes(1);
+	} finally {
+		createRefund.mockRestore();
+		vi.unstubAllEnvs();
+	}
 });
 
 test('filters admin orders by payment, fulfillment, and method', async () => {

@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { calculateOrderTotalInCents } from '../src/shared/features/orders/utils/calculateOrders.js';
+import { calculateOrderTotalInCents } from '../src/shared/utils/pricing.js';
 import { hasInvalidOrderItems } from '../src/shared/features/orders/utils/hasInvalidOrderItems.js';
 import { hasInvalidOrderTotals } from '../src/shared/features/orders/utils/hasInvalidOrderTotals.js';
 

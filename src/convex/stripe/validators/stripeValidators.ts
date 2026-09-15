@@ -43,6 +43,16 @@ export const stripeCheckoutEventArgs = v.object({
 	totalInCents: v.union(v.number(), v.null())
 });
 
+export const stripeRefundEventArgs = v.object({
+	eventType: literals('refund.created', 'refund.updated', 'refund.failed'),
+	eventCreatedAt: v.number(),
+	stripeRefundId: v.string(),
+	stripePaymentIntentId: v.union(v.string(), v.null()),
+	refundStatus: literals('pending', 'succeeded', 'failed', 'canceled'),
+	currency: v.string(),
+	amountInCents: v.number()
+});
+
 export const paidOrderArgs = v.object({
 	checkout: checkoutSnapshot,
 	payment: stripeCheckoutEventArgs

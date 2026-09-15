@@ -8,7 +8,7 @@
 	import { m } from '@/lib/paraglide/messages';
 
 	// UTILS
-	import { formatPrice } from '@/shared/features/cart/utils/formatPrice.js';
+	import { formatPrice } from '@/shared/utils/pricing.js';
 
 	// CONFIG
 	import { UPSELLS_CONFIG } from '@/shared/features/upsells/config.js';

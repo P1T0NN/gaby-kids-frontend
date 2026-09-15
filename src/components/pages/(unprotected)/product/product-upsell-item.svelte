@@ -5,12 +5,10 @@
 	// COMPONENTS
 	import Link from '@/components/ui/custom-components/link/link.svelte';
 	import AddToCartButton from '@/features/cart/components/add-to-cart-button.svelte';
+	import ProductPrice from '@/features/products/components/product-price.svelte';
 
 	// CONFIG
 	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
-
-	// UTILS
-	import { formatPrice } from '@/shared/features/cart/utils/formatPrice.js';
 
 	// TYPES
 	import type { Doc } from '@convex/_generated/dataModel';
@@ -19,7 +17,10 @@
 		product,
 		disabled = false
 	}: {
-		product: Pick<Doc<'products'>, '_id' | 'name' | 'slug' | 'priceInCents' | 'images'>;
+		product: Pick<
+			Doc<'products'>,
+			'_id' | 'name' | 'slug' | 'priceInCents' | 'compareAtPriceInCents' | 'images'
+		>;
 		disabled?: boolean;
 	} = $props();
 	let failedImage = $state<string | null>(null);
@@ -52,7 +53,11 @@
 			<h3 class="text-sm leading-5 font-medium wrap-anywhere group-hover:underline">
 				{product.name}
 			</h3>
-			<p class="text-sm text-muted-foreground tabular-nums">{formatPrice(product.priceInCents)}</p>
+			<ProductPrice
+				priceInCents={product.priceInCents}
+				compareAtPriceInCents={product.compareAtPriceInCents}
+				priceClass="text-sm"
+			/>
 		</div>
 	</Link>
 	<AddToCartButton

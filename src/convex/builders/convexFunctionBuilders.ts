@@ -71,6 +71,15 @@ const authenticatedActionContext = customCtx(
 	}
 );
 
+const adminActionContext = customCtx(
+	async (ctx: ActionCtx, options: RateLimitedFunctionOptions) => {
+		const identity = await requireAdminIdentity(ctx);
+		await enforceRateLimit(ctx, options.rateLimit, identity);
+
+		return { identity };
+	}
+);
+
 const authenticatedQueryContext = customCtx(async (ctx: QueryCtx) => ({
 	identity: await requireIdentity(ctx)
 }));
@@ -164,6 +173,7 @@ export const authenticatedUploadInternalMutation = customMutation(
 	authenticatedUploadContext(false)
 );
 export const authenticatedAction = customAction(rawAction, authenticatedActionContext);
+export const adminAction = customAction(rawAction, adminActionContext);
 export const authenticatedQuery = customQuery(rawQuery, authenticatedQueryContext);
 export const adminMutation = customMutation(rawMutation, adminMutationContext);
 export const adminQuery = customQuery(rawQuery, adminQueryContext);

@@ -19,6 +19,7 @@ export const tables = {
 		slug: v.string(),
 		description: v.string(),
 		priceInCents: v.number(),
+		compareAtPriceInCents: v.optional(v.number()),
 		categoryId: v.id('categories'),
 		images: v.array(v.string()),
 		imageKeys: v.array(v.string()),

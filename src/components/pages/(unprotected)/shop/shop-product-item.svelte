@@ -5,6 +5,7 @@
 	// COMPONENTS
 	import * as Card from '@/components/ui/card/index.js';
 	import AddToCartButton from '@/features/cart/components/add-to-cart-button.svelte';
+	import ProductPrice from '@/features/products/components/product-price.svelte';
 	import Link from '@/components/ui/custom-components/link/link.svelte';
 
 	// CONFIG
@@ -47,6 +48,11 @@
 			<h2 class="line-clamp-2 wrap-anywhere" title={product.name}>{product.name}</h2>
 		</Card.Title>
 		<Card.Description class="line-clamp-3 wrap-anywhere">{product.description}</Card.Description>
+		<ProductPrice
+			priceInCents={product.priceInCents}
+			compareAtPriceInCents={product.compareAtPriceInCents}
+			priceClass="text-lg"
+		/>
 	</Card.Header>
 {/snippet}
 

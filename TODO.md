@@ -136,7 +136,6 @@ Target flow:
 
 ## After the first payment flow works
 
-- [ ] Add expired Checkout Session recovery.
-- [ ] Add refund event handling and refund state updates.
+- [x] Add refund event handling and refund state updates.
 - [ ] Add inventory handling at the chosen reservation or payment boundary.
 - [ ] Build the dashboard metrics and aggregates from verified order payment state.

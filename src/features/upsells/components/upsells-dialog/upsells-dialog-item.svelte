@@ -4,9 +4,7 @@
 
 	// COMPONENTS
 	import AddToCartButton from '@/features/cart/components/add-to-cart-button.svelte';
-
-	// UTILS
-	import { formatPrice } from '@/shared/features/cart/utils/formatPrice.js';
+	import ProductPrice from '@/features/products/components/product-price.svelte';
 
 	// TYPES
 	import type { Doc } from '@convex/_generated/dataModel';
@@ -15,7 +13,10 @@
 		product,
 		onAdded
 	}: {
-		product: Pick<Doc<'products'>, '_id' | 'name' | 'slug' | 'priceInCents' | 'images'>;
+		product: Pick<
+			Doc<'products'>,
+			'_id' | 'name' | 'slug' | 'priceInCents' | 'compareAtPriceInCents' | 'images'
+		>;
 		onAdded: () => void;
 	} = $props();
 	let failedImage = $state<string | null>(null);
@@ -48,9 +49,11 @@
 			{product.name}
 		</h3>
 		<div class="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
-			<p class="text-base leading-6 font-semibold tabular-nums">
-				{formatPrice(product.priceInCents)}
-			</p>
+			<ProductPrice
+				priceInCents={product.priceInCents}
+				compareAtPriceInCents={product.compareAtPriceInCents}
+				priceClass="text-base leading-6"
+			/>
 			<AddToCartButton
 				item={{ id: product._id, image: image ?? '' }}
 				name={product.name}

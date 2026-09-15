@@ -8,7 +8,7 @@
 	import { Badge } from '@/components/ui/badge/index.js';
 
 	/// UTILS
-	import { formatPrice } from '@/shared/features/cart/utils/formatPrice.js';
+	import { formatPrice } from '@/shared/utils/pricing.js';
 
 	// TYPES
 	import type { Doc, Id } from '@convex/_generated/dataModel';

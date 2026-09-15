@@ -16,7 +16,7 @@ import { createOrderCode } from '../helpers/createOrderCode.js';
 import { applyStripeCheckoutEvent } from '../../../stripe/helpers/applyStripeCheckoutEvent.js';
 
 // UTILS
-import { calculateOrderTotalInCents } from '../../../../shared/features/orders/utils/calculateOrders.js';
+import { calculateOrderTotalInCents } from '../../../../shared/utils/pricing.js';
 import { hasInvalidOrderItems } from '../../../../shared/features/orders/utils/hasInvalidOrderItems.js';
 import { hasInvalidStripeOrderPayment } from '../../../stripe/utils/hasInvalidStripeOrderPayment.js';
 

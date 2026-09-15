@@ -1,6 +1,11 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"example_message": "Hello world {username}",
+	"ProductsFeature": {
+		"ProductPrice": {
+			"discount": "{percent}% off"
+		}
+	},
 	"ProductPage": {
 		"pageTitle": "Product details",
 		"backToShop": "Back to shop",
@@ -343,6 +348,9 @@
 		"namePlaceholder": "Product name",
 		"price": "Price",
 		"pricePlaceholder": "0.00",
+		"originalPrice": "Original price (optional)",
+		"originalPricePlaceholder": "0.00",
+		"originalPriceDescription": "Shown crossed out when it is higher than the current price.",
 		"description": "Description",
 		"descriptionPlaceholder": "Describe the product",
 		"images": "Images",
@@ -724,24 +732,40 @@
 		},
 		"AdminEditOrderActions": {
 			"management": "Order actions",
-			"managementDescription": "Cancel and refund are separate actions. Cancellation never refunds a payment.",
+			"managementDescription": "Cancellation and refund are separate actions. Cancellation never refunds a payment.",
 			"paymentStatus": "Payment status",
 			"fulfillmentStatus": "Fulfillment status",
-			"cancelled": "Cancelled",
-			"markFulfilled": "Mark fulfilled",
-			"markUnfulfilled": "Mark unfulfilled",
+			"cancelled": "Cancelled"
+		},
+		"AdminEditOrderCancelButton": {
 			"cancelOrder": "Cancel order",
-			"refundOrder": "Refund order",
 			"confirmationTitle": "Are you sure?",
-			"fulfillConfirmation": "Mark this order as fulfilled?",
-			"unfulfillConfirmation": "Move this order back to unfulfilled?",
 			"cancelConfirmation": "This will mark the order as cancelled and stop it from being fulfilled.",
 			"cancelNoRefund": "Cancelling will not refund the user.",
-			"cancelRefundInstruction": "If you intend to refund the user, choose the “Refund order” button first. Refund processing is not connected yet.",
-			"refundConfirmation": "This records a separate refund request as pending until payment integration processes it.",
+			"cancelRefundInstruction": "If you intend to refund the payment, choose the “Refund order” button first. Cancellation itself never refunds the customer.",
 			"keepCurrentStatus": "Keep current status",
 			"updated": "Order updated.",
 			"updateError": "Couldn't update this order.",
+			"processing": "Processing..."
+		},
+		"AdminEditOrderFulfillmentStatusButton": {
+			"markFulfilled": "Mark fulfilled",
+			"markUnfulfilled": "Mark unfulfilled",
+			"confirmationTitle": "Are you sure?",
+			"fulfillConfirmation": "Mark this order as fulfilled?",
+			"unfulfillConfirmation": "Move this order back to unfulfilled?",
+			"keepCurrentStatus": "Keep current status",
+			"updated": "Order updated.",
+			"updateError": "Couldn't update this order.",
+			"processing": "Processing..."
+		},
+		"AdminEditOrderRefundButton": {
+			"refundOrder": "Refund order",
+			"confirmationTitle": "Are you sure?",
+			"refundConfirmation": "This will issue a full refund to the original payment method.",
+			"refundRequested": "Refund request sent to Stripe.",
+			"refundError": "Couldn't refund this order.",
+			"keepCurrentStatus": "Keep current status",
 			"processing": "Processing..."
 		}
 	},
@@ -938,6 +962,7 @@
 		"requiredValue": "Please enter a value.",
 		"requiredField": "Please fill this in.",
 		"validValue": "Please enter a valid value.",
+		"compareAtPriceMustExceedPrice": "Original price must be higher than the current price.",
 		"passwordsDoNotMatch": "Passwords do not match.",
 		"invalidEmail": "Please enter a valid email address.",
 		"passwordTooShort": "Password must be at least 8 characters long.",
@@ -966,6 +991,7 @@
 		"orderPaymentUnavailable": "This order cannot be paid in its current state.",
 		"orderPaymentRequired": "The order must be paid before it can be fulfilled.",
 		"orderRefundUnavailable": "This order cannot be refunded in its current payment state.",
+		"orderRefundFailed": "Stripe couldn't complete the refund. Check Stripe and try again.",
 		"orderCancelled": "A cancelled order cannot be fulfilled.",
 		"invalidCategoryData": "Please check the category details and try again.",
 		"categoryNotFound": "This category could not be found.",

@@ -15,7 +15,7 @@ import { checkoutSnapshot } from '../../../stripe/validators/stripeValidators.js
 import { createOrderSchema } from '../../../../shared/features/orders/schemas/ordersSchemas.js';
 
 // UTILS
-import { calculateOrderTotalInCents } from '../../../../shared/features/orders/utils/calculateOrders.js';
+import { calculateOrderTotalInCents } from '../../../../shared/utils/pricing.js';
 
 // TYPES
 import type { Id } from '../../../_generated/dataModel.js';

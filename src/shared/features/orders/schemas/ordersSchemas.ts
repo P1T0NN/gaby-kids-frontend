@@ -86,5 +86,5 @@ export const createOrderSchema = checkoutSchema.safeExtend({
 
 export const updateOrderAdminSchema = z.object({
 	id: orderIdSchema,
-	action: z.enum(['fulfill', 'unfulfill', 'cancel', 'request_refund'])
+	action: z.enum(['fulfill', 'unfulfill', 'cancel'])
 });

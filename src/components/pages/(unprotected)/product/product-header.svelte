@@ -1,6 +1,6 @@
 <script lang="ts">
-	// UTILS
-	import { formatPrice } from '@/shared/features/cart/utils/formatPrice.js';
+	// COMPONENTS
+	import ProductPrice from '@/features/products/components/product-price.svelte';
 
 	// TYPES
 	import type { Doc } from '@convex/_generated/dataModel';
@@ -15,7 +15,10 @@
 	>
 		{product.name}
 	</h1>
-	<p class="text-2xl font-medium tracking-tight wrap-anywhere tabular-nums">
-		{formatPrice(product.priceInCents)}
-	</p>
+	<ProductPrice
+		priceInCents={product.priceInCents}
+		compareAtPriceInCents={product.compareAtPriceInCents}
+		class="tracking-tight wrap-anywhere"
+		priceClass="text-2xl font-medium"
+	/>
 </header>

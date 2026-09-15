@@ -14,6 +14,7 @@ export const productResult = v.object({
 	slug: v.string(),
 	description: v.string(),
 	priceInCents: v.number(),
+	compareAtPriceInCents: v.optional(v.number()),
 	categoryId: v.id('categories'),
 	images: v.array(v.string()),
 	imageKeys: v.array(v.string()),
@@ -33,6 +34,7 @@ export const storefrontUpsellResult = productResult.pick(
 	'name',
 	'slug',
 	'priceInCents',
+	'compareAtPriceInCents',
 	'images'
 );
 

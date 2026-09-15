@@ -2,7 +2,7 @@
 import { ORDER_CONFIG } from '../config.js';
 
 // TYPES
-import type { OrderCalculationItem } from './calculateOrders.js';
+import type { OrderCalculationItem } from '../../../utils/pricing.js';
 
 export function hasInvalidOrderItems(items: readonly OrderCalculationItem[]): boolean {
 	return (

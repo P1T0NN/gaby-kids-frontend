@@ -10,6 +10,9 @@
 	import { ADMIN_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
 	import { saveProductSchema } from '@/shared/features/products/schemas/productsSchemas.js';
 
+	// UTILS
+	import { parseOptionalPriceInCents } from '@/shared/utils/pricing.js';
+
 	// COMPONENTS
 	import AdminAddProductHeader from '@/components/pages/admin/add-product/admin-add-product-header.svelte';
 	import ProductCategorySelector from '@/features/categories/components/product-category-selector.svelte';
@@ -30,10 +33,12 @@
 
 	let submitting = $state(false);
 	let categoryId = $state('');
-	
-	let values = $state<MutationValues<typeof api.tables.products.mutations.saveProduct.saveProduct>>({
-		active: true
-	});
+
+	let values = $state<MutationValues<typeof api.tables.products.mutations.saveProduct.saveProduct>>(
+		{
+			active: true
+		}
+	);
 
 	function createProductFields(categoryField: Snippet<[CustomFieldContext]>): FieldConfig[] {
 		return [
@@ -61,6 +66,16 @@
 						min: 0.01,
 						step: 0.01,
 						required: true
+					},
+					{
+						kind: 'input',
+						name: 'compareAtPriceInCents',
+						label: m['AddProductPage.originalPrice'](),
+						description: m['AddProductPage.originalPriceDescription'](),
+						placeholder: m['AddProductPage.originalPricePlaceholder'](),
+						type: 'number',
+						min: 0.01,
+						step: 0.01
 					},
 					{
 						kind: 'textarea',
@@ -116,6 +131,7 @@
 			name: String(values.name ?? ''),
 			description: String(values.description ?? ''),
 			priceInCents: Math.round(Number(values.priceInCents) * 100),
+			compareAtPriceInCents: parseOptionalPriceInCents(values.compareAtPriceInCents),
 			// SAFETY: the shared schema and Convex validate the selected category ID.
 			categoryId: categoryId as Id<'categories'>,
 			status: values.active ? ('active' as const) : ('draft' as const)

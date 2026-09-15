@@ -12,6 +12,7 @@ import { ORDER_CONFIG } from '../../../shared/features/orders/config.js';
 // HELPERS
 import { readPaidCheckout } from '../helpers/readPaidCheckout.js';
 import { applyStripeCheckoutEvent } from '../helpers/applyStripeCheckoutEvent.js';
+import { readStripeRefund } from '../helpers/readStripeRefund.js';
 
 // TYPES
 import type Stripe from 'stripe';
@@ -96,6 +97,16 @@ export const verifyStripeWebhook = internalAction({
 					checkout: readPaidCheckout(session, lines),
 					payment
 				});
+				break;
+			}
+			case 'refund.created':
+			case 'refund.updated':
+			case 'refund.failed': {
+				const refund = event.data.object;
+				await ctx.runMutation(
+					internal.tables.orders.mutations.applyStripeRefund.applyStripeRefund,
+					readStripeRefund(event.type, refund, event.created)
+				);
 				break;
 			}
 		}

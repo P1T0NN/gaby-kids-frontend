@@ -45,6 +45,8 @@ export function getBackendErrorMessage(error: Error): string | undefined {
 			return m['BackendMessages.orderPaymentRequired']();
 		case 'ORDER_REFUND_UNAVAILABLE':
 			return m['BackendMessages.orderRefundUnavailable']();
+		case 'ORDER_REFUND_FAILED':
+			return m['BackendMessages.orderRefundFailed']();
 		case 'ORDER_CANCELLED':
 			return m['BackendMessages.orderCancelled']();
 		case 'INVALID_CATEGORY_DATA':

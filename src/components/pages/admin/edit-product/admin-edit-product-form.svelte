@@ -9,6 +9,9 @@
 	// CONFIG
 	import { ADMIN_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
 
+	// UTILS
+	import { parseOptionalPriceInCents } from '@/shared/utils/pricing.js';
+
 	// COMPONENTS
 	import ProductCategorySelector from '@/features/categories/components/product-category-selector.svelte';
 	import { Button } from '@/components/ui/button/index.js';
@@ -46,6 +49,10 @@
 		name: initialProduct.name,
 		description: initialProduct.description,
 		priceInCents: initialProduct.priceInCents / 100,
+		compareAtPriceInCents:
+			initialProduct.compareAtPriceInCents === undefined
+				? undefined
+				: initialProduct.compareAtPriceInCents / 100,
 		active: initialProduct.status === 'active'
 	}));
 
@@ -83,6 +90,16 @@
 						min: 0.01,
 						step: 0.01,
 						required: true
+					},
+					{
+						kind: 'input',
+						name: 'compareAtPriceInCents',
+						label: m['AddProductPage.originalPrice'](),
+						description: m['AddProductPage.originalPriceDescription'](),
+						placeholder: m['AddProductPage.originalPricePlaceholder'](),
+						type: 'number',
+						min: 0.01,
+						step: 0.01
 					},
 					{
 						kind: 'textarea',
@@ -142,6 +159,7 @@
 		name: String(values.name ?? ''),
 		description: String(values.description ?? ''),
 		priceInCents: Math.round(Number(values.priceInCents) * 100),
+		compareAtPriceInCents: parseOptionalPriceInCents(values.compareAtPriceInCents),
 		categoryId: categoryId as Id<'categories'>,
 		status: values.active ? ('active' as const) : ('draft' as const)
 	})}

@@ -1,8 +1,12 @@
 <script lang="ts">
 	// LIBRARIES
 	import { m } from '@/lib/paraglide/messages';
+
+	// COMPONENTS
+	import ProductPrice from '@/features/products/components/product-price.svelte';
+
 	// UTILS
-	import { formatPrice } from '@/shared/features/cart/utils/formatPrice.js';
+	import { formatPrice } from '@/shared/utils/pricing.js';
 	// TYPES
 	import type { CartItem, CartProduct } from '@/shared/features/cart/types/cartTypes.js';
 
@@ -21,11 +25,18 @@
 	</div>
 	<div class="flex min-w-0 flex-1 flex-col gap-1">
 		<p class="text-sm font-medium wrap-break-word">{item.name}</p>
-		<p class="text-xs text-muted-foreground">
-			{m['CheckoutPage.CheckoutSummaryItem.quantity']({ quantity: item.quantity })} · {formatPrice(
-				item.priceInCents
-			)}
-		</p>
+		<div class="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+			<span>{m['CheckoutPage.CheckoutSummaryItem.quantity']({ quantity: item.quantity })}</span>
+			<span aria-hidden="true">·</span>
+			<ProductPrice
+				priceInCents={item.priceInCents}
+				compareAtPriceInCents={item.compareAtPriceInCents}
+				class="inline-flex"
+				priceClass="text-xs font-normal"
+				compareAtPriceClass="text-xs"
+				discountClass="text-[10px]"
+			/>
+		</div>
 	</div>
 	<p class="shrink-0 text-sm font-medium tabular-nums">
 		{formatPrice(item.priceInCents * item.quantity)}

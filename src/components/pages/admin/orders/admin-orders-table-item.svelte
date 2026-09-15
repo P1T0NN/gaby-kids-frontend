@@ -16,7 +16,7 @@
 
 	// UTILS
 	import { formatDateTime } from '@/shared/utils/date.js';
-	import { formatPrice } from '@/shared/features/cart/utils/formatPrice.js';
+	import { formatPrice } from '@/shared/utils/pricing.js';
 
 	// TYPES
 	import type { Doc } from '@convex/_generated/dataModel';

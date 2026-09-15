@@ -30,6 +30,7 @@ export const saveProduct = adminUploadMutation({
 		name: v.string(),
 		description: v.string(),
 		priceInCents: v.number(),
+		compareAtPriceInCents: v.optional(v.number()),
 		categoryId: v.id('categories'),
 		status: v.optional(productStatus)
 	},
@@ -78,6 +79,7 @@ export const saveProduct = adminUploadMutation({
 			name: input.name,
 			description: input.description,
 			priceInCents,
+			compareAtPriceInCents: input.compareAtPriceInCents,
 			categoryId: input.categoryId,
 			images: await resolveStoredFileUrls(imageKeys),
 			imageKeys,

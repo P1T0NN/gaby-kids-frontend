@@ -6,7 +6,7 @@ export const paymentStatus = literals('pending', 'paid', 'refund_pending', 'refu
 export const checkoutStatus = literals('open', 'complete', 'expired');
 export const fulfillmentStatus = literals('unfulfilled', 'fulfilled');
 export const fulfillmentMethod = literals('delivery', 'pickup');
-export const orderAdminAction = literals('fulfill', 'unfulfill', 'cancel', 'request_refund');
+export const orderAdminAction = literals('fulfill', 'unfulfill', 'cancel');
 
 export const shippingAddress = v.object({
 	street: v.string(),
@@ -55,6 +55,15 @@ export const orderResult = v.object({
 	internalNote: v.optional(v.string()),
 	updatedAt: v.number()
 });
+
+export const refundOrderResult = orderResult.pick(
+	'_id',
+	'_creationTime',
+	'currency',
+	'totalInCents',
+	'paymentStatus',
+	'stripePaymentIntentId'
+);
 
 export const orderItemResult = v.object({
 	_id: v.id('orderItems'),

@@ -5,18 +5,19 @@
 	// COMPONENTS
 	import { Button } from '@/components/ui/button/index.js';
 	import Counter from '@/components/ui/custom-components/counter/counter.svelte';
+	import ProductPrice from '@/features/products/components/product-price.svelte';
 
 	// HOOKS
 	import { useCart } from '@/features/cart/hooks/useCart.svelte.js';
 
 	// UTILS
 	import { toastMessage } from '@/utils/toastMessage.js';
-	import { formatPrice } from '@/shared/features/cart/utils/formatPrice.js';
+	import { formatPrice } from '@/shared/utils/pricing.js';
 
 	// TYPES
-	import type { CartItem } from '@/shared/features/cart/types/cartTypes.js';
+	import type { CartItem, CartProduct } from '@/shared/features/cart/types/cartTypes.js';
 
-	type DisplayCartItem = CartItem & { name: string; priceInCents: number };
+	type DisplayCartItem = CartItem & CartProduct;
 
 	let { cartItems }: { cartItems: DisplayCartItem[] } = $props();
 
@@ -49,10 +50,17 @@
 
 			<div class="flex min-w-0 flex-col items-start gap-1">
 				<p class="text-sm leading-relaxed font-medium wrap-break-word">{item.name}</p>
-				<p class="text-xs text-muted-foreground tabular-nums">
-					{formatPrice(item.priceInCents)}
-					{m['CartFeature.Cart.each']()}
-				</p>
+				<div class="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+					<ProductPrice
+						priceInCents={item.priceInCents}
+						compareAtPriceInCents={item.compareAtPriceInCents}
+						class="inline-flex"
+						priceClass="text-xs font-normal"
+						compareAtPriceClass="text-xs"
+						discountClass="text-[10px]"
+					/>
+					<span>{m['CartFeature.Cart.each']()}</span>
+				</div>
 				<p class="mt-auto pt-2 text-lg font-semibold tracking-tight tabular-nums">
 					{formatPrice(item.priceInCents * item.quantity)}
 				</p>

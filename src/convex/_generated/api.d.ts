@@ -63,9 +63,11 @@ import type * as rateLimits_helpers_enforceRateLimit from "../rateLimits/helpers
 import type * as rateLimits_types_rateLimitTypes from "../rateLimits/types/rateLimitTypes.js";
 import type * as storage_r2 from "../storage/r2.js";
 import type * as stripe_actions_createStripeCheckout from "../stripe/actions/createStripeCheckout.js";
+import type * as stripe_actions_refundOrder from "../stripe/actions/refundOrder.js";
 import type * as stripe_actions_verifyStripeWebhook from "../stripe/actions/verifyStripeWebhook.js";
 import type * as stripe_helpers_applyStripeCheckoutEvent from "../stripe/helpers/applyStripeCheckoutEvent.js";
 import type * as stripe_helpers_readPaidCheckout from "../stripe/helpers/readPaidCheckout.js";
+import type * as stripe_helpers_readStripeRefund from "../stripe/helpers/readStripeRefund.js";
 import type * as stripe_http_stripeWebhook from "../stripe/http/stripeWebhook.js";
 import type * as stripe_utils_buildCheckoutLineItems from "../stripe/utils/buildCheckoutLineItems.js";
 import type * as stripe_utils_hasInvalidStripeOrderPayment from "../stripe/utils/hasInvalidStripeOrderPayment.js";
@@ -93,6 +95,7 @@ import type * as tables_orders_emails_sendOrderStatusEmail from "../tables/order
 import type * as tables_orders_helpers_createOrderCode from "../tables/orders/helpers/createOrderCode.js";
 import type * as tables_orders_helpers_getOrderQuery from "../tables/orders/helpers/getOrderQuery.js";
 import type * as tables_orders_helpers_toCustomerOrder from "../tables/orders/helpers/toCustomerOrder.js";
+import type * as tables_orders_mutations_applyStripeRefund from "../tables/orders/mutations/applyStripeRefund.js";
 import type * as tables_orders_mutations_createOrder from "../tables/orders/mutations/createOrder.js";
 import type * as tables_orders_mutations_updateOrderAdmin from "../tables/orders/mutations/updateOrderAdmin.js";
 import type * as tables_orders_queries_fetchAllOrdersAdmin from "../tables/orders/queries/fetchAllOrdersAdmin.js";
@@ -100,6 +103,7 @@ import type * as tables_orders_queries_fetchCheckoutOrder from "../tables/orders
 import type * as tables_orders_queries_fetchMyOrder from "../tables/orders/queries/fetchMyOrder.js";
 import type * as tables_orders_queries_fetchMyOrders from "../tables/orders/queries/fetchMyOrders.js";
 import type * as tables_orders_queries_fetchOrderAdmin from "../tables/orders/queries/fetchOrderAdmin.js";
+import type * as tables_orders_queries_fetchOrderForRefund from "../tables/orders/queries/fetchOrderForRefund.js";
 import type * as tables_orders_queries_fetchOrderReceipt from "../tables/orders/queries/fetchOrderReceipt.js";
 import type * as tables_orders_utils_applyOrderFilters from "../tables/orders/utils/applyOrderFilters.js";
 import type * as tables_orders_validators_orderValidators from "../tables/orders/validators/orderValidators.js";
@@ -194,9 +198,11 @@ declare const fullApi: ApiFromModules<{
   "rateLimits/types/rateLimitTypes": typeof rateLimits_types_rateLimitTypes;
   "storage/r2": typeof storage_r2;
   "stripe/actions/createStripeCheckout": typeof stripe_actions_createStripeCheckout;
+  "stripe/actions/refundOrder": typeof stripe_actions_refundOrder;
   "stripe/actions/verifyStripeWebhook": typeof stripe_actions_verifyStripeWebhook;
   "stripe/helpers/applyStripeCheckoutEvent": typeof stripe_helpers_applyStripeCheckoutEvent;
   "stripe/helpers/readPaidCheckout": typeof stripe_helpers_readPaidCheckout;
+  "stripe/helpers/readStripeRefund": typeof stripe_helpers_readStripeRefund;
   "stripe/http/stripeWebhook": typeof stripe_http_stripeWebhook;
   "stripe/utils/buildCheckoutLineItems": typeof stripe_utils_buildCheckoutLineItems;
   "stripe/utils/hasInvalidStripeOrderPayment": typeof stripe_utils_hasInvalidStripeOrderPayment;
@@ -224,6 +230,7 @@ declare const fullApi: ApiFromModules<{
   "tables/orders/helpers/createOrderCode": typeof tables_orders_helpers_createOrderCode;
   "tables/orders/helpers/getOrderQuery": typeof tables_orders_helpers_getOrderQuery;
   "tables/orders/helpers/toCustomerOrder": typeof tables_orders_helpers_toCustomerOrder;
+  "tables/orders/mutations/applyStripeRefund": typeof tables_orders_mutations_applyStripeRefund;
   "tables/orders/mutations/createOrder": typeof tables_orders_mutations_createOrder;
   "tables/orders/mutations/updateOrderAdmin": typeof tables_orders_mutations_updateOrderAdmin;
   "tables/orders/queries/fetchAllOrdersAdmin": typeof tables_orders_queries_fetchAllOrdersAdmin;
@@ -231,6 +238,7 @@ declare const fullApi: ApiFromModules<{
   "tables/orders/queries/fetchMyOrder": typeof tables_orders_queries_fetchMyOrder;
   "tables/orders/queries/fetchMyOrders": typeof tables_orders_queries_fetchMyOrders;
   "tables/orders/queries/fetchOrderAdmin": typeof tables_orders_queries_fetchOrderAdmin;
+  "tables/orders/queries/fetchOrderForRefund": typeof tables_orders_queries_fetchOrderForRefund;
   "tables/orders/queries/fetchOrderReceipt": typeof tables_orders_queries_fetchOrderReceipt;
   "tables/orders/utils/applyOrderFilters": typeof tables_orders_utils_applyOrderFilters;
   "tables/orders/validators/orderValidators": typeof tables_orders_validators_orderValidators;

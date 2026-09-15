@@ -15,8 +15,7 @@
 	import { useCart } from '@/features/cart/hooks/useCart.svelte.js';
 
 	// UTILS
-	import { formatPrice } from '@/shared/features/cart/utils/formatPrice.js';
-	import { calculateOrderTotalInCents } from '@/shared/features/orders/utils/calculateOrders.js';
+	import { calculateOrderTotalInCents, formatPrice } from '@/shared/utils/pricing.js';
 
 	// TYPES
 	import type { MutationValues } from '@/components/ui/custom-components/form/formTypes.js';

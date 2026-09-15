@@ -1,7 +1,7 @@
 // TYPES
 import type { Doc } from '../../../../convex/_generated/dataModel.js';
 
-export type CartProduct = Pick<Doc<'products'>, 'name'> & {
+export type CartProduct = Pick<Doc<'products'>, 'name' | 'compareAtPriceInCents'> & {
 	id: Doc<'products'>['_id'];
 	priceInCents: number;
 };

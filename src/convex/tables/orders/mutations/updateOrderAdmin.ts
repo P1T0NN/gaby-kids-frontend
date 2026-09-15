@@ -57,13 +57,6 @@ export const updateOrderAdmin = adminMutation({
 				if (order.cancelledAt === undefined)
 					await sendOrderStatusEmail(ctx, order, 'cancelled', now);
 				break;
-			case 'request_refund':
-				if (order.paymentStatus === 'refund_pending' || order.paymentStatus === 'refunded')
-					return order;
-				if (order.paymentStatus !== 'paid')
-					throw new ConvexError<BackendErrorData>({ code: 'ORDER_REFUND_UNAVAILABLE' });
-				await ctx.db.patch(data.id, { paymentStatus: 'refund_pending', updatedAt: now });
-				break;
 		}
 
 		await logAuditEvent(ctx, ctx.identity, {
