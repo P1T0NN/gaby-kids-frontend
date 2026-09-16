@@ -19,7 +19,7 @@ export const trackUpsellEvent = mutation({
 		if (!sourceProduct || sourceProduct.status !== 'active') return null;
 
 		if (event === 'product_added') {
-			if (!upsellProductId || !sourceProduct.upsellProductIds?.includes(upsellProductId))
+			if (!upsellProductId || !sourceProduct.upsellProductIds.includes(upsellProductId))
 				return null;
 			const upsellProduct = await ctx.db.get('products', upsellProductId);
 			if (!upsellProduct || upsellProduct.status !== 'active') return null;

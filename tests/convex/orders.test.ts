@@ -42,6 +42,10 @@ test('prepares checkout without orders, then creates one paid snapshot with prot
 			images: [],
 			imageKeys: [],
 			storagePrefix: 'products',
+			trackInventory: true,
+			inventory: 0,
+			reservedInventory: 0,
+			upsellProductIds: [],
 			status: 'active'
 		})
 	);
@@ -166,6 +170,10 @@ test('verified webhook creates an order only after payment and queues emails onc
 			images: [],
 			imageKeys: [],
 			storagePrefix: 'products',
+			trackInventory: true,
+			inventory: 10,
+			reservedInventory: 0,
+			upsellProductIds: [],
 			status: 'active'
 		})
 	);
@@ -183,13 +191,17 @@ test('verified webhook creates an order only after payment and queues emails onc
 		}
 	);
 	vi.stubEnv('PUBLIC_ORIGIN', 'https://shop.test');
-	// SAFETY: this mock only supplies the Session fields read by the checkout action.
-	const openSession = {
-		id: 'cs_open',
-		status: 'open',
-		url: 'https://checkout.stripe.test/session'
-	} as Stripe.Response<Stripe.Checkout.Session>;
-	const createSession = vi.spyOn(stripe.checkout.sessions, 'create').mockResolvedValue(openSession);
+	let sessionNumber = 0;
+	const createSession = vi.spyOn(stripe.checkout.sessions, 'create').mockImplementation(async () => {
+		sessionNumber += 1;
+		// SAFETY: this mock only supplies the Session fields read by the checkout action.
+		return {
+			id: `cs_open_${sessionNumber}`,
+			status: 'open',
+			expires_at: Math.ceil(Date.now() / 1000) + 1800,
+			url: 'https://checkout.stripe.test/session'
+		} as Stripe.Response<Stripe.Checkout.Session>;
+	});
 	const {
 		receiptToken: _receiptToken,
 		customerId: _customerId,
@@ -198,7 +210,7 @@ test('verified webhook creates an order only after payment and queues emails onc
 		...input
 	} = checkout;
 	const buyer = t.withIdentity({ subject: 'buyer', tokenIdentifier: 'issuer|buyer' });
-	// Submit the same cart twice: both requests create a fresh Session, with no order writes.
+	// Submit the same cart twice: both requests create a fresh Session and reservation.
 	const action = api.stripe.actions.createStripeCheckout.createStripeCheckout;
 	await buyer.action(action, {
 		...input,
@@ -211,12 +223,15 @@ test('verified webhook creates an order only after payment and queues emails onc
 	expect(createSession).toHaveBeenCalledTimes(2);
 	expect(createSession.mock.calls[0]).toHaveLength(1);
 	const metadata = createSession.mock.calls[0][0]!.metadata!;
+	const secondMetadata = createSession.mock.calls[1][0]!.metadata!;
 	const receiptToken = String(metadata.receiptToken);
 	expect(createSession.mock.calls[1][0]!.metadata!.receiptToken).not.toBe(receiptToken);
 	expect(await t.run((ctx) => ctx.db.query('orders').collect())).toEqual([]);
+	expect(await t.run((ctx) => ctx.db.query('checkoutReservations').collect())).toHaveLength(2);
+	expect(await t.run((ctx) => ctx.db.get(productId))).toMatchObject({ reservedInventory: 4 });
 	createSession.mockRestore();
 	const session = {
-		id: 'cs_webhook',
+		id: 'cs_open_1',
 		object: 'checkout.session',
 		mode: 'payment',
 		livemode: false,
@@ -307,11 +322,18 @@ test('verified webhook creates an order only after payment and queues emails onc
 		expect(await send('checkout.session.completed', session, false)).toBe(false);
 		await send('checkout.session.expired', {
 			...session,
+			id: 'cs_open_2',
+			metadata: secondMetadata,
 			status: 'expired',
 			payment_status: 'unpaid'
 		});
+		await send('checkout.session.async_payment_failed', {
+			...session,
+			id: 'cs_open_2',
+			metadata: secondMetadata,
+			payment_status: 'unpaid'
+		});
 		await send('checkout.session.completed', { ...session, payment_status: 'unpaid' });
-		await send('checkout.session.async_payment_failed', { ...session, payment_status: 'unpaid' });
 		expect(list).not.toHaveBeenCalled();
 		expect(emails).not.toHaveBeenCalled();
 		expect(await t.run((ctx) => ctx.db.query('orders').collect())).toEqual([]);

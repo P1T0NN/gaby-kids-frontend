@@ -13,6 +13,7 @@
 	// UTILS
 	import { toastMessage } from '@/utils/toastMessage.js';
 	import { formatPrice } from '@/shared/utils/pricing.js';
+	import { getProductAvailability } from '@/shared/features/products/utils/getProductAvailability.js';
 
 	// TYPES
 	import type { CartItem, CartProduct } from '@/shared/features/cart/types/cartTypes.js';
@@ -35,6 +36,13 @@
 
 <ul class="divide-y divide-border">
 	{#each cartItems as item (item.id)}
+		{@const availability = getProductAvailability(item)}
+		{@const counterMax =
+			availability.type === 'available'
+				? availability.quantity
+				: availability.type === 'unlimited'
+					? Number.MAX_SAFE_INTEGER
+					: item.quantity}
 		<li
 			class="grid grid-cols-[5rem_minmax(0,1fr)] gap-x-4 gap-y-4 py-6 first:pt-0 sm:grid-cols-[6rem_minmax(0,1fr)]"
 		>
@@ -61,19 +69,35 @@
 					/>
 					<span>{m['CartFeature.Cart.each']()}</span>
 				</div>
+
+				{#if availability.type === 'sold_out' || availability.type === 'temporarily_unavailable'}
+					<p class="text-xs font-medium text-destructive">
+						{availability.type === 'sold_out'
+							? m['CartFeature.Cart.soldOut']()
+							: m['CartFeature.Cart.temporarilyUnavailable']()}
+					</p>
+				{:else if availability.type === 'available' && availability.quantity < item.quantity}
+					<p class="text-xs text-muted-foreground">
+						{m['CartFeature.Cart.onlyLeft']({ count: availability.quantity })}
+					</p>
+				{/if}
+
 				<p class="mt-auto pt-2 text-lg font-semibold tracking-tight tabular-nums">
 					{formatPrice(item.priceInCents * item.quantity)}
 				</p>
 			</div>
+
 			<div class="col-span-2 flex flex-wrap items-center justify-between gap-3">
 				<div class="rounded-full border border-border bg-background px-2 py-1.5">
 					<Counter
 						value={item.quantity}
+						max={counterMax}
 						decreaseLabel={m['CartFeature.Cart.decreaseQuantity']()}
 						increaseLabel={m['CartFeature.Cart.increaseQuantity']()}
 						onValueChange={(quantity) => cart.setItemQuantity(item.id, quantity)}
 					/>
 				</div>
+				
 				<Button
 					variant="ghost"
 					size="sm"

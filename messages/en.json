@@ -15,6 +15,8 @@
 		"ProductDetails": {
 			"addProduct": "Add {name} to cart",
 			"cartHint": "You can adjust quantities in your cart.",
+			"soldOutHint": "This product is sold out.",
+			"temporarilyUnavailableHint": "Temporarily unavailable — someone is completing checkout right now.",
 			"description": "About this product",
 			"upsells": "Pairs well with"
 		},
@@ -259,6 +261,9 @@
 	"CartFeature": {
 		"Cart": {
 			"addToCart": "Add to cart",
+			"soldOut": "Sold out",
+			"temporarilyUnavailable": "Temporarily unavailable",
+			"onlyLeft": "Only {count} available",
 			"saveError": "Couldn't save your cart. Please try again or allow browser storage.",
 			"title": "Cart",
 			"openCart": "Open shopping cart",
@@ -354,6 +359,10 @@
 		"discountedPrice": "Discounted price (optional)",
 		"discountedPricePlaceholder": "0.00",
 		"discountedPriceDescription": "The price customers pay when discounted. Leave blank to use Price.",
+		"trackInventory": "Track inventory",
+		"trackInventoryDescription": "Turn off for products that can be sold without a stock limit.",
+		"inventory": "Stock on hand",
+		"inventoryDescription": "Physical units available to sell. Reserved units cannot be removed.",
 		"discountPresets": "Discount presets",
 		"customDiscount": "Custom discount (%)",
 		"customDiscountDescription": "Use a multiple of 5, from 5% to 95%.",
@@ -387,6 +396,7 @@
 		"searchPlaceholder": "Search products...",
 		"productColumn": "Product",
 		"priceColumn": "Price",
+		"stockColumn": "Stock",
 		"categoryColumn": "Category",
 		"createdColumn": "Created",
 		"actionsColumn": "Actions",
@@ -397,6 +407,10 @@
 		"emptyDescription": "Create the first product for your catalog.",
 		"addProduct": "Add product",
 		"AdminProductsTableItem": {
+			"stockOnHand": "On hand",
+			"reservedStock": "Reserved",
+			"availableStock": "Available",
+			"unlimitedStock": "Unlimited",
 			"openProductActions": "Open actions for {name}",
 			"editProduct": "Edit product",
 			"deleteProduct": "Delete product",
@@ -992,6 +1006,8 @@
 		"productSlugTaken": "A product with this URL already exists. Choose a different product name.",
 		"productDeleteRestricted": "Only draft products can be permanently deleted.",
 		"productNotFound": "This product could not be found.",
+		"cannotDisableInventoryWithReservations": "Inventory tracking cannot be disabled while units are reserved.",
+		"stockBelowReserved": "Stock on hand cannot be lower than the quantity currently reserved.",
 		"invalidUpsellData": "Choose up to four different products, excluding the source product.",
 		"upsellProductUnavailable": "One of the recommended products is no longer active. Remove it or choose another product.",
 		"invalidOrderData": "Please check the order details and try again.",

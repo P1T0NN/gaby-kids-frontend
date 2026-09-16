@@ -61,6 +61,8 @@ test('reuses one category across products', async () => {
 			name,
 			description: `${name} description.`,
 			priceInCents: 100,
+			trackInventory: true,
+			inventory: 0,
 			categoryId: category._id
 		});
 	}
@@ -72,6 +74,8 @@ test('reuses one category across products', async () => {
 		name: 'Canvas Backpack',
 		description: 'A product in another category.',
 		priceInCents: 100,
+		trackInventory: true,
+		inventory: 0,
 		categoryId: otherCategory._id
 	});
 
@@ -79,10 +83,13 @@ test('reuses one category across products', async () => {
 		api.tables.categories.queries.fetchCategoryOptions.fetchCategoryOptions,
 		{}
 	);
-	const page = await t.query(api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic, {
-		paginationOpts: { numItems: 10, cursor: null },
-		filters: { category: 't-shirts' }
-	});
+	const page = await t.query(
+		api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic,
+		{
+			paginationOpts: { numItems: 10, cursor: null },
+			filters: { category: 't-shirts' }
+		}
+	);
 
 	expect(options.map((option) => option.slug)).toContain('t-shirts');
 	expect(page.items).toEqual([]);
@@ -123,6 +130,8 @@ test('validates category slugs, assignments, and archive behavior', async () => 
 		name: 'Archive-safe product',
 		description: 'Its category assignment is retained when the category is archived.',
 		priceInCents: 100,
+		trackInventory: true,
+		inventory: 0,
 		categoryId: category._id
 	});
 
@@ -136,9 +145,12 @@ test('validates category slugs, assignments, and archive behavior', async () => 
 		api.tables.categories.queries.fetchCategoryOptions.fetchCategoryOptions,
 		{}
 	);
-	const archivedProduct = await admin.query(api.tables.products.queries.fetchProductById.fetchProductById, {
-		id: product._id
-	});
+	const archivedProduct = await admin.query(
+		api.tables.products.queries.fetchProductById.fetchProductById,
+		{
+			id: product._id
+		}
+	);
 
 	expect(options.map((option) => option.slug)).not.toContain('accessories');
 	expect(archivedProduct.categoryId).toBe(category._id);
@@ -235,6 +247,8 @@ test('blocks category deletion while products are assigned and preserves their r
 				name,
 				description: `${name} description.`,
 				priceInCents: 100,
+				trackInventory: true,
+				inventory: 0,
 				categoryId: category._id
 			})
 		);

@@ -12,6 +12,7 @@ import { action } from '../../builders/convexFunctionBuilders.js';
 // CONFIG
 import { env } from '../../_generated/server.js';
 import { STRIPE_CHECKOUT_CAPTCHA_ACTION } from '../../../shared/features/captcha/config.js';
+import { ORDER_CONFIG } from '../../../shared/features/orders/config.js';
 import { stripe } from '../stripe.config.js';
 
 // HELPERS
@@ -37,14 +38,17 @@ export const createStripeCheckout = action({
 
 		// Guest receipt credential, not a checkout retry/idempotency key.
 		const receiptToken = randomUUID();
-		const checkout = await ctx.runQuery(
-			internal.tables.orders.queries.fetchCheckoutOrder.fetchCheckoutOrder,
+		const reservation = await ctx.runMutation(
+			internal.tables.checkoutReservations.mutations.createCheckoutReservation
+				.createCheckoutReservation,
 			{ ...orderArgs, receiptToken }
 		);
+		const { checkout } = reservation;
 		const successUrl = new URL('/checkout/success', env.PUBLIC_ORIGIN);
 		successUrl.searchParams.set('key', receiptToken);
 		const address = checkout.shippingAddress;
 		const metadata = {
+			reservationId: reservation.reservationId,
 			receiptToken,
 			customerId: checkout.customerId ?? '',
 			firstName: checkout.firstName,
@@ -61,22 +65,53 @@ export const createStripeCheckout = action({
 			totalInCents: String(checkout.totalInCents),
 			itemCount: String(checkout.items.length)
 		};
-		if (Object.values(metadata).some((value) => value.length > 500))
-			throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
 
-		const session = await stripe.checkout.sessions.create({
-			mode: 'payment',
-			adaptive_pricing: { enabled: false },
-			integration_identifier: 'convex_checkout_hxqplmzr',
-			customer_email: checkout.email,
-			line_items: buildCheckoutLineItems(checkout.currency.toLowerCase(), checkout.items),
-			metadata,
-			success_url: successUrl.toString() + '&session_id={CHECKOUT_SESSION_ID}',
-			cancel_url: new URL('/checkout', env.PUBLIC_ORIGIN).toString()
-		});
+		let session: Awaited<ReturnType<typeof stripe.checkout.sessions.create>> | undefined;
+		try {
+			if (Object.values(metadata).some((value) => value.length > 500))
+				throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
+			const stripeExpiresAt = Math.max(
+				Math.ceil(reservation.expiresAt / 1000),
+				Math.floor(Date.now() / 1000) + ORDER_CONFIG.checkoutReservationMinutes * 60
+			);
 
-		if (session.status !== 'open' || session.url === null)
-			throw new ConvexError<BackendErrorData>({ code: 'ORDER_PAYMENT_UNAVAILABLE' });
-		return { checkoutUrl: session.url };
+			session = await stripe.checkout.sessions.create({
+				mode: 'payment',
+				adaptive_pricing: { enabled: false },
+				integration_identifier: 'convex_checkout_hxqplmzr',
+				customer_email: checkout.email,
+				line_items: buildCheckoutLineItems(checkout.currency.toLowerCase(), checkout.items),
+				expires_at: stripeExpiresAt,
+				metadata,
+				success_url: successUrl.toString() + '&session_id={CHECKOUT_SESSION_ID}',
+				cancel_url: new URL('/checkout', env.PUBLIC_ORIGIN).toString()
+			});
+
+			if (session.status !== 'open' || session.url === null)
+				throw new ConvexError<BackendErrorData>({ code: 'ORDER_PAYMENT_UNAVAILABLE' });
+
+			await ctx.runMutation(
+				internal.tables.checkoutReservations.mutations.associateStripeCheckoutSession
+					.associateStripeCheckoutSession,
+				{
+					reservationId: reservation.reservationId,
+					stripeCheckoutSessionId: session.id,
+					expiresAt: session.expires_at * 1000
+				}
+			);
+			return { checkoutUrl: session.url };
+		} catch (error) {
+			await ctx
+				.runMutation(
+					internal.tables.checkoutReservations.mutations.releaseCheckoutReservation
+						.releaseCheckoutReservation,
+					{ reservationId: reservation.reservationId }
+				)
+				.catch(() => undefined);
+			if (session?.status === 'open') {
+				await stripe.checkout.sessions.expire(session.id).catch(() => undefined);
+			}
+			throw error;
+		}
 	}
 });

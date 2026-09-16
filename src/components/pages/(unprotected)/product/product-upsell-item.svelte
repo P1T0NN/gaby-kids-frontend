@@ -10,6 +10,9 @@
 	// CONFIG
 	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
 
+	// UTILS
+	import { getProductAvailability } from '@/shared/features/products/utils/getProductAvailability.js';
+
 	// TYPES
 	import type { Doc } from '@convex/_generated/dataModel';
 
@@ -19,12 +22,21 @@
 	}: {
 		product: Pick<
 			Doc<'products'>,
-			'_id' | 'name' | 'slug' | 'priceInCents' | 'compareAtPriceInCents' | 'images'
+			| '_id'
+			| 'name'
+			| 'slug'
+			| 'priceInCents'
+			| 'compareAtPriceInCents'
+			| 'images'
+			| 'trackInventory'
+			| 'inventory'
+			| 'reservedInventory'
 		>;
 		disabled?: boolean;
 	} = $props();
 	let failedImage = $state<string | null>(null);
 	const image = $derived(product.images[0]);
+	const availability = $derived(getProductAvailability(product));
 </script>
 
 <li class="flex items-center gap-3">
@@ -64,6 +76,7 @@
 		item={{ id: product._id, image: image ?? '' }}
 		name={product.name}
 		{disabled}
+		{availability}
 		variant="outline"
 		class="min-h-11 shrink-0"
 		aria-label={m['ProductPage.ProductUpsellItem.addProduct']({ name: product.name })}

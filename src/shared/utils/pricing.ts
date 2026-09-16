@@ -1,8 +1,8 @@
 // LIBRARIES
-import { getLocale } from '@/lib/paraglide/runtime';
+import { getLocale } from '../../lib/paraglide/runtime.js';
 
 // CONFIG
-import { COMPANY_DATA } from '@/shared/config.js';
+import { COMPANY_DATA } from '../config.js';
 
 export type PriceInput = string | number | boolean | null | undefined;
 

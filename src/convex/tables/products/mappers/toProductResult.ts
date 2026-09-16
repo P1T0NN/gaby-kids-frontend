@@ -23,7 +23,10 @@ export const toProductResult = async (product: Product): Promise<ProductResult> 
 		images: await resolveStoredFileUrls(product.imageKeys ?? product.images),
 		imageKeys: product.imageKeys ?? product.images,
 		storagePrefix: product.storagePrefix,
-		upsellProductIds: product.upsellProductIds ?? [],
+		trackInventory: product.trackInventory,
+		inventory: product.inventory,
+		reservedInventory: product.reservedInventory,
+		upsellProductIds: product.upsellProductIds,
 		status: product.status
 	};
 

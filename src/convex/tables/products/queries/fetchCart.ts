@@ -8,6 +8,9 @@ import { CART_CONFIG } from '../../../../shared/features/cart/config.js';
 // HELPERS
 import { getProductsById } from '../helpers/getProductsById.js';
 
+// TYPES
+import type { CartProduct } from '../../../../shared/features/cart/types/cartTypes.js';
+
 export const fetchCart = query({
 	args: { ids: v.array(v.string()) },
 	returns: v.object({
@@ -16,7 +19,10 @@ export const fetchCart = query({
 				id: v.id('products'),
 				name: v.string(),
 				priceInCents: v.number(),
-				compareAtPriceInCents: v.optional(v.number())
+				compareAtPriceInCents: v.optional(v.number()),
+				trackInventory: v.boolean(),
+				inventory: v.number(),
+				reservedInventory: v.number()
 			})
 		),
 		invalidIds: v.array(v.string())
@@ -28,12 +34,7 @@ export const fetchCart = query({
 
 		const found = await getProductsById(ctx, uniqueIds);
 
-		const products: {
-			id: NonNullable<(typeof found)[number]>['_id'];
-			name: string;
-			priceInCents: number;
-			compareAtPriceInCents?: number;
-		}[] = [];
+		const products: CartProduct[] = [];
 
 		const invalidIds: string[] = [];
 
@@ -44,7 +45,10 @@ export const fetchCart = query({
 				const cartProduct = {
 					id: product._id,
 					name: product.name,
-					priceInCents: product.priceInCents ?? 0
+					priceInCents: product.priceInCents ?? 0,
+					trackInventory: product.trackInventory,
+					inventory: product.inventory,
+					reservedInventory: product.reservedInventory
 				};
 				products.push(
 					product.compareAtPriceInCents === undefined

@@ -19,7 +19,10 @@ export const productResult = v.object({
 	images: v.array(v.string()),
 	imageKeys: v.array(v.string()),
 	storagePrefix: v.string(),
-	upsellProductIds: v.optional(v.array(v.id('products'))),
+	trackInventory: v.boolean(),
+	inventory: v.number(),
+	reservedInventory: v.number(),
+	upsellProductIds: v.array(v.id('products')),
 	status: productStatus
 });
 
@@ -35,7 +38,10 @@ export const storefrontUpsellResult = productResult.pick(
 	'slug',
 	'priceInCents',
 	'compareAtPriceInCents',
-	'images'
+	'images',
+	'trackInventory',
+	'inventory',
+	'reservedInventory'
 );
 
 export const storefrontProductDetailResult = storefrontProductResult.extend({

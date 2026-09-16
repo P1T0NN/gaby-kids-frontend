@@ -34,6 +34,10 @@ test('cart returns names and identifies missing, malformed, wrong-table and unpu
 					images: [],
 					imageKeys: [],
 					storagePrefix: 'products',
+					trackInventory: true,
+					inventory: 0,
+					reservedInventory: 0,
+					upsellProductIds: [],
 					status
 				})
 			);
@@ -46,8 +50,22 @@ test('cart returns names and identifies missing, malformed, wrong-table and unpu
 		ids: [...ids.products, 'invalid', ids.categoryId, ids.products[0]]
 	});
 	expect(result.products).toEqual([
-		{ id: ids.products[0], name: 'Product 0', priceInCents: 100 },
-		{ id: ids.products[1], name: 'Product 1', priceInCents: 100 }
+		{
+			id: ids.products[0],
+			name: 'Product 0',
+			priceInCents: 100,
+			trackInventory: true,
+			inventory: 0,
+			reservedInventory: 0
+		},
+		{
+			id: ids.products[1],
+			name: 'Product 1',
+			priceInCents: 100,
+			trackInventory: true,
+			inventory: 0,
+			reservedInventory: 0
+		}
 	]);
 	expect(result.invalidIds).toEqual([...ids.products.slice(2), 'invalid', ids.categoryId]);
 	expect(await t.query(query, { ids: [] })).toEqual({ products: [], invalidIds: [] });
@@ -77,6 +95,10 @@ test('shop filters combine with search and pagination without exposing unpublish
 				images: [],
 				imageKeys: [],
 				storagePrefix: 'products',
+				trackInventory: true,
+				inventory: 0,
+				reservedInventory: 0,
+				upsellProductIds: [],
 				status: 'active'
 			})
 		);
@@ -92,6 +114,10 @@ test('shop filters combine with search and pagination without exposing unpublish
 					images: ['https://example.com/photo.jpg'],
 					imageKeys: ['https://example.com/photo.jpg'],
 					storagePrefix: 'products',
+					trackInventory: true,
+					inventory: 0,
+					reservedInventory: 0,
+					upsellProductIds: [],
 					status
 				});
 			}
@@ -104,6 +130,10 @@ test('shop filters combine with search and pagination without exposing unpublish
 				images: ['https://example.com/old.jpg'],
 				imageKeys: [],
 				storagePrefix: 'products',
+				trackInventory: true,
+				inventory: 0,
+				reservedInventory: 0,
+				upsellProductIds: [],
 				status: 'active'
 			});
 			await ctx.db.insert('products', {
@@ -115,6 +145,10 @@ test('shop filters combine with search and pagination without exposing unpublish
 				images: [],
 				imageKeys: [],
 				storagePrefix: 'products',
+				trackInventory: true,
+				inventory: 0,
+				reservedInventory: 0,
+				upsellProductIds: [],
 				status: 'active'
 			});
 		});
@@ -185,6 +219,8 @@ test('allows only admins to create and list valid products', async () => {
 			name: 'Forbidden product',
 			description: 'Users cannot create products.',
 			priceInCents: 100,
+			trackInventory: true,
+			inventory: 0,
 			categoryId: category._id
 		})
 	).rejects.toMatchObject({ data: { code: 'FORBIDDEN' } });
@@ -194,6 +230,8 @@ test('allows only admins to create and list valid products', async () => {
 			name: '',
 			description: 'A product name is required.',
 			priceInCents: 100,
+			trackInventory: true,
+			inventory: 0,
 			categoryId: category._id
 		})
 	).rejects.toMatchObject({ data: { code: 'INVALID_PRODUCT_DATA' } });
@@ -202,6 +240,8 @@ test('allows only admins to create and list valid products', async () => {
 		name: 'Canvas backpack',
 		description: 'A durable everyday backpack.',
 		priceInCents: 100,
+		trackInventory: true,
+		inventory: 5,
 		categoryId: category._id
 	});
 	const page = await admin.query(
@@ -215,13 +255,17 @@ test('allows only admins to create and list valid products', async () => {
 		name: 'Canvas backpack',
 		slug: 'canvas-backpack',
 		images: [],
-		imageKeys: []
+		imageKeys: [],
+		trackInventory: true,
+		inventory: 5,
+		reservedInventory: 0
 	});
 	const createdFoundation = await t.run(async (ctx) => {
 		const product = await ctx.db.get(created._id);
 		return { product };
 	});
 	expect(createdFoundation.product).toMatchObject({
+		trackInventory: true,
 		status: 'draft'
 	});
 	expect(page.total).toBe(1);
@@ -243,18 +287,47 @@ test('allows only admins to create and list valid products', async () => {
 		}
 	);
 	expect(publicPage).toMatchObject({ items: [], total: 0 });
+	await t.run((ctx) => ctx.db.patch(created._id, { reservedInventory: 1 }));
+	await expect(
+		admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
+			id: created._id,
+			name: created.name,
+			description: created.description,
+			priceInCents: created.priceInCents,
+			trackInventory: false,
+			inventory: 0,
+			categoryId: category._id
+		})
+	).rejects.toMatchObject({
+		data: { code: 'CANNOT_DISABLE_INVENTORY_WITH_RESERVATIONS' }
+	});
+	await expect(
+		admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
+			id: created._id,
+			name: created.name,
+			description: created.description,
+			priceInCents: created.priceInCents,
+			trackInventory: true,
+			inventory: 0,
+			categoryId: category._id
+		})
+	).rejects.toMatchObject({ data: { code: 'STOCK_BELOW_RESERVED' } });
+	await t.run((ctx) => ctx.db.patch(created._id, { reservedInventory: 0 }));
 
 	const updated = await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
 		id: created._id,
 		name: 'Updated canvas backpack',
 		description: created.description,
 		priceInCents: created.priceInCents,
+		trackInventory: false,
+		inventory: created.inventory,
 		categoryId: category._id,
 		retainedFiles: []
 	});
 	expect(updated).toMatchObject({
 		name: 'Updated canvas backpack',
-		imageKeys: []
+		imageKeys: [],
+		trackInventory: false
 	});
 
 	await expect(
@@ -294,6 +367,8 @@ test('rejects invalid product details without creating products or consuming upl
 		ctx.db.insert('storageUploads', {
 			ownerId: 'invalid-admin',
 			key: imageKey,
+			expectedSize: 1,
+			expectedContentType: 'image/webp',
 			status: 'uploaded',
 			createdAt: Date.now()
 		})
@@ -302,6 +377,8 @@ test('rejects invalid product details without creating products or consuming upl
 		name: 'Invalid product',
 		description: 'Must roll back',
 		priceInCents: 100,
+		trackInventory: true,
+		inventory: 0,
 		categoryId: category._id,
 		uploadedFiles: [imageKey]
 	};
@@ -351,6 +428,8 @@ test('rejects duplicate slugs, unavailable categories, foreign uploads, and unau
 		name: 'Same name',
 		description: 'Guarded product',
 		priceInCents: 100,
+		trackInventory: true,
+		inventory: 0,
 		categoryId: category._id
 	};
 	await expect(
@@ -373,6 +452,8 @@ test('rejects duplicate slugs, unavailable categories, foreign uploads, and unau
 		ctx.db.insert('storageUploads', {
 			ownerId: 'guard-admin',
 			key: 'categories/foreign',
+			expectedSize: 1,
+			expectedContentType: 'image/webp',
 			status: 'uploaded',
 			createdAt: Date.now()
 		})

@@ -30,6 +30,8 @@ export const saveProduct = adminUploadMutation({
 		name: v.string(),
 		description: v.string(),
 		priceInCents: v.number(),
+		trackInventory: v.boolean(),
+		inventory: v.number(),
 		compareAtPriceInCents: v.optional(v.number()),
 		categoryId: v.id('categories'),
 		status: v.optional(productStatus)
@@ -42,9 +44,18 @@ export const saveProduct = adminUploadMutation({
 		}
 
 		const input = parsed.data;
-		
+
 		const product = args.id ? await ctx.db.get(args.id) : null;
 		if (args.id && !product) throw new ConvexError<BackendErrorData>({ code: 'PRODUCT_NOT_FOUND' });
+		const reservedInventory = product ? product.reservedInventory : 0;
+		if (!input.trackInventory && reservedInventory > 0) {
+			throw new ConvexError<BackendErrorData>({
+				code: 'CANNOT_DISABLE_INVENTORY_WITH_RESERVATIONS'
+			});
+		}
+		if (input.trackInventory && input.inventory < reservedInventory) {
+			throw new ConvexError<BackendErrorData>({ code: 'STOCK_BELOW_RESERVED' });
+		}
 
 		const status = input.status ?? product?.status ?? 'draft';
 
@@ -95,6 +106,10 @@ export const saveProduct = adminUploadMutation({
 			images: await resolveStoredFileUrls(imageKeys),
 			imageKeys,
 			storagePrefix: product?.storagePrefix ?? 'products',
+			trackInventory: input.trackInventory,
+			inventory: input.inventory,
+			reservedInventory,
+			upsellProductIds: product ? product.upsellProductIds : [],
 			status
 		};
 
@@ -113,6 +128,14 @@ export const saveProduct = adminUploadMutation({
 			severity: 'info'
 		});
 
-		return { ...(await ctx.db.get(productId))!, priceInCents, imageKeys };
+		return {
+			...(await ctx.db.get(productId))!,
+			priceInCents,
+			imageKeys,
+			trackInventory: input.trackInventory,
+			inventory: input.inventory,
+			reservedInventory,
+			upsellProductIds: fields.upsellProductIds
+		};
 	}
 });

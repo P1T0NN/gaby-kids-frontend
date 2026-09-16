@@ -3,6 +3,10 @@ import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
 import { productStatus } from './tables/products/validators/productValidators.js';
+import {
+	checkoutReservationStatus,
+	reservedCheckoutItem
+} from './tables/checkoutReservations/validators/checkoutReservationValidators.js';
 
 export const tables = {
 	categories: defineTable({
@@ -24,13 +28,26 @@ export const tables = {
 		images: v.array(v.string()),
 		imageKeys: v.array(v.string()),
 		storagePrefix: v.string(),
-		upsellProductIds: v.optional(v.array(v.id('products'))),
+		trackInventory: v.boolean(),
+		inventory: v.number(),
+		reservedInventory: v.number(),
+		upsellProductIds: v.array(v.id('products')),
 		status: productStatus
 	})
 		.searchIndex('search_name', { searchField: 'name', filterFields: ['status'] })
 		.index('by_slug', ['slug'])
 		.index('by_category_id', ['categoryId'])
 		.index('by_status', ['status']),
+	checkoutReservations: defineTable({
+		status: checkoutReservationStatus,
+		expiresAt: v.number(),
+		stripeCheckoutSessionId: v.optional(v.string()),
+		currency: v.string(),
+		totalInCents: v.number(),
+		items: v.array(reservedCheckoutItem)
+	})
+		.index('by_stripe_checkout_session_id', ['stripeCheckoutSessionId'])
+		.index('by_status_and_expires_at', ['status', 'expiresAt']),
 	orders: defineTable({
 		customerId: v.optional(v.string()),
 		code: v.string(),
@@ -96,8 +113,8 @@ export const tables = {
 	storageUploads: defineTable({
 		ownerId: v.string(),
 		key: v.string(),
-		expectedSize: v.optional(v.number()),
-		expectedContentType: v.optional(v.string()),
+		expectedSize: v.number(),
+		expectedContentType: v.string(),
 		status: literals('pending', 'uploaded'),
 		createdAt: v.number()
 	})

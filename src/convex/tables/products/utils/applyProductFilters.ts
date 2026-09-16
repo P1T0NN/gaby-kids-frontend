@@ -5,13 +5,9 @@ import type { ProductQuery } from '../../../../shared/features/products/types/pr
 export function applyProductFilters(query: ProductQuery, filters: ConvexFilter[]): ProductQuery {
 	for (const filter of filters) {
 		if (filter.field === 'hasUpsells') {
-			query = query.filter((q) => {
-				const noUpsells = q.or(
-					q.eq(q.field('upsellProductIds'), undefined),
-					q.eq(q.field('upsellProductIds'), [])
-				);
-				return filter.eq ? q.not(noUpsells) : noUpsells;
-			});
+			query = query.filter((q) =>
+				filter.eq ? q.neq(q.field('upsellProductIds'), []) : q.eq(q.field('upsellProductIds'), [])
+			);
 		}
 		if (filter.field === 'hasImages') {
 			query = query.filter((q) => {

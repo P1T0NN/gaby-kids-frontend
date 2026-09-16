@@ -87,6 +87,30 @@
 		compareAtPriceInCents={product.compareAtPriceInCents}
 	/>
 </TableCell>
+<TableCell>
+	{#if product.trackInventory ?? true}
+		<dl class="grid min-w-32 grid-cols-[auto_auto] gap-x-3 text-xs">
+			<dt class="text-muted-foreground">
+				{m['AdminProductsPage.AdminProductsTableItem.stockOnHand']()}
+			</dt>
+			<dd class="text-right tabular-nums">{product.inventory ?? 0}</dd>
+			<dt class="text-muted-foreground">
+				{m['AdminProductsPage.AdminProductsTableItem.reservedStock']()}
+			</dt>
+			<dd class="text-right tabular-nums">{product.reservedInventory ?? 0}</dd>
+			<dt class="font-medium">
+				{m['AdminProductsPage.AdminProductsTableItem.availableStock']()}
+			</dt>
+			<dd class="text-right font-medium tabular-nums">
+				{(product.inventory ?? 0) - (product.reservedInventory ?? 0)}
+			</dd>
+		</dl>
+	{:else}
+		<span class="text-sm text-muted-foreground">
+			{m['AdminProductsPage.AdminProductsTableItem.unlimitedStock']()}
+		</span>
+	{/if}
+</TableCell>
 <TableCell class="max-w-48 truncate">{product.categoryOption.name}</TableCell>
 <TableCell class="hidden whitespace-nowrap text-muted-foreground md:table-cell">
 	{formatDate(product._creationTime, getLocale())}

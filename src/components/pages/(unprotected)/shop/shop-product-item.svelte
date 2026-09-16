@@ -2,15 +2,18 @@
 	// LIBRARIES
 	import { m } from '@/lib/paraglide/messages';
 
+	// CONFIG
+	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
+	import { PRODUCTS_CONFIG } from '@/shared/features/products/config.js';
+
 	// COMPONENTS
 	import * as Card from '@/components/ui/card/index.js';
 	import AddToCartButton from '@/features/cart/components/add-to-cart-button.svelte';
 	import ProductPrice from '@/features/products/components/product-price.svelte';
 	import Link from '@/components/ui/custom-components/link/link.svelte';
 
-	// CONFIG
-	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
-	import { PRODUCTS_CONFIG } from '@/shared/features/products/config.js';
+	// UTILS
+	import { getProductAvailability } from '@/shared/features/products/utils/getProductAvailability.js';
 
 	// TYPES
 	import type { Doc } from '@convex/_generated/dataModel';
@@ -20,6 +23,7 @@
 	let failedImage = $state<string | null>(null);
 
 	const image = $derived(product.images[0]);
+	const availability = $derived(getProductAvailability(product));
 </script>
 
 {#snippet productContent()}
@@ -74,6 +78,7 @@
 			name={product.name}
 			showUpsellsAfterAdd={Boolean(product.upsellProductIds?.length)}
 			aria-label={m['ShopPage.ShopProductItem.addProduct']({ name: product.name })}
+			{availability}
 			class="w-full"
 			size="lg"
 		/>

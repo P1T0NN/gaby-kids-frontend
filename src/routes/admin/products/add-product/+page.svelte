@@ -37,7 +37,9 @@
 
 	let values = $state<MutationValues<typeof api.tables.products.mutations.saveProduct.saveProduct>>(
 		{
-			active: true
+			active: true,
+			trackInventory: true,
+			inventory: 0
 		}
 	);
 
@@ -81,6 +83,24 @@
 						type: 'number',
 						min: 0.01,
 						step: 0.01
+					},
+					{
+						kind: 'switch',
+						name: 'trackInventory',
+						label: m['AddProductPage.trackInventory'](),
+						description: m['AddProductPage.trackInventoryDescription']()
+					},
+					{
+						kind: 'input',
+						name: 'inventory',
+						label: m['AddProductPage.inventory'](),
+						description: m['AddProductPage.inventoryDescription'](),
+						type: 'number',
+						min: 0,
+						max: Number.MAX_SAFE_INTEGER,
+						step: 1,
+						required: true,
+						disabled: values.trackInventory === false
 					},
 					{
 						kind: 'custom',
@@ -155,6 +175,8 @@
 				priceInCents: discountedPriceInCents ?? regularPriceInCents,
 				compareAtPriceInCents:
 					discountedPriceInCents === undefined ? undefined : regularPriceInCents,
+				trackInventory: values.trackInventory !== false,
+				inventory: Number(values.inventory),
 				// SAFETY: the shared schema and Convex validate the selected category ID.
 				categoryId: categoryId as Id<'categories'>,
 				status: values.active ? ('active' as const) : ('draft' as const)

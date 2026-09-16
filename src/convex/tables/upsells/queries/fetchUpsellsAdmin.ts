@@ -21,7 +21,7 @@ export const fetchUpsellsAdmin = fetchOptimizedQuery({
 			page.items.map(async (product) => ({
 				product,
 				upsells: await Promise.all(
-					(product.upsellProductIds ?? []).map(async (productId) => {
+					product.upsellProductIds.map(async (productId) => {
 						const upsell = await ctx.db.get('products', productId);
 						return {
 							productId,

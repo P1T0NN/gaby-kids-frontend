@@ -21,9 +21,9 @@ export const fetchUpsellForEdit = adminQuery({
 		if (!product) throw new ConvexError<BackendErrorData>({ code: 'PRODUCT_NOT_FOUND' });
 
 		const upsells = await Promise.all(
-			(product.upsellProductIds ?? []).map((id) => ctx.db.get('products', id))
+			product.upsellProductIds.map((id) => ctx.db.get('products', id))
 		);
-		
+
 		const activeUpsells = upsells.filter(
 			(upsell): upsell is NonNullable<(typeof upsells)[number]> =>
 				upsell !== null && upsell.status === 'active'

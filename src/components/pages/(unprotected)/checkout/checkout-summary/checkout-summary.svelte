@@ -20,6 +20,7 @@
 		calculateOrderTotalInCents,
 		formatPrice
 	} from '@/shared/utils/pricing.js';
+	import { getProductAvailability } from '@/shared/features/products/utils/getProductAvailability.js';
 
 	// TYPES
 	import type { MutationValues } from '@/components/ui/custom-components/form/formTypes.js';
@@ -62,6 +63,16 @@
 	const totalSavingsInCents = $derived(calculateOrderSavingsInCents(pricingItems));
 
 	const loading = $derived(!cart.loaded || products.isLoading || products.isStale);
+
+	const unavailableItems = $derived(
+		items.filter((item) => {
+			const availability = getProductAvailability(item);
+			return availability.type === 'sold_out' || availability.type === 'temporarily_unavailable';
+		})
+	);
+	const unavailableIds = $derived(
+		[...new Set([...(products.data?.invalidIds ?? []), ...unavailableItems.map((item) => item.id)])]
+	);
 </script>
 
 <aside
@@ -80,12 +91,12 @@
 		/>
 	{:else if loading}
 		<CheckoutSummaryLoading />
-	{:else if products.data?.invalidIds.length}
+	{:else if unavailableIds.length}
 		<p role="alert" class="mb-4 text-sm">{m['CheckoutPage.CheckoutSummary.unavailable']()}</p>
 		<Button
 			variant="outline"
 			class="h-auto min-h-11 whitespace-normal"
-			onclick={() => cart.removeInvalidItems(products.data?.invalidIds ?? [])}
+			onclick={() => cart.removeInvalidItems(unavailableIds)}
 			>{m['CheckoutPage.CheckoutSummary.removeUnavailable']()}</Button
 		>
 	{:else}
@@ -128,7 +139,7 @@
 	<Button
 		type="submit"
 		form="checkout-form"
-		disabled={loading || submitting || cart.items.length === 0}
+		disabled={loading || submitting || cart.items.length === 0 || unavailableIds.length > 0}
 		class="mt-6 h-12 w-full"
 		aria-describedby="payment-status"
 	>

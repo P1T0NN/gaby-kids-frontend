@@ -31,6 +31,10 @@ export function getBackendErrorMessage(error: Error): string | undefined {
 			return m['BackendMessages.productSlugTaken']();
 		case 'PRODUCT_DELETE_RESTRICTED':
 			return m['BackendMessages.productDeleteRestricted']();
+		case 'CANNOT_DISABLE_INVENTORY_WITH_RESERVATIONS':
+			return m['BackendMessages.cannotDisableInventoryWithReservations']();
+		case 'STOCK_BELOW_RESERVED':
+			return m['BackendMessages.stockBelowReserved']();
 		case 'INVALID_ORDER_DATA':
 			return m['BackendMessages.invalidOrderData']();
 		case 'ORDER_PRODUCT_UNAVAILABLE':

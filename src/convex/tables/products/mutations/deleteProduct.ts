@@ -23,7 +23,7 @@ export const deleteProduct = adminMutation({
 		if (!product) {
 			throw new ConvexError<BackendErrorData>({ code: 'PRODUCT_NOT_FOUND' });
 		}
-		if (product.status !== 'draft') {
+		if (product.status !== 'draft' || product.reservedInventory > 0) {
 			throw new ConvexError<BackendErrorData>({ code: 'PRODUCT_DELETE_RESTRICTED' });
 		}
 

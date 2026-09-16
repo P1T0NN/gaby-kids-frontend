@@ -19,11 +19,11 @@ export async function getStorefrontUpsells(
 	product: Doc<'products'>
 ): Promise<StorefrontUpsell[]> {
 	const recommendations = await Promise.all(
-		(product.upsellProductIds ?? [])
+		product.upsellProductIds
 			.slice(0, UPSELLS_CONFIG.maxProducts)
 			.map((id) => ctx.db.get('products', id))
 	);
-	
+
 	const activeRecommendations = recommendations.filter(
 		(upsell): upsell is NonNullable<typeof upsell> =>
 			upsell !== null && upsell.status === 'active' && upsell._id !== product._id
@@ -36,7 +36,10 @@ export async function getStorefrontUpsells(
 				name: upsell.name,
 				slug: upsell.slug,
 				priceInCents: upsell.priceInCents,
-				images: await resolveStoredFileUrls((upsell.imageKeys ?? upsell.images).slice(0, 1))
+				images: await resolveStoredFileUrls((upsell.imageKeys ?? upsell.images).slice(0, 1)),
+				trackInventory: upsell.trackInventory,
+				inventory: upsell.inventory,
+				reservedInventory: upsell.reservedInventory
 			};
 
 			if (upsell.compareAtPriceInCents === undefined) return result;

@@ -31,6 +31,10 @@ test('product detail resolves bounded, ordered, active recommendations for guest
 					images: [],
 					imageKeys: ['https://example.com/first.jpg', 'https://example.com/second.jpg'],
 					storagePrefix: 'products',
+					trackInventory: true,
+					inventory: 0,
+					reservedInventory: 0,
+					upsellProductIds: [],
 					status: 'active'
 				})
 			);
@@ -52,7 +56,10 @@ test('product detail resolves bounded, ordered, active recommendations for guest
 			name: `Product ${index}`,
 			slug: `detail-${index}`,
 			priceInCents: 1200 + index,
-			images: ['https://example.com/first.jpg']
+			images: ['https://example.com/first.jpg'],
+			trackInventory: true,
+			inventory: 0,
+			reservedInventory: 0
 		}))
 	);
 	expect((await t.query(upsellsQuery, { productId: ids[0] })).map((item) => item._id)).toEqual([
@@ -105,6 +112,10 @@ test('admins manage ordered upsells and edit data stays consistent', async () =>
 					images: [],
 					imageKeys: [],
 					storagePrefix: 'products',
+					trackInventory: true,
+					inventory: 0,
+					reservedInventory: 0,
+					upsellProductIds: [],
 					status: index === 6 ? 'draft' : 'active'
 				})
 			);
@@ -201,6 +212,10 @@ test('storefront upsell events track only valid product relationships', async ()
 					images: [],
 					imageKeys: [],
 					storagePrefix: 'products',
+					trackInventory: true,
+					inventory: 0,
+					reservedInventory: 0,
+					upsellProductIds: [],
 					status: 'active'
 				})
 			)

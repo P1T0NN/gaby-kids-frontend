@@ -7,6 +7,9 @@
 	import AddToCartButton from '@/features/cart/components/add-to-cart-button.svelte';
 	import ProductUpsellItem from './product-upsell-item.svelte';
 
+	// UTILS
+	import { getProductAvailability } from '@/shared/features/products/utils/getProductAvailability.js';
+
 	// TYPES
 	import type { FunctionReturnType } from 'convex/server';
 	import type { api } from '@convex/_generated/api';
@@ -20,6 +23,15 @@
 		>;
 		disabled?: boolean;
 	} = $props();
+
+	const availability = $derived(getProductAvailability(product));
+	const hint = $derived(
+		availability.type === 'sold_out'
+			? m['ProductPage.ProductDetails.soldOutHint']()
+			: availability.type === 'temporarily_unavailable'
+				? m['ProductPage.ProductDetails.temporarilyUnavailableHint']()
+				: m['ProductPage.ProductDetails.cartHint']()
+	);
 </script>
 
 <div class="flex min-w-0 flex-col gap-8 lg:col-start-2 lg:row-start-2">
@@ -30,12 +42,13 @@
 			openCartAfterAdd
 			showUpsellsAfterAdd={product.upsells.length > 0}
 			{disabled}
+			{availability}
 			size="lg"
 			class="h-14 w-full"
 			aria-label={m['ProductPage.ProductDetails.addProduct']({ name: product.name })}
 		/>
 		<p class="text-center text-sm text-muted-foreground">
-			{m['ProductPage.ProductDetails.cartHint']()}
+			{hint}
 		</p>
 	</div>
 

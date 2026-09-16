@@ -15,6 +15,7 @@
 	// TYPES
 	import type { Snippet } from 'svelte';
 	import type { CartItem } from '@/shared/features/cart/types/cartTypes.js';
+	import type { ProductAvailability } from '@/shared/features/products/types/productsTypes.js';
 	import type { Id } from '@convex/_generated/dataModel.js';
 
 	type Props = Omit<ButtonProps, 'children' | 'onclick' | 'href' | 'type'> & {
@@ -25,6 +26,7 @@
 		showUpsellsAfterAdd?: boolean;
 		toasterId?: string;
 		onAdded?: () => void;
+		availability?: ProductAvailability;
 	};
 
 	let {
@@ -36,11 +38,27 @@
 		toasterId,
 		onAdded,
 		disabled = false,
+		availability = { type: 'unlimited' },
+		'aria-label': ariaLabel,
 		...restProps
 	}: Props = $props();
 
 	const cart = useCart();
 	const openUpsells = getOpenUpsells();
+
+	const isUnavailable = $derived(
+		availability.type === 'sold_out' || availability.type === 'temporarily_unavailable'
+	);
+	const unavailableLabel = $derived(
+		availability.type === 'sold_out'
+			? m['CartFeature.Cart.soldOut']()
+			: availability.type === 'temporarily_unavailable'
+				? m['CartFeature.Cart.temporarilyUnavailable']()
+				: ''
+	);
+	const buttonAriaLabel = $derived(
+		isUnavailable ? `${name} — ${unavailableLabel}` : ariaLabel
+	);
 
 	function addToCart(): void {
 		if (cart.addItem(item, toasterId)) {
@@ -66,8 +84,16 @@
 	}
 </script>
 
-<Button {...restProps} type="button" disabled={disabled || !cart.loaded} onclick={addToCart}>
-	{#if children}
+<Button
+	{...restProps}
+	type="button"
+	disabled={disabled || isUnavailable || !cart.loaded}
+	aria-label={buttonAriaLabel}
+	onclick={addToCart}
+>
+	{#if isUnavailable}
+		{unavailableLabel}
+	{:else if children}
 		{@render children()}
 	{:else}
 		<span class="icon-[lucide--shopping-cart] size-4" data-icon="inline-start" aria-hidden="true"

@@ -55,6 +55,8 @@
 		priceInCents: regularPriceInCents / 100,
 		compareAtPriceInCents:
 			discountedPriceInCents === undefined ? undefined : discountedPriceInCents / 100,
+		trackInventory: initialProduct.trackInventory,
+		inventory: initialProduct.inventory,
 		active: initialProduct.status === 'active'
 	}));
 
@@ -106,6 +108,24 @@
 						type: 'number',
 						min: 0.01,
 						step: 0.01
+					},
+					{
+						kind: 'switch',
+						name: 'trackInventory',
+						label: m['AddProductPage.trackInventory'](),
+						description: m['AddProductPage.trackInventoryDescription']()
+					},
+					{
+						kind: 'input',
+						name: 'inventory',
+						label: m['AddProductPage.inventory'](),
+						description: m['AddProductPage.inventoryDescription'](),
+						type: 'number',
+						min: initialProduct.reservedInventory,
+						max: Number.MAX_SAFE_INTEGER,
+						step: 1,
+						required: true,
+						disabled: formChanges.values.trackInventory === false
 					},
 					{
 						kind: 'custom',
@@ -183,6 +203,8 @@
 			// is stored as priceInCents and the regular price as compareAtPriceInCents.
 			priceInCents: discountedPriceInCents ?? regularPriceInCents,
 			compareAtPriceInCents: discountedPriceInCents === undefined ? undefined : regularPriceInCents,
+			trackInventory: values.trackInventory !== false,
+			inventory: Number(values.inventory),
 			categoryId: categoryId as Id<'categories'>,
 			status: values.active ? ('active' as const) : ('draft' as const)
 		};
