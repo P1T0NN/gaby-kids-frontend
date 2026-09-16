@@ -23,7 +23,11 @@
 	import { useCart } from '@/features/cart/hooks/useCart.svelte.js';
 
 	// UTILS
-	import { calculateOrderTotalInCents, formatPrice } from '@/shared/utils/pricing.js';
+	import {
+		calculateOrderSavingsInCents,
+		calculateOrderTotalInCents,
+		formatPrice
+	} from '@/shared/utils/pricing.js';
 
 	// TYPES
 	import type { CartProduct } from '@/shared/features/cart/types/cartTypes.js';
@@ -48,14 +52,18 @@
 		return result.products;
 	}
 	const badgeLabel = $derived(cart.totalItems > 9 ? '9+' : String(cart.totalItems));
-	const totalPriceInCents = $derived(
-		calculateOrderTotalInCents(
-			cart.items.map((item) => ({
-				unitPriceInCents: cartProducts.find((product) => product.id === item.id)?.priceInCents ?? 0,
+	const pricingItems = $derived(
+		cart.items.map((item) => {
+			const product = cartProducts.find((product) => product.id === item.id);
+			return {
+				unitPriceInCents: product?.priceInCents ?? 0,
+				compareAtPriceInCents: product?.compareAtPriceInCents,
 				quantity: item.quantity
-			}))
-		)
+			};
+		})
 	);
+	const totalPriceInCents = $derived(calculateOrderTotalInCents(pricingItems));
+	const totalSavingsInCents = $derived(calculateOrderSavingsInCents(pricingItems));
 
 	onMount(() =>
 		on(window, 'cart:open', () => document.getElementById('cart-sheet-trigger')?.click())
@@ -79,6 +87,12 @@
 {#snippet footer()}
 	{#if cart.items.length > 0}
 		<footer class="flex shrink-0 flex-col gap-4 border-t pt-4">
+			{#if totalSavingsInCents > 0}
+				<div class="flex items-center justify-between text-sm text-success">
+					<span>{m['CartFeature.Cart.youSave']()}</span>
+					<span class="font-medium tabular-nums">{formatPrice(totalSavingsInCents)}</span>
+				</div>
+			{/if}
 			<div class="flex items-center justify-between text-lg font-semibold">
 				<span>{m['CartFeature.Cart.total']()}</span>
 				<span class="tabular-nums">{formatPrice(totalPriceInCents)}</span>

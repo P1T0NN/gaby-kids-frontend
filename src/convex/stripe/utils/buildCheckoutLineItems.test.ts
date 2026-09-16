@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { buildCheckoutLineItems } from './buildCheckoutLineItems.js';
 import type { Id } from '../../_generated/dataModel.js';
+import { calculateOrderSavingsInCents } from '../../../shared/utils/pricing.js';
 
 describe('buildCheckoutLineItems', () => {
 	it('uses only the stored order snapshot fields', () => {
@@ -30,5 +31,16 @@ describe('buildCheckoutLineItems', () => {
 				quantity: 2
 			}
 		]);
+	});
+});
+
+describe('calculateOrderSavingsInCents', () => {
+	it('multiplies each valid discount by its quantity', () => {
+		expect(
+			calculateOrderSavingsInCents([
+				{ unitPriceInCents: 800, compareAtPriceInCents: 1000, quantity: 2 },
+				{ unitPriceInCents: 500, compareAtPriceInCents: 400, quantity: 3 }
+			])
+		).toBe(400);
 	});
 });

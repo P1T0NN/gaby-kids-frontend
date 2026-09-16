@@ -59,6 +59,7 @@
 
 		{#snippet head()}
 			<TableHead class="min-w-64">{m['AdminProductsPage.productColumn']()}</TableHead>
+			<TableHead>{m['AdminProductsPage.priceColumn']()}</TableHead>
 			<TableHead>{m['AdminProductsPage.categoryColumn']()}</TableHead>
 			<TableHead class="hidden md:table-cell">{m['AdminProductsPage.createdColumn']()}</TableHead>
 			<TableHead class="w-12">

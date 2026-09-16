@@ -10,10 +10,11 @@
 	import { ADMIN_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
 
 	// UTILS
-	import { parseOptionalPriceInCents } from '@/shared/utils/pricing.js';
+	import { parseOptionalPriceInCents, priceInCents } from '@/shared/utils/pricing.js';
 
 	// COMPONENTS
 	import ProductCategorySelector from '@/features/categories/components/product-category-selector.svelte';
+	import ProductDiscountCalculator from '@/features/products/components/product-discount-calculator.svelte';
 	import { Button } from '@/components/ui/button/index.js';
 	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Form from '@/components/ui/custom-components/form/form.svelte';
@@ -42,17 +43,18 @@
 
 	let { product }: { product: Product } = $props();
 	const initialProduct = untrack(() => product);
+	const regularPriceInCents = initialProduct.compareAtPriceInCents ?? initialProduct.priceInCents;
+	const discountedPriceInCents =
+		initialProduct.compareAtPriceInCents === undefined ? undefined : initialProduct.priceInCents;
 	let submitting = $state(false);
 	let categoryId = $state<string>(initialProduct.categoryId);
 	const formChanges = useFormChanges(() => ({
 		id: initialProduct._id,
 		name: initialProduct.name,
 		description: initialProduct.description,
-		priceInCents: initialProduct.priceInCents / 100,
+		priceInCents: regularPriceInCents / 100,
 		compareAtPriceInCents:
-			initialProduct.compareAtPriceInCents === undefined
-				? undefined
-				: initialProduct.compareAtPriceInCents / 100,
+			discountedPriceInCents === undefined ? undefined : discountedPriceInCents / 100,
 		active: initialProduct.status === 'active'
 	}));
 
@@ -64,7 +66,10 @@
 		}))
 	);
 
-	function createProductFields(categoryField: Snippet<[CustomFieldContext]>): FieldConfig[] {
+	function createProductFields(
+		discountField: Snippet<[CustomFieldContext]>,
+		categoryField: Snippet<[CustomFieldContext]>
+	): FieldConfig[] {
 		return [
 			{
 				kind: 'section',
@@ -86,6 +91,7 @@
 						name: 'priceInCents',
 						label: m['AddProductPage.price'](),
 						placeholder: m['AddProductPage.pricePlaceholder'](),
+						description: m['AddProductPage.priceDescription'](),
 						type: 'number',
 						min: 0.01,
 						step: 0.01,
@@ -94,12 +100,19 @@
 					{
 						kind: 'input',
 						name: 'compareAtPriceInCents',
-						label: m['AddProductPage.originalPrice'](),
-						description: m['AddProductPage.originalPriceDescription'](),
-						placeholder: m['AddProductPage.originalPricePlaceholder'](),
+						label: m['AddProductPage.discountedPrice'](),
+						description: m['AddProductPage.discountedPriceDescription'](),
+						placeholder: m['AddProductPage.discountedPricePlaceholder'](),
 						type: 'number',
 						min: 0.01,
 						step: 0.01
+					},
+					{
+						kind: 'custom',
+						name: 'discountCalculator',
+						label: m['AddProductPage.discountPresets'](),
+						class: '-mt-3',
+						render: discountField
 					},
 					{
 						kind: 'textarea',
@@ -145,24 +158,35 @@
 	/>
 {/snippet}
 
+{#snippet discountField({ disabled, getValue, setValue }: CustomFieldContext)}
+	<ProductDiscountCalculator {disabled} {getValue} {setValue} />
+{/snippet}
+
 <Form
 	function={api.tables.products.mutations.saveProduct.saveProduct}
-	fields={createProductFields(categoryField)}
+	fields={createProductFields(discountField, categoryField)}
 	schema={saveProductSchema}
 	uploadNamespace="products"
 	bind:values={formChanges.values}
 	bind:uploadFiles
 	bind:submitting
 	resetOnSuccess={false}
-	prepareArgs={({ values }) => ({
-		id: initialProduct._id,
-		name: String(values.name ?? ''),
-		description: String(values.description ?? ''),
-		priceInCents: Math.round(Number(values.priceInCents) * 100),
-		compareAtPriceInCents: parseOptionalPriceInCents(values.compareAtPriceInCents),
-		categoryId: categoryId as Id<'categories'>,
-		status: values.active ? ('active' as const) : ('draft' as const)
-	})}
+	prepareArgs={({ values }) => {
+		const regularPriceInCents = priceInCents(values.priceInCents);
+		const discountedPriceInCents = parseOptionalPriceInCents(values.compareAtPriceInCents);
+
+		return {
+			id: initialProduct._id,
+			name: String(values.name ?? ''),
+			description: String(values.description ?? ''),
+			// The stored fields keep their existing compatibility semantics: the payable price
+			// is stored as priceInCents and the regular price as compareAtPriceInCents.
+			priceInCents: discountedPriceInCents ?? regularPriceInCents,
+			compareAtPriceInCents: discountedPriceInCents === undefined ? undefined : regularPriceInCents,
+			categoryId: categoryId as Id<'categories'>,
+			status: values.active ? ('active' as const) : ('draft' as const)
+		};
+	}}
 	onSuccess={() => gotoParaglide(ADMIN_PAGE_ENDPOINTS.PRODUCTS)}
 	successMessage={m['AdminEditProductPage.productUpdated']()}
 	errorMessage={m['AdminEditProductPage.updateError']()}

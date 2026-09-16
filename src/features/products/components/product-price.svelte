@@ -2,6 +2,9 @@
 	// LIBRARIES
 	import { m } from '@/lib/paraglide/messages';
 
+	// COMPONENTS
+	import { Badge } from '@/components/ui/badge/index.js';
+
 	// UTILS
 	import { cn } from '@/utils/utils.js';
 	import { formatPrice, getDiscountPercent } from '@/shared/utils/pricing.js';
@@ -35,8 +38,11 @@
 			{formatPrice(compareAtPriceInCents)}
 		</del>
 
-		<span class={cn('text-xs font-semibold text-primary', discountClass)}>
+		<Badge
+			variant="success"
+			class={cn('h-4 px-1.5 py-0 text-[10px] font-semibold', discountClass)}
+		>
 			{m['ProductsFeature.ProductPrice.discount']({ percent: discountPercent })}
-		</span>
+		</Badge>
 	{/if}
 </div>

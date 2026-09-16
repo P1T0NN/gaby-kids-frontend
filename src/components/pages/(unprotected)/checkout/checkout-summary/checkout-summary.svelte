@@ -15,7 +15,11 @@
 	import { useCart } from '@/features/cart/hooks/useCart.svelte.js';
 
 	// UTILS
-	import { calculateOrderTotalInCents, formatPrice } from '@/shared/utils/pricing.js';
+	import {
+		calculateOrderSavingsInCents,
+		calculateOrderTotalInCents,
+		formatPrice
+	} from '@/shared/utils/pricing.js';
 
 	// TYPES
 	import type { MutationValues } from '@/components/ui/custom-components/form/formTypes.js';
@@ -47,14 +51,15 @@
 		})
 	);
 
-	const total = $derived(
-		calculateOrderTotalInCents(
-			items.map((item) => ({
-				unitPriceInCents: item.priceInCents,
-				quantity: item.quantity
-			}))
-		)
+	const pricingItems = $derived(
+		items.map((item) => ({
+			unitPriceInCents: item.priceInCents,
+			compareAtPriceInCents: item.compareAtPriceInCents,
+			quantity: item.quantity
+		}))
 	);
+	const total = $derived(calculateOrderTotalInCents(pricingItems));
+	const totalSavingsInCents = $derived(calculateOrderSavingsInCents(pricingItems));
 
 	const loading = $derived(!cart.loaded || products.isLoading || products.isStale);
 </script>
@@ -92,6 +97,12 @@
 				<dt class="text-muted-foreground">{m['CheckoutPage.CheckoutSummary.subtotal']()}</dt>
 				<dd class="tabular-nums">{formatPrice(total)}</dd>
 			</div>
+			{#if totalSavingsInCents > 0}
+				<div class="flex justify-between gap-4 text-success">
+					<dt>{m['CheckoutPage.CheckoutSummary.youSave']()}</dt>
+					<dd class="font-medium tabular-nums">{formatPrice(totalSavingsInCents)}</dd>
+				</div>
+			{/if}
 			<div class="flex justify-between gap-4">
 				<dt class="text-muted-foreground">
 					{fulfillment === 'delivery'

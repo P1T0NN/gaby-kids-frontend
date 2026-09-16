@@ -13,6 +13,7 @@
 	import { Spinner } from '@/components/ui/spinner/index.js';
 	import { TableCell } from '@/components/ui/table/index.js';
 	import Link from '@/components/ui/custom-components/link/link.svelte';
+	import ProductPrice from '@/features/products/components/product-price.svelte';
 	import { m } from '@/lib/paraglide/messages';
 	import { getLocale } from '@/lib/paraglide/runtime';
 
@@ -79,6 +80,12 @@
 			<p class="max-w-lg truncate text-xs text-muted-foreground">{product.description}</p>
 		</div>
 	</div>
+</TableCell>
+<TableCell class="whitespace-nowrap">
+	<ProductPrice
+		priceInCents={product.priceInCents}
+		compareAtPriceInCents={product.compareAtPriceInCents}
+	/>
 </TableCell>
 <TableCell class="max-w-48 truncate">{product.categoryOption.name}</TableCell>
 <TableCell class="hidden whitespace-nowrap text-muted-foreground md:table-cell">

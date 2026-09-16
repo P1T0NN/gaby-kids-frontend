@@ -4,10 +4,11 @@ import { getLocale } from '@/lib/paraglide/runtime';
 // CONFIG
 import { COMPANY_DATA } from '@/shared/config.js';
 
-type OptionalPriceInput = string | number | boolean | null | undefined;
+export type PriceInput = string | number | boolean | null | undefined;
 
 export type OrderCalculationItem = {
 	unitPriceInCents: number;
+	compareAtPriceInCents?: number;
 	quantity: number;
 };
 
@@ -27,9 +28,13 @@ export function formatPrice(
 	return formatter.format(priceInCents / 100);
 }
 
-export function parseOptionalPriceInCents(value: OptionalPriceInput): number | undefined {
+export function priceInCents(value: PriceInput): number {
+	return Math.round(Number(value) * 100);
+}
+
+export function parseOptionalPriceInCents(value: PriceInput): number | undefined {
 	const normalized = String(value ?? '').trim();
-	return normalized ? Math.round(Number(normalized) * 100) : undefined;
+	return normalized ? priceInCents(normalized) : undefined;
 }
 
 export function getDiscountPercent(
@@ -41,6 +46,35 @@ export function getDiscountPercent(
 	return Math.round(((compareAtPriceInCents - priceInCents) / compareAtPriceInCents) * 100);
 }
 
+export function calculateDiscountedPriceInCents(
+	priceInCents: number,
+	discountPercent: number
+): number | null {
+	const validDiscount =
+		Number.isSafeInteger(priceInCents) &&
+		priceInCents > 0 &&
+		Number.isInteger(discountPercent) &&
+		discountPercent >= 5 &&
+		discountPercent <= 95 &&
+		discountPercent % 5 === 0;
+	if (!validDiscount) return null;
+
+	const discountedPriceInCents = Math.round((priceInCents * (100 - discountPercent)) / 100);
+	return discountedPriceInCents > 0 && discountedPriceInCents < priceInCents
+		? discountedPriceInCents
+		: null;
+}
+
 export function calculateOrderTotalInCents(items: readonly OrderCalculationItem[]): number {
 	return items.reduce((total, item) => total + item.unitPriceInCents * item.quantity, 0);
+}
+
+export function calculateOrderSavingsInCents(items: readonly OrderCalculationItem[]): number {
+	return items.reduce(
+		(savings, item) =>
+			savings +
+			Math.max((item.compareAtPriceInCents ?? item.unitPriceInCents) - item.unitPriceInCents, 0) *
+				item.quantity,
+		0
+	);
 }
