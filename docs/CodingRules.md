@@ -178,14 +178,15 @@ imported directly.
 
 ## Feature components and hooks
 
-| Area       | Existing pieces and intended use                                                                                                                                                                                                                         |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Auth       | `SignInForm`, `SignUpForm`, `ForgotPasswordForm`, `VerifyEmailForm`, and `LogoutButton`; `useAuth` centralizes Better Auth calls, error codes, pending state, OTP/password/social flows, and redirects. Keep wording in components via `ERROR_MESSAGES`. |
-| Search     | `SearchInput` is an InputGroup with clear button and optional listbox snippet. `useSearch` owns raw value, debounce, trim, minimum two-character gate, and `state`/`url` mode. Pass only `search.term` to a query.                                       |
-| Filters    | `ADMIN_USERS_FILTER_DEFS` defines symbolic options. `useFilters` owns state/URL mode, active values, count, clear methods, and stable `identity`.                                                                                                        |
-| Pagination | `useConvexPagination` owns page/cursor sessions; `useConvexInfinitePagination` owns accumulated pages, duplicate protection, retry, and reset. `createConvexPaginationQuery` is their shared subscription builder.                                       |
-| Uploads    | `UploadFile`, `UploadFileDropzone`, `UploadFilePreviewItem`, and `useUpload` manage previews, object-URL cleanup, multiple-file ordering, cover selection, and removal. `optimizeToWebp` is the browser compression step.                                |
-| Validation | `validationsData` and `toHumanMessage` map validator text to safe UI copy.                                                                                                                                                                               |
+| Area             | Existing pieces and intended use                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth             | `SignInForm`, `SignUpForm`, `ForgotPasswordForm`, `VerifyEmailForm`, and `LogoutButton`; `useAuth` centralizes Better Auth calls, error codes, pending state, OTP/password/social flows, and redirects. Keep wording in components via `ERROR_MESSAGES`.                                                                                                                                                          |
+| Search           | `SearchInput` is an InputGroup with clear button and optional listbox snippet. `useSearch` owns raw value, debounce, trim, minimum two-character gate, and `state`/`url` mode. Pass only `search.term` to a query.                                                                                                                                                                                                |
+| Filters          | `ADMIN_USERS_FILTER_DEFS` defines symbolic options. `useFilters` owns state/URL mode, active values, count, clear methods, and stable `identity`.                                                                                                                                                                                                                                                                 |
+| Pagination       | `useConvexPagination` owns page/cursor sessions; `useConvexInfinitePagination` owns accumulated pages, duplicate protection, retry, and reset. `createConvexPaginationQuery` is their shared subscription builder.                                                                                                                                                                                                |
+| Uploads          | `UploadFile`, `UploadFileDropzone`, `UploadFilePreviewItem`, and `useUpload` manage previews, object-URL cleanup, multiple-file ordering, cover selection, and removal. `optimizeToWebp` is the browser compression step.                                                                                                                                                                                         |
+| Validation       | `validationsData` and `toHumanMessage` map validator text to safe UI copy.                                                                                                                                                                                                                                                                                                                                        |
+| Product variants | `ProductVariantsEditor` (with option input, variant row, add buttons) edits `ProductVariantFormValue` rows bound from the product forms; `ProductVariantDiscountCalculator` applies bulk discounts; `getProductVariantRowErrors` is the live row validation; `getProductVariantAvailability` and the shared `getProductVariantLabel`/`getProductVariantOptionKey` utilities serve the storefront picker and cart. |
 
 The admin page components are intentionally page-specific: user list/header
 rows, user profile/settings/sessions/logs tabs, ban/unban/role actions, and
@@ -241,9 +242,25 @@ flags or waits on `Promise.all`.
 
 - `categories`: flat storefront taxonomy referenced by required
   `products.categoryId`.
-- `products`: catalog name, slug, description, price, one category, gallery, and status.
-  `saveProduct` creates or edits product details in one transaction; new products
-  default to draft. Publishing requires an active category.
+- `products`: catalog name, slug, description, one category, an image library
+  (`imageKeys`/`images`; covers for listings, upsells, and OG tags use its first
+  image), status, `productVariantOptionNames`, and display caches
+  (`priceInCents` is the lowest product variant price, `hasPriceRange`, and a
+  shared `compareAtPriceInCents` when every product variant matches).
+  `saveProduct` creates or edits product details, product variants, and the
+  display caches in one transaction; new products default to draft and always
+  have at least one product variant. Publishing requires an active category.
+- `productVariants`: `productId`, `position`, structured `options`
+  (`name`/`value`), a catalog-unique `sku`, an ordered `imageKeys` assignment
+  from the product library (first = primary, rejected if it references a key
+  outside the library), `priceInCents`, `compareAtPriceInCents`, `inventory`,
+  and `reservedInventory`. Indexed by `by_product_id` and `by_sku`. Product
+  variant rows are the only price and stock source; backend code for them lives
+  under `src/convex/tables/productVariants`. The storefront gallery, cart line
+  images, and checkout snapshots use the selected variant's images with the
+  product library as fallback. One product's variants are always read with
+  async iteration through `by_product_id` (never `.collect()`), and deleting a
+  product queues bounded scheduled batches for its variants.
 - Upsells use an optional, ordered `products.upsellProductIds` array (maximum four).
   `/admin/upsells` manages recommendations through `tables/upsells` admin queries
   and `saveProductUpsells`; the public query returns only active recommendations
@@ -284,10 +301,11 @@ Current app-facing functions are:
 - admin users/profile/settings/sessions/logs queries and
   `api.auditLogs.queries.fetchAuditLogsAdmin`.
 - Checkout opens Stripe through `api.stripe.actions.createStripeCheckout`.
-  Its internal preparation query validates products and prices without writing
-  an order or draft. Stripe stores customer metadata and immutable line prices;
-  only the verified paid webhook calls the internal `createOrder` mutation.
-  Session and Payment Intent indexes prevent duplicate orders from webhook retries.
+  Its internal preparation query validates active products and product variant
+  prices without writing an order or draft. Stripe stores customer metadata and
+  immutable line prices; only the verified paid webhook calls the internal
+  `completeCheckoutReservation` mutation. Session and Payment Intent indexes
+  prevent duplicate orders from webhook retries.
   Each submission creates a fresh Stripe Session, without checkout retry tracking.
   The receipt uses a server-generated random `receiptToken` solely as a guest access token.
   Mounting a paid receipt saves guest access; the first return from Stripe clears
@@ -298,15 +316,20 @@ search, and symbolic filters, chooses the feature predicate registry, delegates
 the indexed page fetch, and reads an aggregate/counter total when configured.
 Use `fetchOptimizedSearchQuery` for bounded suggestions. Keep cursors opaque.
 
-The add and edit forms save content/category/images through `saveProduct`.
-Catalog edits use last-save-wins. Product prices are stored as integer cents in
-`products.priceInCents`; stock and customer choices are not implemented.
+The add and edit forms save content/category/images/product variants through
+`saveProduct`. Catalog edits use last-save-wins. Product variant prices and stock
+are stored as integer cents and units on `productVariants`; the product-level
+price fields are display caches only. Cart lines are keyed by `productVariantId`;
+`api.tables.productVariants.queries.fetchCart` resolves live product variant
+prices and availability for the cart and checkout summary. Storefront listings
+read one bounded product-variant summary per page item for availability and use
+the denormalized price cache for prices.
 
 `orders` stores customer, fulfillment, trusted totals, payment/fulfillment state,
-and guest receipt access; `orderItems` stores immutable product name, price,
-and quantity snapshots. Never render order history from live catalog joins or
-cascade-delete orders/items with products. Stripe Checkout payment state comes
-only from verified webhook events; inventory obligations are not implemented yet.
+and guest receipt access; `orderItems` stores immutable product name, product
+variant label, SKU, price, and quantity snapshots. Never render order history
+from live catalog joins or cascade-delete orders/items with products. Stripe
+Checkout payment state comes only from verified webhook events.
 
 Counts and side effects already have homes: product and user totals use
 aggregates, and trigger-wrapped mutations keep these projections current.

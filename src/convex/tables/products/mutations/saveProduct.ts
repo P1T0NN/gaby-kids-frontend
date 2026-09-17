@@ -13,11 +13,13 @@ import { saveProductSchema } from '../../../../shared/features/products/schemas/
 
 // VALIDATORS
 import { productResult, productStatus } from '../validators/productValidators.js';
+import { productVariantInput } from '../../productVariants/validators/productVariantValidators.js';
 
 // HELPERS
 import { validateProductCategory } from '../../categories/helpers/validateProductCategory.js';
 import { logAuditEvent } from '../../../auditLogs/helpers/logAuditEvent.js';
 import { deleteStoredFiles, resolveStoredFileUrls } from '../../../storage/r2.js';
+import { resolveProductVariants } from '../../productVariants/helpers/resolveProductVariants.js';
 import { generateSlug } from '../../../../shared/utils/generateSlug.js';
 
 // TYPES
@@ -28,22 +30,6 @@ import type { BackendErrorData } from '../../../../shared/types/types.js';
 type Product = Doc<'products'>;
 
 type ResolvedImageKeys = { retained: string[]; imageKeys: string[] };
-
-/** Inventory cannot be disabled or lowered below what checkout reservations hold. */
-function assertStockRules(options: {
-	trackInventory: boolean;
-	inventory: number;
-	reservedInventory: number;
-}): void {
-	if (!options.trackInventory && options.reservedInventory > 0) {
-		throw new ConvexError<BackendErrorData>({
-			code: 'CANNOT_DISABLE_INVENTORY_WITH_RESERVATIONS'
-		});
-	}
-	if (options.trackInventory && options.inventory < options.reservedInventory) {
-		throw new ConvexError<BackendErrorData>({ code: 'STOCK_BELOW_RESERVED' });
-	}
-}
 
 /** Keep an existing slug; new products get a generated one that has to be free. */
 async function resolveProductSlug(
@@ -99,11 +85,10 @@ export const saveProduct = adminUploadMutation({
 		id: v.optional(v.id('products')),
 		name: v.string(),
 		description: v.string(),
-		priceInCents: v.number(),
 		trackInventory: v.boolean(),
-		inventory: v.number(),
-		compareAtPriceInCents: v.optional(v.number()),
 		categoryId: v.id('categories'),
+		productVariantOptionNames: v.array(v.string()),
+		productVariants: v.array(productVariantInput),
 		status: v.optional(productStatus)
 	},
 	returns: productResult,
@@ -116,13 +101,6 @@ export const saveProduct = adminUploadMutation({
 		const input = parsed.data;
 		const product = args.id ? await ctx.db.get(args.id) : null;
 		if (args.id && !product) throw new ConvexError<BackendErrorData>({ code: 'PRODUCT_NOT_FOUND' });
-
-		const reservedInventory = product ? product.reservedInventory : 0;
-		assertStockRules({
-			trackInventory: input.trackInventory,
-			inventory: input.inventory,
-			reservedInventory
-		});
 
 		const status = input.status ?? product?.status ?? 'draft';
 		await validateProductCategory(
@@ -139,24 +117,53 @@ export const saveProduct = adminUploadMutation({
 			currentKeys
 		});
 
+		const libraryImageKeys = new Set(imageKeys);
+		for (const productVariant of input.productVariants) {
+			const hasForeignImage = productVariant.imageKeys.some((key) => !libraryImageKeys.has(key));
+			if (
+				hasForeignImage ||
+				new Set(productVariant.imageKeys).size !== productVariant.imageKeys.length
+			) {
+				throw new ConvexError<BackendErrorData>({ code: 'INVALID_PRODUCT_VARIANT_IMAGE' });
+			}
+		}
+
+		const { writes, caches } = await resolveProductVariants({
+			ctx,
+			productId: product?._id,
+			input: input.productVariants,
+			slug,
+			trackInventory: input.trackInventory
+		});
+
 		const fields = {
 			name: input.name,
 			description: input.description,
-			priceInCents: input.priceInCents,
-			compareAtPriceInCents: input.compareAtPriceInCents,
+			productVariantOptionNames: input.productVariantOptionNames,
+			priceInCents: caches.priceInCents,
+			compareAtPriceInCents: caches.compareAtPriceInCents,
+			hasPriceRange: caches.hasPriceRange,
 			categoryId: input.categoryId,
 			images: await resolveStoredFileUrls(imageKeys),
 			imageKeys,
 			storagePrefix: product?.storagePrefix ?? 'products',
 			trackInventory: input.trackInventory,
-			inventory: input.inventory,
-			reservedInventory,
 			upsellProductIds: product ? product.upsellProductIds : [],
 			status
 		};
 
 		const productId = product?._id ?? (await ctx.db.insert('products', { ...fields, slug }));
 		if (product) await ctx.db.patch(productId, fields);
+
+		for (const insert of writes.inserts) {
+			await ctx.db.insert('productVariants', { ...insert, productId });
+		}
+		for (const patch of writes.patches) {
+			await ctx.db.patch(patch.id, patch.fields);
+		}
+		for (const variantId of writes.deletes) {
+			await ctx.db.delete(variantId);
+		}
 
 		await deleteStoredFiles(
 			ctx,
@@ -170,14 +177,6 @@ export const saveProduct = adminUploadMutation({
 			severity: 'info'
 		});
 
-		return {
-			...(await ctx.db.get(productId))!,
-			priceInCents: input.priceInCents,
-			imageKeys,
-			trackInventory: input.trackInventory,
-			inventory: input.inventory,
-			reservedInventory,
-			upsellProductIds: fields.upsellProductIds
-		};
+		return (await ctx.db.get(productId))!;
 	}
 });

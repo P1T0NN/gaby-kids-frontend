@@ -17,12 +17,12 @@ const MAX_POSTAL_CODE_LENGTH = 30;
 const MAX_CITY_LENGTH = 100;
 const MAX_COUNTRY_LENGTH = 100;
 
-const productIdSchema = z
+const productVariantIdSchema = z
 	.string()
 	.min(1)
 	.transform((value) => {
-		// SAFETY: Convex's v.id('products') validator remains authoritative at the mutation boundary.
-		return value as Id<'products'>;
+		// SAFETY: Convex's v.id('productVariants') validator remains authoritative at the mutation boundary.
+		return value as Id<'productVariants'>;
 	});
 
 const orderIdSchema = z
@@ -63,7 +63,7 @@ export const checkoutSchema = z
 		items: z
 			.array(
 				z.object({
-					productId: productIdSchema,
+					productVariantId: productVariantIdSchema,
 					quantity: z.number().int().min(1).max(ORDER_CONFIG.maxQuantity)
 				})
 			)

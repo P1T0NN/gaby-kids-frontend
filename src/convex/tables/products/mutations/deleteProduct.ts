@@ -5,6 +5,9 @@ import { ConvexError, v } from 'convex/values';
 // BUILDERS
 import { adminMutation } from '../../../builders/convexFunctionBuilders.js';
 
+// CONVEX
+import { internal } from '../../../_generated/api.js';
+
 // AUDIT LOGS
 import { logAuditEvent } from '../../../auditLogs/helpers/logAuditEvent.js';
 
@@ -23,7 +26,7 @@ export const deleteProduct = adminMutation({
 		if (!product) {
 			throw new ConvexError<BackendErrorData>({ code: 'PRODUCT_NOT_FOUND' });
 		}
-		if (product.status !== 'draft' || product.reservedInventory > 0) {
+		if (product.status !== 'draft') {
 			throw new ConvexError<BackendErrorData>({ code: 'PRODUCT_DELETE_RESTRICTED' });
 		}
 
@@ -31,6 +34,15 @@ export const deleteProduct = adminMutation({
 
 		const productImageKeys = product.imageKeys ?? product.images;
 		await deleteStoredFiles(ctx, productImageKeys);
+
+		// Variant cleanup continues in bounded scheduled batches so deleting a
+		// large product never exceeds a single transaction.
+		await ctx.scheduler.runAfter(
+			0,
+			internal.tables.productVariants.mutations.deleteProductVariantsBatch
+				.deleteProductVariantsBatch,
+			{ productId: args.id }
+		);
 
 		await logAuditEvent(ctx, ctx.identity, {
 			action: AuditActions.RECORD_DELETED,

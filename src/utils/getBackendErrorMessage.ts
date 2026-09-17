@@ -33,8 +33,16 @@ export function getBackendErrorMessage(error: Error): string | undefined {
 			return m['BackendMessages.productDeleteRestricted']();
 		case 'CANNOT_DISABLE_INVENTORY_WITH_RESERVATIONS':
 			return m['BackendMessages.cannotDisableInventoryWithReservations']();
-		case 'STOCK_BELOW_RESERVED':
-			return m['BackendMessages.stockBelowReserved']();
+		case 'INVALID_PRODUCT_VARIANT':
+			return m['BackendMessages.invalidProductVariant']();
+		case 'INVALID_PRODUCT_VARIANT_IMAGE':
+			return m['BackendMessages.invalidProductVariantImage']();
+		case 'PRODUCT_VARIANT_SKU_TAKEN':
+			return m['BackendMessages.productVariantSkuTaken']();
+		case 'PRODUCT_VARIANT_STOCK_BELOW_RESERVED':
+			return m['BackendMessages.productVariantStockBelowReserved']();
+		case 'CANNOT_DELETE_RESERVED_PRODUCT_VARIANT':
+			return m['BackendMessages.cannotDeleteReservedProductVariant']();
 		case 'INVALID_ORDER_DATA':
 			return m['BackendMessages.invalidOrderData']();
 		case 'ORDER_PRODUCT_UNAVAILABLE':

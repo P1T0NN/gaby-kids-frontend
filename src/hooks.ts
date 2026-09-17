@@ -1,5 +1,5 @@
 // LIBRARIES
-import { deLocalizeUrl } from "./lib/paraglide/runtime";
+import { deLocalizeUrl } from './lib/paraglide/runtime';
 
 // TYPES
 import type { Reroute } from '@sveltejs/kit';

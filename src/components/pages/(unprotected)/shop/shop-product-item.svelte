@@ -9,6 +9,7 @@
 	// COMPONENTS
 	import * as Card from '@/components/ui/card/index.js';
 	import AddToCartButton from '@/features/cart/components/add-to-cart-button.svelte';
+	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import ProductPrice from '@/features/products/components/product-price.svelte';
 	import Link from '@/components/ui/custom-components/link/link.svelte';
 
@@ -17,13 +18,25 @@
 
 	// TYPES
 	import type { Doc } from '@convex/_generated/dataModel';
+	import type { ProductVariantSummary } from '@/shared/features/productVariants/types/productVariantTypes.js';
 
-	let { product }: { product: Doc<'products'> } = $props();
+	let {
+		product
+	}: {
+		product: Doc<'products'> & { productVariantSummary: ProductVariantSummary };
+	} = $props();
 
 	let failedImage = $state<string | null>(null);
 
 	const image = $derived(product.images[0]);
-	const availability = $derived(getProductAvailability(product));
+	const availability = $derived(
+		getProductAvailability({
+			trackInventory: product.trackInventory,
+			inventory: product.productVariantSummary.inventory,
+			reservedInventory: product.productVariantSummary.reservedInventory
+		})
+	);
+	const defaultProductVariantId = $derived(product.productVariantSummary.defaultProductVariantId);
 </script>
 
 {#snippet productContent()}
@@ -55,6 +68,7 @@
 		<ProductPrice
 			priceInCents={product.priceInCents}
 			compareAtPriceInCents={product.compareAtPriceInCents}
+			from={product.hasPriceRange}
 			priceClass="text-lg"
 		/>
 	</Card.Header>
@@ -73,14 +87,26 @@
 	{/if}
 
 	<Card.Footer class="mt-auto">
-		<AddToCartButton
-			item={{ id: product._id, image: image ?? '' }}
-			name={product.name}
-			showUpsellsAfterAdd={Boolean(product.upsellProductIds?.length)}
-			aria-label={m['ShopPage.ShopProductItem.addProduct']({ name: product.name })}
-			{availability}
-			class="w-full"
-			size="lg"
-		/>
+		{#if defaultProductVariantId}
+			<AddToCartButton
+				item={{ productVariantId: defaultProductVariantId, image: image ?? '' }}
+				productId={product._id}
+				name={product.name}
+				showUpsellsAfterAdd={Boolean(product.upsellProductIds?.length)}
+				aria-label={m['ShopPage.ShopProductItem.addProduct']({ name: product.name })}
+				{availability}
+				class="w-full"
+				size="lg"
+			/>
+		{:else}
+			<ButtonLink
+				href={UNPROTECTED_PAGE_ENDPOINTS.PRODUCT(product.slug)}
+				variant="outline"
+				class="w-full"
+				size="lg"
+			>
+				{m['ShopPage.ShopProductItem.chooseOptions']()}
+			</ButtonLink>
+		{/if}
 	</Card.Footer>
 </Card.Root>

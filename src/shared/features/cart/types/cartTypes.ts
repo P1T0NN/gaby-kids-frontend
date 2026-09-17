@@ -1,16 +1,20 @@
 // TYPES
-import type { Doc } from '../../../../convex/_generated/dataModel.js';
+import type { Doc, Id } from '../../../../convex/_generated/dataModel.js';
 
-export type CartProduct = Pick<
-	Doc<'products'>,
-	'name' | 'compareAtPriceInCents' | 'trackInventory' | 'inventory' | 'reservedInventory'
+export type CartProductVariant = Pick<
+	Doc<'productVariants'>,
+	'priceInCents' | 'compareAtPriceInCents' | 'inventory' | 'reservedInventory'
 > & {
-	id: Doc<'products'>['_id'];
-	priceInCents: number;
+	id: Id<'productVariants'>;
+	productId: Id<'products'>;
+	name: string;
+	productVariantLabel: string;
+	image?: string;
+	trackInventory: boolean;
 };
 
 export type CartItem = {
-	id: string;
+	productVariantId: string;
 	image: string;
 	quantity: number;
 };

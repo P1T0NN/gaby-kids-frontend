@@ -35,7 +35,7 @@
 			/>
 		</Field.Field>
 	{/each}
-	
+
 	{#if filters.isActive}
 		<Button type="button" variant="outline" size="sm" onclick={filters.clearAll}>
 			{clearLabel}

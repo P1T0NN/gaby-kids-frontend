@@ -11,8 +11,5 @@
 </script>
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
-<Button 
-	href={localizeHref(href)} 
-	{...restProps} 
-/>
+<Button href={localizeHref(href)} {...restProps} />
 <!-- eslint-enable svelte/no-navigation-without-resolve -->

@@ -1,7 +1,9 @@
 <script lang="ts">
+	// LIBRARIES
+	import { m } from '@/lib/paraglide/messages';
+
 	// UTILS
 	import { cn } from '@/utils/utils.js';
-	import { m } from '@/lib/paraglide/messages';
 
 	// TYPES
 	import type { Snippet } from 'svelte';

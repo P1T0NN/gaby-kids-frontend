@@ -14,21 +14,44 @@ import type {
 	MutationValues,
 	PreparedMutationArgs
 } from '@/components/ui/custom-components/form/formTypes.js';
+import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
+import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
+
+/**
+ * Maps form image references to stored keys. Retained previews already carry a
+ * key; pending previews receive one from `uploadedFiles` in submit order.
+ */
+function buildProductVariantImageKeyMap(
+	uploadFiles: readonly PreviewFile[],
+	uploadedFiles: readonly string[]
+): Map<string, string> {
+	const keyByPreviewId = new Map<string, string>();
+	let uploadedIndex = 0;
+
+	for (const preview of uploadFiles) {
+		if (preview.key) {
+			keyByPreviewId.set(preview.id, preview.key);
+			continue;
+		}
+		keyByPreviewId.set(preview.id, uploadedFiles[uploadedIndex] ?? '');
+		uploadedIndex += 1;
+	}
+
+	return keyByPreviewId;
+}
 
 type SaveProductMutation = typeof api.tables.products.mutations.saveProduct.saveProduct;
 
 export function createProductFields(options: {
-	discountField: Snippet<[CustomFieldContext]>;
+	productVariantsField: Snippet<[CustomFieldContext]>;
 	categoryField: Snippet<[CustomFieldContext]>;
-	inventoryMin: number;
-	inventoryDisabled: boolean;
 }): FieldConfig[] {
 	return [
 		{
 			kind: 'section',
 			class: 'overflow-visible',
-			title: m['AddProductPage.detailsTitle'](),
-			description: m['AddProductPage.detailsDescription'](),
+			title: m['AddProductPage.basicInfoSectionTitle'](),
+			description: m['AddProductPage.basicInfoSectionDescription'](),
 			fields: [
 				{
 					kind: 'input',
@@ -38,52 +61,6 @@ export function createProductFields(options: {
 					type: 'text',
 					maxLength: 255,
 					required: true
-				},
-				{
-					kind: 'input',
-					name: 'priceInCents',
-					label: m['AddProductPage.price'](),
-					placeholder: m['AddProductPage.pricePlaceholder'](),
-					description: m['AddProductPage.priceDescription'](),
-					type: 'number',
-					min: 0.01,
-					step: 0.01,
-					required: true
-				},
-				{
-					kind: 'input',
-					name: 'compareAtPriceInCents',
-					label: m['AddProductPage.discountedPrice'](),
-					description: m['AddProductPage.discountedPriceDescription'](),
-					placeholder: m['AddProductPage.discountedPricePlaceholder'](),
-					type: 'number',
-					min: 0.01,
-					step: 0.01
-				},
-				{
-					kind: 'switch',
-					name: 'trackInventory',
-					label: m['AddProductPage.trackInventory'](),
-					description: m['AddProductPage.trackInventoryDescription']()
-				},
-				{
-					kind: 'input',
-					name: 'inventory',
-					label: m['AddProductPage.inventory'](),
-					description: m['AddProductPage.inventoryDescription'](),
-					type: 'number',
-					min: options.inventoryMin,
-					max: Number.MAX_SAFE_INTEGER,
-					step: 1,
-					required: true,
-					disabled: options.inventoryDisabled
-				},
-				{
-					kind: 'custom',
-					name: 'discountCalculator',
-					label: m['AddProductPage.discountPresets'](),
-					class: '-mt-3',
-					render: options.discountField
 				},
 				{
 					kind: 'textarea',
@@ -97,6 +74,7 @@ export function createProductFields(options: {
 					kind: 'upload',
 					name: 'images',
 					label: m['AddProductPage.images'](),
+					description: m['AddProductPage.imagesDescription'](),
 					mode: 'multiple'
 				},
 				{
@@ -106,7 +84,32 @@ export function createProductFields(options: {
 					description: m['AddProductPage.categoriesDescription'](),
 					required: true,
 					render: options.categoryField
+				}
+			]
+		},
+		{
+			kind: 'section',
+			title: m['ProductVariantsFeature.ProductVariantsEditor.sectionTitle'](),
+			description: m['ProductVariantsFeature.ProductVariantsEditor.sectionDescription'](),
+			fields: [
+				{
+					kind: 'switch',
+					name: 'trackInventory',
+					label: m['AddProductPage.trackInventory'](),
+					description: m['AddProductPage.trackInventoryDescription']()
 				},
+				{
+					kind: 'custom',
+					name: 'productVariants',
+					render: options.productVariantsField
+				}
+			]
+		},
+		{
+			kind: 'section',
+			title: m['AddProductPage.visibilitySectionTitle'](),
+			description: m['AddProductPage.visibilitySectionDescription'](),
+			fields: [
 				{
 					kind: 'switch',
 					name: 'active',
@@ -121,23 +124,54 @@ export function createProductFields(options: {
 export function buildSaveProductArgs(options: {
 	values: MutationValues<SaveProductMutation>;
 	categoryId: string;
+	productVariantOptionNames: string[];
+	productVariants: ProductVariantFormValue[];
+	uploadFiles: PreviewFile[];
+	uploadedFiles: string[];
 	id?: Id<'products'>;
 }): PreparedMutationArgs<SaveProductMutation> {
-	const regularPriceInCents = priceInCents(options.values.priceInCents);
-	const discountedPriceInCents = parseOptionalPriceInCents(options.values.compareAtPriceInCents);
+	const imageKeyByPreviewId = buildProductVariantImageKeyMap(
+		options.uploadFiles,
+		options.uploadedFiles
+	);
 
 	return {
 		id: options.id,
 		name: String(options.values.name ?? ''),
 		description: String(options.values.description ?? ''),
-		// The stored fields keep their existing compatibility semantics: the payable price
-		// is stored as priceInCents and the regular price as compareAtPriceInCents.
-		priceInCents: discountedPriceInCents ?? regularPriceInCents,
-		compareAtPriceInCents: discountedPriceInCents === undefined ? undefined : regularPriceInCents,
 		trackInventory: options.values.trackInventory !== false,
-		inventory: Number(options.values.inventory),
 		// SAFETY: the shared schema and Convex validate the selected category ID.
 		categoryId: options.categoryId as Id<'categories'>,
-		status: options.values.active ? ('active' as const) : ('draft' as const)
+		status: options.values.active ? ('active' as const) : ('draft' as const),
+		productVariantOptionNames: options.productVariantOptionNames.map((optionName) =>
+			optionName.trim()
+		),
+		productVariants: options.productVariants.map((productVariant) => {
+			const regularPriceInCents = priceInCents(productVariant.price);
+			const discountedPriceInCents = parseOptionalPriceInCents(productVariant.discountedPrice);
+
+			return {
+				// SAFETY: Convex's v.id('productVariants') validator remains authoritative.
+				id: productVariant.id ? (productVariant.id as Id<'productVariants'>) : undefined,
+				options: productVariant.options.map((option) => ({
+					name: option.name.trim(),
+					value: option.value.trim()
+				})),
+				sku: productVariant.sku.trim(),
+				imageKeys: [
+					...new Set(
+						productVariant.imageKeys.flatMap((imageId) => {
+							const key = imageKeyByPreviewId.get(imageId);
+							return key ? [key] : [];
+						})
+					)
+				],
+				// Stored semantics: the payable price is priceInCents and the regular price is compareAtPriceInCents.
+				priceInCents: discountedPriceInCents ?? regularPriceInCents,
+				compareAtPriceInCents:
+					discountedPriceInCents === undefined ? undefined : regularPriceInCents,
+				inventory: Number(productVariant.inventory)
+			};
+		})
 	};
 }

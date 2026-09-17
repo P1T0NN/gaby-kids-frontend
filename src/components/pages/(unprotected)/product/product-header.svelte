@@ -3,9 +3,20 @@
 	import ProductPrice from '@/features/products/components/product-price.svelte';
 
 	// TYPES
-	import type { Doc } from '@convex/_generated/dataModel';
+	import type { FunctionReturnType } from 'convex/server';
+	import type { api } from '@convex/_generated/api';
 
-	let { product }: { product: Doc<'products'> } = $props();
+	type StorefrontProduct = NonNullable<
+		FunctionReturnType<typeof api.tables.products.queries.fetchProductBySlug.fetchProductBySlug>
+	>;
+
+	let {
+		product,
+		productVariant
+	}: {
+		product: StorefrontProduct;
+		productVariant: StorefrontProduct['productVariants'][number];
+	} = $props();
 </script>
 
 <header class="flex min-w-0 flex-col gap-4 lg:col-start-2 lg:row-start-1 lg:pt-3">
@@ -16,8 +27,8 @@
 		{product.name}
 	</h1>
 	<ProductPrice
-		priceInCents={product.priceInCents}
-		compareAtPriceInCents={product.compareAtPriceInCents}
+		priceInCents={productVariant.priceInCents}
+		compareAtPriceInCents={productVariant.compareAtPriceInCents}
 		class="tracking-tight wrap-anywhere"
 		priceClass="text-2xl font-medium"
 	/>

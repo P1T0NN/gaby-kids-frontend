@@ -7,7 +7,7 @@ import { COMPANY_DATA } from '../../../../shared/config.js';
 
 // HELPERS
 import { buildCheckoutLine, type CheckoutLine } from '../../orders/helpers/buildCheckoutLine.js';
-import { loadSellableProduct } from '../../products/helpers/loadSellableProduct.js';
+import { loadSellableProductVariant } from '../../productVariants/helpers/loadSellableProductVariant.js';
 import { mergeItemQuantities } from '../../orders/helpers/mergeItemQuantities.js';
 
 // VALIDATORS
@@ -25,18 +25,18 @@ import type { BackendErrorData } from '../../../../shared/types/types.js';
 
 type CheckoutItem = CheckoutLine;
 
-/** Price-check each active product and build the trusted checkout lines. */
+/** Price-check each active product variant and build the trusted checkout lines. */
 async function buildCheckoutItems(
 	ctx: QueryCtx,
-	quantities: Map<Id<'products'>, number>
+	quantities: Map<Id<'productVariants'>, number>
 ): Promise<CheckoutItem[]> {
 	const items: CheckoutItem[] = [];
 	const sortedQuantities = [...quantities].sort(([a], [b]) => a.localeCompare(b));
 
-	for (const [productId, quantity] of sortedQuantities) {
-		const product = await loadSellableProduct(ctx, productId);
+	for (const [productVariantId, quantity] of sortedQuantities) {
+		const { product, productVariant } = await loadSellableProductVariant(ctx, productVariantId);
 
-		items.push(await buildCheckoutLine(product, quantity));
+		items.push(await buildCheckoutLine(product, productVariant, quantity));
 	}
 
 	return items;

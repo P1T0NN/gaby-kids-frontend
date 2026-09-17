@@ -20,7 +20,11 @@
 </script>
 
 <header class="flex flex-col gap-5 border-b pb-7">
-	<ButtonLink href={UNPROTECTED_PAGE_ENDPOINTS.MY_ORDERS} variant="link" class="w-fit px-0 text-muted-foreground">
+	<ButtonLink
+		href={UNPROTECTED_PAGE_ENDPOINTS.MY_ORDERS}
+		variant="link"
+		class="w-fit px-0 text-muted-foreground"
+	>
 		<span class="icon-[lucide--arrow-left] size-4" aria-hidden="true"></span>
 		{m['MyOrderPage.MyOrderHeader.back']()}
 	</ButtonLink>

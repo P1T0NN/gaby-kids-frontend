@@ -6,6 +6,7 @@ import { adminQuery } from '../../../builders/convexFunctionBuilders.js';
 
 // MAPPERS
 import { toProductResult } from '../mappers/toProductResult.js';
+import { toProductVariantResult } from '../../productVariants/mappers/toProductVariantResult.js';
 
 // VALIDATORS
 import { adminProductDetailResult } from '../validators/productValidators.js';
@@ -27,8 +28,17 @@ export const fetchProductById = adminQuery({
 		if (!category) throw new Error('Product category invariant violated.');
 		const { _id, name, slug, status } = category;
 
+		const productVariants: Awaited<ReturnType<typeof toProductVariantResult>>[] = [];
+		for await (const productVariant of ctx.db
+			.query('productVariants')
+			.withIndex('by_product_id', (query) => query.eq('productId', product._id))) {
+			productVariants.push(await toProductVariantResult(productVariant));
+		}
+		productVariants.sort((left, right) => left.position - right.position);
+
 		return {
 			...(await toProductResult(product)),
+			productVariants,
 			categoryOption: { _id, name, slug, status }
 		};
 	}

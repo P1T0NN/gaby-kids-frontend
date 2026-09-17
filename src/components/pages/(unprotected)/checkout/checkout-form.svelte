@@ -56,9 +56,9 @@
 			values.fulfillmentMethod === 'pickup' ? 'pickup' : 'delivery';
 
 		return {
-			// SAFETY: Convex validates every submitted cart ID with v.id('products').
+			// SAFETY: Convex validates every submitted cart ID with v.id('productVariants').
 			items: cart.items.map((item) => ({
-				productId: item.id as Id<'products'>,
+				productVariantId: item.productVariantId as Id<'productVariants'>,
 				quantity: item.quantity
 			})),
 			firstName: String(values.firstName ?? ''),

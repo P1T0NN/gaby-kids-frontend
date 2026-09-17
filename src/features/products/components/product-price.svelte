@@ -12,6 +12,8 @@
 	type Props = {
 		priceInCents: number;
 		compareAtPriceInCents?: number;
+		/** Prefixes the price with "From" for products whose variants differ in price. */
+		from?: boolean;
 		class?: string;
 		priceClass?: string;
 		compareAtPriceClass?: string;
@@ -21,6 +23,7 @@
 	let {
 		priceInCents,
 		compareAtPriceInCents,
+		from = false,
 		class: className,
 		priceClass,
 		compareAtPriceClass,
@@ -31,17 +34,19 @@
 </script>
 
 <div class={cn('flex flex-wrap items-baseline gap-x-2 gap-y-1', className)}>
-	<span class={cn('font-semibold tabular-nums', priceClass)}>{formatPrice(priceInCents)}</span>
+	<span class={cn('font-semibold tabular-nums', priceClass)}>
+		{#if from}<span class="text-xs font-normal text-muted-foreground">
+				{m['ProductsFeature.ProductPrice.from']()}
+			</span>{/if}
+		{formatPrice(priceInCents)}
+	</span>
 
 	{#if discountPercent !== null && compareAtPriceInCents !== undefined}
 		<del class={cn('text-sm text-muted-foreground tabular-nums', compareAtPriceClass)}>
 			{formatPrice(compareAtPriceInCents)}
 		</del>
 
-		<Badge
-			variant="success"
-			class={cn('h-4 px-1.5 py-0 text-[10px] font-semibold', discountClass)}
-		>
+		<Badge variant="success" class={cn('h-4 px-1.5 py-0 text-[10px] font-semibold', discountClass)}>
 			{m['ProductsFeature.ProductPrice.discount']({ percent: discountPercent })}
 		</Badge>
 	{/if}

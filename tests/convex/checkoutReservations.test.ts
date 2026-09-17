@@ -9,6 +9,9 @@ import { internal } from '../../src/convex/_generated/api';
 import schema from '../../src/convex/schema';
 import * as emailService from '../../src/convex/emails/sendEmail';
 
+// TYPES
+import type { Id } from '../../src/convex/_generated/dataModel';
+
 const modules = import.meta.glob('../../src/convex/**/*.ts');
 
 const createCheckoutReservation =
@@ -36,6 +39,55 @@ function createTestContext() {
 	return t;
 }
 
+type ProductVariantFixture = {
+	name: string;
+	slug: string;
+	priceInCents: number;
+	trackInventory: boolean;
+	inventory: number;
+};
+
+/** One active product with a single product variant to reserve against. */
+async function insertProductVariantFixture(
+	t: ReturnType<typeof createTestContext>,
+	fixture: ProductVariantFixture
+): Promise<{ productId: Id<'products'>; productVariantId: Id<'productVariants'> }> {
+	return t.run(async (ctx) => {
+		const categoryId = await ctx.db.insert('categories', {
+			name: `${fixture.name} category`,
+			slug: `${fixture.slug}-category`,
+			status: 'active'
+		});
+		const productId = await ctx.db.insert('products', {
+			name: fixture.name,
+			slug: fixture.slug,
+			description: `${fixture.name} description`,
+			priceInCents: fixture.priceInCents,
+			categoryId,
+			images: [],
+			imageKeys: [],
+			storagePrefix: 'products',
+			trackInventory: fixture.trackInventory,
+			productVariantOptionNames: [],
+			hasPriceRange: false,
+			upsellProductIds: [],
+			status: 'active'
+		});
+		const productVariantId = await ctx.db.insert('productVariants', {
+			productId,
+			position: 0,
+			options: [],
+			sku: `${fixture.slug}-sku`,
+			imageKeys: [],
+			priceInCents: fixture.priceInCents,
+			inventory: fixture.inventory,
+			reservedInventory: 0
+		});
+
+		return { productId, productVariantId };
+	});
+}
+
 function paidEvent(
 	stripeCheckoutSessionId: string,
 	stripePaymentIntentId: string,
@@ -61,49 +113,27 @@ test('reserves tracked stock and stores a trusted immutable checkout snapshot', 
 		const now = new Date('2026-09-16T12:00:00Z');
 		vi.setSystemTime(now);
 		const t = createTestContext();
-		const [trackedProductId, untrackedProductId] = await t.run(async (ctx) => {
-			const categoryId = await ctx.db.insert('categories', {
-				name: 'Reservations',
-				slug: 'reservations',
-				status: 'active'
-			});
-			const fields = {
-				description: 'Original description',
-				categoryId,
-				images: [],
-				storagePrefix: 'products',
-				reservedInventory: 0,
-				upsellProductIds: [],
-				status: 'active' as const
-			};
-			return Promise.all([
-				ctx.db.insert('products', {
-					...fields,
-					name: 'Tracked',
-					slug: 'tracked',
-					priceInCents: 1250,
-					imageKeys: ['https://example.com/tracked.jpg'],
-					trackInventory: true,
-					inventory: 3
-				}),
-				ctx.db.insert('products', {
-					...fields,
-					name: 'Unlimited',
-					slug: 'unlimited',
-					priceInCents: 500,
-					imageKeys: [],
-					trackInventory: false,
-					inventory: 0
-				})
-			]);
+		const tracked = await insertProductVariantFixture(t, {
+			name: 'Tracked',
+			slug: 'tracked',
+			priceInCents: 1250,
+			trackInventory: true,
+			inventory: 3
+		});
+		const untracked = await insertProductVariantFixture(t, {
+			name: 'Unlimited',
+			slug: 'unlimited',
+			priceInCents: 500,
+			trackInventory: false,
+			inventory: 0
 		});
 		const buyer = t.withIdentity({ subject: 'buyer', tokenIdentifier: 'issuer|buyer' });
 		const reservation = await buyer.mutation(createCheckoutReservation, {
 			receiptToken: 'reservation-receipt',
 			items: [
-				{ productId: trackedProductId, quantity: 1 },
-				{ productId: trackedProductId, quantity: 1 },
-				{ productId: untrackedProductId, quantity: 99 }
+				{ productVariantId: tracked.productVariantId, quantity: 1 },
+				{ productVariantId: tracked.productVariantId, quantity: 1 },
+				{ productVariantId: untracked.productVariantId, quantity: 99 }
 			],
 			firstName: 'Ada',
 			lastName: 'Lovelace',
@@ -121,15 +151,21 @@ test('reserves tracked stock and stores a trusted immutable checkout snapshot', 
 		expect(reservation.checkout.items).toEqual(
 			expect.arrayContaining([
 				{
-					productId: trackedProductId,
+					productId: tracked.productId,
+					productVariantId: tracked.productVariantId,
 					name: 'Tracked',
+					productVariantLabel: '',
+					sku: 'tracked-sku',
 					quantity: 2,
 					unitPriceInCents: 1250,
-					imageUrl: 'https://example.com/tracked.jpg'
+					imageUrl: ''
 				},
 				{
-					productId: untrackedProductId,
+					productId: untracked.productId,
+					productVariantId: untracked.productVariantId,
 					name: 'Unlimited',
+					productVariantLabel: '',
+					sku: 'unlimited-sku',
 					quantity: 99,
 					unitPriceInCents: 500,
 					imageUrl: ''
@@ -139,8 +175,10 @@ test('reserves tracked stock and stores a trusted immutable checkout snapshot', 
 		expect(reservation.checkout.items[0]).not.toHaveProperty('trackInventory');
 
 		await t.run(async (ctx) => {
-			expect(await ctx.db.get(trackedProductId)).toMatchObject({ reservedInventory: 2 });
-			expect(await ctx.db.get(untrackedProductId)).toMatchObject({ reservedInventory: 0 });
+			expect(await ctx.db.get(tracked.productVariantId)).toMatchObject({ reservedInventory: 2 });
+			expect(await ctx.db.get(untracked.productVariantId)).toMatchObject({
+				reservedInventory: 0
+			});
 			const stored = await ctx.db.get(reservation.reservationId);
 			expect(stored).toMatchObject({ status: 'active' });
 			expect(stored).not.toHaveProperty('checkout');
@@ -150,24 +188,31 @@ test('reserves tracked stock and stores a trusted immutable checkout snapshot', 
 			expect(stored?.items).toEqual(
 				expect.arrayContaining([
 					{
-						productId: trackedProductId,
+						productId: tracked.productId,
+						productVariantId: tracked.productVariantId,
 						name: 'Tracked',
+						productVariantLabel: '',
+						sku: 'tracked-sku',
 						unitPriceInCents: 1250,
 						quantity: 2,
 						trackInventory: true
 					},
 					{
-						productId: untrackedProductId,
+						productId: untracked.productId,
+						productVariantId: untracked.productVariantId,
 						name: 'Unlimited',
+						productVariantLabel: '',
+						sku: 'unlimited-sku',
 						unitPriceInCents: 500,
 						quantity: 99,
 						trackInventory: false
 					}
 				])
 			);
-			await ctx.db.patch(trackedProductId, { name: 'Changed', priceInCents: 9999 });
+			await ctx.db.patch(tracked.productId, { name: 'Changed' });
+			await ctx.db.patch(tracked.productVariantId, { priceInCents: 9999 });
 			const snapshot = (await ctx.db.get(reservation.reservationId))?.items.find(
-				(item) => item.productId === trackedProductId
+				(item) => item.productVariantId === tracked.productVariantId
 			);
 			expect(snapshot).toMatchObject({
 				name: 'Tracked',
@@ -182,40 +227,27 @@ test('reserves tracked stock and stores a trusted immutable checkout snapshot', 
 			})
 		).toBe(true);
 		await t.run(async (ctx) => {
-			expect(await ctx.db.get(trackedProductId)).toMatchObject({ reservedInventory: 0 });
-			expect(await ctx.db.get(untrackedProductId)).toMatchObject({ reservedInventory: 0 });
+			expect(await ctx.db.get(tracked.productVariantId)).toMatchObject({ reservedInventory: 0 });
+			expect(await ctx.db.get(untracked.productVariantId)).toMatchObject({
+				reservedInventory: 0
+			});
 		});
 	} finally {
 		vi.useRealTimers();
 	}
 });
 
-test('competing reservations cannot oversell tracked inventory', async () => {
+test('competing reservations cannot oversell tracked product variant inventory', async () => {
 	const t = createTestContext();
-	const productId = await t.run(async (ctx) => {
-		const categoryId = await ctx.db.insert('categories', {
-			name: 'Last item',
-			slug: 'last-item',
-			status: 'active'
-		});
-		return ctx.db.insert('products', {
-			name: 'Last item',
-			slug: 'only-one',
-			description: 'One remains',
-			priceInCents: 1000,
-			categoryId,
-			images: [],
-			imageKeys: [],
-			storagePrefix: 'products',
-			trackInventory: true,
-			inventory: 1,
-			reservedInventory: 0,
-			upsellProductIds: [],
-			status: 'active'
-		});
+	const { productVariantId } = await insertProductVariantFixture(t, {
+		name: 'Last item',
+		slug: 'only-one',
+		priceInCents: 1000,
+		trackInventory: true,
+		inventory: 1
 	});
 	const input = {
-		items: [{ productId, quantity: 1 }],
+		items: [{ productVariantId, quantity: 1 }],
 		firstName: 'Ada',
 		lastName: 'Lovelace',
 		email: 'ada@example.com',
@@ -231,39 +263,24 @@ test('competing reservations cannot oversell tracked inventory', async () => {
 	const rejected = results.find((result) => result.status === 'rejected');
 	expect(rejected?.reason).toMatchObject({ data: { code: 'ORDER_PRODUCT_UNAVAILABLE' } });
 	await t.run(async (ctx) => {
-		expect(await ctx.db.get(productId)).toMatchObject({ reservedInventory: 1 });
+		expect(await ctx.db.get(productVariantId)).toMatchObject({ reservedInventory: 1 });
 		expect(await ctx.db.query('checkoutReservations').take(2)).toHaveLength(1);
 	});
 });
 
-test('rejects a reservation when tracked inventory is zero', async () => {
+test('rejects a reservation when tracked product variant inventory is zero', async () => {
 	const t = createTestContext();
-	const productId = await t.run(async (ctx) => {
-		const categoryId = await ctx.db.insert('categories', {
-			name: 'Sold out',
-			slug: 'sold-out',
-			status: 'active'
-		});
-		return ctx.db.insert('products', {
-			name: 'Sold out item',
-			slug: 'sold-out-item',
-			description: 'Nothing left',
-			priceInCents: 1000,
-			categoryId,
-			images: [],
-			imageKeys: [],
-			storagePrefix: 'products',
-			trackInventory: true,
-			inventory: 0,
-			reservedInventory: 0,
-			upsellProductIds: [],
-			status: 'active'
-		});
+	const { productVariantId } = await insertProductVariantFixture(t, {
+		name: 'Sold out',
+		slug: 'sold-out-item',
+		priceInCents: 1000,
+		trackInventory: true,
+		inventory: 0
 	});
 	await expect(
 		t.mutation(createCheckoutReservation, {
 			receiptToken: 'sold-out-reservation',
-			items: [{ productId, quantity: 1 }],
+			items: [{ productVariantId, quantity: 1 }],
 			firstName: 'Ada',
 			lastName: 'Lovelace',
 			email: 'ada@example.com',
@@ -272,7 +289,10 @@ test('rejects a reservation when tracked inventory is zero', async () => {
 		})
 	).rejects.toMatchObject({ data: { code: 'ORDER_PRODUCT_UNAVAILABLE' } });
 	await t.run(async (ctx) => {
-		expect(await ctx.db.get(productId)).toMatchObject({ inventory: 0, reservedInventory: 0 });
+		expect(await ctx.db.get(productVariantId)).toMatchObject({
+			inventory: 0,
+			reservedInventory: 0
+		});
 		expect(await ctx.db.query('checkoutReservations').take(1)).toEqual([]);
 	});
 });
@@ -283,30 +303,15 @@ test('association, release, and expiration cleanup are idempotent', async () => 
 		const now = new Date('2026-09-16T12:00:00Z');
 		vi.setSystemTime(now);
 		const t = createTestContext();
-		const productId = await t.run(async (ctx) => {
-			const categoryId = await ctx.db.insert('categories', {
-				name: 'Lifecycle',
-				slug: 'lifecycle',
-				status: 'active'
-			});
-			return ctx.db.insert('products', {
-				name: 'Lifecycle product',
-				slug: 'lifecycle-product',
-				description: 'Lifecycle',
-				priceInCents: 1000,
-				categoryId,
-				images: [],
-				imageKeys: [],
-				storagePrefix: 'products',
-				trackInventory: true,
-				inventory: 4,
-				reservedInventory: 0,
-				upsellProductIds: [],
-				status: 'active'
-			});
+		const { productVariantId } = await insertProductVariantFixture(t, {
+			name: 'Lifecycle product',
+			slug: 'lifecycle-product',
+			priceInCents: 1000,
+			trackInventory: true,
+			inventory: 4
 		});
 		const input = {
-			items: [{ productId, quantity: 1 }],
+			items: [{ productVariantId, quantity: 1 }],
 			firstName: 'Ada',
 			lastName: 'Lovelace',
 			email: 'ada@example.com',
@@ -320,7 +325,7 @@ test('association, release, and expiration cleanup are idempotent', async () => 
 		const second = await t.mutation(createCheckoutReservation, {
 			...input,
 			receiptToken: 'second',
-			items: [{ productId, quantity: 2 }]
+			items: [{ productVariantId, quantity: 2 }]
 		});
 		const firstAssociation = {
 			reservationId: first.reservationId,
@@ -357,13 +362,15 @@ test('association, release, and expiration cleanup are idempotent', async () => 
 		).rejects.toMatchObject({
 			data: { code: 'CHECKOUT_RESERVATION_CONFLICT' }
 		});
-		expect(await t.run((ctx) => ctx.db.get(productId))).toMatchObject({ reservedInventory: 2 });
+		expect(await t.run((ctx) => ctx.db.get(productVariantId))).toMatchObject({
+			reservedInventory: 2
+		});
 
 		vi.setSystemTime(new Date(now.getTime() + 31 * 60_000));
 		expect(await t.mutation(deleteExpiredCheckoutReservationsCron, {})).toBe(1);
 		expect(await t.mutation(deleteExpiredCheckoutReservationsCron, {})).toBe(0);
 		await t.run(async (ctx) => {
-			expect(await ctx.db.get(productId)).toMatchObject({ reservedInventory: 0 });
+			expect(await ctx.db.get(productVariantId)).toMatchObject({ reservedInventory: 0 });
 			expect(await ctx.db.get(first.reservationId)).toMatchObject({ status: 'released' });
 			expect(await ctx.db.get(second.reservationId)).toMatchObject({ status: 'released' });
 		});
@@ -376,46 +383,25 @@ test('completes one paid reservation exactly once and skips untracked inventory'
 	const emails = vi.spyOn(emailService, 'sendEmail');
 	try {
 		const t = createTestContext();
-		const [trackedProductId, untrackedProductId] = await t.run(async (ctx) => {
-			const categoryId = await ctx.db.insert('categories', {
-				name: 'Paid reservations',
-				slug: 'paid-reservations',
-				status: 'active'
-			});
-			const fields = {
-				description: 'Completion test',
-				categoryId,
-				images: [],
-				imageKeys: [],
-				storagePrefix: 'products',
-				reservedInventory: 0,
-				upsellProductIds: [],
-				status: 'active' as const
-			};
-			return Promise.all([
-				ctx.db.insert('products', {
-					...fields,
-					name: 'Tracked completion',
-					slug: 'tracked-completion',
-					priceInCents: 1200,
-					trackInventory: true,
-					inventory: 3
-				}),
-				ctx.db.insert('products', {
-					...fields,
-					name: 'Unlimited completion',
-					slug: 'unlimited-completion',
-					priceInCents: 100,
-					trackInventory: false,
-					inventory: 0
-				})
-			]);
+		const tracked = await insertProductVariantFixture(t, {
+			name: 'Tracked completion',
+			slug: 'tracked-completion',
+			priceInCents: 1200,
+			trackInventory: true,
+			inventory: 3
+		});
+		const untracked = await insertProductVariantFixture(t, {
+			name: 'Unlimited completion',
+			slug: 'unlimited-completion',
+			priceInCents: 100,
+			trackInventory: false,
+			inventory: 0
 		});
 		const reservation = await t.mutation(createCheckoutReservation, {
 			receiptToken: 'paid-reservation',
 			items: [
-				{ productId: trackedProductId, quantity: 2 },
-				{ productId: untrackedProductId, quantity: 4 }
+				{ productVariantId: tracked.productVariantId, quantity: 2 },
+				{ productVariantId: untracked.productVariantId, quantity: 4 }
 			],
 			firstName: 'Ada',
 			lastName: 'Lovelace',
@@ -447,11 +433,11 @@ test('completes one paid reservation exactly once and skips untracked inventory'
 		expect(orderId).not.toBeNull();
 		expect(emails).toHaveBeenCalledTimes(2);
 		await t.run(async (ctx) => {
-			expect(await ctx.db.get(trackedProductId)).toMatchObject({
+			expect(await ctx.db.get(tracked.productVariantId)).toMatchObject({
 				inventory: 1,
 				reservedInventory: 0
 			});
-			expect(await ctx.db.get(untrackedProductId)).toMatchObject({
+			expect(await ctx.db.get(untracked.productVariantId)).toMatchObject({
 				inventory: 0,
 				reservedInventory: 0
 			});
@@ -466,30 +452,16 @@ test('completes one paid reservation exactly once and skips untracked inventory'
 
 test('leaves an unpaid reservation active and refuses payment after release', async () => {
 	const t = createTestContext();
-	const productId = await t.run(async (ctx) =>
-		ctx.db.insert('products', {
-			name: 'Out of order event',
-			slug: 'out-of-order-event',
-			description: 'Out of order test',
-			priceInCents: 1000,
-			categoryId: await ctx.db.insert('categories', {
-				name: 'Out of order',
-				slug: 'out-of-order',
-				status: 'active'
-			}),
-			images: [],
-			imageKeys: [],
-			storagePrefix: 'products',
-			trackInventory: true,
-			inventory: 1,
-			reservedInventory: 0,
-			upsellProductIds: [],
-			status: 'active'
-		})
-	);
+	const { productVariantId } = await insertProductVariantFixture(t, {
+		name: 'Out of order event',
+		slug: 'out-of-order-event',
+		priceInCents: 1000,
+		trackInventory: true,
+		inventory: 1
+	});
 	const reservation = await t.mutation(createCheckoutReservation, {
 		receiptToken: 'out-of-order-reservation',
-		items: [{ productId, quantity: 1 }],
+		items: [{ productVariantId, quantity: 1 }],
 		firstName: 'Ada',
 		lastName: 'Lovelace',
 		email: 'ada@example.com',
@@ -514,7 +486,7 @@ test('leaves an unpaid reservation active and refuses payment after release', as
 			payment: { ...payment, paymentStatus: 'unpaid' }
 		})
 	).toBeNull();
-	expect(await t.run((ctx) => ctx.db.get(productId))).toMatchObject({
+	expect(await t.run((ctx) => ctx.db.get(productVariantId))).toMatchObject({
 		inventory: 1,
 		reservedInventory: 1
 	});
@@ -527,36 +499,25 @@ test('leaves an unpaid reservation active and refuses payment after release', as
 		})
 	).rejects.toMatchObject({ data: { code: 'CHECKOUT_RESERVATION_CONFLICT' } });
 	await t.run(async (ctx) => {
-		expect(await ctx.db.get(productId)).toMatchObject({ inventory: 1, reservedInventory: 0 });
+		expect(await ctx.db.get(productVariantId)).toMatchObject({
+			inventory: 1,
+			reservedInventory: 0
+		});
 		expect(await ctx.db.query('orders').collect()).toEqual([]);
 	});
 });
 
 test('rejects a payment already consumed by a competing reservation', async () => {
 	const t = createTestContext();
-	const productId = await t.run(async (ctx) =>
-		ctx.db.insert('products', {
-			name: 'Competing payment',
-			slug: 'competing-payment',
-			description: 'Competing payment test',
-			priceInCents: 1000,
-			categoryId: await ctx.db.insert('categories', {
-				name: 'Competing completion',
-				slug: 'competing-completion',
-				status: 'active'
-			}),
-			images: [],
-			imageKeys: [],
-			storagePrefix: 'products',
-			trackInventory: true,
-			inventory: 2,
-			reservedInventory: 0,
-			upsellProductIds: [],
-			status: 'active'
-		})
-	);
+	const { productVariantId } = await insertProductVariantFixture(t, {
+		name: 'Competing payment',
+		slug: 'competing-payment',
+		priceInCents: 1000,
+		trackInventory: true,
+		inventory: 2
+	});
 	const input = {
-		items: [{ productId, quantity: 1 }],
+		items: [{ productVariantId, quantity: 1 }],
 		firstName: 'Ada',
 		lastName: 'Lovelace',
 		email: 'ada@example.com',
@@ -604,38 +565,27 @@ test('rejects a payment already consumed by a competing reservation', async () =
 		})
 	).rejects.toThrow('Payment already belongs to another order.');
 	await t.run(async (ctx) => {
-		expect(await ctx.db.get(productId)).toMatchObject({ inventory: 1, reservedInventory: 1 });
+		expect(await ctx.db.get(productVariantId)).toMatchObject({
+			inventory: 1,
+			reservedInventory: 1
+		});
 		expect(await ctx.db.get(second.reservationId)).toMatchObject({ status: 'active' });
 		expect(await ctx.db.query('orders').collect()).toHaveLength(1);
 	});
 });
 
-test('rolls back completion when reserved inventory is inconsistent', async () => {
+test('rolls back completion when reserved product variant inventory is inconsistent', async () => {
 	const t = createTestContext();
-	const productId = await t.run(async (ctx) =>
-		ctx.db.insert('products', {
-			name: 'Insufficient completion',
-			slug: 'insufficient-completion',
-			description: 'Insufficient test',
-			priceInCents: 1000,
-			categoryId: await ctx.db.insert('categories', {
-				name: 'Insufficient',
-				slug: 'insufficient',
-				status: 'active'
-			}),
-			images: [],
-			imageKeys: [],
-			storagePrefix: 'products',
-			trackInventory: true,
-			inventory: 1,
-			reservedInventory: 0,
-			upsellProductIds: [],
-			status: 'active'
-		})
-	);
+	const { productVariantId } = await insertProductVariantFixture(t, {
+		name: 'Insufficient completion',
+		slug: 'insufficient-completion',
+		priceInCents: 1000,
+		trackInventory: true,
+		inventory: 1
+	});
 	const reservation = await t.mutation(createCheckoutReservation, {
 		receiptToken: 'insufficient-reservation',
-		items: [{ productId, quantity: 1 }],
+		items: [{ productVariantId, quantity: 1 }],
 		firstName: 'Ada',
 		lastName: 'Lovelace',
 		email: 'ada@example.com',
@@ -647,7 +597,7 @@ test('rolls back completion when reserved inventory is inconsistent', async () =
 		stripeCheckoutSessionId: 'cs_insufficient',
 		expiresAt: reservation.expiresAt
 	});
-	await t.run((ctx) => ctx.db.patch(productId, { inventory: 0 }));
+	await t.run((ctx) => ctx.db.patch(productVariantId, { inventory: 0 }));
 	await expect(
 		t.mutation(completeCheckoutReservation, {
 			reservationId: reservation.reservationId,
@@ -661,7 +611,10 @@ test('rolls back completion when reserved inventory is inconsistent', async () =
 		})
 	).rejects.toThrow('Checkout reservation inventory invariant violated.');
 	await t.run(async (ctx) => {
-		expect(await ctx.db.get(productId)).toMatchObject({ inventory: 0, reservedInventory: 1 });
+		expect(await ctx.db.get(productVariantId)).toMatchObject({
+			inventory: 0,
+			reservedInventory: 1
+		});
 		expect(await ctx.db.get(reservation.reservationId)).toMatchObject({ status: 'active' });
 		expect(await ctx.db.query('orders').collect()).toEqual([]);
 	});
@@ -669,30 +622,16 @@ test('rolls back completion when reserved inventory is inconsistent', async () =
 
 test('rejects payment created after an active reservation expires', async () => {
 	const t = createTestContext();
-	const productId = await t.run(async (ctx) =>
-		ctx.db.insert('products', {
-			name: 'Expired payment',
-			slug: 'expired-payment',
-			description: 'Expired payment test',
-			priceInCents: 1000,
-			categoryId: await ctx.db.insert('categories', {
-				name: 'Expired payment',
-				slug: 'expired-payment',
-				status: 'active'
-			}),
-			images: [],
-			imageKeys: [],
-			storagePrefix: 'products',
-			trackInventory: true,
-			inventory: 1,
-			reservedInventory: 0,
-			upsellProductIds: [],
-			status: 'active'
-		})
-	);
+	const { productVariantId } = await insertProductVariantFixture(t, {
+		name: 'Expired payment',
+		slug: 'expired-payment',
+		priceInCents: 1000,
+		trackInventory: true,
+		inventory: 1
+	});
 	const reservation = await t.mutation(createCheckoutReservation, {
 		receiptToken: 'expired-payment-reservation',
-		items: [{ productId, quantity: 1 }],
+		items: [{ productVariantId, quantity: 1 }],
 		firstName: 'Ada',
 		lastName: 'Lovelace',
 		email: 'ada@example.com',
@@ -719,7 +658,10 @@ test('rejects payment created after an active reservation expires', async () => 
 		})
 	).rejects.toMatchObject({ data: { code: 'CHECKOUT_RESERVATION_CONFLICT' } });
 	await t.run(async (ctx) => {
-		expect(await ctx.db.get(productId)).toMatchObject({ inventory: 1, reservedInventory: 1 });
+		expect(await ctx.db.get(productVariantId)).toMatchObject({
+			inventory: 1,
+			reservedInventory: 1
+		});
 		expect(await ctx.db.get(reservation.reservationId)).toMatchObject({ status: 'active' });
 		expect(await ctx.db.query('orders').take(1)).toEqual([]);
 	});

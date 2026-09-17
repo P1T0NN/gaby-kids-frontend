@@ -28,32 +28,45 @@ function createTestContext() {
 test('prepares checkout without orders, then creates one paid snapshot with protected access', async () => {
 	const t = createTestContext();
 	const owner = t.withIdentity({ subject: 'buyer', tokenIdentifier: 'issuer|buyer' });
-	const productId = await t.run(async (ctx) =>
-		ctx.db.insert('products', {
+	const { productId, productVariantId } = await t.run(async (ctx) => {
+		const categoryId = await ctx.db.insert('categories', {
+			name: 'Orders',
+			slug: 'orders',
+			status: 'active'
+		});
+		const insertedProductId = await ctx.db.insert('products', {
 			name: 'Snapshot product',
 			slug: 'snapshot-product',
 			description: 'Original details',
 			priceInCents: 1299,
-			categoryId: await ctx.db.insert('categories', {
-				name: 'Orders',
-				slug: 'orders',
-				status: 'active'
-			}),
+			categoryId,
 			images: [],
 			imageKeys: [],
 			storagePrefix: 'products',
 			trackInventory: true,
-			inventory: 0,
-			reservedInventory: 0,
+			productVariantOptionNames: [],
+			hasPriceRange: false,
 			upsellProductIds: [],
 			status: 'active'
-		})
-	);
+		});
+		const insertedProductVariantId = await ctx.db.insert('productVariants', {
+			productId: insertedProductId,
+			position: 0,
+			options: [],
+			sku: 'snapshot-product-sku',
+			imageKeys: [],
+			priceInCents: 1299,
+			inventory: 0,
+			reservedInventory: 0
+		});
+
+		return { productId: insertedProductId, productVariantId: insertedProductVariantId };
+	});
 	const input = {
 		receiptToken: 'test-receipt-token',
 		items: [
-			{ productId, quantity: 1 },
-			{ productId, quantity: 1 }
+			{ productVariantId, quantity: 1 },
+			{ productVariantId, quantity: 1 }
 		],
 		firstName: 'Ada',
 		lastName: 'Lovelace',
@@ -74,8 +87,8 @@ test('prepares checkout without orders, then creates one paid snapshot with prot
 		owner.query(prepare, {
 			...input,
 			items: [
-				{ productId, quantity: 99 },
-				{ productId, quantity: 1 }
+				{ productVariantId, quantity: 99 },
+				{ productVariantId, quantity: 1 }
 			]
 		})
 	).rejects.toMatchObject({ data: { code: 'INVALID_ORDER_DATA' } });
@@ -106,9 +119,10 @@ test('prepares checkout without orders, then creates one paid snapshot with prot
 	await expect(
 		t.mutation(create, { ...paid, payment: { ...payment, totalInCents: 1 } })
 	).rejects.toThrow();
-	await t.run((ctx) =>
-		ctx.db.patch(productId, { name: 'Changed', priceInCents: 9999, status: 'archived' })
-	);
+	await t.run(async (ctx) => {
+		await ctx.db.patch(productId, { name: 'Changed', status: 'archived' });
+		await ctx.db.patch(productVariantId, { priceInCents: 9999 });
+	});
 	const [orderId, duplicate] = await Promise.all([
 		t.mutation(create, paid),
 		t.mutation(create, paid)
@@ -156,32 +170,45 @@ test('verified webhook creates an order only after payment and queues emails onc
 	vi.stubEnv('STRIPE_WEBHOOK_SECRET', 'whsec_local');
 	const { stripe } = await import('../../src/convex/stripe/stripe.config');
 	const t = createTestContext();
-	const productId = await t.run(async (ctx) =>
-		ctx.db.insert('products', {
+	const { productId, productVariantId } = await t.run(async (ctx) => {
+		const categoryId = await ctx.db.insert('categories', {
+			name: 'Test',
+			slug: 'test',
+			status: 'active'
+		});
+		const insertedProductId = await ctx.db.insert('products', {
 			name: 'Paid product',
 			slug: 'paid',
 			description: 'Test',
 			priceInCents: 1200,
-			categoryId: await ctx.db.insert('categories', {
-				name: 'Test',
-				slug: 'test',
-				status: 'active'
-			}),
+			categoryId,
 			images: [],
 			imageKeys: [],
 			storagePrefix: 'products',
 			trackInventory: true,
-			inventory: 10,
-			reservedInventory: 0,
+			productVariantOptionNames: ['Color'],
+			hasPriceRange: false,
 			upsellProductIds: [],
 			status: 'active'
-		})
-	);
+		});
+		const insertedProductVariantId = await ctx.db.insert('productVariants', {
+			productId: insertedProductId,
+			position: 0,
+			options: [{ name: 'Color', value: 'Red' }],
+			sku: 'paid-sku',
+			imageKeys: [],
+			priceInCents: 1200,
+			inventory: 10,
+			reservedInventory: 0
+		});
+
+		return { productId: insertedProductId, productVariantId: insertedProductVariantId };
+	});
 	const checkout = await t.query(
 		internal.tables.orders.queries.fetchCheckoutOrder.fetchCheckoutOrder,
 		{
 			receiptToken: 'test-webhook-receipt-token',
-			items: [{ productId, quantity: 2 }],
+			items: [{ productVariantId, quantity: 2 }],
 			firstName: 'Ada',
 			lastName: 'Lovelace',
 			email: 'ada@example.com',
@@ -192,34 +219,35 @@ test('verified webhook creates an order only after payment and queues emails onc
 	);
 	vi.stubEnv('PUBLIC_ORIGIN', 'https://shop.test');
 	let sessionNumber = 0;
-	const createSession = vi.spyOn(stripe.checkout.sessions, 'create').mockImplementation(async () => {
-		sessionNumber += 1;
-		// SAFETY: this mock only supplies the Session fields read by the checkout action.
-		return {
-			id: `cs_open_${sessionNumber}`,
-			status: 'open',
-			expires_at: Math.ceil(Date.now() / 1000) + 1800,
-			url: 'https://checkout.stripe.test/session'
-		} as Stripe.Response<Stripe.Checkout.Session>;
-	});
-	const {
-		receiptToken: _receiptToken,
-		customerId: _customerId,
-		currency: _currency,
-		totalInCents: _total,
-		...input
-	} = checkout;
+	const createSession = vi
+		.spyOn(stripe.checkout.sessions, 'create')
+		.mockImplementation(async () => {
+			sessionNumber += 1;
+			// SAFETY: this mock only supplies the Session fields read by the checkout action.
+			return {
+				id: `cs_open_${sessionNumber}`,
+				status: 'open',
+				expires_at: Math.ceil(Date.now() / 1000) + 1800,
+				url: 'https://checkout.stripe.test/session'
+			} as Stripe.Response<Stripe.Checkout.Session>;
+		});
+	const input = {
+		items: checkout.items.map(({ productVariantId, quantity }) => ({
+			productVariantId,
+			quantity
+		})),
+		firstName: checkout.firstName,
+		lastName: checkout.lastName,
+		email: checkout.email,
+		phone: checkout.phone,
+		fulfillmentMethod: checkout.fulfillmentMethod,
+		shippingAddress: checkout.shippingAddress
+	};
 	const buyer = t.withIdentity({ subject: 'buyer', tokenIdentifier: 'issuer|buyer' });
 	// Submit the same cart twice: both requests create a fresh Session and reservation.
 	const action = api.stripe.actions.createStripeCheckout.createStripeCheckout;
-	await buyer.action(action, {
-		...input,
-		items: input.items.map(({ productId, quantity }) => ({ productId, quantity }))
-	});
-	await buyer.action(action, {
-		...input,
-		items: input.items.map(({ productId, quantity }) => ({ productId, quantity }))
-	});
+	await buyer.action(action, { ...input });
+	await buyer.action(action, { ...input });
 	expect(createSession).toHaveBeenCalledTimes(2);
 	expect(createSession.mock.calls[0]).toHaveLength(1);
 	const metadata = createSession.mock.calls[0][0]!.metadata!;
@@ -228,7 +256,9 @@ test('verified webhook creates an order only after payment and queues emails onc
 	expect(createSession.mock.calls[1][0]!.metadata!.receiptToken).not.toBe(receiptToken);
 	expect(await t.run((ctx) => ctx.db.query('orders').collect())).toEqual([]);
 	expect(await t.run((ctx) => ctx.db.query('checkoutReservations').collect())).toHaveLength(2);
-	expect(await t.run((ctx) => ctx.db.get(productId))).toMatchObject({ reservedInventory: 4 });
+	expect(await t.run((ctx) => ctx.db.get(productVariantId))).toMatchObject({
+		reservedInventory: 4
+	});
 	createSession.mockRestore();
 	const session = {
 		id: 'cs_open_1',
@@ -256,7 +286,8 @@ test('verified webhook creates an order only after payment and queues emails onc
 				amount_subtotal: 2400,
 				amount_tax: 0,
 				metadata: {},
-				description: 'Paid product',
+				// Stripe copies the display name (product plus variant label) here.
+				description: 'Paid product — Red',
 				quantity: 2,
 				amount_total: 2400,
 				currency: session.currency,
@@ -288,7 +319,13 @@ test('verified webhook creates an order only after payment and queues emails onc
 						images: [],
 						livemode: false,
 						marketing_features: [],
-						metadata: { productId },
+						metadata: {
+							productId,
+							productVariantId,
+							productName: 'Paid product',
+							productVariantLabel: 'Red',
+							sku: 'paid-sku'
+						},
 						name: 'Paid product',
 						package_dimensions: null,
 						shippable: null,
@@ -359,7 +396,9 @@ test('verified webhook creates an order only after payment and queues emails onc
 			shippingAddress: { street: 'Street', city: 'City' }
 		});
 		expect(await t.run((ctx) => ctx.db.query('orders').collect())).toHaveLength(1);
-		expect(await t.run((ctx) => ctx.db.query('orderItems').collect())).toHaveLength(1);
+		expect(await t.run((ctx) => ctx.db.query('orderItems').collect())).toMatchObject([
+			{ name: 'Paid product', productVariantLabel: 'Red', sku: 'paid-sku', quantity: 2 }
+		]);
 		expect(emails).toHaveBeenCalledTimes(2);
 		expect(new Set(emails.mock.calls.map(([, message]) => message.idempotencyKey)).size).toBe(2);
 	} finally {

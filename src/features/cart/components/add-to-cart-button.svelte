@@ -19,7 +19,8 @@
 	import type { Id } from '@convex/_generated/dataModel.js';
 
 	type Props = Omit<ButtonProps, 'children' | 'onclick' | 'href' | 'type'> & {
-		item: Omit<CartItem, 'quantity'> & { id: Id<'products'> };
+		item: Omit<CartItem, 'quantity'>;
+		productId: Id<'products'>;
 		name: string;
 		children?: Snippet;
 		openCartAfterAdd?: boolean;
@@ -31,6 +32,7 @@
 
 	let {
 		item,
+		productId,
 		name,
 		children,
 		openCartAfterAdd = false,
@@ -56,9 +58,7 @@
 				? m['CartFeature.Cart.temporarilyUnavailable']()
 				: ''
 	);
-	const buttonAriaLabel = $derived(
-		isUnavailable ? `${name} — ${unavailableLabel}` : ariaLabel
-	);
+	const buttonAriaLabel = $derived(isUnavailable ? `${name} — ${unavailableLabel}` : ariaLabel);
 
 	function addToCart(): void {
 		if (cart.addItem(item, toasterId)) {
@@ -69,7 +69,7 @@
 			});
 			onAdded?.();
 			if (showUpsellsAfterAdd) {
-				openUpsells({ _id: item.id, name }, openCartAfterAdd);
+				openUpsells({ _id: productId, name }, openCartAfterAdd);
 			} else if (openCartAfterAdd) {
 				window.dispatchEvent(new Event('cart:open'));
 			}

@@ -18,14 +18,14 @@ export const toProductResult = async (product: Product): Promise<ProductResult> 
 		name: product.name,
 		slug: product.slug,
 		description: product.description,
+		productVariantOptionNames: product.productVariantOptionNames,
 		priceInCents: product.priceInCents ?? 0,
+		hasPriceRange: product.hasPriceRange,
 		categoryId: product.categoryId,
 		images: await resolveStoredFileUrls(product.imageKeys ?? product.images),
 		imageKeys: product.imageKeys ?? product.images,
 		storagePrefix: product.storagePrefix,
 		trackInventory: product.trackInventory,
-		inventory: product.inventory,
-		reservedInventory: product.reservedInventory,
 		upsellProductIds: product.upsellProductIds,
 		status: product.status
 	};

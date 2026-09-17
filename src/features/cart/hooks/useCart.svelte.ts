@@ -23,7 +23,7 @@ export function useCart() {
 	}
 
 	function addItem(item: Omit<CartItem, 'quantity'>, toasterId?: string): boolean {
-		if (!item.id.trim()) return false;
+		if (!item.productVariantId.trim()) return false;
 		if (!localStorage.read()) return false;
 
 		const nextItems = addCartItem(localStorage.value, item);
@@ -40,10 +40,12 @@ export function useCart() {
 		return localStorage.set(nextItems);
 	}
 
-	function setItemQuantity(id: string, quantity: number): boolean {
+	function setItemQuantity(productVariantId: string, quantity: number): boolean {
 		if (!Number.isSafeInteger(quantity) || quantity < 1) return false;
 
-		const itemIndex = localStorage.value.findIndex((item) => item.id === id);
+		const itemIndex = localStorage.value.findIndex(
+			(item) => item.productVariantId === productVariantId
+		);
 		if (itemIndex === -1) return false;
 
 		const nextItems = localStorage.value.map((item, index) =>
@@ -54,14 +56,18 @@ export function useCart() {
 		return localStorage.set(nextItems);
 	}
 
-	function removeItem(id: string): boolean {
-		const nextItems = localStorage.value.filter((item) => item.id !== id);
+	function removeItem(productVariantId: string): boolean {
+		const nextItems = localStorage.value.filter(
+			(item) => item.productVariantId !== productVariantId
+		);
 		return nextItems.length !== localStorage.value.length && localStorage.set(nextItems);
 	}
 
-	function removeInvalidItems(ids: string[]): boolean {
+	function removeInvalidItems(productVariantIds: string[]): boolean {
 		if (!localStorage.read()) return false;
-		const nextItems = localStorage.value.filter((item) => !ids.includes(item.id));
+		const nextItems = localStorage.value.filter(
+			(item) => !productVariantIds.includes(item.productVariantId)
+		);
 		return nextItems.length !== localStorage.value.length && localStorage.set(nextItems);
 	}
 

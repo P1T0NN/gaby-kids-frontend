@@ -60,10 +60,10 @@ test('reuses one category across products', async () => {
 		await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
 			name,
 			description: `${name} description.`,
-			priceInCents: 100,
 			trackInventory: true,
-			inventory: 0,
-			categoryId: category._id
+			categoryId: category._id,
+			productVariantOptionNames: [],
+			productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory: 0 }]
 		});
 	}
 	const otherCategory = await admin.mutation(
@@ -73,10 +73,10 @@ test('reuses one category across products', async () => {
 	await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
 		name: 'Canvas Backpack',
 		description: 'A product in another category.',
-		priceInCents: 100,
 		trackInventory: true,
-		inventory: 0,
-		categoryId: otherCategory._id
+		categoryId: otherCategory._id,
+		productVariantOptionNames: [],
+		productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory: 0 }]
 	});
 
 	const options = await t.query(
@@ -129,10 +129,10 @@ test('validates category slugs, assignments, and archive behavior', async () => 
 	const product = await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
 		name: 'Archive-safe product',
 		description: 'Its category assignment is retained when the category is archived.',
-		priceInCents: 100,
 		trackInventory: true,
-		inventory: 0,
-		categoryId: category._id
+		categoryId: category._id,
+		productVariantOptionNames: [],
+		productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory: 0 }]
 	});
 
 	await admin.mutation(api.tables.categories.mutations.updateCategory.updateCategory, {
@@ -246,10 +246,10 @@ test('blocks category deletion while products are assigned and preserves their r
 			await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
 				name,
 				description: `${name} description.`,
-				priceInCents: 100,
 				trackInventory: true,
-				inventory: 0,
-				categoryId: category._id
+				categoryId: category._id,
+				productVariantOptionNames: [],
+				productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory: 0 }]
 			})
 		);
 	}
@@ -307,6 +307,8 @@ test('deletes an unassigned category only for admins and writes an audit event',
 		admin.query(api.tables.categories.queries.fetchCategory.fetchCategory, { id: category._id })
 	).rejects.toMatchObject({ data: { code: 'CATEGORY_NOT_FOUND' } });
 
+	// Scheduled audit writes use real timers; give the timer a turn before draining.
+	await new Promise((resolve) => setTimeout(resolve, 0));
 	await t.finishInProgressScheduledFunctions();
 	const auditLogs = await admin.query(
 		api.auditLogs.queries.fetchAuditLogsAdmin.fetchAuditLogsAdmin,

@@ -15,7 +15,10 @@ export const createStripeCheckoutResult = v.object({
 
 export const checkoutItem = v.object({
 	productId: v.id('products'),
+	productVariantId: v.id('productVariants'),
 	name: v.string(),
+	productVariantLabel: v.string(),
+	sku: v.string(),
 	unitPriceInCents: v.number(),
 	quantity: v.number(),
 	imageUrl: v.optional(v.string())

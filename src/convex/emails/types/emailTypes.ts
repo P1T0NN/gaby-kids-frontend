@@ -36,4 +36,7 @@ export type OrderEmailData = Pick<
 	| 'totalInCents'
 >;
 
-export type OrderItemEmailData = Pick<Doc<'orderItems'>, 'name' | 'quantity' | 'unitPriceInCents'>;
+export type OrderItemEmailData = Pick<
+	Doc<'orderItems'>,
+	'name' | 'productVariantLabel' | 'sku' | 'quantity' | 'unitPriceInCents'
+>;

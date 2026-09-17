@@ -29,34 +29,36 @@
 	} from '@/shared/utils/pricing.js';
 
 	// TYPES
-	import type { CartProduct } from '@/shared/features/cart/types/cartTypes.js';
+	import type { CartProductVariant } from '@/shared/features/cart/types/cartTypes.js';
 
 	const cart = useCart();
 
 	const client = useConvexClient();
 
-	let products = $state<Promise<CartProduct[]>>();
-	let cartProducts = $state<CartProduct[]>([]);
+	let cartProductVariantsPromise = $state<Promise<CartProductVariant[]>>();
+	let cartProductVariants = $state<CartProductVariant[]>([]);
 
-	async function fetchCart(): Promise<CartProduct[]> {
-		const result = await client.query(api.tables.products.queries.fetchCart.fetchCart, {
-			ids: cart.items.map((item) => item.id)
+	async function fetchCart(): Promise<CartProductVariant[]> {
+		const result = await client.query(api.tables.productVariants.queries.fetchCart.fetchCart, {
+			productVariantIds: cart.items.map((item) => item.productVariantId)
 		});
 
 		if (result.invalidIds.length && cart.removeInvalidItems(result.invalidIds)) {
 			toast(m['CartFeature.Cart.unavailableItemsRemoved'](), { toasterId: 'cart' });
 		}
 
-		cartProducts = result.products;
-		return result.products;
+		cartProductVariants = result.items;
+		return result.items;
 	}
 	const badgeLabel = $derived(cart.totalItems > 9 ? '9+' : String(cart.totalItems));
 	const pricingItems = $derived(
 		cart.items.map((item) => {
-			const product = cartProducts.find((product) => product.id === item.id);
+			const productVariant = cartProductVariants.find(
+				(cartProductVariant) => cartProductVariant.id === item.productVariantId
+			);
 			return {
-				unitPriceInCents: product?.priceInCents ?? 0,
-				compareAtPriceInCents: product?.compareAtPriceInCents,
+				unitPriceInCents: productVariant?.priceInCents ?? 0,
+				compareAtPriceInCents: productVariant?.compareAtPriceInCents,
 				quantity: item.quantity
 			};
 		})
@@ -114,8 +116,8 @@
 	class="pt-6"
 	onOpen={() => {
 		if (cart.loaded && !cart.error && cart.items.length) {
-			cartProducts = [];
-			products = fetchCart();
+			cartProductVariants = [];
+			cartProductVariantsPromise = fetchCart();
 		}
 	}}
 	{trigger}
@@ -135,12 +137,14 @@
 				description={m['CartFeature.Cart.emptyDescription']()}
 			/>
 		{:else}
-			{#await products}
+			{#await cartProductVariantsPromise}
 				<CartLoading />
 			{:then data}
 				{@const cartItems = cart.items.flatMap((item) => {
-					const product = data?.find((product) => product.id === item.id);
-					return product ? [{ ...item, ...product }] : [];
+					const productVariant = data?.find(
+						(cartProductVariant) => cartProductVariant.id === item.productVariantId
+					);
+					return productVariant ? [{ ...item, ...productVariant }] : [];
 				})}
 				<CartItems {cartItems} />
 			{:catch}

@@ -7,7 +7,7 @@
 	import { setOpenUpsells } from '@/features/upsells/components/upsells-dialog/upsells-dialog-context.js';
 
 	let { children } = $props();
-	
+
 	let upsellsDialog: UpsellsDialog;
 	setOpenUpsells((product, openCartIfEmpty) => upsellsDialog.open(product, openCartIfEmpty));
 </script>

@@ -6,6 +6,7 @@ import { productAggregate } from '../aggregates/productAggregate.js';
 
 // HELPERS
 import { getProductPage } from '../helpers/getProductPage.js';
+import { getProductVariantSummary } from '../../productVariants/helpers/getProductVariantSummary.js';
 
 // VALIDATORS
 import { adminProductPage } from '../validators/productValidators.js';
@@ -27,7 +28,11 @@ export const fetchAllProductsAdmin = fetchOptimizedQuery({
 					const category = await ctx.db.get(product.categoryId);
 					if (!category) throw new Error('Product category invariant violated.');
 					const { _id, name, slug, status } = category;
-					return { ...product, categoryOption: { _id, name, slug, status } };
+					return {
+						...product,
+						categoryOption: { _id, name, slug, status },
+						productVariantSummary: await getProductVariantSummary(ctx, product._id)
+					};
 				})
 			)
 		};

@@ -20,12 +20,12 @@
 	import { useAnalytics } from '@/features/analytics/hooks/useAnalytics.svelte.js';
 
 	// TYPES
+	import type { FunctionReturnType } from 'convex/server';
 	import type { Doc, Id } from '@convex/_generated/dataModel.js';
 
-	type Upsell = Pick<
-		Doc<'products'>,
-		'_id' | 'name' | 'slug' | 'priceInCents' | 'compareAtPriceInCents' | 'images'
-	>;
+	type Upsell = FunctionReturnType<
+		typeof api.tables.upsells.queries.fetchProductUpsells.fetchProductUpsells
+	>[number];
 
 	const titleId = $props.id();
 

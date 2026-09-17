@@ -16,7 +16,7 @@
 	} = $props();
 </script>
 
-<section class={cn('not-last:pb-3 flex min-w-0 flex-col gap-1', className)}>
+<section class={cn('flex min-w-0 flex-col gap-1 not-last:pb-3', className)}>
 	<h2 data-native-sidebar-section-title class="px-3 text-sm font-medium text-sidebar-foreground/70">
 		{title}
 	</h2>

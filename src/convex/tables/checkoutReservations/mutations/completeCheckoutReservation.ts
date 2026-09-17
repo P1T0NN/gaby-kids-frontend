@@ -21,7 +21,7 @@ import { calculateOrderTotalInCents } from '../../../../shared/utils/pricing.js'
 import { hasDifferentItems } from '../../../../shared/features/checkoutReservations/utils/hasDifferentItems.js';
 import { hasConflictingOrder as hasConflictingOrderCheck } from '../../../../shared/features/checkoutReservations/utils/hasConflictingOrder.js';
 import { hasInvalidCheckoutSnapshot } from '../../../../shared/features/checkoutReservations/utils/hasInvalidCheckoutSnapshot.js';
-import { hasInvalidProductInventory as hasInvalidProductInventoryCheck } from '../../../../shared/features/checkoutReservations/utils/hasInvalidProductInventory.js';
+import { hasInvalidProductVariantInventory } from '../../../../shared/features/productVariants/utils/hasInvalidProductVariantInventory.js';
 import { hasInvalidStripeOrderPayment } from '../../../stripe/utils/hasInvalidStripeOrderPayment.js';
 
 // VALIDATORS
@@ -38,7 +38,11 @@ import type { BackendErrorData } from '../../../../shared/types/types.js';
 type Reservation = Doc<'checkoutReservations'>;
 type Order = Doc<'orders'>;
 type AppliedPayment = NonNullable<ReturnType<typeof applyStripeCheckoutEvent>>;
-type InventoryUpdate = { productId: Id<'products'>; inventory: number; reservedInventory: number };
+type InventoryUpdate = {
+	productVariantId: Id<'productVariants'>;
+	inventory: number;
+	reservedInventory: number;
+};
 
 /**
  * Replayed webhooks return the order the completed reservation already produced;
@@ -91,16 +95,15 @@ async function buildInventoryUpdates(
 	for (const item of items) {
 		if (!item.trackInventory) continue;
 
-		const product = await ctx.db.get(item.productId);
-		if (!product) throw new Error('Checkout reservation inventory invariant violated.');
-		if (hasInvalidProductInventoryCheck(product, item.quantity)) {
+		const productVariant = await ctx.db.get(item.productVariantId);
+		if (!productVariant || hasInvalidProductVariantInventory(productVariant, item.quantity)) {
 			throw new Error('Checkout reservation inventory invariant violated.');
 		}
 
 		updates.push({
-			productId: product._id,
-			inventory: product.inventory - item.quantity,
-			reservedInventory: product.reservedInventory - item.quantity
+			productVariantId: productVariant._id,
+			inventory: productVariant.inventory - item.quantity,
+			reservedInventory: productVariant.reservedInventory - item.quantity
 		});
 	}
 
@@ -150,7 +153,7 @@ export const completeCheckoutReservation = internalMutation({
 		const code = await allocateOrderCode(ctx);
 
 		for (const update of inventoryUpdates) {
-			await ctx.db.patch(update.productId, {
+			await ctx.db.patch(update.productVariantId, {
 				inventory: update.inventory,
 				reservedInventory: update.reservedInventory
 			});

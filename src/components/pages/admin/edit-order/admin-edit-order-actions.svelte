@@ -1,7 +1,7 @@
 <script lang="ts">
 	// LIBRARIES
 	import { m } from '@/lib/paraglide/messages';
-	
+
 	// COMPONENTS
 	import { Badge } from '@/components/ui/badge/index.js';
 	import * as Card from '@/components/ui/card/index.js';

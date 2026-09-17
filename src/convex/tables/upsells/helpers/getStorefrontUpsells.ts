@@ -4,6 +4,9 @@ import { UPSELLS_CONFIG } from '../../../../shared/features/upsells/config.js';
 // STORAGE
 import { resolveStoredFileUrls } from '../../../storage/r2.js';
 
+// HELPERS
+import { getProductVariantSummary } from '../../productVariants/helpers/getProductVariantSummary.js';
+
 // VALIDATORS
 import { storefrontUpsellResult } from '../../products/validators/productValidators.js';
 
@@ -30,21 +33,16 @@ export async function getStorefrontUpsells(
 	);
 
 	return Promise.all(
-		activeRecommendations.map(async (upsell) => {
-			const result = {
-				_id: upsell._id,
-				name: upsell.name,
-				slug: upsell.slug,
-				priceInCents: upsell.priceInCents,
-				images: await resolveStoredFileUrls((upsell.imageKeys ?? upsell.images).slice(0, 1)),
-				trackInventory: upsell.trackInventory,
-				inventory: upsell.inventory,
-				reservedInventory: upsell.reservedInventory
-			};
-
-			if (upsell.compareAtPriceInCents === undefined) return result;
-
-			return { ...result, compareAtPriceInCents: upsell.compareAtPriceInCents };
-		})
+		activeRecommendations.map(async (upsell) => ({
+			_id: upsell._id,
+			name: upsell.name,
+			slug: upsell.slug,
+			priceInCents: upsell.priceInCents,
+			compareAtPriceInCents: upsell.compareAtPriceInCents,
+			hasPriceRange: upsell.hasPriceRange,
+			images: await resolveStoredFileUrls((upsell.imageKeys ?? upsell.images).slice(0, 1)),
+			trackInventory: upsell.trackInventory,
+			productVariantSummary: await getProductVariantSummary(ctx, upsell._id)
+		}))
 	);
 }

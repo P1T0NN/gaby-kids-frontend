@@ -9,12 +9,12 @@ export async function releaseActiveReservation(
 
 	for (const item of reservation.items) {
 		if (!item.trackInventory) continue;
-		const product = await ctx.db.get(item.productId);
-		if (!product || product.reservedInventory < item.quantity) {
+		const productVariant = await ctx.db.get(item.productVariantId);
+		if (!productVariant || productVariant.reservedInventory < item.quantity) {
 			throw new Error('Checkout reservation inventory invariant violated.');
 		}
-		await ctx.db.patch(item.productId, {
-			reservedInventory: product.reservedInventory - item.quantity
+		await ctx.db.patch(item.productVariantId, {
+			reservedInventory: productVariant.reservedInventory - item.quantity
 		});
 	}
 

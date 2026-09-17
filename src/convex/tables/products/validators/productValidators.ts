@@ -7,6 +7,7 @@ import { categoryOption } from '../../categories/validators/categoryValidators.j
 
 // VALIDATORS
 import { pageValidator } from '../../../validators/pageValidator.js';
+import { productVariantResult } from '../../productVariants/validators/productVariantValidators.js';
 
 export const productStatus = literals('draft', 'active', 'archived');
 
@@ -16,38 +17,54 @@ export const productResult = v.object({
 	name: v.string(),
 	slug: v.string(),
 	description: v.string(),
+	productVariantOptionNames: v.array(v.string()),
 	priceInCents: v.number(),
 	compareAtPriceInCents: v.optional(v.number()),
+	hasPriceRange: v.boolean(),
 	categoryId: v.id('categories'),
 	images: v.array(v.string()),
 	imageKeys: v.array(v.string()),
 	storagePrefix: v.string(),
 	trackInventory: v.boolean(),
-	inventory: v.number(),
-	reservedInventory: v.number(),
 	upsellProductIds: v.array(v.id('products')),
 	status: productStatus
 });
 
-export const adminProductResult = productResult.extend({ categoryOption });
+export const productVariantSummary = v.object({
+	count: v.number(),
+	inventory: v.number(),
+	reservedInventory: v.number(),
+	/** Present only when the product has exactly one product variant. */
+	defaultProductVariantId: v.optional(v.id('productVariants'))
+});
 
-export const adminProductDetailResult = adminProductResult;
+export const adminProductResult = productResult.extend({
+	categoryOption,
+	productVariantSummary
+});
 
-export const storefrontProductResult = productResult;
+export const adminProductDetailResult = productResult.extend({
+	categoryOption,
+	productVariants: v.array(productVariantResult)
+});
 
-export const storefrontUpsellResult = productResult.pick(
-	'_id',
-	'name',
-	'slug',
-	'priceInCents',
-	'compareAtPriceInCents',
-	'images',
-	'trackInventory',
-	'inventory',
-	'reservedInventory'
-);
+export const storefrontProductResult = productResult.extend({ productVariantSummary });
 
-export const storefrontProductDetailResult = storefrontProductResult.extend({
+export const storefrontUpsellResult = productResult
+	.pick(
+		'_id',
+		'name',
+		'slug',
+		'priceInCents',
+		'compareAtPriceInCents',
+		'hasPriceRange',
+		'images',
+		'trackInventory'
+	)
+	.extend({ productVariantSummary });
+
+export const storefrontProductDetailResult = productResult.extend({
+	productVariants: v.array(productVariantResult),
 	upsells: v.array(storefrontUpsellResult)
 });
 

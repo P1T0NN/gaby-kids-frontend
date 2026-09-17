@@ -6,12 +6,15 @@ import { calculateOrderSavingsInCents } from '../../../shared/utils/pricing.js';
 
 describe('buildCheckoutLineItems', () => {
 	it('uses only the stored order snapshot fields', () => {
-		// SAFETY: this pure formatter never performs a database lookup; the test uses an opaque ID.
+		// SAFETY: this pure formatter never performs a database lookup; the test uses opaque IDs.
 		expect(
 			buildCheckoutLineItems('eur', [
 				{
 					productId: 'product' as Id<'products'>,
+					productVariantId: 'productVariant' as Id<'productVariants'>,
 					name: 'Stored name',
+					productVariantLabel: 'Red / M',
+					sku: 'SHIRT-R-M',
 					unitPriceInCents: 1299,
 					quantity: 2,
 					imageUrl: 'https://cdn.example.com/product.webp'
@@ -23,8 +26,14 @@ describe('buildCheckoutLineItems', () => {
 					currency: 'eur',
 					unit_amount: 1299,
 					product_data: {
-						name: 'Stored name',
-						metadata: { productId: 'product' },
+						name: 'Stored name — Red / M',
+						metadata: {
+							productId: 'product',
+							productVariantId: 'productVariant',
+							productName: 'Stored name',
+							productVariantLabel: 'Red / M',
+							sku: 'SHIRT-R-M'
+						},
 						images: ['https://cdn.example.com/product.webp']
 					}
 				},

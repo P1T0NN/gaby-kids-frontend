@@ -3,6 +3,7 @@ import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
 import { productStatus } from './tables/products/validators/productValidators.js';
+import { productVariantOption } from './tables/productVariants/validators/productVariantValidators.js';
 import {
 	checkoutReservationStatus,
 	reservedCheckoutItem
@@ -22,15 +23,15 @@ export const tables = {
 		name: v.string(),
 		slug: v.string(),
 		description: v.string(),
+		productVariantOptionNames: v.array(v.string()),
 		priceInCents: v.number(),
 		compareAtPriceInCents: v.optional(v.number()),
+		hasPriceRange: v.boolean(),
 		categoryId: v.id('categories'),
 		images: v.array(v.string()),
 		imageKeys: v.array(v.string()),
 		storagePrefix: v.string(),
 		trackInventory: v.boolean(),
-		inventory: v.number(),
-		reservedInventory: v.number(),
 		upsellProductIds: v.array(v.id('products')),
 		status: productStatus
 	})
@@ -38,6 +39,20 @@ export const tables = {
 		.index('by_slug', ['slug'])
 		.index('by_category_id', ['categoryId'])
 		.index('by_status', ['status']),
+	productVariants: defineTable({
+		productId: v.id('products'),
+		position: v.number(),
+		options: v.array(productVariantOption),
+		sku: v.string(),
+		/** Assigned product image keys; the first one is the variant's primary image. */
+		imageKeys: v.array(v.string()),
+		priceInCents: v.number(),
+		compareAtPriceInCents: v.optional(v.number()),
+		inventory: v.number(),
+		reservedInventory: v.number()
+	})
+		.index('by_product_id', ['productId'])
+		.index('by_sku', ['sku']),
 	checkoutReservations: defineTable({
 		status: checkoutReservationStatus,
 		expiresAt: v.number(),
@@ -104,7 +119,10 @@ export const tables = {
 	orderItems: defineTable({
 		orderId: v.id('orders'),
 		productId: v.id('products'),
+		productVariantId: v.id('productVariants'),
 		name: v.string(),
+		productVariantLabel: v.string(),
+		sku: v.string(),
 		unitPriceInCents: v.number(),
 		quantity: v.number()
 	})

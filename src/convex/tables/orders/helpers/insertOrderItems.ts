@@ -4,7 +4,10 @@ import type { MutationCtx } from '../../../_generated/server.js';
 
 type OrderItemSnapshot = {
 	productId: Id<'products'>;
+	productVariantId: Id<'productVariants'>;
 	name: string;
+	productVariantLabel: string;
+	sku: string;
 	unitPriceInCents: number;
 	quantity: number;
 };
@@ -19,7 +22,10 @@ export async function insertOrderItems(
 		await ctx.db.insert('orderItems', {
 			orderId,
 			productId: item.productId,
+			productVariantId: item.productVariantId,
 			name: item.name,
+			productVariantLabel: item.productVariantLabel,
+			sku: item.sku,
 			unitPriceInCents: item.unitPriceInCents,
 			quantity: item.quantity
 		});

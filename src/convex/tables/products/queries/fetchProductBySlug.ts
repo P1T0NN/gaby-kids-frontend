@@ -6,6 +6,7 @@ import { query } from '../../../_generated/server.js';
 
 // MAPPERS
 import { toProductResult } from '../mappers/toProductResult.js';
+import { toProductVariantResult } from '../../productVariants/mappers/toProductVariantResult.js';
 
 // VALIDATORS
 import { storefrontProductDetailResult } from '../validators/productValidators.js';
@@ -23,10 +24,18 @@ export const fetchProductBySlug = query({
 			.unique();
 		if (!product || product.status !== 'active') return null;
 
+		const productVariants: Awaited<ReturnType<typeof toProductVariantResult>>[] = [];
+		for await (const productVariant of ctx.db
+			.query('productVariants')
+			.withIndex('by_product_id', (query) => query.eq('productId', product._id))) {
+			productVariants.push(await toProductVariantResult(productVariant));
+		}
+		productVariants.sort((left, right) => left.position - right.position);
+
 		const [details, upsells] = await Promise.all([
 			toProductResult(product),
 			getStorefrontUpsells(ctx, product)
 		]);
-		return { ...details, upsells };
+		return { ...details, productVariants, upsells };
 	}
 });

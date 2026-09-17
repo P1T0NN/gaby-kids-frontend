@@ -23,16 +23,16 @@ are added.
 
 ## Customer emails
 
-| Trigger | When to send | Include |
-| --- | --- | --- |
-| Email verification | Immediately after sign-up or an explicit resend, respecting the resend cooldown | One-time code or link, expiry, and support guidance |
-| Password reset | Immediately after a reset is requested; keep the UI response generic for unknown addresses | One-time code or link, expiry, and a warning if it was not requested |
-| Account security change | After a password, email address, or other high-impact account change succeeds | What changed, when, and how to report unauthorized activity |
-| Paid order confirmation | After the server verifies payment, preferably from the payment webhook rather than the success-page redirect | Immutable item and price snapshot, total, order reference, and current fulfillment status |
-| Payment failure or checkout expiry | Only after the server confirms that customer action is needed | Safe explanation, recovery link, and order reference |
-| Fulfillment or shipment | When the order is actually fulfilled or shipped | Status, tracking details when available, and support contact |
-| Cancellation or refund | After cancellation or the payment provider confirms the refund | Affected order, amount, status, and expected next step or timing |
-| Support response | When staff replies to a customer request | The reply preview and a secure link to continue the conversation |
+| Trigger                            | When to send                                                                                                 | Include                                                                                   |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Email verification                 | Immediately after sign-up or an explicit resend, respecting the resend cooldown                              | One-time code or link, expiry, and support guidance                                       |
+| Password reset                     | Immediately after a reset is requested; keep the UI response generic for unknown addresses                   | One-time code or link, expiry, and a warning if it was not requested                      |
+| Account security change            | After a password, email address, or other high-impact account change succeeds                                | What changed, when, and how to report unauthorized activity                               |
+| Paid order confirmation            | After the server verifies payment, preferably from the payment webhook rather than the success-page redirect | Immutable item and price snapshot, total, order reference, and current fulfillment status |
+| Payment failure or checkout expiry | Only after the server confirms that customer action is needed                                                | Safe explanation, recovery link, and order reference                                      |
+| Fulfillment or shipment            | When the order is actually fulfilled or shipped                                                              | Status, tracking details when available, and support contact                              |
+| Cancellation or refund             | After cancellation or the payment provider confirms the refund                                               | Affected order, amount, status, and expected next step or timing                          |
+| Support response                   | When staff replies to a customer request                                                                     | The reply preview and a secure link to continue the conversation                          |
 
 If Stripe payment receipts are enabled, use Stripe for the payment receipt and
 send the app's email for order and fulfillment information only; do not send
@@ -43,14 +43,14 @@ two competing receipts.
 Send to a configured operations address or admin group, not to every admin
 account individually unless the app explicitly needs per-admin routing.
 
-| Trigger | When to send | Include |
-| --- | --- | --- |
-| New paid order | Immediately after payment is verified | Order reference, total, customer contact, fulfillment link, and any stock warning |
-| Payment, refund, or dispute problem | Immediately when human action is required; retry automatically first where safe | Order/provider reference, current state, safe error summary, and a dashboard link |
-| Order processing mismatch or stuck order | After bounded retries or when an order passes its service-level deadline | What is unresolved, last attempted action, and the next operator action |
-| Low or out-of-stock inventory | When a threshold is crossed, preferably as a digest for repeated low-stock events | Product, current availability, threshold, and admin link |
-| Customer support or contact request | Immediately when a response is expected | Customer message, urgency, and reply link |
-| Security or permission event | Immediately for admin-role changes, suspicious activity, or an unusual authentication failure spike | Event, affected account, time, and investigation link; never include secrets |
+| Trigger                                  | When to send                                                                                        | Include                                                                           |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| New paid order                           | Immediately after payment is verified                                                               | Order reference, total, customer contact, fulfillment link, and any stock warning |
+| Payment, refund, or dispute problem      | Immediately when human action is required; retry automatically first where safe                     | Order/provider reference, current state, safe error summary, and a dashboard link |
+| Order processing mismatch or stuck order | After bounded retries or when an order passes its service-level deadline                            | What is unresolved, last attempted action, and the next operator action           |
+| Low or out-of-stock inventory            | When a threshold is crossed, preferably as a digest for repeated low-stock events                   | Product, current availability, threshold, and admin link                          |
+| Customer support or contact request      | Immediately when a response is expected                                                             | Customer message, urgency, and reply link                                         |
+| Security or permission event             | Immediately for admin-role changes, suspicious activity, or an unusual authentication failure spike | Event, affected account, time, and investigation link; never include secrets      |
 
 Routine product edits, audit entries, normal logins, abandoned carts, duplicate
 webhooks, and ordinary order-status changes belong in the admin dashboard rather

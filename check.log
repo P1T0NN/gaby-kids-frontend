@@ -1,0 +1,21 @@
+﻿bun : $ svelte-kit sync && svelte-check --tsconfig ./tsconfig.json
+At line:1 char:1
++ bun run check 2>&1 | Out-File -Encoding utf8 check.log; Select-String ...
++ ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ svelte-kit sy..../tsconfig.json:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Loading svelte-check in workspace: d:\Stvari\Programiranje\Svelte Templates\svelte-convex-ecommerce-i18n
+Getting Svelte diagnostics...
+
+d:\Stvari\Programiranje\Svelte Templates\svelte-convex-ecommerce-i18n\[32msrc\convex\stripe\helpers\readPaidCheckout.ts[39m:30:52
+[31mError[39m: Property 'metadata' does not exist on type 'Product | DeletedProduct'.
+  Property 'metadata' does not exist on type 'DeletedProduct'. 
+[36m		// the stored metadata keeps the bare product name the reservation uses.
+		const name = product instanceof Object ? product.[35mmetadata[36m.productName : undefined;
+		const hasInvalidLine =[39m
+
+====================================
+[31msvelte-check found 1 error and 0 warnings in 1 file
+error: script "check" exited with code 1
+[39m

@@ -3,7 +3,71 @@
 	"example_message": "Hello world {username}",
 	"ProductsFeature": {
 		"ProductPrice": {
-			"discount": "{percent}% off"
+			"discount": "{percent}% off",
+			"from": "From"
+		}
+	},
+	"ProductVariantsFeature": {
+		"ProductVariantsEditor": {
+			"sectionTitle": "Product variants",
+			"sectionDescription": "Sell this product in different versions, like colors or sizes. Each variant has its own SKU, price, and stock.",
+			"options": "Options",
+			"optionNameRequired": "Give every option a name.",
+			"noOptionsHint": "No options yet — customers buy this as a single default variant."
+		},
+		"ProductVariantsEditorVariantTabs": {
+			"variantLabel": "Variant {number}",
+			"hasErrors": "Has errors"
+		},
+		"ProductVariantsEditorOptionInput": {
+			"optionNamePlaceholder": "Add a name for option {number} first",
+			"optionNameLabel": "Option {number} name",
+			"removeOption": "Remove option"
+		},
+		"ProductVariantsEditorAddOptionButton": {
+			"addOption": "Add option"
+		},
+		"ProductVariantsEditorVariantImagePicker": {
+			"images": "Images",
+			"hint": "Click an image to assign it to this variant; numbers set the gallery order.",
+			"uploadFirst": "Upload product images first.",
+			"assignImage": "Assign image {number}",
+			"unassignImage": "Remove image {number}",
+			"appliedImages": "Applied images for this variant:",
+			"noAppliedImages": "No images applied to this variant yet.",
+			"applyToSameValue": "Apply to all with:"
+		},
+		"ProductVariantsEditorVariantRow": {
+			"variantColumn": "Variant",
+			"defaultVariant": "Default",
+			"skuColumn": "SKU",
+			"skuPlaceholder": "Auto",
+			"skuDuplicate": "Use a unique SKU.",
+			"priceColumn": "Price",
+			"priceRequired": "Enter a price.",
+			"discountedPriceColumn": "Discounted price (optional)",
+			"discountedPriceRequiresPrice": "Set the Price first.",
+			"discountedPriceInvalid": "Discounted price must be lower than the price.",
+			"stockColumn": "Stock",
+			"stockInvalid": "Enter a whole number of 0 or more.",
+			"stockBelowReserved": "{count} reserved — stock can't be lower.",
+			"optionValueRequired": "Enter a value for every option.",
+			"removeVariant": "Remove variant {number}"
+		},
+		"ProductVariantsEditorVariantOptionInput": {
+			"optionValuePlaceholder": "Value",
+			"optionValueLabel": "Value for {name}"
+		},
+		"ProductVariantsEditorAddVariantButton": {
+			"addVariant": "Add variant"
+		},
+		"ProductVariantDiscountCalculator": {
+			"presets": "Discount presets",
+			"customDiscount": "Custom discount (%)",
+			"customDiscountDescription": "Use a multiple of 5, from 5% to 95%.",
+			"apply": "Apply",
+			"stepError": "Enter a multiple of 5 between 5% and 95%.",
+			"enterPriceFirst": "Enter a price to enable discount shortcuts."
 		}
 	},
 	"ProductPage": {
@@ -22,7 +86,8 @@
 		},
 		"ProductUpsellItem": {
 			"add": "Add",
-			"addProduct": "Add {name} to cart"
+			"addProduct": "Add {name} to cart",
+			"viewOptions": "View options"
 		},
 		"ProductLoading": {
 			"loading": "Loading product details"
@@ -323,7 +388,8 @@
 		"loadError": "Couldn't load products. Please try again.",
 		"ShopProductItem": {
 			"noImage": "Photo coming soon",
-			"addProduct": "Add {name} to cart"
+			"addProduct": "Add {name} to cart",
+			"chooseOptions": "Choose options"
 		}
 	},
 	"AuthErrorPage": {
@@ -348,30 +414,19 @@
 		"pageTitle": "Add product | Admin",
 		"adminLabel": "Admin",
 		"title": "Add product",
-		"pageDescription": "Add the product details, versions, prices, and stock.",
-		"detailsTitle": "Product details",
-		"detailsDescription": "Add the customer-facing name, description, and images.",
+		"pageDescription": "Add the product details, media, variants, prices, and stock.",
+		"basicInfoSectionTitle": "Basic product information",
+		"basicInfoSectionDescription": "The customer-facing name, description, images, and category.",
+		"visibilitySectionTitle": "Visibility",
+		"visibilitySectionDescription": "Save this product as a draft or publish it to the storefront.",
 		"name": "Name",
 		"namePlaceholder": "Product name",
-		"price": "Price",
-		"pricePlaceholder": "0.00",
-		"priceDescription": "The regular price before any discount.",
-		"discountedPrice": "Discounted price (optional)",
-		"discountedPricePlaceholder": "0.00",
-		"discountedPriceDescription": "The price customers pay when discounted. Leave blank to use Price.",
 		"trackInventory": "Track inventory",
 		"trackInventoryDescription": "Turn off for products that can be sold without a stock limit.",
-		"inventory": "Stock on hand",
-		"inventoryDescription": "Physical units available to sell. Reserved units cannot be removed.",
-		"discountPresets": "Discount presets",
-		"customDiscount": "Custom discount (%)",
-		"customDiscountDescription": "Use a multiple of 5, from 5% to 95%.",
-		"applyDiscount": "Apply",
-		"discountStepError": "Enter a multiple of 5 between 5% and 95%.",
-		"enterPriceFirst": "Enter Price first to enable discount shortcuts.",
 		"description": "Description",
 		"descriptionPlaceholder": "Describe the product",
 		"images": "Images",
+		"imagesDescription": "Upload every product image here, then assign them per variant.",
 		"categories": "Category",
 		"categoriesDescription": "Place this product in a storefront category.",
 		"ProductCategorySelector": {
@@ -407,6 +462,7 @@
 		"emptyDescription": "Create the first product for your catalog.",
 		"addProduct": "Add product",
 		"AdminProductsTableItem": {
+			"variants": "Variants",
 			"stockOnHand": "On hand",
 			"reservedStock": "Reserved",
 			"availableStock": "Available",
@@ -912,7 +968,8 @@
 		},
 		"UpsellsDialogItem": {
 			"add": "Add",
-			"addProduct": "Add {name} to cart"
+			"addProduct": "Add {name} to cart",
+			"viewOptions": "View options"
 		},
 		"ManageUpsellsDialog": {
 			"addUpsell": "Add Upsell",
@@ -987,6 +1044,9 @@
 		"requiredField": "Please fill this in.",
 		"validValue": "Please enter a valid value.",
 		"compareAtPriceMustExceedPrice": "Discounted price must be lower than Price.",
+		"duplicateProductVariantOption": "Option names must be different.",
+		"duplicateProductVariant": "Two product variants cannot use the same option values.",
+		"invalidProductVariant": "Check the product options and product variant values.",
 		"passwordsDoNotMatch": "Passwords do not match.",
 		"invalidEmail": "Please enter a valid email address.",
 		"passwordTooShort": "Password must be at least 8 characters long.",
@@ -1007,7 +1067,11 @@
 		"productDeleteRestricted": "Only draft products can be permanently deleted.",
 		"productNotFound": "This product could not be found.",
 		"cannotDisableInventoryWithReservations": "Inventory tracking cannot be disabled while units are reserved.",
-		"stockBelowReserved": "Stock on hand cannot be lower than the quantity currently reserved.",
+		"invalidProductVariant": "One of the product variants is invalid. Review the options and values.",
+		"invalidProductVariantImage": "A product variant references an image that is no longer in the product images. Reassign it and save again.",
+		"productVariantSkuTaken": "That SKU is already used by another product variant. Choose a different one.",
+		"productVariantStockBelowReserved": "Product variant stock cannot be lower than the quantity currently reserved.",
+		"cannotDeleteReservedProductVariant": "A product variant with reserved units cannot be removed. Wait for the checkout to finish or expire.",
 		"invalidUpsellData": "Choose up to four different products, excluding the source product.",
 		"upsellProductUnavailable": "One of the recommended products is no longer active. Remove it or choose another product.",
 		"invalidOrderData": "Please check the order details and try again.",

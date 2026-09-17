@@ -7,10 +7,7 @@
 </script>
 
 <div role="status" aria-label={m['ShopPage.loadingProducts']()}>
-	<div
-		class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-		aria-hidden="true"
-	>
+	<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
 		{#each Array(12)}
 			<div class="flex flex-col gap-4">
 				<Skeleton class="aspect-[13/10] w-full rounded-4xl" />

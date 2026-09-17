@@ -15,11 +15,12 @@
 		buildSaveProductArgs,
 		createProductFields
 	} from '@/features/products/forms/createProductForm.js';
+	import { createProductVariantFormValue } from '@/features/productVariants/utils/productVariantFormValues.js';
 
 	// COMPONENTS
 	import AdminAddProductHeader from '@/components/pages/admin/add-product/admin-add-product-header.svelte';
 	import ProductCategorySelector from '@/features/categories/components/product-category-selector.svelte';
-	import ProductDiscountCalculator from '@/features/products/components/product-discount-calculator.svelte';
+	import ProductVariantsEditor from '@/features/productVariants/components/product-variants-editor/product-variants-editor.svelte';
 	import { Button } from '@/components/ui/button/index.js';
 	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Form from '@/components/ui/custom-components/form/form.svelte';
@@ -31,27 +32,54 @@
 		CustomFieldContext,
 		MutationValues
 	} from '@/components/ui/custom-components/form/formTypes.js';
+	import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
+	import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
 
 	let submitting = $state(false);
 	let categoryId = $state('');
+	let productVariantOptionNames = $state<string[]>([]);
+	let productVariants = $state<ProductVariantFormValue[]>([createProductVariantFormValue([])]);
+	let uploadFiles = $state<PreviewFile[]>([]);
 
 	let values = $state<MutationValues<typeof api.tables.products.mutations.saveProduct.saveProduct>>(
 		{
 			active: true,
-			trackInventory: true,
-			inventory: 0
+			trackInventory: true
 		}
 	);
+
+	// Show the error as soon as any submit attempt failed, even when native
+	// validation stopped the form before the schema ran.
+	function categoryFieldError(fieldErrors: Readonly<Record<string, string>>): string {
+		if (categoryId) return '';
+		return (
+			fieldErrors.categoryId ??
+			(Object.keys(fieldErrors).length > 0 ? m['ValidationMessages.requiredValue']() : '')
+		);
+	}
 </script>
 
 <SvelteHead title={m['AddProductPage.pageTitle']()} noindex />
 
-{#snippet categoryField({ field, disabled }: CustomFieldContext)}
-	<ProductCategorySelector id={field.name} bind:selectedId={categoryId} required {disabled} />
+{#snippet categoryField({ field, disabled, errors }: CustomFieldContext)}
+	<ProductCategorySelector
+		id={field.name}
+		bind:selectedId={categoryId}
+		required
+		{disabled}
+		error={categoryFieldError(errors)}
+	/>
 {/snippet}
 
-{#snippet discountField({ disabled, getValue, setValue }: CustomFieldContext)}
-	<ProductDiscountCalculator {disabled} {getValue} {setValue} />
+{#snippet productVariantsField({ disabled, errors }: CustomFieldContext)}
+	<ProductVariantsEditor
+		bind:productVariants
+		bind:productVariantOptionNames
+		{uploadFiles}
+		trackInventory={values.trackInventory !== false}
+		{disabled}
+		{errors}
+	/>
 {/snippet}
 
 <div class="mx-auto flex w-full max-w-4xl flex-col gap-6">
@@ -60,16 +88,20 @@
 	<!-- eslint-disable svelte/no-navigation-without-resolve -->
 	<Form
 		function={api.tables.products.mutations.saveProduct.saveProduct}
-		fields={createProductFields({
-			discountField,
-			categoryField,
-			inventoryMin: 0,
-			inventoryDisabled: values.trackInventory === false
-		})}
+		fields={createProductFields({ productVariantsField, categoryField })}
 		bind:values
+		bind:uploadFiles
 		schema={saveProductSchema}
 		uploadNamespace="products"
-		prepareArgs={({ values }) => buildSaveProductArgs({ values, categoryId })}
+		prepareArgs={({ values, uploadedFiles }) =>
+			buildSaveProductArgs({
+				values,
+				categoryId,
+				productVariantOptionNames,
+				productVariants,
+				uploadFiles,
+				uploadedFiles
+			})}
 		bind:submitting
 		onSuccess={() => gotoParaglide(ADMIN_PAGE_ENDPOINTS.PRODUCTS)}
 		successMessage={m['AddProductPage.productAdded']()}

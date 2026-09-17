@@ -9,7 +9,10 @@ export const checkoutReservationStatus = literals('active', 'completed', 'releas
 
 export const reservedCheckoutItem = v.object({
 	productId: v.id('products'),
+	productVariantId: v.id('productVariants'),
 	name: v.string(),
+	productVariantLabel: v.string(),
+	sku: v.string(),
 	unitPriceInCents: v.number(),
 	quantity: v.number(),
 	trackInventory: v.boolean()

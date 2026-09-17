@@ -18,7 +18,7 @@
 	import { getLocale } from '@/lib/paraglide/runtime';
 
 	const banDetailsSchema = z.object({ banExpires: z.number().nullable() });
-	
+
 	type BanDetails = z.infer<typeof banDetailsSchema>;
 
 	function parseBanDetails(description: string | null): BanDetails | null {

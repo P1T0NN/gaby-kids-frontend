@@ -112,7 +112,10 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 		setValue: (name, value) => setValue(name, value as FormValue<Mutation> | undefined),
 		inputValue,
 		checkboxValue,
-		disabled: options.bindings.submitting
+		disabled: options.bindings.submitting,
+		get errors() {
+			return errors;
+		}
 	});
 
 	const focusFirstError = (form: HTMLFormElement) => {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	// LIBRARIES
 	import { m } from '@/lib/paraglide/messages';
-	
+
 	// COMPONENTS
 	import BadgeLocalized from '@/components/ui/custom-components/badge-localized/badge-localized.svelte';
 
@@ -22,7 +22,6 @@
 		unfulfilled: 'secondary',
 		fulfilled: 'default'
 	} satisfies Record<FulfillmentStatus, BadgeVariant>;
-
 </script>
 
 <BadgeLocalized value={status} {translations} variant={variants[status]} />

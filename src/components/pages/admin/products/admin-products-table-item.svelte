@@ -23,7 +23,10 @@
 	import { formatDate } from '@/shared/utils/date.js';
 	import { toastMessage } from '@/utils/toastMessage.js';
 
-	type Product = Doc<'products'> & { categoryOption: { name: string } };
+	type Product = Doc<'products'> & {
+		categoryOption: { name: string };
+		productVariantSummary: { count: number; inventory: number; reservedInventory: number };
+	};
 
 	let { product }: { product: Product } = $props();
 
@@ -84,24 +87,29 @@
 	<ProductPrice
 		priceInCents={product.priceInCents}
 		compareAtPriceInCents={product.compareAtPriceInCents}
+		from={product.hasPriceRange}
 	/>
 </TableCell>
 <TableCell>
 	{#if product.trackInventory ?? true}
 		<dl class="grid min-w-32 grid-cols-[auto_auto] gap-x-3 text-xs">
 			<dt class="text-muted-foreground">
+				{m['AdminProductsPage.AdminProductsTableItem.variants']()}
+			</dt>
+			<dd class="text-right tabular-nums">{product.productVariantSummary.count}</dd>
+			<dt class="text-muted-foreground">
 				{m['AdminProductsPage.AdminProductsTableItem.stockOnHand']()}
 			</dt>
-			<dd class="text-right tabular-nums">{product.inventory ?? 0}</dd>
+			<dd class="text-right tabular-nums">{product.productVariantSummary.inventory}</dd>
 			<dt class="text-muted-foreground">
 				{m['AdminProductsPage.AdminProductsTableItem.reservedStock']()}
 			</dt>
-			<dd class="text-right tabular-nums">{product.reservedInventory ?? 0}</dd>
+			<dd class="text-right tabular-nums">{product.productVariantSummary.reservedInventory}</dd>
 			<dt class="font-medium">
 				{m['AdminProductsPage.AdminProductsTableItem.availableStock']()}
 			</dt>
 			<dd class="text-right font-medium tabular-nums">
-				{(product.inventory ?? 0) - (product.reservedInventory ?? 0)}
+				{product.productVariantSummary.inventory - product.productVariantSummary.reservedInventory}
 			</dd>
 		</dl>
 	{:else}

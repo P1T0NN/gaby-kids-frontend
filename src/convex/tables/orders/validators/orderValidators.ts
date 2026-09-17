@@ -21,7 +21,7 @@ export const shippingAddress = v.object({
 
 export const createOrderArgs = v.object({
 	receiptToken: v.string(),
-	items: v.array(v.object({ productId: v.id('products'), quantity: v.number() })),
+	items: v.array(v.object({ productVariantId: v.id('productVariants'), quantity: v.number() })),
 	firstName: v.string(),
 	lastName: v.string(),
 	email: v.string(),
@@ -73,7 +73,10 @@ export const orderItemResult = v.object({
 	_creationTime: v.number(),
 	orderId: v.id('orders'),
 	productId: v.id('products'),
+	productVariantId: v.id('productVariants'),
 	name: v.string(),
+	productVariantLabel: v.string(),
+	sku: v.string(),
 	unitPriceInCents: v.number(),
 	quantity: v.number()
 });

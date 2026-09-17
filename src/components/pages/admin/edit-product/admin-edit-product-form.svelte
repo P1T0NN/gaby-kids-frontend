@@ -14,10 +14,11 @@
 		buildSaveProductArgs,
 		createProductFields
 	} from '@/features/products/forms/createProductForm.js';
+	import { formatProductVariantFormPrice } from '@/features/productVariants/utils/productVariantFormValues.js';
 
 	// COMPONENTS
 	import ProductCategorySelector from '@/features/categories/components/product-category-selector.svelte';
-	import ProductDiscountCalculator from '@/features/products/components/product-discount-calculator.svelte';
+	import ProductVariantsEditor from '@/features/productVariants/components/product-variants-editor/product-variants-editor.svelte';
 	import { Button } from '@/components/ui/button/index.js';
 	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Form from '@/components/ui/custom-components/form/form.svelte';
@@ -33,6 +34,7 @@
 	// TYPES
 	import type { CustomFieldContext } from '@/components/ui/custom-components/form/formTypes.js';
 	import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
+	import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
 	import type { FunctionReturnType } from 'convex/server';
 
 	type Product = FunctionReturnType<
@@ -43,21 +45,48 @@
 
 	const initialProduct = untrack(() => product);
 
-	const regularPriceInCents = initialProduct.compareAtPriceInCents ?? initialProduct.priceInCents;
-
-	const discountedPriceInCents = initialProduct.compareAtPriceInCents === undefined ? undefined : initialProduct.priceInCents;
-
 	let submitting = $state(false);
 	let categoryId = $state<string>(initialProduct.categoryId);
+
+	function toProductVariantFormValue(
+		productVariant: Product['productVariants'][number]
+	): ProductVariantFormValue {
+		const regularPriceInCents = productVariant.compareAtPriceInCents ?? productVariant.priceInCents;
+		const discountedPriceInCents =
+			productVariant.compareAtPriceInCents === undefined ? undefined : productVariant.priceInCents;
+
+		return {
+			id: productVariant._id,
+			options: productVariant.options.map((option) => ({ ...option })),
+			sku: productVariant.sku,
+			imageKeys: [...productVariant.imageKeys],
+			price: formatProductVariantFormPrice(regularPriceInCents),
+			discountedPrice: formatProductVariantFormPrice(discountedPriceInCents),
+			inventory: String(productVariant.inventory),
+			reservedInventory: productVariant.reservedInventory
+		};
+	}
+
+	// Show the error as soon as any submit attempt failed, even when native
+	// validation stopped the form before the schema ran.
+	function categoryFieldError(fieldErrors: Readonly<Record<string, string>>): string {
+		if (categoryId) return '';
+		return (
+			fieldErrors.categoryId ??
+			(Object.keys(fieldErrors).length > 0 ? m['ValidationMessages.requiredValue']() : '')
+		);
+	}
+
+	let productVariantOptionNames = $state<string[]>([...initialProduct.productVariantOptionNames]);
+	let productVariants = $state<ProductVariantFormValue[]>(
+		initialProduct.productVariants.map(toProductVariantFormValue)
+	);
 
 	const formChanges = useFormChanges(() => ({
 		id: initialProduct._id,
 		name: initialProduct.name,
 		description: initialProduct.description,
-		priceInCents: regularPriceInCents / 100,
-		compareAtPriceInCents: discountedPriceInCents === undefined ? undefined : discountedPriceInCents / 100,
 		trackInventory: initialProduct.trackInventory,
-		inventory: initialProduct.inventory,
 		active: initialProduct.status === 'active'
 	}));
 
@@ -70,35 +99,47 @@
 	);
 </script>
 
-{#snippet categoryField({ field, disabled }: CustomFieldContext)}
+{#snippet categoryField({ field, disabled, errors }: CustomFieldContext)}
 	<ProductCategorySelector
 		id={field.name}
 		bind:selectedId={categoryId}
 		initialCategory={initialProduct.categoryOption}
 		required
 		{disabled}
+		error={categoryFieldError(errors)}
 	/>
 {/snippet}
 
-{#snippet discountField({ disabled, getValue, setValue }: CustomFieldContext)}
-	<ProductDiscountCalculator {disabled} {getValue} {setValue} />
+{#snippet productVariantsField({ disabled, errors }: CustomFieldContext)}
+	<ProductVariantsEditor
+		bind:productVariants
+		bind:productVariantOptionNames
+		{uploadFiles}
+		trackInventory={formChanges.values.trackInventory !== false}
+		{disabled}
+		{errors}
+	/>
 {/snippet}
 
 <Form
 	function={api.tables.products.mutations.saveProduct.saveProduct}
-	fields={createProductFields({
-		discountField,
-		categoryField,
-		inventoryMin: initialProduct.reservedInventory,
-		inventoryDisabled: formChanges.values.trackInventory === false
-	})}
+	fields={createProductFields({ productVariantsField, categoryField })}
 	schema={saveProductSchema}
 	uploadNamespace="products"
 	bind:values={formChanges.values}
 	bind:uploadFiles
 	bind:submitting
 	resetOnSuccess={false}
-	prepareArgs={({ values }) => buildSaveProductArgs({ values, categoryId, id: initialProduct._id })}
+	prepareArgs={({ values, uploadedFiles }) =>
+		buildSaveProductArgs({
+			values,
+			categoryId,
+			productVariantOptionNames,
+			productVariants,
+			uploadFiles,
+			uploadedFiles,
+			id: initialProduct._id
+		})}
 	onSuccess={() => gotoParaglide(ADMIN_PAGE_ENDPOINTS.PRODUCTS)}
 	successMessage={m['AdminEditProductPage.productUpdated']()}
 	errorMessage={m['AdminEditProductPage.updateError']()}

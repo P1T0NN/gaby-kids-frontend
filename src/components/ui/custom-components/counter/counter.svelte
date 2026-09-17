@@ -43,7 +43,7 @@
 	<span class="min-w-6 text-center text-sm font-medium tabular-nums" aria-live="polite"
 		>{value}</span
 	>
-	
+
 	<Button
 		variant="outline"
 		size="icon-xs"

@@ -25,15 +25,22 @@ export function readPaidCheckout(
 		const product = price?.product;
 		const quantity = line.quantity;
 		const unitPriceInCents = price?.unit_amount;
-		const name = line.description;
+		// The line name carries the variant label for display; the stored metadata
+		// keeps the bare product name the reservation snapshot uses. Sessions
+		// created before that metadata existed fall back to the line description.
+		const name =
+			product instanceof Object && !('deleted' in product)
+				? (product.metadata.productName ?? line.description)
+				: undefined;
 		const hasInvalidLine =
 			!price ||
 			!(product instanceof Object) ||
 			'deleted' in product ||
 			!product.metadata.productId ||
+			!product.metadata.productVariantId ||
+			!name ||
 			unitPriceInCents == null ||
 			quantity === null ||
-			!name ||
 			line.currency !== session.currency ||
 			price.currency !== session.currency ||
 			line.amount_total !== unitPriceInCents * quantity;
@@ -41,7 +48,11 @@ export function readPaidCheckout(
 		return {
 			// SAFETY: the internal mutation checks this Stripe-owned value with v.id('products').
 			productId: product.metadata.productId as Id<'products'>,
+			// SAFETY: the internal mutation checks this Stripe-owned value with v.id('productVariants').
+			productVariantId: product.metadata.productVariantId as Id<'productVariants'>,
 			name,
+			productVariantLabel: product.metadata.productVariantLabel ?? '',
+			sku: product.metadata.sku ?? '',
 			unitPriceInCents,
 			quantity
 		};

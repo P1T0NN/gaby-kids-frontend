@@ -5,26 +5,36 @@
 	// COMPONENTS
 	import { Separator } from '@/components/ui/separator/index.js';
 	import AddToCartButton from '@/features/cart/components/add-to-cart-button.svelte';
+	import ProductVariantPicker from '@/components/pages/(unprotected)/product/product-variant-picker.svelte';
 	import ProductUpsellItem from './product-upsell-item.svelte';
 
 	// UTILS
-	import { getProductAvailability } from '@/shared/features/products/utils/getProductAvailability.js';
+	import { getProductVariantAvailability } from '@/features/productVariants/utils/getProductVariantAvailability.js';
 
 	// TYPES
 	import type { FunctionReturnType } from 'convex/server';
 	import type { api } from '@convex/_generated/api';
 
+	type StorefrontProduct = NonNullable<
+		FunctionReturnType<typeof api.tables.products.queries.fetchProductBySlug.fetchProductBySlug>
+	>;
+	type StorefrontProductVariant = StorefrontProduct['productVariants'][number];
+
 	let {
 		product,
+		productVariants,
+		productVariant,
+		onSelectProductVariant,
 		disabled = false
 	}: {
-		product: NonNullable<
-			FunctionReturnType<typeof api.tables.products.queries.fetchProductBySlug.fetchProductBySlug>
-		>;
+		product: StorefrontProduct;
+		productVariants: StorefrontProductVariant[];
+		productVariant: StorefrontProductVariant;
+		onSelectProductVariant: (productVariantId: string) => void;
 		disabled?: boolean;
 	} = $props();
 
-	const availability = $derived(getProductAvailability(product));
+	const availability = $derived(getProductVariantAvailability(product, productVariant));
 	const hint = $derived(
 		availability.type === 'sold_out'
 			? m['ProductPage.ProductDetails.soldOutHint']()
@@ -35,21 +45,37 @@
 </script>
 
 <div class="flex min-w-0 flex-col gap-8 lg:col-start-2 lg:row-start-2">
-	<div class="flex flex-col gap-3">
-		<AddToCartButton
-			item={{ id: product._id, image: product.images[0] ?? '' }}
-			name={product.name}
-			openCartAfterAdd
-			showUpsellsAfterAdd={product.upsells.length > 0}
-			{disabled}
-			{availability}
-			size="lg"
-			class="h-14 w-full"
-			aria-label={m['ProductPage.ProductDetails.addProduct']({ name: product.name })}
-		/>
-		<p class="text-center text-sm text-muted-foreground">
-			{hint}
-		</p>
+	<div class="flex flex-col gap-5">
+		{#if productVariants.length > 1}
+			<ProductVariantPicker
+				{product}
+				{productVariants}
+				selectedProductVariantId={productVariant._id}
+				{onSelectProductVariant}
+				{disabled}
+			/>
+		{/if}
+
+		<div class="flex flex-col gap-3">
+			<AddToCartButton
+				item={{
+					productVariantId: productVariant._id,
+					image: productVariant.images[0] ?? product.images[0] ?? ''
+				}}
+				productId={product._id}
+				name={product.name}
+				openCartAfterAdd
+				showUpsellsAfterAdd={product.upsells.length > 0}
+				{disabled}
+				{availability}
+				size="lg"
+				class="h-14 w-full"
+				aria-label={m['ProductPage.ProductDetails.addProduct']({ name: product.name })}
+			/>
+			<p class="text-center text-sm text-muted-foreground">
+				{hint}
+			</p>
+		</div>
 	</div>
 
 	{#if product.upsells.length > 0}

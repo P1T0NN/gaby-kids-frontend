@@ -22,13 +22,16 @@
 		selectedId = $bindable(''),
 		initialCategory,
 		required = false,
-		disabled = false
+		disabled = false,
+		error = ''
 	}: {
 		id?: string;
 		selectedId?: string;
 		initialCategory?: CategoryOption;
 		required?: boolean;
 		disabled?: boolean;
+		/** Submit-time validation message; empty when the field is clean. */
+		error?: string;
 	} = $props();
 
 	const search = useSearch({ mode: 'state' });
@@ -77,6 +80,7 @@
 	placeholder={m['AddProductPage.ProductCategorySelector.searchPlaceholder']()}
 	{disabled}
 	{required}
+	aria-invalid={error ? true : undefined}
 	{dropdownOpen}
 	oninput={handleInput}
 	onclear={clearSelection}
@@ -116,3 +120,7 @@
 		{/if}
 	{/snippet}
 </SearchInput>
+
+{#if error}
+	<p class="mt-1.5 text-xs text-destructive" role="alert">{error}</p>
+{/if}

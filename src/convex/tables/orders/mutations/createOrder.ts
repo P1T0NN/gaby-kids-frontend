@@ -41,7 +41,7 @@ function assertValidSnapshot(checkout: CheckoutSnapshot, event: PaymentEvent, to
 		!Number.isSafeInteger(total) ||
 		total <= 0 ||
 		total !== checkout.totalInCents ||
-		new Set(checkout.items.map((item) => item.productId)).size !== checkout.items.length ||
+		new Set(checkout.items.map((item) => item.productVariantId)).size !== checkout.items.length ||
 		checkout.items.some((item) => !item.name.trim() || item.quantity > ORDER_CONFIG.maxQuantity);
 	if (hasInvalidSnapshot) throw new Error('Stripe order snapshot invariant violated.');
 

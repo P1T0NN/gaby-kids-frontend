@@ -20,6 +20,9 @@
 	// HOOKS
 	import { useCachedConvexQuery } from '@/hooks/useCachedConvexQuery.svelte.js';
 
+	// UTILS
+	import { getProductVariantAvailability } from '@/features/productVariants/utils/getProductVariantAvailability.js';
+
 	// TYPES
 	import type { PageProps } from './$types';
 
@@ -28,6 +31,19 @@
 	const product = useCachedConvexQuery(
 		api.tables.products.queries.fetchProductBySlug.fetchProductBySlug,
 		() => ({ slug: params.slug })
+	);
+
+	let selectedProductVariantId = $state('');
+
+	const productVariants = $derived(product.data?.productVariants ?? []);
+	const selectedProductVariant = $derived(
+		productVariants.find((productVariant) => productVariant._id === selectedProductVariantId) ??
+			productVariants.find((productVariant) => {
+				if (!product.data) return false;
+				const availability = getProductVariantAvailability(product.data, productVariant);
+				return availability.type === 'available' || availability.type === 'unlimited';
+			}) ??
+			productVariants[0]
 	);
 </script>
 
@@ -58,17 +74,37 @@
 			class="min-h-80"
 		/>
 	{:else}
-		<article
-			aria-labelledby="product-name"
-			class="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:gap-x-12 lg:gap-y-8 xl:gap-x-20"
-		>
-			<ProductHeader product={product.data} />
-			<div class="min-w-0 lg:sticky lg:top-24 lg:col-start-1 lg:row-span-2 lg:row-start-1">
-				{#key product.data._id}
-					<ImageGallery images={product.data.images} alt={product.data.name} />
-				{/key}
-			</div>
-			<ProductDetails product={product.data} disabled={product.isStale} />
-		</article>
+		{@const productData = product.data}
+		{#if selectedProductVariant}
+			{@const productVariant = selectedProductVariant}
+			<article
+				aria-labelledby="product-name"
+				class="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:gap-x-12 lg:gap-y-8 xl:gap-x-20"
+			>
+				<ProductHeader product={productData} {productVariant} />
+				<div class="min-w-0 lg:sticky lg:top-24 lg:col-start-1 lg:row-span-2 lg:row-start-1">
+					{#key productVariant._id}
+						<ImageGallery
+							images={productVariant.images.length > 0 ? productVariant.images : productData.images}
+							alt={productData.name}
+						/>
+					{/key}
+				</div>
+				<ProductDetails
+					product={productData}
+					{productVariants}
+					{productVariant}
+					onSelectProductVariant={(productVariantId) =>
+						(selectedProductVariantId = productVariantId)}
+					disabled={product.isStale}
+				/>
+			</article>
+		{:else}
+			<EmptyData
+				title={m['ProductPage.notFoundTitle']()}
+				description={m['ProductPage.notFoundDescription']()}
+				class="min-h-80"
+			/>
+		{/if}
 	{/if}
 </Section>

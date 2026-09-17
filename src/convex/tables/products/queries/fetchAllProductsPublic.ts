@@ -13,6 +13,7 @@ import { getTotalSizeAggregate } from '../../../aggregates/helpers/getTotalSizeA
 // HELPERS
 import { buildProductFilter } from '../utils/filterPredicates.js';
 import { getProductPage } from '../helpers/getProductPage.js';
+import { getProductVariantSummary } from '../../productVariants/helpers/getProductVariantSummary.js';
 
 // VALIDATORS
 import { storefrontProductPage } from '../validators/productValidators.js';
@@ -34,6 +35,15 @@ export const fetchAllProductsPublic = fetchOptimizedQuery({
 		return buildProductFilter(key, value);
 	},
 	fetchPage: async ({ ctx, paginationOpts, search, filters }) => {
-		return getProductPage(ctx, paginationOpts, search, filters, 'active');
+		const page = await getProductPage(ctx, paginationOpts, search, filters, 'active');
+		return {
+			...page,
+			items: await Promise.all(
+				page.items.map(async (product) => ({
+					...product,
+					productVariantSummary: await getProductVariantSummary(ctx, product._id)
+				}))
+			)
+		};
 	}
 });

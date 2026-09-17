@@ -24,7 +24,7 @@
 	type Order = Doc<'orders'>;
 
 	let { order }: { order: Order } = $props();
-	
+
 	const reference = $derived(order._id.slice(-8).toUpperCase());
 </script>
 

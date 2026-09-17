@@ -65,6 +65,8 @@ export type FormSection = {
 
 export type CustomFieldContext = FormFieldContext<unknown> & {
 	field: CustomField;
+	/** Submitted schema errors keyed by field name; empty when the form is clean. */
+	errors: Readonly<Record<string, string>>;
 };
 
 export type CustomField = BaseField & {

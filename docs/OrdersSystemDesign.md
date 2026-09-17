@@ -20,12 +20,12 @@ untracked inventory policy. A product is the purchasable unit initially; do not
 restore default variants just to sell it. These are future prerequisites, not
 changes to the current catalog in this documentation task.
 
-| Stripe handles | The app still handles |
-| --- | --- |
-| Payment form, card handling, payment authentication and processing | Server-owned prices, product eligibility, quantity validation |
-| Configured payment fraud screening | Order ownership, private receipts, admin permissions |
-| Checkout address collection and final amount presentation | Purchase snapshots, inventory, fulfillment |
-| Configured shipping options and Stripe Tax | Verified payment synchronization and duplicate-safe operations |
+| Stripe handles                                                     | The app still handles                                          |
+| ------------------------------------------------------------------ | -------------------------------------------------------------- |
+| Payment form, card handling, payment authentication and processing | Server-owned prices, product eligibility, quantity validation  |
+| Configured payment fraud screening                                 | Order ownership, private receipts, admin permissions           |
+| Checkout address collection and final amount presentation          | Purchase snapshots, inventory, fulfillment                     |
+| Configured shipping options and Stripe Tax                         | Verified payment synchronization and duplicate-safe operations |
 
 Hosted Checkout reduces PCI scope by keeping card data out of the app; it does
 not eliminate merchant obligations or protect app endpoints.
@@ -165,14 +165,14 @@ Stripe does not reserve app inventory. Tracked products maintain
 admin stock adjustments respect holds. Use existing rate limits against
 checkout/stock-hold abuse. Do not split reservations into independent writes.
 
-| Event | Guarded atomic stock effect |
-| --- | --- |
-| Create | Increase reserved; none to held |
-| Verified payment | Subtract from onHand and reserved; held to committed |
-| Confirm unpaid checkout cannot complete | Subtract reserved; held to released |
-| Fulfillment | No stock change |
-| Refund | No automatic stock change |
-| Admin confirms goods available for resale | Increase onHand once; committed to restocked |
+| Event                                     | Guarded atomic stock effect                          |
+| ----------------------------------------- | ---------------------------------------------------- |
+| Create                                    | Increase reserved; none to held                      |
+| Verified payment                          | Subtract from onHand and reserved; held to committed |
+| Confirm unpaid checkout cannot complete   | Subtract reserved; held to released                  |
+| Fulfillment                               | No stock change                                      |
+| Refund                                    | No automatic stock change                            |
+| Admin confirms goods available for resale | Increase onHand once; committed to restocked         |
 
 Untracked-only orders keep stock state none.
 

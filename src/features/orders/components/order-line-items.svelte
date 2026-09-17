@@ -27,6 +27,11 @@
 		<li class="flex items-start justify-between gap-4 py-4 first:pt-0 last:pb-0">
 			<div class="min-w-0">
 				<p class="truncate font-medium">{item.name}</p>
+				{#if item.productVariantLabel || item.sku}
+					<p class="truncate text-xs text-muted-foreground">
+						{[item.productVariantLabel, item.sku].filter(Boolean).join(' · ')}
+					</p>
+				{/if}
 				<p class="text-xs text-muted-foreground">{quantityLabel(item.quantity)}</p>
 			</div>
 			<p class="shrink-0 font-medium tabular-nums">

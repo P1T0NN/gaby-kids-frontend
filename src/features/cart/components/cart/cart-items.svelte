@@ -16,16 +16,16 @@
 	import { getProductAvailability } from '@/shared/features/products/utils/getProductAvailability.js';
 
 	// TYPES
-	import type { CartItem, CartProduct } from '@/shared/features/cart/types/cartTypes.js';
+	import type { CartItem, CartProductVariant } from '@/shared/features/cart/types/cartTypes.js';
 
-	type DisplayCartItem = CartItem & CartProduct;
+	type DisplayCartItem = CartItem & CartProductVariant;
 
 	let { cartItems }: { cartItems: DisplayCartItem[] } = $props();
 
 	const cart = useCart();
 
 	const removeItem = (item: DisplayCartItem) => {
-		if (item.quantity !== 1 || !cart.removeItem(item.id)) return;
+		if (item.quantity !== 1 || !cart.removeItem(item.productVariantId)) return;
 		toastMessage({
 			type: 'success',
 			message: m['CartFeature.Cart.removeSuccess']({ name: item.name }),
@@ -35,8 +35,12 @@
 </script>
 
 <ul class="divide-y divide-border">
-	{#each cartItems as item (item.id)}
-		{@const availability = getProductAvailability(item)}
+	{#each cartItems as item (item.productVariantId)}
+		{@const availability = getProductAvailability({
+			trackInventory: item.trackInventory,
+			inventory: item.inventory,
+			reservedInventory: item.reservedInventory
+		})}
 		{@const counterMax =
 			availability.type === 'available'
 				? availability.quantity
@@ -58,6 +62,9 @@
 
 			<div class="flex min-w-0 flex-col items-start gap-1">
 				<p class="text-sm leading-relaxed font-medium wrap-break-word">{item.name}</p>
+				{#if item.productVariantLabel}
+					<p class="text-xs text-muted-foreground">{item.productVariantLabel}</p>
+				{/if}
 				<div class="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
 					<ProductPrice
 						priceInCents={item.priceInCents}
@@ -94,10 +101,10 @@
 						max={counterMax}
 						decreaseLabel={m['CartFeature.Cart.decreaseQuantity']()}
 						increaseLabel={m['CartFeature.Cart.increaseQuantity']()}
-						onValueChange={(quantity) => cart.setItemQuantity(item.id, quantity)}
+						onValueChange={(quantity) => cart.setItemQuantity(item.productVariantId, quantity)}
 					/>
 				</div>
-				
+
 				<Button
 					variant="ghost"
 					size="sm"

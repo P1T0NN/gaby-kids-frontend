@@ -8,9 +8,9 @@
 	// UTILS
 	import { formatPrice } from '@/shared/utils/pricing.js';
 	// TYPES
-	import type { CartItem, CartProduct } from '@/shared/features/cart/types/cartTypes.js';
+	import type { CartItem, CartProductVariant } from '@/shared/features/cart/types/cartTypes.js';
 
-	let { item }: { item: CartItem & CartProduct } = $props();
+	let { item }: { item: CartItem & CartProductVariant } = $props();
 </script>
 
 <li class="flex items-start gap-4 py-4 first:pt-0">
@@ -25,6 +25,9 @@
 	</div>
 	<div class="flex min-w-0 flex-1 flex-col gap-1">
 		<p class="text-sm font-medium wrap-break-word">{item.name}</p>
+		{#if item.productVariantLabel}
+			<p class="text-xs text-muted-foreground">{item.productVariantLabel}</p>
+		{/if}
 		<div class="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
 			<span>{m['CheckoutPage.CheckoutSummaryItem.quantity']({ quantity: item.quantity })}</span>
 			<span aria-hidden="true">·</span>

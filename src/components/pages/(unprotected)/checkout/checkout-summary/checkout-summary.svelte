@@ -39,16 +39,18 @@
 
 	const cart = useCart();
 
-	const products = useQuery(api.tables.products.queries.fetchCart.fetchCart, () =>
+	const productVariants = useQuery(api.tables.productVariants.queries.fetchCart.fetchCart, () =>
 		cart.loaded && !cart.error && cart.items.length
-			? { ids: cart.items.map((item) => item.id) }
+			? { productVariantIds: cart.items.map((item) => item.productVariantId) }
 			: 'skip'
 	);
 
 	const items = $derived(
 		cart.items.flatMap((item) => {
-			const product = products.data?.products.find((product) => product.id === item.id);
-			return product ? [{ ...item, ...product }] : [];
+			const productVariant = productVariants.data?.items.find(
+				(cartProductVariant) => cartProductVariant.id === item.productVariantId
+			);
+			return productVariant ? [{ ...item, ...productVariant }] : [];
 		})
 	);
 
@@ -62,7 +64,7 @@
 	const total = $derived(calculateOrderTotalInCents(pricingItems));
 	const totalSavingsInCents = $derived(calculateOrderSavingsInCents(pricingItems));
 
-	const loading = $derived(!cart.loaded || products.isLoading || products.isStale);
+	const loading = $derived(!cart.loaded || productVariants.isLoading || productVariants.isStale);
 
 	const unavailableItems = $derived(
 		items.filter((item) => {
@@ -70,9 +72,12 @@
 			return availability.type === 'sold_out' || availability.type === 'temporarily_unavailable';
 		})
 	);
-	const unavailableIds = $derived(
-		[...new Set([...(products.data?.invalidIds ?? []), ...unavailableItems.map((item) => item.id)])]
-	);
+	const unavailableIds = $derived([
+		...new Set([
+			...(productVariants.data?.invalidIds ?? []),
+			...unavailableItems.map((item) => item.productVariantId)
+		])
+	]);
 </script>
 
 <aside
@@ -82,7 +87,7 @@
 	<h2 id="order-summary" class="mb-6 text-xl font-semibold">
 		{m['CheckoutPage.CheckoutSummary.summary']()}
 	</h2>
-	{#if cart.error || products.error}
+	{#if cart.error || productVariants.error}
 		<ErrorComponent message={m['CartFeature.Cart.loadError']()} />
 	{:else if cart.loaded && cart.items.length === 0}
 		<EmptyData
@@ -101,7 +106,7 @@
 		>
 	{:else}
 		<ul class="divide-y divide-border">
-			{#each items as item (item.id)}<CheckoutSummaryItem {item} />{/each}
+			{#each items as item (item.productVariantId)}<CheckoutSummaryItem {item} />{/each}
 		</ul>
 		<dl class="flex flex-col gap-3 border-t pt-5 text-sm">
 			<div class="flex justify-between gap-4">

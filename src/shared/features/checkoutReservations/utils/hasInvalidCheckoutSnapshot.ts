@@ -9,7 +9,7 @@ import { hasInvalidOrderItems } from '../../orders/utils/hasInvalidOrderItems.js
 
 type CheckoutSnapshotItem = Pick<
 	Doc<'checkoutReservations'>['items'][number],
-	'productId' | 'name' | 'unitPriceInCents' | 'quantity'
+	'productVariantId' | 'name' | 'unitPriceInCents' | 'quantity'
 >;
 
 type CheckoutSnapshot = {
@@ -26,7 +26,7 @@ export function hasInvalidCheckoutSnapshot(
 		!Number.isSafeInteger(totalInCents) ||
 		totalInCents <= 0 ||
 		totalInCents !== checkout.totalInCents ||
-		new Set(checkout.items.map((item) => item.productId)).size !== checkout.items.length ||
+		new Set(checkout.items.map((item) => item.productVariantId)).size !== checkout.items.length ||
 		checkout.items.some((item) => !item.name.trim() || item.quantity > ORDER_CONFIG.maxQuantity)
 	);
 }
