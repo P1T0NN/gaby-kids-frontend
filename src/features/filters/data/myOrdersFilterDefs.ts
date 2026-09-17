@@ -1,6 +1,9 @@
 // LIBRARIES
 import { m } from '@/lib/paraglide/messages';
 
+// DATA
+import { fulfillmentStatusOptions, paymentStatusOptions } from './orderFilterOptions.js';
+
 // TYPES
 import type { FilterDef } from '@/shared/features/filters/types/filterTypes.js';
 
@@ -23,16 +26,7 @@ export const MY_ORDERS_FILTER_DEFS = [
 			return m['MyOrdersPage.paymentFilterLabel']();
 		},
 		get options() {
-			return [
-				{ value: '', label: m['MyOrdersPage.allPaymentStatuses']() },
-				{ value: 'pending', label: m['OrdersFeature.OrdersPaymentStatusBadge.pending']() },
-				{ value: 'paid', label: m['OrdersFeature.OrdersPaymentStatusBadge.paid']() },
-				{
-					value: 'refund_pending',
-					label: m['OrdersFeature.OrdersPaymentStatusBadge.refundPending']()
-				},
-				{ value: 'refunded', label: m['OrdersFeature.OrdersPaymentStatusBadge.refunded']() }
-			];
+			return paymentStatusOptions(m['MyOrdersPage.allPaymentStatuses']());
 		}
 	},
 	{
@@ -41,17 +35,7 @@ export const MY_ORDERS_FILTER_DEFS = [
 			return m['MyOrdersPage.fulfillmentFilterLabel']();
 		},
 		get options() {
-			return [
-				{ value: '', label: m['MyOrdersPage.allFulfillmentStatuses']() },
-				{
-					value: 'unfulfilled',
-					label: m['OrdersFeature.OrdersFulfillmentStatusBadge.unfulfilled']()
-				},
-				{
-					value: 'fulfilled',
-					label: m['OrdersFeature.OrdersFulfillmentStatusBadge.fulfilled']()
-				}
-			];
+			return fulfillmentStatusOptions(m['MyOrdersPage.allFulfillmentStatuses']());
 		}
 	},
 	{

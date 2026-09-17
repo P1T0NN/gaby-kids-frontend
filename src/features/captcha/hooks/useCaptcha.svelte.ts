@@ -35,3 +35,5 @@ export function useCaptcha() {
 		reset
 	};
 }
+
+export type CaptchaApi = ReturnType<typeof useCaptcha>;

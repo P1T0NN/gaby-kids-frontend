@@ -12,7 +12,6 @@
 	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
 
 	// COMPONENTS
-	import { Button } from '@/components/ui/button/index.js';
 	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import EmptyData from '@/components/ui/custom-components/empty-data/empty-data.svelte';
 	import NativeSheet from '@/components/ui/native-components/native-sheet/native-sheet.svelte';

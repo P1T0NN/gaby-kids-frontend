@@ -23,23 +23,25 @@
 	import type { Snippet } from 'svelte';
 	import type { FunctionReference, FunctionReturnType } from 'convex/server';
 	import type {
+		ExtraFields,
 		FieldConfig,
-		FormFieldContext,
 		FormValue,
+		InputField,
 		MutationValues,
 		PreparedMutationArgs,
 		SafeParseSchema,
+		SelectField,
+		TextareaField,
 		UploadPrepareContext
 	} from './formTypes.js';
 	import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
 
-	type ExtraFieldsContext = FormFieldContext<FormValue<Mutation>>;
 	type Props = Omit<WithElementRef<HTMLAttributes<HTMLFormElement>>, 'onsubmit'> & {
 		function: Mutation;
 		functionType?: 'mutation' | 'action';
 		captchaAction?: string;
 		fields?: FieldConfig[];
-		extraFields?: Snippet<[ExtraFieldsContext]>;
+		extraFields?: ExtraFields<FormValue<Mutation>>;
 		onSuccess?: (result: FunctionReturnType<Mutation>) => void | Promise<void>;
 		successMessage?: string;
 		errorMessage?: string;
@@ -125,33 +127,25 @@
 
 	const fieldKey = (field: FieldConfig, index: number) =>
 		field.kind === 'section' ? 'section-' + index : field.name;
+
+	// Shared bindings for the text-like controls; only the rendered component differs.
+	function controlProps(field: InputField | TextareaField | SelectField) {
+		return {
+			value: form.inputValue(field.name),
+			disabled: submitting || field.disabled,
+			error: form.errors[field.name],
+			onValueChange: (value: string) => form.setValue(field.name, value)
+		};
+	}
 </script>
 
 {#snippet renderLocalField(field: FieldConfig)}
 	{#if field.kind === 'input'}
-		<FormInput
-			{field}
-			value={form.inputValue(field.name)}
-			disabled={submitting || field.disabled}
-			error={form.errors[field.name]}
-			onValueChange={(value) => form.setValue(field.name, value)}
-		/>
+		<FormInput {field} {...controlProps(field)} />
 	{:else if field.kind === 'textarea'}
-		<FormTextarea
-			{field}
-			value={form.inputValue(field.name)}
-			disabled={submitting || field.disabled}
-			error={form.errors[field.name]}
-			onValueChange={(value) => form.setValue(field.name, value)}
-		/>
+		<FormTextarea {field} {...controlProps(field)} />
 	{:else if field.kind === 'select'}
-		<FormSelect
-			{field}
-			value={form.inputValue(field.name)}
-			disabled={submitting || field.disabled}
-			error={form.errors[field.name]}
-			onValueChange={(value) => form.setValue(field.name, value)}
-		/>
+		<FormSelect {field} {...controlProps(field)} />
 	{:else if field.kind === 'checkbox'}
 		<FormCheckbox
 			{field}

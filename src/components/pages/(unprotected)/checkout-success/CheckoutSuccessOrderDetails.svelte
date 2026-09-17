@@ -4,6 +4,7 @@
 
 	// COMPONENTS
 	import * as Card from '@/components/ui/card/index.js';
+	import OrderShippingAddress from '@/features/orders/components/order-shipping-address.svelte';
 
 	// TYPES
 	import type { Doc } from '@convex/_generated/dataModel';
@@ -42,19 +43,9 @@
 					: m['CheckoutSuccessPage.CheckoutSuccessOrderDetails.pickup']()}
 			</p>
 		</div>
-		{#if order.shippingAddress}
-			<div class="sm:col-span-2">
-				<p class="text-xs text-muted-foreground">
-					{m['CheckoutSuccessPage.CheckoutSuccessOrderDetails.shippingAddress']()}
-				</p>
-				<address class="mt-1 font-medium not-italic">
-					{order.shippingAddress.street}{#if order.shippingAddress.apartment}, {order
-							.shippingAddress.apartment}{/if}<br />
-					{order.shippingAddress.postalCode}
-					{order.shippingAddress.city},
-					{order.shippingAddress.country}
-				</address>
-			</div>
-		{/if}
+		<OrderShippingAddress
+			address={order.shippingAddress}
+			label={m['CheckoutSuccessPage.CheckoutSuccessOrderDetails.shippingAddress']()}
+		/>
 	</Card.Content>
 </Card.Root>

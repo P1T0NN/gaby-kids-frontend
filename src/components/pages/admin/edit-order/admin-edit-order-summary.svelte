@@ -5,9 +5,10 @@
 
 	// COMPONENTS
 	import * as Card from '@/components/ui/card/index.js';
+	import OrderLineItems from '@/features/orders/components/order-line-items.svelte';
+	import OrderShippingAddress from '@/features/orders/components/order-shipping-address.svelte';
 
 	// UTILS
-	import { formatPrice } from '@/shared/utils/pricing.js';
 	import { formatDateTime } from '@/shared/utils/date.js';
 
 	// TYPES
@@ -57,20 +58,10 @@
 				<p class="font-medium capitalize">{order.fulfillmentMethod}</p>
 			</div>
 
-			{#if order.shippingAddress}
-				<div class="sm:col-span-2">
-					<p class="text-xs text-muted-foreground">
-						{m['AdminEditOrderPage.AdminEditOrderSummary.shippingAddress']()}
-					</p>
-					<address class="mt-1 font-medium not-italic">
-						{order.shippingAddress.street}{#if order.shippingAddress.apartment}, {order
-								.shippingAddress.apartment}{/if}<br />
-						{order.shippingAddress.postalCode}
-						{order.shippingAddress.city},
-						{order.shippingAddress.country}
-					</address>
-				</div>
-			{/if}
+			<OrderShippingAddress
+				address={order.shippingAddress}
+				label={m['AdminEditOrderPage.AdminEditOrderSummary.shippingAddress']()}
+			/>
 		</Card.Content>
 	</Card.Root>
 
@@ -79,37 +70,15 @@
 			><Card.Title>{m['AdminEditOrderPage.AdminEditOrderSummary.items']()}</Card.Title></Card.Header
 		>
 		<Card.Content>
-			<ul class="divide-y divide-border">
-				{#each items as item (item._id)}
-					<li class="flex items-start justify-between gap-4 py-4 first:pt-0 last:pb-0">
-						<div class="min-w-0">
-							<p class="truncate font-medium">{item.name}</p>
-							<p class="text-xs text-muted-foreground">
-								{m['AdminEditOrderPage.AdminEditOrderSummary.quantity']({
-									quantity: item.quantity
-								})}
-							</p>
-						</div>
-						<p class="shrink-0 font-medium tabular-nums">
-							{formatPrice(item.unitPriceInCents * item.quantity)}
-						</p>
-					</li>
-				{/each}
-			</ul>
-
-			<dl class="mt-5 flex flex-col gap-2 border-t pt-5 text-sm">
-				<div class="flex justify-between">
-					<dt class="text-muted-foreground">
-						{m['AdminEditOrderPage.AdminEditOrderSummary.subtotal']()}
-					</dt>
-					<dd>{formatPrice(order.subtotalInCents)}</dd>
-				</div>
-				
-				<div class="flex justify-between text-base font-semibold">
-					<dt>{m['AdminEditOrderPage.AdminEditOrderSummary.total']()}</dt>
-					<dd>{formatPrice(order.totalInCents)}</dd>
-				</div>
-			</dl>
+			<OrderLineItems
+				{items}
+				subtotalInCents={order.subtotalInCents}
+				totalInCents={order.totalInCents}
+				quantityLabel={(quantity) =>
+					m['AdminEditOrderPage.AdminEditOrderSummary.quantity']({ quantity })}
+				subtotalLabel={m['AdminEditOrderPage.AdminEditOrderSummary.subtotal']()}
+				totalLabel={m['AdminEditOrderPage.AdminEditOrderSummary.total']()}
+			/>
 		</Card.Content>
 	</Card.Root>
 </div>

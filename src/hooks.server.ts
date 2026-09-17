@@ -42,6 +42,10 @@ export const handleError: HandleServerError = ({ error, status, message }) => {
 	return { message: 'Internal Error' };
 };
 
-// Remote-function argument validation failures — keep the generic 400 message
-// so we don't help attackers probing the exposed endpoints.
+/**
+ * Remote-function argument validation failures — keep the generic 400 message so we
+ * don't help attackers probing the exposed endpoints.
+ *
+ * @expected-unused SvelteKit invokes this hook by name; it is never imported.
+ */
 export const handleValidationError: HandleValidationError = () => ({ message: 'Invalid request' });

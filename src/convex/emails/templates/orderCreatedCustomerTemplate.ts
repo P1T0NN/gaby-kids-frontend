@@ -1,6 +1,6 @@
 // UTILS
 import { escapeHtml } from '../../../shared/utils/escapeHtml.js';
-import { formatPrice } from '../../../shared/utils/pricing.js';
+import { orderEmailParts } from '../helpers/orderEmailParts.js';
 
 // DATA
 import { EMAIL_DATA } from '../data/emailData.js';
@@ -14,14 +14,10 @@ export function renderOrderCreatedCustomerTemplate(
 ): Omit<SendEmailOptions, 'to' | 'idempotencyKey'> {
 	const { COLORS } = EMAIL_DATA;
 
-	const total = formatPrice(order.totalInCents, order.currency, 'en');
 	const orderUrl = new URL('/checkout/success', EMAIL_DATA.BRAND.URL);
 	orderUrl.searchParams.set('key', order.receiptToken);
 
-	const lines = items.map((item) => `${item.quantity} x ${item.name}`).join('\n');
-	const itemRows = items
-		.map((item) => `<li style="margin:0 0 8px;">${item.quantity} x ${escapeHtml(item.name)}</li>`)
-		.join('');
+	const { total, lines, itemRows } = orderEmailParts(order, items);
 
 	return {
 		subject: `Order ${order.code} received`,

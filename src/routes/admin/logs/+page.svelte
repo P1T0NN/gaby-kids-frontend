@@ -73,6 +73,12 @@
 		{/snippet}
 
 		{#snippet row(log)}
+			{@const resourceLabel = log.resourceId
+				? m['AdminLogsPage.resourceWithId']({
+						type: log.resourceType ?? m['AdminLogsPage.resource'](),
+						id: log.resourceId
+					})
+				: (log.resourceType ?? m['AdminLogsPage.resource']())}
 			<TableCell>
 				<code class="font-medium">{log.action}</code>
 				<div class="mt-1 flex max-w-64 flex-col gap-0.5 text-xs text-muted-foreground md:hidden">
@@ -80,14 +86,7 @@
 						{m['AdminLogsPage.actor']({ actor: log.actorId ?? m['AdminLogsPage.system']() })}
 					</span>
 					{#if log.resourceType || log.resourceId}
-						<span class="truncate">
-							{log.resourceId
-								? m['AdminLogsPage.resourceWithId']({
-										type: log.resourceType ?? m['AdminLogsPage.resource'](),
-										id: log.resourceId
-									})
-								: (log.resourceType ?? m['AdminLogsPage.resource']())}
-						</span>
+						<span class="truncate">{resourceLabel}</span>
 					{/if}
 				</div>
 			</TableCell>
@@ -110,22 +109,7 @@
 			</TableCell>
 			<TableCell class="hidden max-w-56 lg:table-cell">
 				{#if log.resourceType || log.resourceId}
-					<span
-						class="block truncate"
-						title={log.resourceId
-							? m['AdminLogsPage.resourceWithId']({
-									type: log.resourceType ?? m['AdminLogsPage.resource'](),
-									id: log.resourceId
-								})
-							: (log.resourceType ?? m['AdminLogsPage.resource']())}
-					>
-						{log.resourceId
-							? m['AdminLogsPage.resourceWithId']({
-									type: log.resourceType ?? m['AdminLogsPage.resource'](),
-									id: log.resourceId
-								})
-							: (log.resourceType ?? m['AdminLogsPage.resource']())}
-					</span>
+					<span class="block truncate" title={resourceLabel}>{resourceLabel}</span>
 				{:else}
 					<span class="text-muted-foreground">{m['AdminLogsPage.none']()}</span>
 				{/if}

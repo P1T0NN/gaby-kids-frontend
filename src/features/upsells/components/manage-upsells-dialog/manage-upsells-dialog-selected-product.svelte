@@ -2,13 +2,11 @@
 	// COMPONENTS
 	import ManageUpsellsDialogSelectedUpsellItem from './manage-upsells-dialog-selected-upsell-item.svelte';
 	import ManageUpsellsDialogSelectProduct from './manage-upsells-dialog-select-product.svelte';
+	import UpsellProductSummary from '../upsell-product-summary.svelte';
 	import { Button } from '@/components/ui/button/index.js';
 
 	// TRANSLATIONS
 	import { m } from '@/lib/paraglide/messages';
-
-	// UTILS
-	import { formatPrice } from '@/shared/utils/pricing.js';
 
 	// CONFIG
 	import { UPSELLS_CONFIG } from '@/shared/features/upsells/config.js';
@@ -48,26 +46,7 @@
 <div class="flex flex-col gap-5">
 	<div class="flex items-center justify-between gap-4">
 		<div class="flex min-w-0 items-center gap-3">
-			{#if product.images[0]}
-				<img
-					src={product.images[0]}
-					alt=""
-					width="56"
-					height="56"
-					class="size-14 shrink-0 rounded-lg object-cover"
-				/>
-			{:else}
-				<div class="flex size-14 shrink-0 items-center justify-center rounded-lg bg-muted">
-					<span class="icon-[lucide--package] size-5 text-muted-foreground" aria-hidden="true"
-					></span>
-				</div>
-			{/if}
-			<div class="min-w-0">
-				<p class="truncate text-sm font-medium">{product.name}</p>
-				<p class="text-sm text-muted-foreground">
-					{formatPrice(product.priceInCents)}
-				</p>
-			</div>
+			<UpsellProductSummary {product} />
 		</div>
 		{#if showChange}
 			<Button type="button" variant="outline" size="sm" onclick={onChange}>

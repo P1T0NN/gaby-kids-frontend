@@ -20,7 +20,7 @@
 	type FulfillmentAction = 'fulfill' | 'unfulfill';
 
 	let { order }: { order: Doc<'orders'> } = $props();
-	
+
 	let selectedAction = $state<FulfillmentAction | null>(null);
 	let pending = $state(false);
 
@@ -38,35 +38,15 @@
 		open();
 	}
 
-	async function handleFulfillOrder(close: () => void): Promise<void> {
+	async function updateFulfillment(
+		close: () => void,
+		action: 'fulfill' | 'unfulfill'
+	): Promise<void> {
 		if (pending) return;
 
 		pending = true;
 		try {
-			await updateOrder({ id: order._id, action: 'fulfill' });
-			toastMessage({
-				type: 'success',
-				message: m['AdminEditOrderPage.AdminEditOrderFulfillmentStatusButton.updated']()
-			});
-			close();
-		} catch (error) {
-			toastMessage({
-				type: 'error',
-				error,
-				message: m['AdminEditOrderPage.AdminEditOrderFulfillmentStatusButton.updateError']()
-			});
-		} finally {
-			pending = false;
-			selectedAction = null;
-		}
-	}
-
-	async function handleUnfulfillOrder(close: () => void): Promise<void> {
-		if (pending) return;
-
-		pending = true;
-		try {
-			await updateOrder({ id: order._id, action: 'unfulfill' });
+			await updateOrder({ id: order._id, action });
 			toastMessage({
 				type: 'success',
 				message: m['AdminEditOrderPage.AdminEditOrderFulfillmentStatusButton.updated']()
@@ -141,8 +121,7 @@
 						type="button"
 						size="sm"
 						onclick={() => {
-							if (selectedAction === 'fulfill') void handleFulfillOrder(close);
-							else if (selectedAction === 'unfulfill') void handleUnfulfillOrder(close);
+							if (selectedAction !== null) void updateFulfillment(close, selectedAction);
 						}}
 						disabled={pending || selectedAction === null}
 					>

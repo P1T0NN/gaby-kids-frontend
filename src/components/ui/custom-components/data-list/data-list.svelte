@@ -1,9 +1,9 @@
 <script lang="ts" generics="T">
 	// COMPONENTS
+	import DataEmptyState from '@/components/ui/custom-components/data-empty-state/data-empty-state.svelte';
+	import DataPagination from '@/components/ui/custom-components/data-pagination/data-pagination.svelte';
 	import DataTableItemsLoading from '@/components/ui/custom-components/data-table/data-table-items-loading.svelte';
-	import EmptyData from '@/components/ui/custom-components/empty-data/empty-data.svelte';
 	import InfiniteScroll from '@/components/ui/custom-components/infinite-scroll/infinite-scroll.svelte';
-	import PaginatedData from '@/components/ui/custom-components/paginated-data/paginated-data.svelte';
 	import { m } from '@/lib/paraglide/messages';
 
 	// UTILS
@@ -62,11 +62,7 @@
 	{#if empty}
 		{@render empty()}
 	{:else}
-		<EmptyData title={emptyTitle} description={emptyDescription} action={emptyAction}>
-			{#snippet icon()}
-				<span class="icon-[lucide--inbox] size-5" aria-hidden="true"></span>
-			{/snippet}
-		</EmptyData>
+		<DataEmptyState title={emptyTitle} description={emptyDescription} action={emptyAction} />
 	{/if}
 {/snippet}
 
@@ -99,15 +95,7 @@
 	{/if}
 {:else if isPagePaginationState(pagination)}
 	{#if showPagination && placement === 'above' && pagination.data.length > 0}
-		<PaginatedData
-			page={pagination.page}
-			nextCursor={pagination.nextCursor}
-			total={total !== undefined ? total : pagination.total}
-			pageSize={pagination.pageSize}
-			loading={pagination.loading}
-			onPrev={pagination.onPrev}
-			onNext={pagination.onNext}
-		/>
+		<DataPagination {pagination} {total} />
 	{/if}
 	{#if pagination.error}
 		{@render errorSnippet?.(pagination.error)}
@@ -123,14 +111,6 @@
 		{@render emptyState()}
 	{/if}
 	{#if showPagination && placement === 'below' && pagination.data.length > 0}
-		<PaginatedData
-			page={pagination.page}
-			nextCursor={pagination.nextCursor}
-			total={total !== undefined ? total : pagination.total}
-			pageSize={pagination.pageSize}
-			loading={pagination.loading}
-			onPrev={pagination.onPrev}
-			onNext={pagination.onNext}
-		/>
+		<DataPagination {pagination} {total} />
 	{/if}
 {/if}

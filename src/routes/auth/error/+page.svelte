@@ -10,7 +10,6 @@
 	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints';
 
 	// COMPONENTS
-	import { Button } from '@/components/ui/button';
 	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import SvelteHead from '@/components/ui/custom-components/svelte-head/svelte-head.svelte';
 
@@ -19,6 +18,7 @@
 	import { getLocale } from '@/lib/paraglide/runtime';
 
 	const banDetailsSchema = z.object({ banExpires: z.number().nullable() });
+	
 	type BanDetails = z.infer<typeof banDetailsSchema>;
 
 	function parseBanDetails(description: string | null): BanDetails | null {

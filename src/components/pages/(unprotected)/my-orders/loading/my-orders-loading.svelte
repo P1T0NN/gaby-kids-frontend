@@ -3,7 +3,7 @@
 </script>
 
 <div class="flex flex-col" aria-hidden="true">
-	{#each Array(3) as _, index (index)}
+	{#each Array(3)}
 		<div
 			class="grid gap-5 border-b py-6 first:pt-0 last:border-b-0 sm:grid-cols-[1fr_auto] sm:items-center"
 		>

@@ -3,6 +3,9 @@
 	import Input from '@/components/ui/input/input.svelte';
 	import FormField from './form-field.svelte';
 
+	// UTILS
+	import { formControlAttrs, formControlInput } from './formControl.js';
+
 	// TYPES
 	import type { InputField } from './formTypes.js';
 
@@ -19,8 +22,7 @@
 
 <FormField {field} {disabled} {error}>
 	<Input
-		id={field.name}
-		name={field.name}
+		{...formControlAttrs(field, error)}
 		type={field.type ?? 'text'}
 		{value}
 		maxlength={field.maxLength}
@@ -30,8 +32,6 @@
 		placeholder={field.placeholder}
 		required={field.required}
 		{disabled}
-		aria-invalid={error ? 'true' : undefined}
-		aria-describedby={error ? `${field.name}-error` : undefined}
-		oninput={(event) => onValueChange(event.currentTarget.value)}
+		oninput={formControlInput(onValueChange)}
 	/>
 </FormField>

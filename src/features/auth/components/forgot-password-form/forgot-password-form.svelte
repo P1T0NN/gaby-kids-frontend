@@ -10,16 +10,11 @@
 	// COMPONENTS
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Field from '@/components/ui/field/index.js';
-	import { Button } from '@/components/ui/button/index.js';
+	import AuthFormShell from '../auth-form-shell/auth-form-shell.svelte';
 	import EmailInput from '@/components/ui/custom-components/email-input/email-input.svelte';
-	import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp/index.js';
+	import OtpField from '../otp-field/otp-field.svelte';
 	import PasswordInput from '@/components/ui/custom-components/password-input/password-input.svelte';
-	import { Spinner } from '@/components/ui/spinner/index.js';
-	import CaptchaField from '@/features/captcha/components/captcha-field.svelte';
 	import Link from '@/components/ui/custom-components/link/link.svelte';
-
-	// DATA
-	import { ERROR_MESSAGE_KEYS } from '@/shared/features/auth/data/authData';
 
 	// TYPES
 	import type { ComponentProps } from 'svelte';
@@ -62,97 +57,53 @@
 	}
 </script>
 
-<Card.Root {...restProps}>
-	<Card.Header>
-		{#if step === 'email'}
-			<Card.Title>{m['AuthFeature.ForgotPasswordForm.forgotYourPassword']()}</Card.Title>
-			<Card.Description
-				>{m['AuthFeature.ForgotPasswordForm.emailResetDescription']()}</Card.Description
+<AuthFormShell
+	{...restProps}
+	title={step === 'email'
+		? m['AuthFeature.ForgotPasswordForm.forgotYourPassword']()
+		: m['AuthFeature.ForgotPasswordForm.setNewPassword']()}
+	description={step === 'email'
+		? m['AuthFeature.ForgotPasswordForm.emailResetDescription']()
+		: m['AuthFeature.ForgotPasswordForm.resetCodeDescription']()}
+	submitting={auth.submitting}
+	error={auth.error}
+	{captcha}
+	onsubmit={handleSubmit}
+	submitLabel={step === 'email'
+		? m['AuthFeature.ForgotPasswordForm.sendResetCode']()
+		: m['AuthFeature.ForgotPasswordForm.resetPassword']()}
+	submitDisabled={step === 'reset' && otp.length < 6}
+>
+	{#if step === 'email'}
+		<Field.Field>
+			<Field.Label for="email">{m['AuthFeature.ForgotPasswordForm.email']()}</Field.Label>
+			<EmailInput id="email" required bind:value={email} />
+		</Field.Field>
+	{:else}
+		<OtpField label={m['AuthFeature.ForgotPasswordForm.verificationCode']()} bind:value={otp} />
+
+		<Field.Field>
+			<Field.Label for="password">{m['AuthFeature.ForgotPasswordForm.newPassword']()}</Field.Label>
+			<PasswordInput id="password" required bind:value={password} />
+			<Field.Description
+				>{m['AuthFeature.ForgotPasswordForm.passwordLengthDescription']()}</Field.Description
 			>
-		{:else}
-			<Card.Title>{m['AuthFeature.ForgotPasswordForm.setNewPassword']()}</Card.Title>
-			<Card.Description
-				>{m['AuthFeature.ForgotPasswordForm.resetCodeDescription']()}</Card.Description
+		</Field.Field>
+
+		<Field.Field>
+			<Field.Label for="confirm-password"
+				>{m['AuthFeature.ForgotPasswordForm.confirmPassword']()}</Field.Label
 			>
-		{/if}
-	</Card.Header>
-
-	<Card.Content>
-		<form onsubmit={handleSubmit}>
-			<Field.Group>
-				{#if step === 'email'}
-					<Field.Field>
-						<Field.Label for="email">{m['AuthFeature.ForgotPasswordForm.email']()}</Field.Label>
-						<EmailInput id="email" required bind:value={email} />
-					</Field.Field>
-				{:else}
-					<Field.Field>
-						<Field.Label>{m['AuthFeature.ForgotPasswordForm.verificationCode']()}</Field.Label>
-						<InputOTP maxlength={6} bind:value={otp}>
-							{#snippet children({ cells })}
-								<InputOTPGroup>
-									{#each cells as cell, i (i)}
-										<InputOTPSlot {cell} />
-									{/each}
-								</InputOTPGroup>
-							{/snippet}
-						</InputOTP>
-					</Field.Field>
-
-					<Field.Field>
-						<Field.Label for="password"
-							>{m['AuthFeature.ForgotPasswordForm.newPassword']()}</Field.Label
-						>
-						<PasswordInput id="password" required bind:value={password} />
-						<Field.Description
-							>{m['AuthFeature.ForgotPasswordForm.passwordLengthDescription']()}</Field.Description
-						>
-					</Field.Field>
-
-					<Field.Field>
-						<Field.Label for="confirm-password"
-							>{m['AuthFeature.ForgotPasswordForm.confirmPassword']()}</Field.Label
-						>
-						<PasswordInput id="confirm-password" required bind:value={confirmPassword} />
-					</Field.Field>
-				{/if}
-
-				<Field.Field>
-					<CaptchaField onToken={captcha.setToken} onReset={captcha.registerReset} />
-				</Field.Field>
-
-				{#if auth.error}
-					<p class="text-sm font-medium text-red-500">
-						{m[ERROR_MESSAGE_KEYS[auth.error]]()}
-					</p>
-				{/if}
-
-				<Field.Field>
-					{#if step === 'email'}
-						<Button type="submit" disabled={auth.submitting || !captcha.token}>
-							{#if auth.submitting}
-								<Spinner />
-							{/if}
-							{m['AuthFeature.ForgotPasswordForm.sendResetCode']()}
-						</Button>
-					{:else}
-						<Button type="submit" disabled={auth.submitting || otp.length < 6 || !captcha.token}>
-							{#if auth.submitting}
-								<Spinner />
-							{/if}
-							{m['AuthFeature.ForgotPasswordForm.resetPassword']()}
-						</Button>
-					{/if}
-				</Field.Field>
-			</Field.Group>
-		</form>
-	</Card.Content>
-
-	<Card.Footer class="flex justify-center">
-		<Field.Description>
-			<Link href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN} class="text-sm font-medium"
-				>{m['AuthFeature.ForgotPasswordForm.backToSignIn']()}</Link
-			>
-		</Field.Description>
-	</Card.Footer>
-</Card.Root>
+			<PasswordInput id="confirm-password" required bind:value={confirmPassword} />
+		</Field.Field>
+	{/if}
+	{#snippet footer()}
+		<Card.Footer class="flex justify-center">
+			<Field.Description>
+				<Link href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN} class="text-sm font-medium"
+					>{m['AuthFeature.ForgotPasswordForm.backToSignIn']()}</Link
+				>
+			</Field.Description>
+		</Card.Footer>
+	{/snippet}
+</AuthFormShell>

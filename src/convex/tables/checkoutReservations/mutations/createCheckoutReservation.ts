@@ -10,7 +10,11 @@ import { internalMutation } from '../../../builders/convexFunctionBuilders.js';
 
 // UTILS
 import { calculateOrderTotalInCents } from '../../../../shared/utils/pricing.js';
-import { resolveStoredFileUrls } from '../../../storage/r2.js';
+
+// HELPERS
+import { buildCheckoutLine, type CheckoutLine } from '../../orders/helpers/buildCheckoutLine.js';
+import { loadSellableProduct } from '../../products/helpers/loadSellableProduct.js';
+import { mergeItemQuantities } from '../../orders/helpers/mergeItemQuantities.js';
 
 // SCHEMAS
 import { createOrderSchema } from '../../../../shared/features/orders/schemas/ordersSchemas.js';
@@ -21,7 +25,61 @@ import { checkoutReservationResult } from '../validators/checkoutReservationVali
 
 // TYPES
 import type { Id } from '../../../_generated/dataModel.js';
+import type { MutationCtx } from '../../../_generated/server.js';
 import type { BackendErrorData } from '../../../../shared/types/types.js';
+
+type CheckoutItem = CheckoutLine;
+type ReservedItem = {
+	productId: Id<'products'>;
+	name: string;
+	unitPriceInCents: number;
+	quantity: number;
+	trackInventory: boolean;
+};
+type InventoryUpdate = { productId: Id<'products'>; reservedInventory: number };
+type ReservationLines = {
+	checkoutItems: CheckoutItem[];
+	reservedItems: ReservedItem[];
+	inventoryUpdates: InventoryUpdate[];
+};
+
+/** Price and availability-check each product, then build the trusted snapshot lines. */
+async function buildReservationLines(
+	ctx: MutationCtx,
+	quantities: Map<Id<'products'>, number>
+): Promise<ReservationLines> {
+	const checkoutItems: CheckoutItem[] = [];
+	const reservedItems: ReservedItem[] = [];
+	const inventoryUpdates: InventoryUpdate[] = [];
+	const sortedQuantities = [...quantities].sort(([a], [b]) => a.localeCompare(b));
+
+	for (const [productId, quantity] of sortedQuantities) {
+		const product = await loadSellableProduct(ctx, productId);
+
+		const availableInventory = product.inventory - product.reservedInventory;
+		const hasInsufficientInventory = product.trackInventory && availableInventory < quantity;
+		if (hasInsufficientInventory) {
+			throw new ConvexError<BackendErrorData>({ code: 'ORDER_PRODUCT_UNAVAILABLE' });
+		}
+
+		checkoutItems.push(await buildCheckoutLine(product, quantity));
+		reservedItems.push({
+			productId,
+			name: product.name,
+			unitPriceInCents: product.priceInCents,
+			quantity,
+			trackInventory: product.trackInventory
+		});
+		if (product.trackInventory) {
+			inventoryUpdates.push({
+				productId,
+				reservedInventory: product.reservedInventory + quantity
+			});
+		}
+	}
+
+	return { checkoutItems, reservedItems, inventoryUpdates };
+}
 
 export const createCheckoutReservation = internalMutation({
 	args: createOrderArgs.fields,
@@ -30,65 +88,12 @@ export const createCheckoutReservation = internalMutation({
 		const parsed = createOrderSchema.safeParse(args);
 		if (!parsed.success) throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
 		const data = parsed.data;
-		const quantities = new Map<Id<'products'>, number>();
-		for (const item of data.items) {
-			const quantity = (quantities.get(item.productId) ?? 0) + item.quantity;
-			if (quantity > ORDER_CONFIG.maxQuantity) {
-				throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
-			}
-			quantities.set(item.productId, quantity);
-		}
 
-		const checkoutItems = [];
-		const reservedItems = [];
-		const inventoryUpdates = [];
-		const sortedQuantities = [...quantities].sort(([a], [b]) => a.localeCompare(b));
-
-		for (const [productId, quantity] of sortedQuantities) {
-			const product = await ctx.db.get(productId);
-			if (!product || product.status !== 'active') {
-				throw new ConvexError<BackendErrorData>({ code: 'ORDER_PRODUCT_UNAVAILABLE' });
-			}
-
-			const hasInvalidPrice =
-				!Number.isSafeInteger(product.priceInCents) || product.priceInCents < 0;
-
-			if (hasInvalidPrice) {
-				throw new Error('Product price invariant violated.');
-			}
-
-			const availableInventory = product.inventory - product.reservedInventory;
-			const hasInsufficientInventory = product.trackInventory && availableInventory < quantity;
-			if (hasInsufficientInventory) {
-				throw new ConvexError<BackendErrorData>({ code: 'ORDER_PRODUCT_UNAVAILABLE' });
-			}
-
-			const imageKey = (product.imageKeys ?? product.images)[0];
-			const imageUrl = imageKey ? (await resolveStoredFileUrls([imageKey]))[0] : undefined;
-
-			checkoutItems.push({
-				productId,
-				name: product.name,
-				unitPriceInCents: product.priceInCents,
-				quantity,
-				imageUrl: imageUrl ?? ''
-			});
-
-			reservedItems.push({
-				productId,
-				name: product.name,
-				unitPriceInCents: product.priceInCents,
-				quantity,
-				trackInventory: product.trackInventory
-			});
-
-			if (product.trackInventory) {
-				inventoryUpdates.push({
-					productId,
-					reservedInventory: product.reservedInventory + quantity
-				});
-			}
-		}
+		const quantities = mergeItemQuantities(data.items);
+		const { checkoutItems, reservedItems, inventoryUpdates } = await buildReservationLines(
+			ctx,
+			quantities
+		);
 
 		const totalInCents = calculateOrderTotalInCents(checkoutItems);
 		if (!Number.isSafeInteger(totalInCents) || totalInCents <= 0) {

@@ -1,23 +1,20 @@
 <script lang="ts">
 	// LIBRARIES
 	import { authClient } from '@/features/auth/lib/authClient';
+	import { runAuthAction } from '@/features/auth/lib/runAuthAction';
 
 	// COMPONENTS
 	import { Button } from '@/components/ui/button';
+	import ConfirmDialogActions from '@/components/ui/custom-components/confirm-dialog-actions/confirm-dialog-actions.svelte';
 	import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 	import NativeDialog from '@/components/ui/native-components/native-dialog/native-dialog.svelte';
 	import NativeSelect from '@/components/ui/native-components/native-select/native-select.svelte';
-	import { Spinner } from '@/components/ui/spinner';
 	import { Textarea } from '@/components/ui/textarea';
 	import { m } from '@/lib/paraglide/messages';
 
 	// DATA
 	import { banDurations, type BanDuration } from '@/shared/features/auth/data/authData';
 
-	// UTILS
-	import { toastMessage } from '@/utils/toastMessage';
-
-	type AuthResult = { error?: { message?: string } | null } | null | undefined;
 	type PendingAction = 'ban' | null;
 
 	let { userId, userName }: { userId: string; userName: string } = $props();
@@ -40,32 +37,9 @@
 		return banDuration === 'indefinite' ? undefined : seconds[banDuration];
 	}
 
-	async function runAction(
-		action: () => Promise<AuthResult>,
-		successMessage: string,
-		errorMessage: string
-	): Promise<boolean> {
-		pendingAction = 'ban';
-
-		try {
-			const result = await action();
-			if (result?.error) {
-				toastMessage({ type: 'error', error: result.error, message: errorMessage });
-				return false;
-			}
-
-			toastMessage({ type: 'success', message: successMessage });
-			return true;
-		} catch (error) {
-			toastMessage({ type: 'error', error, message: errorMessage });
-			return false;
-		} finally {
-			pendingAction = null;
-		}
-	}
-
 	async function banUser(close: () => void): Promise<void> {
-		const didBan = await runAction(
+		pendingAction = 'ban';
+		const didBan = await runAuthAction(
 			() =>
 				authClient.admin.banUser({
 					userId,
@@ -75,6 +49,7 @@
 			m['AdminUserPage.BanUserDialog.userBanned'](),
 			m['AdminUserPage.BanUserDialog.banError']()
 		);
+		pendingAction = null;
 
 		if (didBan) {
 			banReason = '';
@@ -135,21 +110,13 @@
 				</Field>
 			</FieldGroup>
 
-			<div class="flex justify-end gap-2">
-				<Button
-					type="button"
-					variant="outline"
-					size="sm"
-					onclick={close}
-					disabled={pendingAction !== null}
-				>
-					{m['AdminUserPage.BanUserDialog.cancel']()}
-				</Button>
-				<Button type="submit" variant="destructive" size="sm" disabled={pendingAction !== null}>
-					{#if pendingAction === 'ban'}<Spinner data-icon="inline-start" />{/if}
-					{m['AdminUserPage.BanUserDialog.banUser']()}
-				</Button>
-			</div>
+			<ConfirmDialogActions
+				pending={pendingAction !== null}
+				cancelLabel={m['AdminUserPage.BanUserDialog.cancel']()}
+				confirmLabel={m['AdminUserPage.BanUserDialog.banUser']()}
+				confirmType="submit"
+				onCancel={close}
+			/>
 		</form>
 	{/snippet}
 </NativeDialog>

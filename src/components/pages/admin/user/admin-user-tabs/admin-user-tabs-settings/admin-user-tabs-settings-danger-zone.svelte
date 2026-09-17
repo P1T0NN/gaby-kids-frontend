@@ -11,18 +11,16 @@
 
 	// AUTH
 	import { authClient } from '@/features/auth/lib/authClient';
+	import { runAuthAction } from '@/features/auth/lib/runAuthAction';
 
 	// COMPONENTS
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
+	import ConfirmDialogActions from '@/components/ui/custom-components/confirm-dialog-actions/confirm-dialog-actions.svelte';
 	import { Field, FieldLabel } from '@/components/ui/field';
 	import NativeDialog from '@/components/ui/native-components/native-dialog/native-dialog.svelte';
 	import { Input } from '@/components/ui/input';
-	import { Spinner } from '@/components/ui/spinner';
 	import { m } from '@/lib/paraglide/messages';
-
-	// UTILS
-	import { toastMessage } from '@/utils/toastMessage';
 
 	type User = NonNullable<
 		FunctionReturnType<
@@ -30,45 +28,22 @@
 		>
 	>;
 	type PendingAction = 'delete' | null;
-	type AuthResult = { error?: { message?: string } | null } | null | undefined;
 
 	let { user }: { user: User } = $props();
 
 	let deleteConfirmation = $state('');
 	let pendingAction = $state<PendingAction>(null);
 
-	async function runAction(
-		action: () => Promise<AuthResult>,
-		successMessage: string,
-		errorMessage: string
-	): Promise<boolean> {
-		pendingAction = 'delete';
-
-		try {
-			const result = await action();
-			if (result?.error) {
-				toastMessage({ type: 'error', error: result.error, message: errorMessage });
-				return false;
-			}
-
-			toastMessage({ type: 'success', message: successMessage });
-			return true;
-		} catch (error) {
-			toastMessage({ type: 'error', error, message: errorMessage });
-			return false;
-		} finally {
-			pendingAction = null;
-		}
-	}
-
 	async function deleteUser(close: () => void): Promise<void> {
 		if (deleteConfirmation.trim() !== user.email) return;
 
-		const didDelete = await runAction(
+		pendingAction = 'delete';
+		const didDelete = await runAuthAction(
 			() => authClient.admin.removeUser({ userId: user.id }),
 			m['AdminUserPage.AdminUserTabsSettingsDangerZone.userDeleted'](),
 			m['AdminUserPage.AdminUserTabsSettingsDangerZone.deleteError']()
 		);
+		pendingAction = null;
 
 		if (didDelete) {
 			close();
@@ -147,26 +122,14 @@
 								/>
 							</Field>
 
-							<div class="flex justify-end gap-2">
-								<Button
-									type="button"
-									variant="outline"
-									size="sm"
-									onclick={close}
-									disabled={pendingAction !== null}
-								>
-									{m['AdminUserPage.AdminUserTabsSettingsDangerZone.cancel']()}
-								</Button>
-								<Button
-									type="submit"
-									variant="destructive"
-									size="sm"
-									disabled={deleteConfirmation.trim() !== user.email || pendingAction !== null}
-								>
-									{#if pendingAction === 'delete'}<Spinner data-icon="inline-start" />{/if}
-									{m['AdminUserPage.AdminUserTabsSettingsDangerZone.deleteAccount']()}
-								</Button>
-							</div>
+							<ConfirmDialogActions
+								pending={pendingAction !== null}
+								cancelLabel={m['AdminUserPage.AdminUserTabsSettingsDangerZone.cancel']()}
+								confirmLabel={m['AdminUserPage.AdminUserTabsSettingsDangerZone.deleteAccount']()}
+								confirmType="submit"
+								confirmDisabled={deleteConfirmation.trim() !== user.email}
+								onCancel={close}
+							/>
 						</form>
 					{/snippet}
 				</NativeDialog>

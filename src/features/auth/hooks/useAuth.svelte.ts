@@ -4,6 +4,9 @@ import { gotoParaglide } from '@/utils/gotoParaglide.js';
 // LIBRARIES
 import { authClient } from '../lib/authClient';
 
+// TYPES
+import type { AuthActionResult } from '../lib/runAuthAction';
+
 // COMPONENTS
 import { toast } from 'svelte-sonner';
 
@@ -18,8 +21,6 @@ import { SERVER_MESSAGE_TO_CODE } from '@/shared/features/auth/data/authData';
 
 // TYPES
 import type { SignUpErrorCode } from '@/shared/features/auth/types/authTypes';
-
-type AuthResult = { error?: { code?: string; message?: string } | null } | null | undefined;
 
 /**
  * Shared submit plumbing for the auth forms — owns `error`/`submitting` state,
@@ -43,7 +44,7 @@ export function useAuth() {
 		return { fetchOptions: { headers: { 'x-captcha-response': captchaToken } } };
 	}
 
-	async function run(action: () => Promise<AuthResult>, onSuccess?: () => void) {
+	async function run(action: () => Promise<AuthActionResult>, onSuccess?: () => void) {
 		error = null;
 		submitting = true;
 		try {
@@ -53,7 +54,6 @@ export function useAuth() {
 					// eslint-disable-next-line svelte/prefer-svelte-reactivity
 					const params = new URLSearchParams({ error: 'BANNED_USER' });
 					if (result.error.message) params.set('error_description', result.error.message);
-					// eslint-disable-next-line svelte/no-navigation-without-resolve
 					await gotoParaglide(`${UNPROTECTED_PAGE_ENDPOINTS.AUTH_ERROR}?${params}`);
 					return;
 				}
@@ -109,8 +109,9 @@ export function useAuth() {
 					// No callbackURL on purpose — the redirect plugin does a full page reload,
 					// which would drop the toast.
 					toast.success(successMessage);
-					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					gotoParaglide(`${UNPROTECTED_PAGE_ENDPOINTS.VERIFY_EMAIL}?email=${encodeURIComponent(email)}`);
+					gotoParaglide(
+						`${UNPROTECTED_PAGE_ENDPOINTS.VERIFY_EMAIL}?email=${encodeURIComponent(email)}`
+					);
 				}
 			);
 		},

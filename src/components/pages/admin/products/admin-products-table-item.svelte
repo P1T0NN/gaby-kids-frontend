@@ -7,10 +7,9 @@
 	import type { Doc } from '@convex/_generated/dataModel';
 
 	// COMPONENTS
-	import { Button } from '@/components/ui/button/index.js';
-	import NativeDialog from '@/components/ui/native-components/native-dialog/native-dialog.svelte';
+	import ConfirmDeleteDialog from '@/components/ui/custom-components/confirm-delete-dialog/confirm-delete-dialog.svelte';
+	import DestructiveMenuItem from '@/components/ui/custom-components/destructive-menu-item/destructive-menu-item.svelte';
 	import NativePopover from '@/components/ui/native-components/native-popover/native-popover.svelte';
-	import { Spinner } from '@/components/ui/spinner/index.js';
 	import { TableCell } from '@/components/ui/table/index.js';
 	import Link from '@/components/ui/custom-components/link/link.svelte';
 	import ProductPrice from '@/features/products/components/product-price.svelte';
@@ -132,57 +131,23 @@
 			<span class="icon-[lucide--pencil] size-4" aria-hidden="true"></span>
 			{m['AdminProductsPage.AdminProductsTableItem.editProduct']()}
 		</Link>
-		<NativeDialog>
+		<ConfirmDeleteDialog
+			title={m['AdminProductsPage.AdminProductsTableItem.deleteConfirmationTitle']()}
+			description={m['AdminProductsPage.AdminProductsTableItem.deleteConfirmationDescription']({
+				name: product.name
+			})}
+			confirmLabel={m['AdminProductsPage.AdminProductsTableItem.deleteProduct']()}
+			cancelLabel={m['AdminProductsPage.AdminProductsTableItem.cancel']()}
+			pending={pendingAction !== null}
+			onConfirm={(close) => void handleDelete(close)}
+		>
 			{#snippet trigger({ open })}
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					class="w-full justify-start rounded-xl px-3 py-2 font-normal text-destructive hover:bg-destructive/10 hover:text-destructive"
-					onclick={open}
+				<DestructiveMenuItem
+					label={m['AdminProductsPage.AdminProductsTableItem.deleteProduct']()}
 					disabled={pendingAction !== null}
-				>
-					<span class="icon-[lucide--trash-2] size-4" aria-hidden="true"></span>
-					{m['AdminProductsPage.AdminProductsTableItem.deleteProduct']()}
-				</Button>
+					onclick={open}
+				/>
 			{/snippet}
-
-			{#snippet children({ close })}
-				<div class="flex flex-col gap-5 p-6">
-					<div class="flex flex-col gap-1.5">
-						<h2 class="text-lg font-semibold">
-							{m['AdminProductsPage.AdminProductsTableItem.deleteConfirmationTitle']()}
-						</h2>
-						<p class="text-sm text-muted-foreground">
-							{m['AdminProductsPage.AdminProductsTableItem.deleteConfirmationDescription']({
-								name: product.name
-							})}
-						</p>
-					</div>
-
-					<div class="flex justify-end gap-2">
-						<Button
-							type="button"
-							variant="outline"
-							size="sm"
-							onclick={close}
-							disabled={pendingAction !== null}
-						>
-							{m['AdminProductsPage.AdminProductsTableItem.cancel']()}
-						</Button>
-						<Button
-							type="button"
-							variant="destructive"
-							size="sm"
-							onclick={() => void handleDelete(close)}
-							disabled={pendingAction !== null}
-						>
-							{#if pendingAction === 'delete'}<Spinner data-icon="inline-start" />{/if}
-							{m['AdminProductsPage.AdminProductsTableItem.deleteProduct']()}
-						</Button>
-					</div>
-				</div>
-			{/snippet}
-		</NativeDialog>
+		</ConfirmDeleteDialog>
 	</NativePopover>
 </TableCell>

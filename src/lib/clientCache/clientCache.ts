@@ -37,6 +37,8 @@ export const convexQueryCache = createClientCache<unknown>();
  * Hold a SvelteKit `query()` result alive across navigation. `query()` evicts a
  * cache entry once its proxy is garbage-collected, so retaining each proxy here
  * lets revisits reuse it until the bounded LRU evicts it.
+ *
+ * @expected-unused Documented template helper (`CodingRules.md`) with no live caller yet.
  */
 export function cacheQuery<const TArgs extends unknown[], TResult>(
 	fn: (...args: TArgs) => TResult,

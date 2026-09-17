@@ -4,7 +4,11 @@ import { SHOP_CATEGORY_FILTER_KEY } from '../../../../shared/features/filters/da
 // TYPES
 import type { ConvexFilter } from '../../../../shared/features/filters/types/filterTypesConvex.js';
 
+// UTILS
+import { eqColumn } from '../../../../shared/features/filters/utils/commonPredicatesConvex.js';
+
+const categoryPredicate = eqColumn('category');
+
 export function buildProductFilter(key: string, value: string): ConvexFilter | undefined {
-	if (key === SHOP_CATEGORY_FILTER_KEY) return { field: 'category', eq: value };
-	return undefined;
+	return key === SHOP_CATEGORY_FILTER_KEY ? categoryPredicate(value) : undefined;
 }

@@ -27,6 +27,9 @@ import {
 } from '../betterAuth/helpers/requireIdentity.js';
 import { enforceRateLimit } from '../rateLimits/helpers/enforceRateLimit.js';
 
+// STORAGE
+import { getUploadByKey } from '../storage/getUploadByKey.js';
+
 // CONFIG
 import { STORAGE_CONFIG } from '../../shared/features/storage/config.js';
 
@@ -133,10 +136,7 @@ const authenticatedUploadContext = (
 
 		const uploads: Doc<'storageUploads'>[] = [];
 		for (const key of keys ?? []) {
-			const upload = await ctx.db
-				.query('storageUploads')
-				.withIndex('by_key', (query) => query.eq('key', key))
-				.unique();
+			const upload = await getUploadByKey(ctx, key);
 			const isUnavailableUpload =
 				!upload ||
 				upload.ownerId !== getOwnerId(authenticated.identity) ||

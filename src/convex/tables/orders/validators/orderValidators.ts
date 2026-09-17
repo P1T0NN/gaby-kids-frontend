@@ -2,6 +2,9 @@
 import { literals } from 'convex-helpers/validators';
 import { v } from 'convex/values';
 
+// VALIDATORS
+import { pageValidator } from '../../../validators/pageValidator.js';
+
 export const paymentStatus = literals('pending', 'paid', 'refund_pending', 'refunded');
 export const checkoutStatus = literals('open', 'complete', 'expired');
 export const fulfillmentStatus = literals('unfulfilled', 'fulfilled');
@@ -75,13 +78,7 @@ export const orderItemResult = v.object({
 	quantity: v.number()
 });
 
-export const orderPage = v.object({
-	items: v.array(orderResult),
-	nextCursor: v.union(v.string(), v.null()),
-	hasNextPage: v.boolean(),
-	pageSize: v.number(),
-	total: v.optional(v.number())
-});
+export const orderPage = pageValidator(orderResult);
 
 export const orderDetailResult = v.object({ order: orderResult, items: v.array(orderItemResult) });
 
@@ -97,12 +94,7 @@ export const myOrderResult = v.object({
 	cancelledAt: v.optional(v.number())
 });
 
-export const myOrderPage = v.object({
-	items: v.array(myOrderResult),
-	nextCursor: v.union(v.string(), v.null()),
-	hasNextPage: v.boolean(),
-	pageSize: v.number(),
-	total: v.optional(v.number()),
+export const myOrderPage = pageValidator(myOrderResult).extend({
 	invalidOrderIds: v.array(v.string()),
 	syncOrders: v.array(v.object({ id: v.id('orders'), receiptToken: v.string() }))
 });

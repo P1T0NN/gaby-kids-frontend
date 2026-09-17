@@ -14,7 +14,6 @@
 	import LogoutButton from '@/features/auth/components/logout-button/logout-button.svelte';
 	import NativeAvatar from '@/components/ui/native-components/native-avatar/native-avatar.svelte';
 	import NativePopover from '@/components/ui/native-components/native-popover/native-popover.svelte';
-	import { Button } from '@/components/ui/button/index.js';
 	import { Separator } from '@/components/ui/separator/index.js';
 	import Spinner from '@/components/ui/spinner/spinner.svelte';
 	import { m } from '@/lib/paraglide/messages';

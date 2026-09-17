@@ -1,6 +1,9 @@
 // LIBRARIES
 import { m } from '@/lib/paraglide/messages';
 
+// DATA
+import { fulfillmentStatusOptions, paymentStatusOptions } from './orderFilterOptions.js';
+
 // TYPES
 import type { FilterDef } from '@/shared/features/filters/types/filterTypes.js';
 
@@ -11,16 +14,7 @@ export const ADMIN_ORDERS_FILTER_DEFS = [
 			return m['AdminOrdersPage.paymentFilterLabel']();
 		},
 		get options() {
-			return [
-				{ value: '', label: m['AdminOrdersPage.allPaymentStatuses']() },
-				{ value: 'pending', label: m['OrdersFeature.OrdersPaymentStatusBadge.pending']() },
-				{ value: 'paid', label: m['OrdersFeature.OrdersPaymentStatusBadge.paid']() },
-				{
-					value: 'refund_pending',
-					label: m['OrdersFeature.OrdersPaymentStatusBadge.refundPending']()
-				},
-				{ value: 'refunded', label: m['OrdersFeature.OrdersPaymentStatusBadge.refunded']() }
-			];
+			return paymentStatusOptions(m['AdminOrdersPage.allPaymentStatuses']());
 		}
 	},
 	{
@@ -29,17 +23,7 @@ export const ADMIN_ORDERS_FILTER_DEFS = [
 			return m['AdminOrdersPage.fulfillmentFilterLabel']();
 		},
 		get options() {
-			return [
-				{ value: '', label: m['AdminOrdersPage.allFulfillmentStatuses']() },
-				{
-					value: 'unfulfilled',
-					label: m['OrdersFeature.OrdersFulfillmentStatusBadge.unfulfilled']()
-				},
-				{
-					value: 'fulfilled',
-					label: m['OrdersFeature.OrdersFulfillmentStatusBadge.fulfilled']()
-				}
-			];
+			return fulfillmentStatusOptions(m['AdminOrdersPage.allFulfillmentStatuses']());
 		}
 	},
 	{

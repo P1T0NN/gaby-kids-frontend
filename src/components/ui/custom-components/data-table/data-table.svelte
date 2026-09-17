@@ -2,11 +2,11 @@
 	// COMPONENTS
 	import { Card } from '@/components/ui/card/index.js';
 	import { Table, TableHeader, TableBody, TableRow, TableHead } from '@/components/ui/table';
+	import DataEmptyState from '@/components/ui/custom-components/data-empty-state/data-empty-state.svelte';
+	import DataPagination from '@/components/ui/custom-components/data-pagination/data-pagination.svelte';
 	import DataTableItem from './data-table-item.svelte';
 	import DataTableItemsLoading from './data-table-items-loading.svelte';
 	import DataTableSelectionBar from './data-table-selection-bar.svelte';
-	import EmptyData from '@/components/ui/custom-components/empty-data/empty-data.svelte';
-	import PaginatedData from '@/components/ui/custom-components/paginated-data/paginated-data.svelte';
 	import { m } from '@/lib/paraglide/messages';
 
 	// HOOKS
@@ -57,15 +57,7 @@
 	{@render header()}
 {/if}
 {#if placement === 'above' && pagination.data.length > 0}
-	<PaginatedData
-		page={pagination.page}
-		nextCursor={pagination.nextCursor}
-		total={total !== undefined ? total : pagination.total}
-		pageSize={pagination.pageSize}
-		loading={pagination.loading}
-		onPrev={pagination.onPrev}
-		onNext={pagination.onNext}
-	/>
+	<DataPagination {pagination} {total} />
 {/if}
 {#if pagination.error && pagination.data.length === 0}
 	{@render errorSnippet?.(pagination.error)}
@@ -139,20 +131,8 @@
 {:else if empty}
 	{@render empty()}
 {:else}
-	<EmptyData title={emptyTitle} description={emptyDescription} action={emptyAction}>
-		{#snippet icon()}
-			<span class="icon-[lucide--inbox] size-5" aria-hidden="true"></span>
-		{/snippet}
-	</EmptyData>
+	<DataEmptyState title={emptyTitle} description={emptyDescription} action={emptyAction} />
 {/if}
 {#if placement === 'below' && pagination.data.length > 0}
-	<PaginatedData
-		page={pagination.page}
-		nextCursor={pagination.nextCursor}
-		total={total !== undefined ? total : pagination.total}
-		pageSize={pagination.pageSize}
-		loading={pagination.loading}
-		onPrev={pagination.onPrev}
-		onNext={pagination.onNext}
-	/>
+	<DataPagination {pagination} {total} />
 {/if}

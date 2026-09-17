@@ -4,10 +4,11 @@ import { internalQuery } from '../../../_generated/server.js';
 
 // CONFIG
 import { COMPANY_DATA } from '../../../../shared/config.js';
-import { ORDER_CONFIG } from '../../../../shared/features/orders/config.js';
 
-// STORAGE
-import { resolveStoredFileUrls } from '../../../storage/r2.js';
+// HELPERS
+import { buildCheckoutLine, type CheckoutLine } from '../../orders/helpers/buildCheckoutLine.js';
+import { loadSellableProduct } from '../../products/helpers/loadSellableProduct.js';
+import { mergeItemQuantities } from '../../orders/helpers/mergeItemQuantities.js';
 
 // VALIDATORS
 import { createOrderArgs } from '../validators/orderValidators.js';
@@ -19,7 +20,27 @@ import { calculateOrderTotalInCents } from '../../../../shared/utils/pricing.js'
 
 // TYPES
 import type { Id } from '../../../_generated/dataModel.js';
+import type { QueryCtx } from '../../../_generated/server.js';
 import type { BackendErrorData } from '../../../../shared/types/types.js';
+
+type CheckoutItem = CheckoutLine;
+
+/** Price-check each active product and build the trusted checkout lines. */
+async function buildCheckoutItems(
+	ctx: QueryCtx,
+	quantities: Map<Id<'products'>, number>
+): Promise<CheckoutItem[]> {
+	const items: CheckoutItem[] = [];
+	const sortedQuantities = [...quantities].sort(([a], [b]) => a.localeCompare(b));
+
+	for (const [productId, quantity] of sortedQuantities) {
+		const product = await loadSellableProduct(ctx, productId);
+
+		items.push(await buildCheckoutLine(product, quantity));
+	}
+
+	return items;
+}
 
 // Prepares trusted Stripe inputs without creating any order or checkout documents.
 export const fetchCheckoutOrder = internalQuery({
@@ -29,34 +50,13 @@ export const fetchCheckoutOrder = internalQuery({
 		const parsed = createOrderSchema.safeParse(args);
 		if (!parsed.success) throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
 		const data = parsed.data;
-		const quantities = new Map<Id<'products'>, number>();
-		for (const item of data.items) {
-			const quantity = (quantities.get(item.productId) ?? 0) + item.quantity;
-			if (quantity > ORDER_CONFIG.maxQuantity)
-				throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
-			quantities.set(item.productId, quantity);
-		}
 
-		const items = [];
-		for (const [productId, quantity] of [...quantities].sort(([a], [b]) => a.localeCompare(b))) {
-			const product = await ctx.db.get(productId);
-			if (!product || product.status !== 'active')
-				throw new ConvexError<BackendErrorData>({ code: 'ORDER_PRODUCT_UNAVAILABLE' });
-			if (!Number.isSafeInteger(product.priceInCents) || product.priceInCents < 0)
-				throw new Error('Product price invariant violated.');
-			const imageKey = (product.imageKeys ?? product.images)[0];
-			const imageUrl = imageKey ? (await resolveStoredFileUrls([imageKey]))[0] : undefined;
-			items.push({
-				productId,
-				name: product.name,
-				unitPriceInCents: product.priceInCents,
-				quantity,
-				imageUrl: imageUrl ?? ''
-			});
-		}
+		const quantities = mergeItemQuantities(data.items);
+		const items = await buildCheckoutItems(ctx, quantities);
 		const totalInCents = calculateOrderTotalInCents(items);
-		if (!Number.isSafeInteger(totalInCents) || totalInCents <= 0)
+		if (!Number.isSafeInteger(totalInCents) || totalInCents <= 0) {
 			throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
+		}
 
 		const identity = await ctx.auth.getUserIdentity();
 		return {

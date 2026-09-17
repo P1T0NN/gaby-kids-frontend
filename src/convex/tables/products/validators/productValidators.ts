@@ -5,6 +5,9 @@ import { v } from 'convex/values';
 // CATEGORIES
 import { categoryOption } from '../../categories/validators/categoryValidators.js';
 
+// VALIDATORS
+import { pageValidator } from '../../../validators/pageValidator.js';
+
 export const productStatus = literals('draft', 'active', 'archived');
 
 export const productResult = v.object({
@@ -48,13 +51,7 @@ export const storefrontProductDetailResult = storefrontProductResult.extend({
 	upsells: v.array(storefrontUpsellResult)
 });
 
-export const productPage = v.object({
-	items: v.array(productResult),
-	nextCursor: v.union(v.string(), v.null()),
-	hasNextPage: v.boolean(),
-	pageSize: v.number(),
-	total: v.optional(v.number())
-});
+export const productPage = pageValidator(productResult);
 
 export const storefrontProductPage = productPage.extend({
 	items: v.array(storefrontProductResult)

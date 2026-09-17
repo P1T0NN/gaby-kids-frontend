@@ -23,7 +23,7 @@ export const saveProductUpsells = adminMutation({
 		if (!parsed.success) {
 			throw new ConvexError<BackendErrorData>({ code: 'INVALID_UPSELL_DATA' });
 		}
-		
+
 		const { productId, upsellProductIds } = parsed.data;
 
 		const hasDuplicates = new Set(upsellProductIds).size !== upsellProductIds.length;

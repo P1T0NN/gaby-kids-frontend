@@ -1,0 +1,104 @@
+{
+	"$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+	"ignorePatterns": ["src/convex/**/_generated/**", "tools/oxlint/anti-slop/index.js"],
+	// Not imported in JS: @iconify/tailwind4 loads this collection to generate `icon-[lucide--*]` classes.
+	"ignoreDependencies": ["@iconify-json/lucide"],
+	"ignoreUnresolvedImports": [
+		"@convex/_generated/api",
+		"@convex/_generated/dataModel",
+		"@convex/_generated/dataModel.js"
+	],
+	"ignoreExports": [
+		{ "file": "src/components/ui/*/index.ts", "exports": ["*"] },
+		// Intentional: both dialogs expose a programmatic `open()` on purpose.
+		{
+			"file": "src/components/ui/native-components/native-dialog/native-dialog.svelte",
+			"exports": ["open"]
+		},
+		{
+			"file": "src/features/upsells/components/upsells-dialog/upsells-dialog.svelte",
+			"exports": ["open"]
+		}
+	],
+	"ignoreExportsUsedInFile": true,
+	"overrides": [
+		{
+			"files": [
+				"src/components/ui/avatar/**",
+				"src/components/ui/badge/**",
+				"src/components/ui/breadcrumb/**",
+				"src/components/ui/button/**",
+				"src/components/ui/card/**",
+				"src/components/ui/carousel/**",
+				"src/components/ui/checkbox/**",
+				"src/components/ui/drawer/**",
+				"src/components/ui/empty/**",
+				"src/components/ui/field/**",
+				"src/components/ui/input/**",
+				"src/components/ui/input-group/**",
+				"src/components/ui/input-otp/**",
+				"src/components/ui/label/**",
+				"src/components/ui/pagination/**",
+				"src/components/ui/progress/**",
+				"src/components/ui/radio-group/**",
+				"src/components/ui/select/**",
+				"src/components/ui/separator/**",
+				"src/components/ui/sheet/**",
+				"src/components/ui/sidebar/**",
+				"src/components/ui/skeleton/**",
+				"src/components/ui/slider/**",
+				"src/components/ui/sonner/**",
+				"src/components/ui/spinner/**",
+				"src/components/ui/switch/**",
+				"src/components/ui/table/**",
+				"src/components/ui/tabs/**",
+				"src/components/ui/textarea/**",
+				"src/components/ui/tooltip/**"
+			],
+			"rules": {
+				"unused-files": "off",
+				"unused-exports": "off",
+				"unused-types": "off",
+				"unused-enum-members": "off",
+				"unused-class-members": "off",
+				"duplicate-exports": "off"
+			}
+		}
+	],
+	"duplicates": {
+		"ignore": [
+			"src/convex/**/_generated/**",
+			"tools/oxlint/anti-slop/index.js",
+			"src/components/ui/avatar/**",
+			"src/components/ui/badge/**",
+			"src/components/ui/breadcrumb/**",
+			"src/components/ui/button/**",
+			"src/components/ui/card/**",
+			"src/components/ui/carousel/**",
+			"src/components/ui/checkbox/**",
+			"src/components/ui/drawer/**",
+			"src/components/ui/empty/**",
+			"src/components/ui/field/**",
+			"src/components/ui/input/**",
+			"src/components/ui/input-group/**",
+			"src/components/ui/input-otp/**",
+			"src/components/ui/label/**",
+			"src/components/ui/pagination/**",
+			"src/components/ui/progress/**",
+			"src/components/ui/radio-group/**",
+			"src/components/ui/select/**",
+			"src/components/ui/separator/**",
+			"src/components/ui/sheet/**",
+			"src/components/ui/sidebar/**",
+			"src/components/ui/skeleton/**",
+			"src/components/ui/slider/**",
+			"src/components/ui/sonner/**",
+			"src/components/ui/spinner/**",
+			"src/components/ui/switch/**",
+			"src/components/ui/table/**",
+			"src/components/ui/tabs/**",
+			"src/components/ui/textarea/**",
+			"src/components/ui/tooltip/**"
+		]
+	}
+}

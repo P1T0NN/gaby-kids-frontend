@@ -14,14 +14,10 @@
 	import * as Field from '@/components/ui/field/index.js';
 	import { Button } from '@/components/ui/button/index.js';
 	import { Input } from '@/components/ui/input/index.js';
-	import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp/index.js';
-	import { Spinner } from '@/components/ui/spinner/index.js';
 	import { toast } from 'svelte-sonner';
-	import CaptchaField from '@/features/captcha/components/captcha-field.svelte';
+	import AuthFormShell from '../auth-form-shell/auth-form-shell.svelte';
 	import Link from '@/components/ui/custom-components/link/link.svelte';
-
-	// DATA
-	import { ERROR_MESSAGE_KEYS } from '@/shared/features/auth/data/authData';
+	import OtpField from '../otp-field/otp-field.svelte';
 
 	// TYPES
 	import type { ComponentProps } from 'svelte';
@@ -87,85 +83,55 @@
 	}
 </script>
 
-<Card.Root {...restProps}>
-	<Card.Header>
-		<Card.Title>{m['AuthFeature.VerifyEmailForm.verifyYourEmail']()}</Card.Title>
-		<Card.Description>{m['AuthFeature.VerifyEmailForm.verifyEmailDescription']()}</Card.Description>
-	</Card.Header>
+<AuthFormShell
+	{...restProps}
+	title={m['AuthFeature.VerifyEmailForm.verifyYourEmail']()}
+	description={m['AuthFeature.VerifyEmailForm.verifyEmailDescription']()}
+	submitting={auth.submitting}
+	error={auth.error}
+	{captcha}
+	onsubmit={handleSubmit}
+	submitLabel={m['AuthFeature.VerifyEmailForm.verifyEmail']()}
+	submitDisabled={otp.length < 6}
+>
+	<Field.Field>
+		<Field.Label for="email">{m['AuthFeature.VerifyEmailForm.email']()}</Field.Label>
+		<Input
+			id="email"
+			type="email"
+			placeholder={m['AuthFeature.VerifyEmailForm.emailPlaceholder']()}
+			required
+			bind:value={email}
+		/>
+	</Field.Field>
 
-	<Card.Content>
-		<form onsubmit={handleSubmit}>
-			<Field.Group>
-				<Field.Field>
-					<Field.Label for="email">{m['AuthFeature.VerifyEmailForm.email']()}</Field.Label>
-					<Input
-						id="email"
-						type="email"
-						placeholder={m['AuthFeature.VerifyEmailForm.emailPlaceholder']()}
-						required
-						bind:value={email}
-					/>
-				</Field.Field>
+	<OtpField label={m['AuthFeature.VerifyEmailForm.verificationCode']()} bind:value={otp} />
+	{#snippet footer()}
+		<Card.Footer class="flex justify-center">
+			<Field.Description class="flex items-center justify-center gap-2">
+				<span>{m['AuthFeature.VerifyEmailForm.didntReceiveCode']()}</span>
+				<Button
+					variant="outline"
+					size="sm"
+					type="button"
+					disabled={auth.submitting || resendCooldown > 0 || email.length === 0 || !captcha.token}
+					onclick={handleResend}
+				>
+					{#if resendCooldown > 0}
+						{m['AuthFeature.VerifyEmailForm.resendCodeIn']({ seconds: resendCooldown })}
+					{:else}
+						{m['AuthFeature.VerifyEmailForm.resendCode']()}
+					{/if}
+				</Button>
+			</Field.Description>
+		</Card.Footer>
 
-				<Field.Field>
-					<Field.Label>{m['AuthFeature.VerifyEmailForm.verificationCode']()}</Field.Label>
-					<InputOTP maxlength={6} bind:value={otp}>
-						{#snippet children({ cells })}
-							<InputOTPGroup>
-								{#each cells as cell, i (i)}
-									<InputOTPSlot {cell} />
-								{/each}
-							</InputOTPGroup>
-						{/snippet}
-					</InputOTP>
-				</Field.Field>
-
-				<Field.Field>
-					<CaptchaField onToken={captcha.setToken} onReset={captcha.registerReset} />
-				</Field.Field>
-
-				{#if auth.error}
-					<p class="text-sm font-medium text-red-500">
-						{m[ERROR_MESSAGE_KEYS[auth.error]]()}
-					</p>
-				{/if}
-
-				<Field.Field>
-					<Button type="submit" disabled={auth.submitting || otp.length < 6 || !captcha.token}>
-						{#if auth.submitting}
-							<Spinner />
-						{/if}
-						{m['AuthFeature.VerifyEmailForm.verifyEmail']()}
-					</Button>
-				</Field.Field>
-			</Field.Group>
-		</form>
-	</Card.Content>
-
-	<Card.Footer class="flex justify-center">
-		<Field.Description class="flex items-center justify-center gap-2">
-			<span>{m['AuthFeature.VerifyEmailForm.didntReceiveCode']()}</span>
-			<Button
-				variant="outline"
-				size="sm"
-				type="button"
-				disabled={auth.submitting || resendCooldown > 0 || email.length === 0 || !captcha.token}
-				onclick={handleResend}
-			>
-				{#if resendCooldown > 0}
-					{m['AuthFeature.VerifyEmailForm.resendCodeIn']({ seconds: resendCooldown })}
-				{:else}
-					{m['AuthFeature.VerifyEmailForm.resendCode']()}
-				{/if}
-			</Button>
-		</Field.Description>
-	</Card.Footer>
-
-	<Card.Footer class="flex justify-center">
-		<Field.Description>
-			<Link href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN} class="text-sm font-medium"
-				>{m['AuthFeature.VerifyEmailForm.backToSignIn']()}</Link
-			>
-		</Field.Description>
-	</Card.Footer>
-</Card.Root>
+		<Card.Footer class="flex justify-center">
+			<Field.Description>
+				<Link href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN} class="text-sm font-medium"
+					>{m['AuthFeature.VerifyEmailForm.backToSignIn']()}</Link
+				>
+			</Field.Description>
+		</Card.Footer>
+	{/snippet}
+</AuthFormShell>

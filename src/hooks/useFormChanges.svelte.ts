@@ -25,17 +25,29 @@ function areEqual(
 	if (Object.is(left, right)) return true;
 	if (left === null || right === null) return false;
 
-	if (left instanceof Date || right instanceof Date) {
-		return (
-			left instanceof Date && right instanceof Date && Object.is(left.getTime(), right.getTime())
-		);
-	}
+	if (left instanceof Date || right instanceof Date) return areDatesEqual(left, right);
+	if (Array.isArray(left) || Array.isArray(right)) return areArraysEqual(left, right, seen);
 
-	if (Array.isArray(left) || Array.isArray(right)) {
-		if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false;
-		return left.every((value, index) => areEqual(value, right[index], seen));
-	}
+	return areObjectsEqual(left, right, seen);
+}
 
+function areDatesEqual(left: FormValue, right: FormValue): boolean {
+	return (
+		left instanceof Date && right instanceof Date && Object.is(left.getTime(), right.getTime())
+	);
+}
+
+function areArraysEqual(left: FormValue, right: FormValue, seen: WeakMap<object, object>): boolean {
+	if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false;
+
+	return left.every((value, index) => areEqual(value, right[index], seen));
+}
+
+function areObjectsEqual(
+	left: FormValue,
+	right: FormValue,
+	seen: WeakMap<object, object>
+): boolean {
 	if (!isFormObject(left) || !isFormObject(right)) return false;
 	if (Object.getPrototypeOf(left) !== Object.getPrototypeOf(right)) return false;
 

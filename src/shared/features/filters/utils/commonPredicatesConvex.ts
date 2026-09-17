@@ -22,6 +22,7 @@ export function eqMap<T extends ConvexFilterScalar>(
 	};
 }
 
+/** @expected-unused Reserved common factory for future numeric range facets. */
 export function numberBuckets(field: string, buckets: readonly NumberBucket[]): FilterPredicate {
 	return (value) => {
 		const bucket = buckets.find((candidate) => candidate.value === value);
@@ -33,6 +34,7 @@ export function numberBuckets(field: string, buckets: readonly NumberBucket[]): 
 /** Relative date bucket whose lower bound is evaluated for each query. */
 export type DateBucket = { value: string; from: () => number };
 
+/** @expected-unused Reserved common factory for future relative-date facets. */
 export function dateBuckets(field: string, buckets: readonly DateBucket[]): FilterPredicate {
 	return (value) => {
 		const bucket = buckets.find((candidate) => candidate.value === value);

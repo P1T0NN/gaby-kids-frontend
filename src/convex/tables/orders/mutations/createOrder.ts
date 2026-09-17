@@ -1,5 +1,5 @@
 // LIBRARIES
-import { v } from 'convex/values';
+import { v, type ObjectType } from 'convex/values';
 
 // BUILDERS
 import { internalMutation } from '../../../builders/convexFunctionBuilders.js';
@@ -12,16 +12,93 @@ import { paidOrderArgs } from '../../../stripe/validators/stripeValidators.js';
 import { createOrderSchema } from '../../../../shared/features/orders/schemas/ordersSchemas.js';
 
 // HELPERS
-import { createOrderCode } from '../helpers/createOrderCode.js';
+import { allocateOrderCode } from '../helpers/allocateOrderCode.js';
 import { applyStripeCheckoutEvent } from '../../../stripe/helpers/applyStripeCheckoutEvent.js';
+import { insertOrderItems } from '../helpers/insertOrderItems.js';
 
 // UTILS
+import { buildOrderCustomer } from '../../../../shared/features/orders/utils/buildOrderCustomer.js';
 import { calculateOrderTotalInCents } from '../../../../shared/utils/pricing.js';
 import { hasInvalidOrderItems } from '../../../../shared/features/orders/utils/hasInvalidOrderItems.js';
 import { hasInvalidStripeOrderPayment } from '../../../stripe/utils/hasInvalidStripeOrderPayment.js';
 
 // EMAILS
 import { sendOrderCreatedEmails } from '../emails/sendOrderCreatedEmails.js';
+
+// TYPES
+import type { Id } from '../../../_generated/dataModel.js';
+import type { MutationCtx } from '../../../_generated/server.js';
+
+type PaidOrderArgs = ObjectType<typeof paidOrderArgs.fields>;
+type CheckoutSnapshot = PaidOrderArgs['checkout'];
+type PaymentEvent = PaidOrderArgs['payment'];
+type AppliedPayment = NonNullable<ReturnType<typeof applyStripeCheckoutEvent>>;
+
+/** Reject snapshots whose items, total, or payment details are not internally consistent. */
+function assertValidSnapshot(checkout: CheckoutSnapshot, event: PaymentEvent, total: number): void {
+	const hasInvalidSnapshot =
+		hasInvalidOrderItems(checkout.items) ||
+		!Number.isSafeInteger(total) ||
+		total <= 0 ||
+		total !== checkout.totalInCents ||
+		new Set(checkout.items.map((item) => item.productId)).size !== checkout.items.length ||
+		checkout.items.some((item) => !item.name.trim() || item.quantity > ORDER_CONFIG.maxQuantity);
+	if (hasInvalidSnapshot) throw new Error('Stripe order snapshot invariant violated.');
+
+	const hasInvalidPayment = hasInvalidStripeOrderPayment(
+		{
+			stripeCheckoutSessionId: event.stripeCheckoutSessionId,
+			currency: checkout.currency,
+			totalInCents: total
+		},
+		event
+	);
+	if (hasInvalidPayment) throw new Error('Stripe Checkout Session invariant violated.');
+}
+
+/** Replayed webhooks return the order this session already produced; null for a fresh order. */
+async function resolveExistingOrder(
+	ctx: MutationCtx,
+	options: {
+		event: PaymentEvent;
+		payment: AppliedPayment;
+		total: number;
+		currency: string;
+		receiptToken: string;
+	}
+): Promise<Id<'orders'> | null> {
+	const existing = await ctx.db
+		.query('orders')
+		.withIndex('by_stripeCheckoutSessionId', (q) =>
+			q.eq('stripeCheckoutSessionId', options.event.stripeCheckoutSessionId)
+		)
+		.unique();
+
+	if (existing) {
+		const hasConflictingPayment =
+			existing.stripePaymentIntentId !== options.payment.stripePaymentIntentId ||
+			existing.totalInCents !== options.total ||
+			existing.currency !== options.currency;
+		if (hasConflictingPayment) throw new Error('Order already has different payment details.');
+		return existing._id;
+	}
+
+	const samePayment = await ctx.db
+		.query('orders')
+		.withIndex('by_stripePaymentIntentId', (q) =>
+			q.eq('stripePaymentIntentId', options.payment.stripePaymentIntentId)
+		)
+		.unique();
+	if (samePayment) throw new Error('Payment already belongs to another order.');
+
+	const sameReceipt = await ctx.db
+		.query('orders')
+		.withIndex('by_receiptToken', (q) => q.eq('receiptToken', options.receiptToken))
+		.unique();
+	if (sameReceipt) throw new Error('Receipt already belongs to another order.');
+
+	return null;
+}
 
 // Only the verified Stripe webhook supplies these snapshots, never the browser.
 export const createOrder = internalMutation({
@@ -33,65 +110,19 @@ export const createOrder = internalMutation({
 
 		const data = createOrderSchema.parse(checkout);
 		const total = calculateOrderTotalInCents(checkout.items);
-		const hasInvalidSnapshot =
-			hasInvalidOrderItems(checkout.items) ||
-			!Number.isSafeInteger(total) ||
-			total <= 0 ||
-			total !== checkout.totalInCents ||
-			new Set(checkout.items.map((item) => item.productId)).size !== checkout.items.length ||
-			checkout.items.some((item) => !item.name.trim() || item.quantity > ORDER_CONFIG.maxQuantity);
-		if (hasInvalidSnapshot) throw new Error('Stripe order snapshot invariant violated.');
-		if (
-			hasInvalidStripeOrderPayment(
-				{
-					stripeCheckoutSessionId: event.stripeCheckoutSessionId,
-					currency: checkout.currency,
-					totalInCents: total
-				},
-				event
-			)
-		)
-			throw new Error('Stripe Checkout Session invariant violated.');
+		assertValidSnapshot(checkout, event, total);
 
-		const existing = await ctx.db
-			.query('orders')
-			.withIndex('by_stripeCheckoutSessionId', (q) =>
-				q.eq('stripeCheckoutSessionId', event.stripeCheckoutSessionId)
-			)
-			.unique();
-		if (existing) {
-			const hasConflictingPayment =
-				existing.stripePaymentIntentId !== payment.stripePaymentIntentId ||
-				existing.totalInCents !== total ||
-				existing.currency !== checkout.currency;
-			if (hasConflictingPayment) throw new Error('Order already has different payment details.');
-			return existing._id;
-		}
-		const samePayment = await ctx.db
-			.query('orders')
-			.withIndex('by_stripePaymentIntentId', (q) =>
-				q.eq('stripePaymentIntentId', payment.stripePaymentIntentId)
-			)
-			.unique();
-		if (samePayment) throw new Error('Payment already belongs to another order.');
-		const sameReceipt = await ctx.db
-			.query('orders')
-			.withIndex('by_receiptToken', (q) => q.eq('receiptToken', data.receiptToken))
-			.unique();
-		if (sameReceipt) throw new Error('Receipt already belongs to another order.');
+		const existingOrderId = await resolveExistingOrder(ctx, {
+			event,
+			payment,
+			total,
+			currency: checkout.currency,
+			receiptToken: data.receiptToken
+		});
+		if (existingOrderId) return existingOrderId;
 
-		let code = createOrderCode();
-		for (let attempt = 0; attempt < 7; attempt += 1) {
-			const collision = await ctx.db
-				.query('orders')
-				.withIndex('by_code', (q) => q.eq('code', code))
-				.unique();
-			if (!collision) break;
-			if (attempt === 6) throw new Error('Could not allocate a unique order code.');
-			code = createOrderCode();
-		}
-
-		const { items: _items, ...customer } = data;
+		const code = await allocateOrderCode(ctx);
+		const customer = buildOrderCustomer(data);
 		const order = {
 			...customer,
 			customerId: checkout.customerId,
@@ -108,16 +139,9 @@ export const createOrder = internalMutation({
 			updatedAt: Date.now()
 		};
 		const orderId = await ctx.db.insert('orders', order);
-		for (const item of checkout.items) {
-			const orderItem = {
-				productId: item.productId,
-				name: item.name,
-				unitPriceInCents: item.unitPriceInCents,
-				quantity: item.quantity
-			};
-			await ctx.db.insert('orderItems', { orderId, ...orderItem });
-		}
+		await insertOrderItems(ctx, orderId, checkout.items);
 		await sendOrderCreatedEmails(ctx, { ...order, _id: orderId }, checkout.items);
+
 		return orderId;
 	}
 });

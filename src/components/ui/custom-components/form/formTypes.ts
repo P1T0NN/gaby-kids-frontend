@@ -4,7 +4,6 @@ import type { FunctionArgs, FunctionReference } from 'convex/server';
 import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
 
 export type FormFieldValue = string | number | boolean;
-export type FormValues = Record<string, FormFieldValue>;
 
 type MutationValue<Mutation extends FunctionReference<'mutation' | 'action'>> =
 	FunctionArgs<Mutation>[keyof FunctionArgs<Mutation>];

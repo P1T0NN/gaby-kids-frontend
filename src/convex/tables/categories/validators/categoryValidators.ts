@@ -1,6 +1,9 @@
 // LIBRARIES
 import { v } from 'convex/values';
 
+// VALIDATORS
+import { pageValidator } from '../../../validators/pageValidator.js';
+
 const categoryStatus = v.union(v.literal('active'), v.literal('archived'));
 
 export const categoryResult = v.object({
@@ -24,10 +27,4 @@ export const categoryOption = v.object({
 
 export const categoryOptions = v.array(categoryOption);
 
-export const categoryPage = v.object({
-	items: v.array(categoryAdminResult),
-	nextCursor: v.union(v.string(), v.null()),
-	hasNextPage: v.boolean(),
-	pageSize: v.number(),
-	total: v.optional(v.number())
-});
+export const categoryPage = pageValidator(categoryAdminResult);

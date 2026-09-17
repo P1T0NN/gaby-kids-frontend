@@ -3,6 +3,9 @@
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import FormField from './form-field.svelte';
 
+	// UTILS
+	import { formControlAttrs, formControlInput } from './formControl.js';
+
 	// TYPES
 	import type { TextareaField } from './formTypes.js';
 
@@ -19,15 +22,12 @@
 
 <FormField {field} {disabled} {error}>
 	<Textarea
-		id={field.name}
-		name={field.name}
+		{...formControlAttrs(field, error)}
 		{value}
 		placeholder={field.placeholder}
 		maxlength={field.maxLength}
 		required={field.required}
 		{disabled}
-		aria-invalid={error ? 'true' : undefined}
-		aria-describedby={error ? `${field.name}-error` : undefined}
-		oninput={(event) => onValueChange(event.currentTarget.value)}
+		oninput={formControlInput(onValueChange)}
 	/>
 </FormField>

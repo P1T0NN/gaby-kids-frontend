@@ -11,18 +11,24 @@
 	import type { FilterOption } from '@/shared/features/filters/types/filterTypes.js';
 
 	let {
+		id,
+		label = m['CategoriesFeature.CategoryOptions.category'](),
 		categoryValue = '',
-		onCategoryChange = () => {}
+		onCategoryChange = () => {},
+		class: className
 	}: {
+		id?: string;
+		label?: string;
 		categoryValue?: string;
 		onCategoryChange?: (value: string) => void;
+		class?: string;
 	} = $props();
 
 	const categoryOptionsQuery = useQuery(
 		api.tables.categories.queries.fetchCategoryOptions.fetchCategoryOptions,
 		{}
 	);
-	
+
 	const categoryOptions = $derived<FilterOption[]>([
 		{
 			value: '',
@@ -36,9 +42,11 @@
 </script>
 
 <NativeSelect
+	{id}
+	{label}
 	options={categoryOptions}
 	value={categoryValue}
 	placeholder={m['CategoriesFeature.CategoryOptions.category']()}
-	label={m['CategoriesFeature.CategoryOptions.category']()}
 	onchange={onCategoryChange}
+	class={className}
 />
