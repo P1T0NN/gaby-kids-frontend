@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<template id="__bundler_thumbnail" data-bg-color="#F4EFE7"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#F4EFE7"/><circle cx="100" cy="100" r="52" fill="none" stroke="#C86B5A" stroke-width="2"/><text x="100" y="114" text-anchor="middle" font-family="Georgia,serif" font-size="40" fill="#2B2723">GK</text></svg></template>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600&family=Jost:wght@300;400;500;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --lino:#F7F4EF; --crema:#EDE7DD; --coral:#D9694F; --coral-dk:#B4523C;
+  --marea:#7E9BA3; --tinta:#1F1F1D; --humo:#6E6B66;
+  --hair:rgba(126,155,163,.25);
+  --serif:'Cormorant Garamond',Georgia,serif; --sans:'DM Sans',system-ui,sans-serif;
+}
+body{margin:0;background:#D8D2C7;font-family:'DM Sans',system-ui,sans-serif;color:#1F1F1D;-webkit-font-smoothing:antialiased;}
+a{color:#7E9BA3;text-decoration:none;}
+a:hover{color:#1F1F1D;}
+@keyframes marquee-x{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.marquee{animation:marquee-x 46s linear infinite;}
+.marquee-m{animation-duration:34s;}
+*{box-sizing:border-box;}
+</style>
+</helmet>
+
+<div style="padding:96px 80px 140px;display:flex;flex-direction:column;gap:120px;--serif:{{ displayFont }};">
+
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:1000px;">
+    <div style="font:500 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#8A8378;">Canvas de diseño · Claude Design · Agosto 2026</div>
+    <div style="font:400 56px/1.05 var(--serif);color:var(--tinta);">Gaby Kids ® — Tienda en línea</div>
+    <div style="font:400 17px/1.6 var(--sans);color:#6E6B66;max-width:720px;">Seis artboards: Home, Categoría (Ropones Niña) y Producto, cada uno en escritorio 1440px con su versión mobile 390px alineada debajo. Paleta y tipografía tomadas de la etiqueta gabybera.</div>
+  </div>
+
+  <div style="display:flex;gap:120px;align-items:flex-start;">
+
+    <div style="display:flex;flex-direction:column;gap:56px;">
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="font:500 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#8A8378;">Artboard 1 · Escritorio 1440</div>
+        <div style="font:400 34px/1.1 var(--serif);color:var(--tinta);">Home</div>
+      </div>
+
+      <div style="width:1440px;background:var(--lino);border:1px solid var(--hair);overflow:hidden;">
+
+        <div style="height:36px;background:var(--tinta);color:var(--lino);display:flex;align-items:center;justify-content:center;font:400 12px/1 var(--sans);letter-spacing:.06em;">Envíos a todo México · Entrega estimada 3–5 días hábiles · Mayoreo disponible</div>
+
+        <div style="height:84px;background:var(--lino);border-bottom:1px solid var(--hair);display:grid;grid-template-columns:260px 1fr 200px;align-items:center;padding:0 48px;gap:24px;">
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <svg width="176" height="34" viewBox="0 0 176 34" style="display:block;">
+              <text x="0" y="24" font-family="Cormorant Garamond, serif" font-size="27" fill="#1F1F1D" letter-spacing="0.5">Gaby Kids</text>
+              <text x="139" y="14" font-family="DM Sans, sans-serif" font-size="9" fill="#6E6B66">®</text>
+            </svg>
+            <div style="font:500 9px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--coral);">Reemplazar: logo real</div>
+          </div>
+          <div style="display:flex;gap:30px;justify-content:center;font:400 14px/1 var(--sans);color:var(--tinta);">
+            <span>Niña</span><span>Niño</span><span>Bautizo</span><span>Guayaberas</span><span>Accesorios</span><span>Mayoreo</span>
+          </div>
+          <div style="display:flex;gap:20px;justify-content:flex-end;align-items:center;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><circle cx="11" cy="11" r="7"></circle><line x1="16" y1="16" x2="21" y2="21"></line></svg>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"></path></svg>
+            <div style="position:relative;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><path d="M6 8h12l-1.2 12H7.2z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+              <div style="position:absolute;top:-6px;right:-8px;width:17px;height:17px;border-radius:999px;background:var(--coral);color:var(--lino);font:500 10px/17px var(--sans);text-align:center;">2</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="position:relative;height:760px;background:var(--crema);display:flex;align-items:center;">
+          <div style="position:absolute;inset:0;border-bottom:1px solid var(--hair);display:flex;align-items:flex-end;justify-content:flex-end;padding:0 48px 24px;">
+            <div style="font:500 12px/1.6 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#A79E90;text-align:right;max-width:380px;">Foto — niña con ropón de encaje frente a la chimenea blanca · full-bleed</div>
+          </div>
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(247,244,239,.35) 0%,rgba(247,244,239,.62) 45%,rgba(247,244,239,.45) 100%);"></div>
+          <div style="position:relative;width:100%;padding:0 120px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:26px;">
+            <div style="font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Hecho en México</div>
+            <div style="font:400 76px/1.02 var(--serif);color:var(--tinta);letter-spacing:-.01em;text-wrap:pretty;max-width:900px;">Para el día que se recuerda toda la vida</div>
+            <div style="font:400 18px/1.65 var(--sans);color:var(--humo);max-width:560px;">Ropones, batitas y guayaberas para bautizos, presentaciones y primeras comuniones.</div>
+            <div style="display:flex;gap:14px;justify-content:center;padding-top:8px;">
+              <div style="padding:16px 34px;background:var(--coral);color:var(--lino);border-radius:3px;font:500 14px/1 var(--sans);letter-spacing:.02em;">Ver colección</div>
+              <div style="padding:16px 34px;border:1px solid var(--tinta);color:var(--tinta);border-radius:3px;font:500 14px/1 var(--sans);letter-spacing:.02em;">Guayaberas gabybera</div>
+            </div>
+          </div>
+          <div style="position:absolute;right:24px;bottom:20px;font:400 12px/1 var(--serif);color:rgba(31,31,29,.45);">Gaby Kids ®</div>
+        </div>
+
+        <div style="padding:64px 48px 60px;display:flex;flex-direction:column;gap:28px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            <div style="font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Compra por categoría</div>
+          </div>
+          <div style="overflow:hidden;margin:0 -48px;padding:0 48px;">
+            <div class="marquee" style="display:flex;gap:24px;width:max-content;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-guayaberas.png" alt="Guayaberas" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Guayaberas</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-trajes.png" alt="Trajes" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Trajes</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-tipicos.png" alt="Trajes Típicos" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Trajes Típicos</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-formal.png" alt="Bautizos" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Bautizos</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-comunion.png" alt="Primera Comunión" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Primera Comunión</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-bautizos.png" alt="Accesorios" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Accesorios</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-accesorios.png" alt="Formal" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Formal</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-guayaberas.png" alt="Guayaberas" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Guayaberas</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-trajes.png" alt="Trajes" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Trajes</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-tipicos.png" alt="Trajes Típicos" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Trajes Típicos</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-formal.png" alt="Bautizos" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Bautizos</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-comunion.png" alt="Primera Comunión" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Primera Comunión</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-bautizos.png" alt="Accesorios" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Accesorios</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:216px;flex:none;">
+                <div style="width:200px;height:200px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                  <img src="assets/cat-accesorios.png" alt="Formal" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                </div>
+                <div style="font:500 12px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);text-align:center;">Formal</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--crema);padding:80px 48px;display:flex;flex-direction:column;gap:36px;">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Compra por ocasión</div>
+            <div style="font:400 44px/1.1 var(--serif);color:var(--tinta);">El evento tiene fecha. Nosotros la cumplimos.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+            <sc-for list="{{ ocasiones }}" as="o" hint-placeholder-count="3">
+              <div style="background:var(--lino);border:1px solid var(--hair);border-radius:4px;overflow:hidden;display:flex;flex-direction:column;">
+                <div style="height:260px;background:var(--crema);border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;">
+                  <span style="font:500 11px/1.5 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#A79E90;">{{ o.foto }}</span>
+                </div>
+                <div style="padding:26px 28px 30px;display:flex;flex-direction:column;gap:10px;">
+                  <div style="font:400 30px/1.15 var(--serif);color:var(--tinta);">{{ o.titulo }}</div>
+                  <div style="font:400 14px/1.6 var(--sans);color:var(--humo);">{{ o.desc }}</div>
+                  <div style="font:500 13px/1 var(--sans);color:var(--marea);padding-top:8px;">Ver todo →</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="padding:80px 48px;display:flex;flex-direction:column;gap:34px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+            <div style="font:400 44px/1.1 var(--serif);color:var(--tinta);">Lo más pedido esta temporada</div>
+            <div style="font:500 13px/1 var(--sans);color:var(--marea);">Ver los 124 modelos →</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
+            <sc-for list="{{ destacados }}" as="p" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="position:relative;aspect-ratio:3/4;background:var(--crema);border:1px solid var(--hair);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;">
+                  <span style="font:500 10px/1.5 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#A79E90;">{{ p.foto }}</span>
+                  <sc-if value="{{ p.badge }}" hint-placeholder-val="{{ true }}">
+                    <div style="position:absolute;top:12px;left:12px;padding:6px 10px;border-radius:2px;font:500 10px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--lino);background:{{ p.badgeBg }};">{{ p.badge }}</div>
+                  </sc-if>
+                </div>
+                <div style="font:400 21px/1.25 var(--serif);color:var(--tinta);">{{ p.nombre }}</div>
+                <div style="font:500 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--humo);">{{ p.tallas }}</div>
+                <div style="font:500 15px/1 var(--sans);color:var(--tinta);">{{ p.precio }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background:var(--tinta);color:var(--lino);display:grid;grid-template-columns:1fr 1fr;min-height:520px;">
+          <div style="display:flex;align-items:center;justify-content:center;background:#2A2A27;text-align:center;padding:24px;">
+            <span style="font:500 11px/1.6 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#7E7A72;">Foto macro — lino bordado con la etiqueta del ancla</span>
+          </div>
+          <div style="padding:80px 72px;display:flex;flex-direction:column;gap:24px;justify-content:center;">
+            <svg width="150" height="46" viewBox="0 0 150 46">
+              <path d="M18 10v22M11 17h14M18 32c-5 0-9-3.5-9-8" fill="none" stroke="#F7F4EF" stroke-width="1.3"></path>
+              <circle cx="18" cy="7" r="3" fill="none" stroke="#F7F4EF" stroke-width="1.3"></circle>
+              <text x="38" y="30" font-family="Cormorant Garamond, serif" font-size="26" fill="#F7F4EF" letter-spacing="1">gabybera</text>
+            </svg>
+            <div style="font:400 40px/1.15 var(--serif);">Lino natural, bordado a mano</div>
+            <div style="font:400 16px/1.7 var(--sans);color:#BFB9AE;max-width:420px;">Guayaberas de niño hechas en lino fresco, con alforzas cosidas una por una y bordado del nombre sin costo. Su propia etiqueta, la misma casa.</div>
+            <div style="align-self:flex-start;margin-top:10px;padding:15px 32px;border:1px solid var(--lino);border-radius:3px;font:500 14px/1 var(--sans);">Conocer gabybera</div>
+          </div>
+        </div>
+
+        <div style="padding:56px 48px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;border-bottom:1px solid var(--hair);">
+          <sc-for list="{{ confianza }}" as="t" hint-placeholder-count="4">
+            <div style="display:flex;gap:14px;align-items:center;">
+              <div style="width:30px;height:30px;color:var(--marea);flex:none;">{{ t.icon }}</div>
+              <div style="font:400 14px/1.45 var(--sans);color:var(--tinta);">{{ t.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="background:var(--crema);padding:76px 48px;display:flex;align-items:flex-end;justify-content:space-between;gap:48px;">
+          <div style="display:flex;flex-direction:column;gap:10px;max-width:520px;">
+            <div style="font:400 40px/1.15 var(--serif);color:var(--tinta);">Recibe primero los nuevos modelos</div>
+            <div style="font:400 15px/1.6 var(--sans);color:var(--humo);">Un correo al mes con los ropones y guayaberas recién salidos del taller.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:stretch;">
+            <div style="width:320px;padding:16px 18px;background:var(--lino);border:1px solid var(--hair);border-radius:3px;font:400 14px/1 var(--sans);color:#A79E90;">tu@correo.com</div>
+            <div style="padding:16px 30px;background:var(--coral);color:var(--lino);border-radius:3px;font:500 14px/1 var(--sans);">Suscribirme</div>
+          </div>
+        </div>
+
+        <div style="background:var(--tinta);color:var(--lino);padding:72px 48px 32px;display:flex;flex-direction:column;gap:52px;">
+          <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="font:400 28px/1 var(--serif);">Gaby Kids ®</div>
+              <div style="font:400 14px/1.6 var(--sans);color:#BFB9AE;max-width:280px;">Confort y Elegancia en Ropa para Niños. Taller propio en Jalisco desde 1998.</div>
+              <div style="font:500 11px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--marea);">@gabykids_mex</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#7E7A72;">Comprar</div>
+              <div style="font:400 14px/2 var(--sans);color:#E4DFD6;">Ropones niña<br>Batitas bautizo<br>Guayaberas gabybera<br>Primera comunión<br>Trajes de charro</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#7E7A72;">Ayuda</div>
+              <div style="font:400 14px/2 var(--sans);color:#E4DFD6;">Envíos<br>Cambios y devoluciones<br>Guía de tallas por edad<br>Contacto</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#7E7A72;">Redes</div>
+              <div style="font:400 14px/2 var(--sans);color:#E4DFD6;">Instagram<br>Facebook<br>WhatsApp</div>
+            </div>
+          </div>
+          <div style="border-top:1px solid rgba(247,244,239,.15);padding-top:22px;display:flex;justify-content:space-between;font:400 12px/1 var(--sans);color:#8E8A82;">
+            <div>© 2026 Gaby Kids ® · Aviso de Privacidad · Términos</div>
+            <div>Visa · Mastercard · Amex · OXXO · Mercado Pago · SPEI</div>
+          </div>
+        </div>
+
+        <div style="position:relative;height:0;">
+          <div style="position:absolute;right:32px;bottom:32px;width:60px;height:60px;border-radius:999px;background:var(--marea);display:flex;align-items:center;justify-content:center;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F7F4EF" stroke-width="1.5"><path d="M21 12a9 9 0 0 1-13.2 8L3 21l1.1-4.7A9 9 0 1 1 21 12z"></path><path d="M8.6 9.5c.7 2.6 3.3 5.2 5.9 5.9l1.4-1.4 2.1.9-.4 2.2c-3.9.5-9.1-4.7-8.6-8.6l2.2-.4.9 2.1z" fill="#F7F4EF" stroke="none"></path></svg>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px;padding-left:0;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="font:500 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#8A8378;">Artboard 4 · Mobile 390</div>
+          <div style="font:400 26px/1.1 var(--serif);color:var(--tinta);">Home — mobile</div>
+        </div>
+        <div style="width:390px;background:var(--lino);border:1px solid var(--hair);overflow:hidden;">
+          <div style="min-height:44px;background:var(--tinta);color:var(--lino);display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 16px;font:400 11px/1.4 var(--sans);">Envíos a todo México · 3–5 días hábiles · Mayoreo disponible</div>
+          <div style="height:64px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;padding:0 18px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><line x1="3" y1="7" x2="21" y2="7"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="17" x2="21" y2="17"></line></svg>
+            <svg width="126" height="26" viewBox="0 0 126 26"><text x="0" y="19" font-family="Cormorant Garamond, serif" font-size="21" fill="#1F1F1D">Gaby Kids</text><text x="98" y="11" font-family="DM Sans, sans-serif" font-size="7" fill="#6E6B66">®</text></svg>
+            <div style="display:flex;gap:14px;align-items:center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><circle cx="11" cy="11" r="7"></circle><line x1="16" y1="16" x2="21" y2="21"></line></svg>
+              <div style="position:relative;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><path d="M6 8h12l-1.2 12H7.2z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+                <div style="position:absolute;top:-5px;right:-7px;width:15px;height:15px;border-radius:999px;background:var(--coral);color:var(--lino);font:500 9px/15px var(--sans);text-align:center;">2</div>
+              </div>
+            </div>
+          </div>
+          <div style="position:relative;height:560px;background:var(--crema);">
+            <div style="position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;text-align:center;padding:26px 22px;"><span style="font:500 10px/1.5 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#A79E90;">Foto — niña con ropón de encaje, chimenea blanca</span></div>
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(247,244,239,0) 30%,rgba(247,244,239,.85) 68%);"></div>
+            <div style="position:absolute;left:0;right:0;bottom:0;padding:0 22px 30px;display:flex;flex-direction:column;gap:16px;">
+              <div style="font:500 10px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Hecho en México</div>
+              <div style="font:400 42px/1.05 var(--serif);color:var(--tinta);text-wrap:pretty;">Para el día que se recuerda toda la vida</div>
+              <div style="font:400 14px/1.6 var(--sans);color:var(--humo);">Ropones, batitas y guayaberas para bautizos, presentaciones y primeras comuniones.</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="padding:15px;background:var(--coral);color:var(--lino);border-radius:3px;font:500 14px/1 var(--sans);text-align:center;">Ver colección</div>
+                <div style="padding:15px;border:1px solid var(--tinta);color:var(--tinta);border-radius:3px;font:500 14px/1 var(--sans);text-align:center;">Guayaberas gabybera</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:32px 0 30px 18px;display:flex;flex-direction:column;gap:16px;">
+            <div style="font:500 10px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Compra por categoría</div>
+            <div style="overflow:hidden;margin:0 -18px;padding:0 18px;">
+              <div class="marquee marquee-m" style="display:flex;gap:16px;width:max-content;">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-guayaberas.png" alt="Guayaberas" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Guayaberas</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-trajes.png" alt="Trajes" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Trajes</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-tipicos.png" alt="Trajes Típicos" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Trajes Típicos</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-formal.png" alt="Bautizos" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Bautizos</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-comunion.png" alt="Primera Comunión" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Primera Comunión</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-bautizos.png" alt="Accesorios" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Accesorios</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-accesorios.png" alt="Formal" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Formal</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-guayaberas.png" alt="Guayaberas" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Guayaberas</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-trajes.png" alt="Trajes" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Trajes</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-tipicos.png" alt="Trajes Típicos" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Trajes Típicos</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-formal.png" alt="Bautizos" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Bautizos</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-comunion.png" alt="Primera Comunión" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Primera Comunión</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-bautizos.png" alt="Accesorios" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Accesorios</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:124px;flex:none;">
+                  <div style="width:116px;height:116px;border-radius:999px;border:1px solid var(--marea);overflow:hidden;background:var(--lino);">
+                    <img src="assets/cat-accesorios.png" alt="Formal" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);" />
+                  </div>
+                  <div style="font:500 10px/1.3 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tinta);text-align:center;">Formal</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="background:var(--crema);padding:38px 18px;display:flex;flex-direction:column;gap:20px;">
+            <div style="font:400 30px/1.1 var(--serif);color:var(--tinta);">Compra por ocasión</div>
+            <sc-for list="{{ ocasiones }}" as="o" hint-placeholder-count="3">
+              <div style="background:var(--lino);border:1px solid var(--hair);border-radius:4px;overflow:hidden;">
+                <div style="height:150px;background:var(--crema);display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;"><span style="font:500 9px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#A79E90;">{{ o.foto }}</span></div>
+                <div style="padding:18px 20px 22px;display:flex;flex-direction:column;gap:8px;">
+                  <div style="font:400 24px/1.15 var(--serif);color:var(--tinta);">{{ o.titulo }}</div>
+                  <div style="font:400 13px/1.55 var(--sans);color:var(--humo);">{{ o.desc }}</div>
+                  <div style="font:500 12px/1 var(--sans);color:var(--marea);padding-top:4px;">Ver todo →</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:38px 18px;display:flex;flex-direction:column;gap:22px;">
+            <div style="font:400 30px/1.1 var(--serif);color:var(--tinta);">Lo más pedido esta temporada</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <sc-for list="{{ destacados }}" as="p" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="position:relative;aspect-ratio:3/4;background:var(--crema);border:1px solid var(--hair);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;">
+                    <span style="font:500 8px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#A79E90;">{{ p.foto }}</span>
+                    <sc-if value="{{ p.badge }}" hint-placeholder-val="{{ true }}">
+                      <div style="position:absolute;top:8px;left:8px;padding:4px 7px;border-radius:2px;font:500 8px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--lino);background:{{ p.badgeBg }};">{{ p.badge }}</div>
+                    </sc-if>
+                  </div>
+                  <div style="font:400 17px/1.2 var(--serif);color:var(--tinta);">{{ p.nombre }}</div>
+                  <div style="font:500 9px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--humo);">{{ p.tallas }}</div>
+                  <div style="font:500 13px/1 var(--sans);color:var(--tinta);">{{ p.precio }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:var(--tinta);color:var(--lino);">
+            <div style="height:220px;background:#2A2A27;display:flex;align-items:center;justify-content:center;text-align:center;padding:18px;"><span style="font:500 9px/1.6 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#7E7A72;">Foto macro — lino bordado, etiqueta del ancla</span></div>
+            <div style="padding:34px 18px 40px;display:flex;flex-direction:column;gap:16px;">
+              <svg width="130" height="40" viewBox="0 0 150 46"><path d="M18 10v22M11 17h14M18 32c-5 0-9-3.5-9-8" fill="none" stroke="#F7F4EF" stroke-width="1.3"></path><circle cx="18" cy="7" r="3" fill="none" stroke="#F7F4EF" stroke-width="1.3"></circle><text x="38" y="30" font-family="Cormorant Garamond, serif" font-size="26" fill="#F7F4EF" letter-spacing="1">gabybera</text></svg>
+              <div style="font:400 28px/1.15 var(--serif);">Lino natural, bordado a mano</div>
+              <div style="font:400 14px/1.65 var(--sans);color:#BFB9AE;">Guayaberas de niño en lino fresco, alforzas cosidas una por una y bordado del nombre sin costo.</div>
+              <div style="align-self:flex-start;padding:14px 26px;border:1px solid var(--lino);border-radius:3px;font:500 13px/1 var(--sans);">Conocer gabybera</div>
+            </div>
+          </div>
+          <div style="padding:30px 18px;display:grid;grid-template-columns:1fr 1fr;gap:18px;border-bottom:1px solid var(--hair);">
+            <sc-for list="{{ confianza }}" as="t" hint-placeholder-count="4">
+              <div style="display:flex;gap:10px;align-items:center;">
+                <div style="width:24px;height:24px;color:var(--marea);flex:none;">{{ t.icon }}</div>
+                <div style="font:400 12px/1.4 var(--sans);color:var(--tinta);">{{ t.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:var(--crema);padding:34px 18px;display:flex;flex-direction:column;gap:14px;">
+            <div style="font:400 28px/1.15 var(--serif);color:var(--tinta);">Recibe primero los nuevos modelos</div>
+            <div style="padding:15px 16px;background:var(--lino);border:1px solid var(--hair);border-radius:3px;font:400 13px/1 var(--sans);color:#A79E90;">tu@correo.com</div>
+            <div style="padding:15px;background:var(--coral);color:var(--lino);border-radius:3px;font:500 13px/1 var(--sans);text-align:center;">Suscribirme</div>
+          </div>
+          <div style="background:var(--tinta);color:var(--lino);padding:40px 18px 24px;display:flex;flex-direction:column;gap:26px;">
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="font:400 24px/1 var(--serif);">Gaby Kids ®</div>
+              <div style="font:400 13px/1.6 var(--sans);color:#BFB9AE;">Confort y Elegancia en Ropa para Niños.</div>
+              <div style="font:500 10px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--marea);">@gabykids_mex</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;">
+              <div><div style="font:500 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#7E7A72;margin-bottom:8px;">Comprar</div><div style="font:400 13px/1.9 var(--sans);color:#E4DFD6;">Ropones niña<br>Batitas bautizo<br>Guayaberas<br>Comunión</div></div>
+              <div><div style="font:500 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#7E7A72;margin-bottom:8px;">Ayuda</div><div style="font:400 13px/1.9 var(--sans);color:#E4DFD6;">Envíos<br>Cambios<br>Tallas<br>WhatsApp</div></div>
+            </div>
+            <div style="border-top:1px solid rgba(247,244,239,.15);padding-top:18px;font:400 11px/1.6 var(--sans);color:#8E8A82;">© 2026 Gaby Kids ® · Aviso de Privacidad<br>Visa · Mastercard · OXXO · Mercado Pago</div>
+          </div>
+          <div style="position:relative;height:0;">
+            <div style="position:absolute;right:18px;bottom:18px;width:52px;height:52px;border-radius:999px;background:var(--marea);display:flex;align-items:center;justify-content:center;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F7F4EF" stroke-width="1.5"><path d="M21 12a9 9 0 0 1-13.2 8L3 21l1.1-4.7A9 9 0 1 1 21 12z"></path></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:56px;">
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="font:500 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#8A8378;">Artboard 2 · Escritorio 1440</div>
+        <div style="font:400 34px/1.1 var(--serif);color:var(--tinta);">Categoría — Ropones Niña</div>
+      </div>
+
+      <div style="width:1440px;background:var(--lino);border:1px solid var(--hair);overflow:hidden;">
+        <div style="height:36px;background:var(--tinta);color:var(--lino);display:flex;align-items:center;justify-content:center;font:400 12px/1 var(--sans);letter-spacing:.06em;">Envíos a todo México · Entrega estimada 3–5 días hábiles · Mayoreo disponible</div>
+        <div style="height:84px;border-bottom:1px solid var(--hair);display:grid;grid-template-columns:260px 1fr 200px;align-items:center;padding:0 48px;gap:24px;">
+          <svg width="176" height="34" viewBox="0 0 176 34"><text x="0" y="24" font-family="Cormorant Garamond, serif" font-size="27" fill="#1F1F1D" letter-spacing="0.5">Gaby Kids</text><text x="139" y="14" font-family="DM Sans, sans-serif" font-size="9" fill="#6E6B66">®</text></svg>
+          <div style="display:flex;gap:30px;justify-content:center;font:400 14px/1 var(--sans);color:var(--tinta);">
+            <span style="border-bottom:1px solid var(--coral);padding-bottom:4px;">Niña</span><span>Niño</span><span>Bautizo</span><span>Guayaberas</span><span>Accesorios</span><span>Mayoreo</span>
+          </div>
+          <div style="display:flex;gap:20px;justify-content:flex-end;align-items:center;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><circle cx="11" cy="11" r="7"></circle><line x1="16" y1="16" x2="21" y2="21"></line></svg>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"></path></svg>
+            <div style="position:relative;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><path d="M6 8h12l-1.2 12H7.2z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+              <div style="position:absolute;top:-6px;right:-8px;width:17px;height:17px;border-radius:999px;background:var(--coral);color:var(--lino);font:500 10px/17px var(--sans);text-align:center;">2</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:28px 48px 0;font:400 12px/1 var(--sans);color:var(--humo);">Inicio / Niña / <span style="color:var(--tinta);">Ropones</span></div>
+
+        <div style="padding:26px 48px 34px;display:flex;flex-direction:column;gap:10px;">
+          <div style="font:400 54px/1.05 var(--serif);color:var(--tinta);">Ropones Niña</div>
+          <div style="font:400 15px/1.6 var(--sans);color:var(--humo);">Bautizo y presentación · 24 modelos</div>
+        </div>
+
+        <div style="padding:0 48px 80px;display:grid;grid-template-columns:240px 1fr;gap:48px;align-items:start;">
+
+          <div style="display:flex;flex-direction:column;gap:30px;">
+            <div style="font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--tinta);padding-bottom:14px;border-bottom:1px solid var(--hair);">Filtrar</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Talla</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <div style="padding:8px 12px;border:1px solid var(--marea);background:var(--marea);color:var(--lino);border-radius:2px;font:400 12px/1 var(--sans);">0–3m</div>
+                <div style="padding:8px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);color:var(--tinta);">3–6m</div>
+                <div style="padding:8px 12px;border:1px solid var(--marea);background:var(--marea);color:var(--lino);border-radius:2px;font:400 12px/1 var(--sans);">6–12m</div>
+                <div style="padding:8px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);color:var(--tinta);">12–18m</div>
+                <div style="padding:8px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);color:var(--tinta);">2 años</div>
+                <div style="padding:8px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);color:var(--tinta);">3 años</div>
+                <div style="padding:8px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);color:var(--tinta);">4 años</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Color</div>
+              <div style="display:flex;flex-direction:column;gap:10px;font:400 13px/1 var(--sans);color:var(--tinta);">
+                <div style="display:flex;align-items:center;gap:10px;"><span style="width:16px;height:16px;border-radius:999px;background:#FFFFFF;border:1px solid var(--hair);"></span>blanco <span style="color:var(--humo);">(11)</span></div>
+                <div style="display:flex;align-items:center;gap:10px;"><span style="width:16px;height:16px;border-radius:999px;background:#F3EDE1;border:1px solid var(--hair);"></span>marfil <span style="color:var(--humo);">(9)</span></div>
+                <div style="display:flex;align-items:center;gap:10px;"><span style="width:16px;height:16px;border-radius:999px;background:#E3D7C4;border:1px solid var(--hair);"></span>beige <span style="color:var(--humo);">(3)</span></div>
+                <div style="display:flex;align-items:center;gap:10px;"><span style="width:16px;height:16px;border-radius:999px;background:#EBD3D3;border:1px solid var(--hair);"></span>rosa palo <span style="color:var(--humo);">(4)</span></div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Ocasión</div>
+              <div style="display:flex;flex-direction:column;gap:10px;font:400 13px/1 var(--sans);color:var(--tinta);">
+                <div style="display:flex;align-items:center;gap:10px;"><span style="width:14px;height:14px;border:1px solid var(--marea);background:var(--marea);"></span>bautizo</div>
+                <div style="display:flex;align-items:center;gap:10px;"><span style="width:14px;height:14px;border:1px solid var(--hair);"></span>presentación</div>
+                <div style="display:flex;align-items:center;gap:10px;"><span style="width:14px;height:14px;border:1px solid var(--hair);"></span>comunión</div>
+                <div style="display:flex;align-items:center;gap:10px;"><span style="width:14px;height:14px;border:1px solid var(--hair);"></span>boda</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Tela</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <div style="padding:8px 12px;border:1px solid var(--marea);background:var(--marea);color:var(--lino);border-radius:2px;font:400 12px/1 var(--sans);">encaje</div>
+                <div style="padding:8px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);">organza</div>
+                <div style="padding:8px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);">satín</div>
+                <div style="padding:8px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);">lino</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Precio</div>
+              <div style="position:relative;height:2px;background:var(--hair);margin:8px 0;">
+                <div style="position:absolute;left:12%;right:28%;top:0;height:2px;background:var(--marea);"></div>
+                <div style="position:absolute;left:12%;top:-6px;width:14px;height:14px;border-radius:999px;background:var(--lino);border:1px solid var(--marea);"></div>
+                <div style="position:absolute;right:28%;top:-6px;width:14px;height:14px;border-radius:999px;background:var(--lino);border:1px solid var(--marea);"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font:400 12px/1 var(--sans);color:var(--humo);"><span>$860</span><span>$2,090</span></div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:26px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;">
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <div style="padding:9px 14px;background:var(--crema);border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);color:var(--tinta);display:flex;gap:8px;">0–3m <span style="color:var(--humo);">×</span></div>
+                <div style="padding:9px 14px;background:var(--crema);border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);color:var(--tinta);display:flex;gap:8px;">6–12m <span style="color:var(--humo);">×</span></div>
+                <div style="padding:9px 14px;background:var(--crema);border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);color:var(--tinta);display:flex;gap:8px;">bautizo <span style="color:var(--humo);">×</span></div>
+                <div style="padding:9px 14px;background:var(--crema);border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);color:var(--tinta);display:flex;gap:8px;">encaje <span style="color:var(--humo);">×</span></div>
+                <div style="font:500 12px/1 var(--sans);color:var(--marea);padding-left:6px;">Limpiar todo</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Ordenar por</span>
+                <div style="padding:11px 16px;border:1px solid var(--hair);border-radius:2px;font:400 13px/1 var(--sans);color:var(--tinta);display:flex;gap:26px;align-items:center;">Novedades
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><path d="M6 9l6 6 6-6"></path></svg>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px 24px;">
+              <sc-for list="{{ ropones }}" as="p" hint-placeholder-count="12">
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                  <div style="position:relative;aspect-ratio:3/4;background:var(--crema);border:1px solid var(--hair);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;">
+                    <span style="font:500 10px/1.5 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#A79E90;">{{ p.foto }}</span>
+                    <sc-if value="{{ p.badge }}" hint-placeholder-val="{{ true }}">
+                      <div style="position:absolute;top:12px;left:12px;padding:6px 10px;border-radius:2px;font:500 10px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--lino);background:{{ p.badgeBg }};">{{ p.badge }}</div>
+                    </sc-if>
+                  </div>
+                  <div style="font:400 21px/1.25 var(--serif);color:var(--tinta);">{{ p.nombre }}</div>
+                  <div style="font:500 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--humo);">{{ p.tallas }}</div>
+                  <div style="font:500 15px/1 var(--sans);color:var(--tinta);">{{ p.precio }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="border:1px dashed var(--coral);border-radius:3px;padding:20px 22px;display:flex;flex-direction:column;gap:16px;">
+              <div style="font:500 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--coral);">Nota de canvas · estado hover de la card</div>
+              <div style="display:flex;gap:22px;align-items:flex-start;">
+                <div style="width:230px;display:flex;flex-direction:column;gap:12px;">
+                  <div style="position:relative;aspect-ratio:3/4;background:var(--crema);border:1px solid var(--marea);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;">
+                    <span style="font:500 10px/1.5 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#A79E90;">Foto 2 — macro, encaje chantilly, detalle</span>
+                    <div style="position:absolute;left:12px;right:12px;bottom:12px;padding:13px 0;border:1px solid var(--tinta);background:rgba(247,244,239,.92);color:var(--tinta);border-radius:2px;font:500 12px/1 var(--sans);text-align:center;letter-spacing:.04em;">Agregar</div>
+                  </div>
+                  <div style="font:400 21px/1.25 var(--serif);color:var(--tinta);">Ropón Guadalupe — encaje chantilly</div>
+                  <div style="font:500 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--humo);">0-3m · 3-6m · 6-12m</div>
+                  <div style="font:500 15px/1 var(--sans);color:var(--tinta);">$1,290 MXN</div>
+                </div>
+                <div style="font:400 14px/1.7 var(--sans);color:var(--humo);max-width:420px;">Al pasar el cursor la foto principal se reemplaza por la segunda imagen (macro de detalle) con un cross-fade de 200ms, y aparece el botón fantasma <span style="color:var(--tinta);">[Agregar]</span> a ancho completo sobre la foto. En mobile no hay hover: el botón vive siempre visible debajo del precio.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:24px;align-items:center;padding-top:14px;">
+              <div style="padding:15px 40px;border:1px solid var(--tinta);border-radius:3px;font:500 13px/1 var(--sans);color:var(--tinta);">Cargar más</div>
+              <div style="display:flex;gap:8px;align-items:center;font:400 13px/1 var(--sans);color:var(--humo);">
+                <span style="width:34px;height:34px;border:1px solid var(--tinta);background:var(--tinta);color:var(--lino);display:flex;align-items:center;justify-content:center;border-radius:2px;">1</span>
+                <span style="width:34px;height:34px;border:1px solid var(--hair);display:flex;align-items:center;justify-content:center;border-radius:2px;color:var(--tinta);">2</span>
+                <span style="width:34px;height:34px;border:1px solid var(--hair);display:flex;align-items:center;justify-content:center;border-radius:2px;color:var(--tinta);">3</span>
+                <span style="padding-left:8px;">Siguiente →</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--tinta);color:var(--lino);padding:44px 48px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font:400 26px/1 var(--serif);">Gaby Kids ®</div>
+          <div style="font:400 12px/1 var(--sans);color:#8E8A82;">© 2026 Gaby Kids ® · Aviso de Privacidad · Envíos · Cambios · Mayoreo</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="font:500 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#8A8378;">Artboard 5 · Mobile 390</div>
+          <div style="font:400 26px/1.1 var(--serif);color:var(--tinta);">Categoría — mobile (drawer de filtros)</div>
+        </div>
+        <div style="display:flex;gap:32px;align-items:flex-start;">
+          <div style="width:390px;background:var(--lino);border:1px solid var(--hair);overflow:hidden;">
+            <div style="height:64px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;padding:0 18px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><line x1="3" y1="7" x2="21" y2="7"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="17" x2="21" y2="17"></line></svg>
+              <svg width="126" height="26" viewBox="0 0 126 26"><text x="0" y="19" font-family="Cormorant Garamond, serif" font-size="21" fill="#1F1F1D">Gaby Kids</text></svg>
+              <div style="position:relative;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><path d="M6 8h12l-1.2 12H7.2z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+                <div style="position:absolute;top:-5px;right:-7px;width:15px;height:15px;border-radius:999px;background:var(--coral);color:var(--lino);font:500 9px/15px var(--sans);text-align:center;">2</div>
+              </div>
+            </div>
+            <div style="padding:20px 18px 0;font:400 11px/1 var(--sans);color:var(--humo);">Inicio / Niña / <span style="color:var(--tinta);">Ropones</span></div>
+            <div style="padding:16px 18px 20px;display:flex;flex-direction:column;gap:6px;">
+              <div style="font:400 38px/1.05 var(--serif);color:var(--tinta);">Ropones Niña</div>
+              <div style="font:400 13px/1.6 var(--sans);color:var(--humo);">Bautizo y presentación · 24 modelos</div>
+            </div>
+            <div style="padding:0 18px 16px;display:flex;gap:10px;">
+              <div style="flex:1;padding:13px;border:1px solid var(--tinta);border-radius:3px;font:500 12px/1 var(--sans);text-align:center;color:var(--tinta);">Filtrar (4)</div>
+              <div style="flex:1;padding:13px;border:1px solid var(--hair);border-radius:3px;font:500 12px/1 var(--sans);text-align:center;color:var(--tinta);">Ordenar</div>
+            </div>
+            <div style="padding:0 18px 16px;display:flex;gap:8px;overflow:hidden;">
+              <div style="padding:8px 12px;background:var(--crema);border:1px solid var(--hair);border-radius:2px;font:400 11px/1 var(--sans);flex:none;">0–3m ×</div>
+              <div style="padding:8px 12px;background:var(--crema);border:1px solid var(--hair);border-radius:2px;font:400 11px/1 var(--sans);flex:none;">6–12m ×</div>
+              <div style="padding:8px 12px;background:var(--crema);border:1px solid var(--hair);border-radius:2px;font:400 11px/1 var(--sans);flex:none;">bautizo ×</div>
+              <div style="padding:8px 0;font:500 11px/1 var(--sans);color:var(--marea);flex:none;">Limpiar</div>
+            </div>
+            <div style="padding:0 18px 34px;display:grid;grid-template-columns:1fr 1fr;gap:20px 14px;">
+              <sc-for list="{{ ropones }}" as="p" hint-placeholder-count="12">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="position:relative;aspect-ratio:3/4;background:var(--crema);border:1px solid var(--hair);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;">
+                    <span style="font:500 8px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#A79E90;">{{ p.foto }}</span>
+                    <sc-if value="{{ p.badge }}" hint-placeholder-val="{{ true }}">
+                      <div style="position:absolute;top:8px;left:8px;padding:4px 7px;border-radius:2px;font:500 8px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--lino);background:{{ p.badgeBg }};">{{ p.badge }}</div>
+                    </sc-if>
+                  </div>
+                  <div style="font:400 17px/1.2 var(--serif);color:var(--tinta);">{{ p.nombre }}</div>
+                  <div style="font:500 9px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--humo);">{{ p.tallas }}</div>
+                  <div style="font:500 13px/1 var(--sans);color:var(--tinta);">{{ p.precio }}</div>
+                  <div style="padding:11px;border:1px solid var(--tinta);border-radius:2px;font:500 11px/1 var(--sans);text-align:center;color:var(--tinta);">Agregar</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="padding:0 18px 40px;display:flex;flex-direction:column;gap:16px;align-items:center;">
+              <div style="width:100%;padding:14px;border:1px solid var(--tinta);border-radius:3px;font:500 12px/1 var(--sans);text-align:center;color:var(--tinta);">Cargar más</div>
+              <div style="font:400 12px/1 var(--sans);color:var(--humo);">1 · 2 · 3 · Siguiente →</div>
+            </div>
+            <div style="background:var(--tinta);color:var(--lino);padding:30px 18px;display:flex;flex-direction:column;gap:8px;">
+              <div style="font:400 22px/1 var(--serif);">Gaby Kids ®</div>
+              <div style="font:400 11px/1.6 var(--sans);color:#8E8A82;">© 2026 · Aviso de Privacidad · Envíos · Cambios</div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="font:500 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--coral);">Estado · drawer de filtros (mobile)</div>
+            <div style="width:330px;background:var(--lino);border:1px solid var(--hair);box-shadow:-8px 0 24px rgba(31,31,29,.06);display:flex;flex-direction:column;">
+              <div style="padding:20px 18px;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;align-items:center;">
+                <div style="font:400 24px/1 var(--serif);color:var(--tinta);">Filtrar</div>
+                <div style="font:400 18px/1 var(--sans);color:var(--humo);">×</div>
+              </div>
+              <div style="padding:22px 18px;display:flex;flex-direction:column;gap:24px;">
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="font:500 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Talla</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                    <div style="padding:9px 12px;border:1px solid var(--marea);background:var(--marea);color:var(--lino);border-radius:2px;font:400 12px/1 var(--sans);">0–3m</div>
+                    <div style="padding:9px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);">3–6m</div>
+                    <div style="padding:9px 12px;border:1px solid var(--marea);background:var(--marea);color:var(--lino);border-radius:2px;font:400 12px/1 var(--sans);">6–12m</div>
+                    <div style="padding:9px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);">12–18m</div>
+                    <div style="padding:9px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);">2 años</div>
+                    <div style="padding:9px 12px;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);">3 años</div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="font:500 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Color</div>
+                  <div style="display:flex;gap:12px;">
+                    <span style="width:28px;height:28px;border-radius:999px;background:#FFFFFF;border:1px solid var(--hair);"></span>
+                    <span style="width:28px;height:28px;border-radius:999px;background:#F3EDE1;border:1px solid var(--hair);"></span>
+                    <span style="width:28px;height:28px;border-radius:999px;background:#E3D7C4;border:1px solid var(--hair);"></span>
+                    <span style="width:28px;height:28px;border-radius:999px;background:#EBD3D3;border:1px solid var(--hair);"></span>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="font:500 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Ocasión · Tela · Precio</div>
+                  <div style="font:400 13px/2 var(--sans);color:var(--tinta);">bautizo · presentación · comunión · boda<br>encaje · organza · satín · lino<br>$860 — $2,090</div>
+                </div>
+              </div>
+              <div style="padding:18px;border-top:1px solid var(--hair);display:flex;gap:10px;">
+                <div style="flex:1;padding:14px;border:1px solid var(--tinta);border-radius:3px;font:500 12px/1 var(--sans);text-align:center;color:var(--tinta);">Limpiar</div>
+                <div style="flex:1.4;padding:14px;background:var(--coral);color:var(--lino);border-radius:3px;font:500 12px/1 var(--sans);text-align:center;">Ver 12 modelos</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:56px;">
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="font:500 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#8A8378;">Artboard 3 · Escritorio 1440</div>
+        <div style="font:400 34px/1.1 var(--serif);color:var(--tinta);">Producto — detalle (con drawer de carrito)</div>
+      </div>
+
+      <div style="position:relative;width:1440px;background:var(--lino);border:1px solid var(--hair);overflow:hidden;">
+        <div style="height:36px;background:var(--tinta);color:var(--lino);display:flex;align-items:center;justify-content:center;font:400 12px/1 var(--sans);letter-spacing:.06em;">Envíos a todo México · Entrega estimada 3–5 días hábiles · Mayoreo disponible</div>
+        <div style="height:84px;border-bottom:1px solid var(--hair);display:grid;grid-template-columns:260px 1fr 200px;align-items:center;padding:0 48px;gap:24px;">
+          <svg width="176" height="34" viewBox="0 0 176 34"><text x="0" y="24" font-family="Cormorant Garamond, serif" font-size="27" fill="#1F1F1D" letter-spacing="0.5">Gaby Kids</text><text x="139" y="14" font-family="DM Sans, sans-serif" font-size="9" fill="#6E6B66">®</text></svg>
+          <div style="display:flex;gap:30px;justify-content:center;font:400 14px/1 var(--sans);color:var(--tinta);">
+            <span style="border-bottom:1px solid var(--coral);padding-bottom:4px;">Niña</span><span>Niño</span><span>Bautizo</span><span>Guayaberas</span><span>Accesorios</span><span>Mayoreo</span>
+          </div>
+          <div style="display:flex;gap:20px;justify-content:flex-end;align-items:center;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><circle cx="11" cy="11" r="7"></circle><line x1="16" y1="16" x2="21" y2="21"></line></svg>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"></path></svg>
+            <div style="position:relative;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><path d="M6 8h12l-1.2 12H7.2z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+              <div style="position:absolute;top:-6px;right:-8px;width:17px;height:17px;border-radius:999px;background:var(--coral);color:var(--lino);font:500 10px/17px var(--sans);text-align:center;">2</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:26px 48px 0;font:400 12px/1 var(--sans);color:var(--humo);">Inicio / Niña / Ropones / <span style="color:var(--tinta);">Ropón Guadalupe</span></div>
+
+        <div style="padding:32px 48px 72px;display:grid;grid-template-columns:55fr 45fr;gap:64px;align-items:start;">
+          <div style="display:grid;grid-template-columns:96px 1fr;gap:16px;">
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="aspect-ratio:3/4;background:var(--crema);border:1px solid var(--tinta);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;"><span style="font:500 7px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#A79E90;">Foto 1 — cuerpo completo</span></div>
+              <div style="aspect-ratio:3/4;background:var(--crema);border:1px solid var(--hair);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;"><span style="font:500 7px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#A79E90;">Foto 2 — macro encaje</span></div>
+              <div style="aspect-ratio:3/4;background:var(--crema);border:1px solid var(--hair);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;"><span style="font:500 7px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#A79E90;">Foto 3 — moño y botones</span></div>
+              <div style="position:relative;aspect-ratio:3/4;background:var(--crema);border:1px solid var(--hair);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;">
+                <span style="font:500 7px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#A79E90;">Video 20s</span>
+                <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:999px;background:rgba(31,31,29,.75);display:flex;align-items:center;justify-content:center;">
+                  <svg width="10" height="10" viewBox="0 0 12 12"><path d="M3 2l7 4-7 4z" fill="#F7F4EF"></path></svg>
+                </div>
+              </div>
+            </div>
+            <div style="position:relative;aspect-ratio:3/4;background:var(--crema);border:1px solid var(--hair);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;">
+              <span style="font:500 11px/1.6 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#A79E90;">Foto — niña, ropón Guadalupe, cuerpo completo,<br>chimenea blanca y tapete de piel</span>
+              <div style="position:absolute;right:14px;bottom:12px;font:400 12px/1 var(--serif);color:rgba(31,31,29,.4);">Gaby Kids ®</div>
+              <div style="position:absolute;right:14px;top:14px;display:flex;gap:8px;align-items:center;padding:8px 12px;background:rgba(247,244,239,.9);border:1px solid var(--hair);border-radius:2px;font:500 9px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--humo);">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6E6B66" stroke-width="1.5"><circle cx="11" cy="11" r="7"></circle><line x1="16" y1="16" x2="21" y2="21"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                Zoom al hover
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:22px;">
+            <div style="font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Ropones niña</div>
+            <div style="font:400 56px/1.05 var(--serif);color:var(--tinta);">Ropón Guadalupe</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="font:500 24px/1 var(--sans);color:var(--tinta);">$1,290 MXN</div>
+              <div style="font:400 13px/1 var(--sans);color:var(--humo);">o 3 meses sin intereses de $430</div>
+            </div>
+            <div style="font:400 15px/1.7 var(--sans);color:var(--humo);max-width:480px;">Encaje chantilly sobre forro de algodón, botones forrados a mano y cinta de raso en la espalda. Hecho en nuestro taller en Jalisco.</div>
+
+            <div style="height:1px;background:var(--hair);"></div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                <div style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Talla (por edad)</div>
+                <div style="font:500 13px/1 var(--sans);color:var(--marea);">Guía de tallas</div>
+              </div>
+              <div style="display:flex;gap:10px;">
+                <div style="width:72px;height:52px;border:1px solid var(--hair);border-radius:2px;display:flex;align-items:center;justify-content:center;font:400 13px/1 var(--sans);color:var(--tinta);">0-3m</div>
+                <div style="width:72px;height:52px;border:1px solid var(--hair);border-radius:2px;display:flex;align-items:center;justify-content:center;font:400 13px/1 var(--sans);color:var(--humo);text-decoration:line-through;">3-6m</div>
+                <div style="width:72px;height:52px;border:1px solid var(--tinta);background:var(--tinta);border-radius:2px;display:flex;align-items:center;justify-content:center;font:500 13px/1 var(--sans);color:var(--lino);">6-12m</div>
+                <div style="width:72px;height:52px;border:1px solid var(--hair);border-radius:2px;display:flex;align-items:center;justify-content:center;font:400 13px/1 var(--sans);color:var(--tinta);">12-18m</div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Color · Marfil</div>
+              <div style="display:flex;gap:14px;">
+                <span style="width:34px;height:34px;border-radius:999px;background:#FFFFFF;border:1px solid var(--hair);"></span>
+                <span style="width:34px;height:34px;border-radius:999px;background:#F3EDE1;border:1px solid var(--tinta);box-shadow:0 0 0 3px var(--lino) inset;"></span>
+                <span style="width:34px;height:34px;border-radius:999px;background:#E3D7C4;border:1px solid var(--hair);"></span>
+                <span style="width:34px;height:34px;border-radius:999px;background:#EBD3D3;border:1px solid var(--hair);"></span>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:16px;align-items:center;">
+              <div style="display:flex;align-items:center;border:1px solid var(--hair);border-radius:2px;">
+                <span style="width:44px;height:48px;display:flex;align-items:center;justify-content:center;font:400 16px/1 var(--sans);color:var(--humo);">−</span>
+                <span style="width:44px;height:48px;display:flex;align-items:center;justify-content:center;font:500 14px/1 var(--sans);color:var(--tinta);border-left:1px solid var(--hair);border-right:1px solid var(--hair);">1</span>
+                <span style="width:44px;height:48px;display:flex;align-items:center;justify-content:center;font:400 16px/1 var(--sans);color:var(--tinta);">+</span>
+              </div>
+              <div style="font:400 13px/1.5 var(--sans);color:var(--humo);">Bordado del nombre sin costo — pídelo por WhatsApp.</div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="padding:19px;background:var(--coral);color:var(--lino);border-radius:3px;font:500 14px/1 var(--sans);text-align:center;letter-spacing:.03em;">Agregar al carrito</div>
+              <div style="padding:19px;border:1px solid var(--marea);color:var(--marea);border-radius:3px;font:500 14px/1 var(--sans);text-align:center;display:flex;gap:10px;align-items:center;justify-content:center;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7E9BA3" stroke-width="1.5"><path d="M21 12a9 9 0 0 1-13.2 8L3 21l1.1-4.7A9 9 0 1 1 21 12z"></path></svg>
+                Preguntar por WhatsApp
+              </div>
+              <div style="font:400 13px/1 var(--sans);color:var(--humo);text-align:center;padding-top:4px;">Llega antes del 12 de septiembre si pides hoy.</div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;border-top:1px solid var(--hair);">
+              <div style="padding:20px 0;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;font:400 15px/1 var(--sans);color:var(--tinta);">Detalles y materiales <span style="color:var(--humo);">+</span></div>
+              <div style="padding:20px 0;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;font:400 15px/1 var(--sans);color:var(--tinta);">Guía de tallas <span style="color:var(--humo);">+</span></div>
+              <div style="padding:20px 0;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;font:400 15px/1 var(--sans);color:var(--tinta);">Envíos y entregas <span style="color:var(--humo);">+</span></div>
+              <div style="padding:20px 0;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;font:400 15px/1 var(--sans);color:var(--tinta);">Cambios y devoluciones <span style="color:var(--humo);">+</span></div>
+            </div>
+
+            <div style="display:flex;gap:28px;padding-top:4px;">
+              <div style="display:flex;gap:8px;align-items:center;font:400 12px/1.3 var(--sans);color:var(--humo);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7E9BA3" stroke-width="1.5"><path d="M2 16h14V8H2zM16 11h4l2 3v2h-6"></path></svg>Envío 3–5 días</div>
+              <div style="display:flex;gap:8px;align-items:center;font:400 12px/1.3 var(--sans);color:var(--humo);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7E9BA3" stroke-width="1.5"><path d="M21 12a9 9 0 1 1-3-6.7M21 3v5h-5"></path></svg>Cambios en 15 días</div>
+              <div style="display:flex;gap:8px;align-items:center;font:400 12px/1.3 var(--sans);color:var(--humo);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7E9BA3" stroke-width="1.5"><path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6z"></path></svg>Pago seguro</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--crema);padding:72px 48px;display:flex;flex-direction:column;gap:30px;">
+          <div style="font:400 40px/1.1 var(--serif);color:var(--tinta);">Completa el look</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
+            <sc-for list="{{ accesorios }}" as="a" hint-placeholder-count="3">
+              <div style="background:var(--lino);border:1px solid var(--hair);border-radius:3px;padding:16px;display:flex;gap:16px;align-items:center;">
+                <div style="width:88px;height:110px;flex:none;background:var(--crema);border:1px solid var(--hair);border-radius:2px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;"><span style="font:500 8px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#A79E90;">{{ a.foto }}</span></div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="font:400 20px/1.2 var(--serif);color:var(--tinta);">{{ a.nombre }}</div>
+                  <div style="font:500 14px/1 var(--sans);color:var(--tinta);">{{ a.precio }}</div>
+                  <div style="font:500 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--marea);">Agregar +</div>
+                </div>
+              </div>
+            </sc-for>
+            <div style="background:var(--lino);border:1px solid var(--hair);border-radius:3px;padding:16px;display:flex;gap:16px;align-items:center;">
+              <div style="width:88px;height:110px;flex:none;background:var(--crema);border:1px solid var(--hair);border-radius:2px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;"><span style="font:500 8px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#A79E90;">Foto — diadema, macro</span></div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="font:400 20px/1.2 var(--serif);color:var(--tinta);">Diadema de flores de tela</div>
+                <div style="font:500 14px/1 var(--sans);color:var(--tinta);">$290 MXN</div>
+                <div style="font:500 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--marea);">Agregar +</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:72px 48px;display:flex;flex-direction:column;gap:30px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+            <div style="font:400 40px/1.1 var(--serif);color:var(--tinta);">Reseñas</div>
+            <div style="display:flex;gap:10px;align-items:center;font:400 14px/1 var(--sans);color:var(--humo);"><span style="color:var(--coral);letter-spacing:.1em;">★★★★★</span> 4.9 · 87 reseñas</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+            <sc-for list="{{ resenas }}" as="r" hint-placeholder-count="3">
+              <div style="border:1px solid var(--hair);border-radius:3px;padding:26px;display:flex;flex-direction:column;gap:14px;">
+                <div style="color:var(--coral);font:400 15px/1 var(--sans);letter-spacing:.14em;">★★★★★</div>
+                <div style="font:400 15px/1.7 var(--sans);color:var(--tinta);">{{ r.texto }}</div>
+                <div style="display:flex;flex-direction:column;gap:4px;padding-top:6px;">
+                  <div style="font:500 13px/1 var(--sans);color:var(--tinta);">{{ r.nombre }}</div>
+                  <div style="font:400 12px/1 var(--sans);color:var(--humo);">{{ r.ocasion }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="padding:0 48px 80px;display:flex;flex-direction:column;gap:30px;">
+          <div style="font:400 40px/1.1 var(--serif);color:var(--tinta);">También te puede gustar</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
+            <sc-for list="{{ destacados }}" as="p" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="position:relative;aspect-ratio:3/4;background:var(--crema);border:1px solid var(--hair);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;">
+                  <span style="font:500 10px/1.5 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#A79E90;">{{ p.foto }}</span>
+                </div>
+                <div style="font:400 21px/1.25 var(--serif);color:var(--tinta);">{{ p.nombre }}</div>
+                <div style="font:500 15px/1 var(--sans);color:var(--tinta);">{{ p.precio }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background:var(--tinta);color:var(--lino);padding:44px 48px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font:400 26px/1 var(--serif);">Gaby Kids ®</div>
+          <div style="font:400 12px/1 var(--sans);color:#8E8A82;">© 2026 Gaby Kids ® · Aviso de Privacidad · Envíos · Cambios · Mayoreo</div>
+        </div>
+
+        <div style="position:absolute;inset:0;background:rgba(31,31,29,.28);"></div>
+        <div style="position:absolute;top:0;right:0;bottom:0;width:400px;background:var(--lino);border-left:1px solid var(--hair);display:flex;flex-direction:column;">
+          <div style="padding:26px 24px;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;align-items:center;">
+            <div style="font:400 26px/1 var(--serif);color:var(--tinta);">Tu carrito (2)</div>
+            <div style="font:400 20px/1 var(--sans);color:var(--humo);">×</div>
+          </div>
+          <div style="padding:24px;display:flex;flex-direction:column;gap:22px;flex:1;">
+            <sc-for list="{{ carrito }}" as="l" hint-placeholder-count="2">
+              <div style="display:flex;gap:16px;">
+                <div style="width:82px;height:104px;flex:none;background:var(--crema);border:1px solid var(--hair);border-radius:2px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;"><span style="font:500 8px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#A79E90;">{{ l.foto }}</span></div>
+                <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+                  <div style="font:400 19px/1.2 var(--serif);color:var(--tinta);">{{ l.nombre }}</div>
+                  <div style="font:400 12px/1.4 var(--sans);color:var(--humo);">{{ l.meta }}</div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding-top:6px;">
+                    <div style="display:flex;align-items:center;border:1px solid var(--hair);border-radius:2px;font:400 12px/1 var(--sans);">
+                      <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--humo);">−</span>
+                      <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-left:1px solid var(--hair);border-right:1px solid var(--hair);color:var(--tinta);">{{ l.cant }}</span>
+                      <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--tinta);">+</span>
+                    </div>
+                    <div style="font:500 14px/1 var(--sans);color:var(--tinta);">{{ l.precio }}</div>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+            <div style="height:1px;background:var(--hair);"></div>
+            <div style="background:var(--crema);border-radius:3px;padding:16px;display:flex;flex-direction:column;gap:8px;">
+              <div style="font:400 13px/1.5 var(--sans);color:var(--tinta);">Te faltan <span style="color:var(--coral);font-weight:500;">$180</span> para envío gratis.</div>
+              <div style="height:3px;background:rgba(126,155,163,.3);border-radius:999px;"><div style="width:88%;height:3px;background:var(--marea);border-radius:999px;"></div></div>
+              <div style="font:400 11px/1 var(--sans);color:var(--humo);">Envío gratis a partir de $1,500 MXN</div>
+            </div>
+          </div>
+          <div style="padding:24px;border-top:1px solid var(--hair);display:flex;flex-direction:column;gap:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <div style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Subtotal</div>
+              <div style="font:500 20px/1 var(--sans);color:var(--tinta);">$1,680 MXN</div>
+            </div>
+            <div style="padding:18px;background:var(--coral);color:var(--lino);border-radius:3px;font:500 14px/1 var(--sans);text-align:center;">Ir a pagar</div>
+            <div style="font:500 13px/1 var(--sans);color:var(--marea);text-align:center;">Seguir comprando</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="font:500 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#8A8378;">Artboard 6 · Mobile 390</div>
+          <div style="font:400 26px/1.1 var(--serif);color:var(--tinta);">Producto — mobile</div>
+        </div>
+        <div style="width:390px;background:var(--lino);border:1px solid var(--hair);overflow:hidden;">
+          <div style="height:64px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;padding:0 18px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><path d="M15 5l-7 7 7 7"></path></svg>
+            <svg width="126" height="26" viewBox="0 0 126 26"><text x="0" y="19" font-family="Cormorant Garamond, serif" font-size="21" fill="#1F1F1D">Gaby Kids</text></svg>
+            <div style="position:relative;">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><path d="M6 8h12l-1.2 12H7.2z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+              <div style="position:absolute;top:-5px;right:-7px;width:15px;height:15px;border-radius:999px;background:var(--coral);color:var(--lino);font:500 9px/15px var(--sans);text-align:center;">2</div>
+            </div>
+          </div>
+          <div style="position:relative;height:470px;background:var(--crema);display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;">
+            <span style="font:500 10px/1.6 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#A79E90;">Foto — niña, ropón Guadalupe, cuerpo completo</span>
+            <div style="position:absolute;right:14px;bottom:14px;font:400 11px/1 var(--serif);color:rgba(31,31,29,.4);">Gaby Kids ®</div>
+            <div style="position:absolute;left:0;right:0;bottom:12px;display:flex;gap:6px;justify-content:center;">
+              <span style="width:22px;height:2px;background:var(--tinta);"></span>
+              <span style="width:22px;height:2px;background:rgba(31,31,29,.2);"></span>
+              <span style="width:22px;height:2px;background:rgba(31,31,29,.2);"></span>
+              <span style="width:22px;height:2px;background:rgba(31,31,29,.2);"></span>
+            </div>
+          </div>
+          <div style="padding:12px 18px;display:flex;gap:8px;overflow:hidden;border-bottom:1px solid var(--hair);">
+            <div style="width:56px;height:70px;flex:none;background:var(--crema);border:1px solid var(--tinta);border-radius:2px;"></div>
+            <div style="width:56px;height:70px;flex:none;background:var(--crema);border:1px solid var(--hair);border-radius:2px;"></div>
+            <div style="width:56px;height:70px;flex:none;background:var(--crema);border:1px solid var(--hair);border-radius:2px;"></div>
+            <div style="position:relative;width:56px;height:70px;flex:none;background:var(--crema);border:1px solid var(--hair);border-radius:2px;display:flex;align-items:center;justify-content:center;">
+              <div style="width:22px;height:22px;border-radius:999px;background:rgba(31,31,29,.75);display:flex;align-items:center;justify-content:center;"><svg width="9" height="9" viewBox="0 0 12 12"><path d="M3 2l7 4-7 4z" fill="#F7F4EF"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:26px 18px 30px;display:flex;flex-direction:column;gap:18px;">
+            <div style="font:500 10px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Ropones niña</div>
+            <div style="font:400 40px/1.05 var(--serif);color:var(--tinta);">Ropón Guadalupe</div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="font:500 21px/1 var(--sans);color:var(--tinta);">$1,290 MXN</div>
+              <div style="font:400 12px/1 var(--sans);color:var(--humo);">o 3 meses sin intereses de $430</div>
+            </div>
+            <div style="font:400 14px/1.7 var(--sans);color:var(--humo);">Encaje chantilly sobre forro de algodón, botones forrados a mano y cinta de raso en la espalda. Hecho en Jalisco.</div>
+            <div style="height:1px;background:var(--hair);"></div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                <div style="font:500 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Talla (por edad)</div>
+                <div style="font:500 12px/1 var(--sans);color:var(--marea);">Guía de tallas</div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <div style="flex:1;height:50px;border:1px solid var(--hair);border-radius:2px;display:flex;align-items:center;justify-content:center;font:400 12px/1 var(--sans);color:var(--tinta);">0-3m</div>
+                <div style="flex:1;height:50px;border:1px solid var(--hair);border-radius:2px;display:flex;align-items:center;justify-content:center;font:400 12px/1 var(--sans);color:var(--humo);text-decoration:line-through;">3-6m</div>
+                <div style="flex:1;height:50px;border:1px solid var(--tinta);background:var(--tinta);border-radius:2px;display:flex;align-items:center;justify-content:center;font:500 12px/1 var(--sans);color:var(--lino);">6-12m</div>
+                <div style="flex:1;height:50px;border:1px solid var(--hair);border-radius:2px;display:flex;align-items:center;justify-content:center;font:400 12px/1 var(--sans);color:var(--tinta);">12-18m</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="font:500 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">Color · Marfil</div>
+              <div style="display:flex;gap:12px;">
+                <span style="width:32px;height:32px;border-radius:999px;background:#FFFFFF;border:1px solid var(--hair);"></span>
+                <span style="width:32px;height:32px;border-radius:999px;background:#F3EDE1;border:1px solid var(--tinta);"></span>
+                <span style="width:32px;height:32px;border-radius:999px;background:#E3D7C4;border:1px solid var(--hair);"></span>
+                <span style="width:32px;height:32px;border-radius:999px;background:#EBD3D3;border:1px solid var(--hair);"></span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;border:1px solid var(--hair);border-radius:2px;align-self:flex-start;">
+              <span style="width:46px;height:46px;display:flex;align-items:center;justify-content:center;font:400 16px/1 var(--sans);color:var(--humo);">−</span>
+              <span style="width:46px;height:46px;display:flex;align-items:center;justify-content:center;font:500 14px/1 var(--sans);color:var(--tinta);border-left:1px solid var(--hair);border-right:1px solid var(--hair);">1</span>
+              <span style="width:46px;height:46px;display:flex;align-items:center;justify-content:center;font:400 16px/1 var(--sans);color:var(--tinta);">+</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="padding:18px;background:var(--coral);color:var(--lino);border-radius:3px;font:500 14px/1 var(--sans);text-align:center;">Agregar al carrito</div>
+              <div style="padding:18px;border:1px solid var(--marea);color:var(--marea);border-radius:3px;font:500 14px/1 var(--sans);text-align:center;display:flex;gap:8px;align-items:center;justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7E9BA3" stroke-width="1.5"><path d="M21 12a9 9 0 0 1-13.2 8L3 21l1.1-4.7A9 9 0 1 1 21 12z"></path></svg>
+                Preguntar por WhatsApp
+              </div>
+              <div style="font:400 12px/1 var(--sans);color:var(--humo);text-align:center;padding-top:2px;">Llega antes del 12 de septiembre si pides hoy.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;border-top:1px solid var(--hair);">
+              <div style="padding:17px 0;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;font:400 14px/1 var(--sans);color:var(--tinta);">Detalles y materiales <span style="color:var(--humo);">+</span></div>
+              <div style="padding:17px 0;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;font:400 14px/1 var(--sans);color:var(--tinta);">Guía de tallas <span style="color:var(--humo);">+</span></div>
+              <div style="padding:17px 0;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;font:400 14px/1 var(--sans);color:var(--tinta);">Envíos y entregas <span style="color:var(--humo);">+</span></div>
+              <div style="padding:17px 0;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;font:400 14px/1 var(--sans);color:var(--tinta);">Cambios y devoluciones <span style="color:var(--humo);">+</span></div>
+            </div>
+          </div>
+          <div style="background:var(--crema);padding:34px 18px;display:flex;flex-direction:column;gap:18px;">
+            <div style="font:400 28px/1.1 var(--serif);color:var(--tinta);">Completa el look</div>
+            <div style="display:flex;gap:14px;overflow:hidden;">
+              <sc-for list="{{ accesorios }}" as="a" hint-placeholder-count="3">
+                <div style="width:150px;flex:none;display:flex;flex-direction:column;gap:8px;">
+                  <div style="aspect-ratio:3/4;background:var(--lino);border:1px solid var(--hair);border-radius:2px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;"><span style="font:500 8px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#A79E90;">{{ a.foto }}</span></div>
+                  <div style="font:400 17px/1.2 var(--serif);color:var(--tinta);">{{ a.nombre }}</div>
+                  <div style="font:500 13px/1 var(--sans);color:var(--tinta);">{{ a.precio }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="padding:34px 18px;display:flex;flex-direction:column;gap:18px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <div style="font:400 28px/1.1 var(--serif);color:var(--tinta);">Reseñas</div>
+              <div style="font:400 12px/1 var(--sans);color:var(--humo);"><span style="color:var(--coral);">★★★★★</span> 4.9 · 87</div>
+            </div>
+            <sc-for list="{{ resenas }}" as="r" hint-placeholder-count="3">
+              <div style="border:1px solid var(--hair);border-radius:3px;padding:18px;display:flex;flex-direction:column;gap:10px;">
+                <div style="color:var(--coral);font:400 13px/1 var(--sans);letter-spacing:.12em;">★★★★★</div>
+                <div style="font:400 14px/1.65 var(--sans);color:var(--tinta);">{{ r.texto }}</div>
+                <div style="font:500 12px/1 var(--sans);color:var(--tinta);">{{ r.nombre }}</div>
+                <div style="font:400 11px/1 var(--sans);color:var(--humo);">{{ r.ocasion }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:var(--tinta);color:var(--lino);padding:30px 18px;display:flex;flex-direction:column;gap:8px;">
+            <div style="font:400 22px/1 var(--serif);">Gaby Kids ®</div>
+            <div style="font:400 11px/1.6 var(--sans);color:#8E8A82;">© 2026 · Aviso de Privacidad · Envíos · Cambios</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:36px;padding-top:40px;">
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="font:500 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#8A8378;">Fuera de los artboards</div>
+      <div style="font:400 34px/1.1 var(--serif);color:var(--tinta);">Tablero de estilo</div>
+    </div>
+
+    <div style="background:var(--lino);border:1px solid var(--hair);padding:56px;display:flex;flex-direction:column;gap:64px;max-width:1440px;">
+
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div style="font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Paleta · etiqueta gabybera</div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:16px;">
+          <div style="display:flex;flex-direction:column;gap:10px;"><div style="height:120px;background:#F7F4EF;border:1px solid var(--hair);"></div><div style="font:500 12px/1 var(--sans);color:var(--tinta);">lino</div><div style="font:400 12px/1 var(--sans);color:var(--humo);">#F7F4EF</div><div style="font:400 11px/1.4 var(--sans);color:var(--humo);">Fondo de página</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px;"><div style="height:120px;background:#EDE7DD;"></div><div style="font:500 12px/1 var(--sans);color:var(--tinta);">crema</div><div style="font:400 12px/1 var(--sans);color:var(--humo);">#EDE7DD</div><div style="font:400 11px/1.4 var(--sans);color:var(--humo);">Secciones alternas, cards</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px;"><div style="height:120px;background:#D9694F;"></div><div style="font:500 12px/1 var(--sans);color:var(--tinta);">coral</div><div style="font:400 12px/1 var(--sans);color:var(--humo);">#D9694F</div><div style="font:400 11px/1.4 var(--sans);color:var(--humo);">CTA, precios de oferta, badges</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px;"><div style="height:120px;background:#B4523C;"></div><div style="font:500 12px/1 var(--sans);color:var(--tinta);">coral-dk</div><div style="font:400 12px/1 var(--sans);color:var(--humo);">#B4523C</div><div style="font:400 11px/1.4 var(--sans);color:var(--humo);">Hover del coral</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px;"><div style="height:120px;background:#7E9BA3;"></div><div style="font:500 12px/1 var(--sans);color:var(--tinta);">marea</div><div style="font:400 12px/1 var(--sans);color:var(--humo);">#7E9BA3</div><div style="font:400 11px/1.4 var(--sans);color:var(--humo);">Links, filtros activos, íconos</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px;"><div style="height:120px;background:#1F1F1D;"></div><div style="font:500 12px/1 var(--sans);color:var(--tinta);">tinta</div><div style="font:400 12px/1 var(--sans);color:var(--humo);">#1F1F1D</div><div style="font:400 11px/1.4 var(--sans);color:var(--humo);">Títulos y texto principal</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px;"><div style="height:120px;background:#6E6B66;"></div><div style="font:500 12px/1 var(--sans);color:var(--tinta);">humo</div><div style="font:400 12px/1 var(--sans);color:var(--humo);">#6E6B66</div><div style="font:400 11px/1.4 var(--sans);color:var(--humo);">Texto secundario y meta</div></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:64px;align-items:start;">
+        <div style="display:flex;flex-direction:column;gap:22px;">
+          <div style="font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Escala tipográfica</div>
+          <div style="display:flex;flex-direction:column;gap:18px;">
+            <div style="display:flex;gap:24px;align-items:baseline;"><span style="width:180px;flex:none;font:400 11px/1.4 var(--sans);color:var(--humo);">Display 76 / 1.02<br>Cormorant Garamond 400</span><span style="font:400 76px/1.02 var(--serif);color:var(--tinta);">Para el día</span></div>
+            <div style="display:flex;gap:24px;align-items:baseline;"><span style="width:180px;flex:none;font:400 11px/1.4 var(--sans);color:var(--humo);">H1 producto 56 / 1.05</span><span style="font:400 56px/1.05 var(--serif);color:var(--tinta);">Ropón Guadalupe</span></div>
+            <div style="display:flex;gap:24px;align-items:baseline;"><span style="width:180px;flex:none;font:400 11px/1.4 var(--sans);color:var(--humo);">H2 sección 44 / 1.1</span><span style="font:400 44px/1.1 var(--serif);color:var(--tinta);">Lo más pedido</span></div>
+            <div style="display:flex;gap:24px;align-items:baseline;"><span style="width:180px;flex:none;font:400 11px/1.4 var(--sans);color:var(--humo);">Nombre de card 21 / 1.25</span><span style="font:400 21px/1.25 var(--serif);color:var(--tinta);">Batita Lucía — organza y satín</span></div>
+            <div style="display:flex;gap:24px;align-items:baseline;"><span style="width:180px;flex:none;font:400 11px/1.4 var(--sans);color:var(--humo);">Cuerpo 15 / 1.7<br>DM Sans 400</span><span style="font:400 15px/1.7 var(--sans);color:var(--humo);max-width:340px;">Encaje chantilly sobre forro de algodón, botones forrados a mano.</span></div>
+            <div style="display:flex;gap:24px;align-items:baseline;"><span style="width:180px;flex:none;font:400 11px/1.4 var(--sans);color:var(--humo);">Precio 15 / 500</span><span style="font:500 15px/1 var(--sans);color:var(--tinta);">$1,290 MXN &nbsp; <span style="color:var(--coral);">$980 MXN</span></span></div>
+            <div style="display:flex;gap:24px;align-items:baseline;"><span style="width:180px;flex:none;font:400 11px/1.4 var(--sans);color:var(--humo);">Micro-label 11 · .16em</span><span style="font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--humo);">0-3m · 3-6m · 6-12m</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:22px;">
+          <div style="font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Botones · normal / hover / deshabilitado</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+            <div style="padding:16px;background:var(--coral);color:var(--lino);border-radius:3px;font:500 13px/1 var(--sans);text-align:center;">Agregar</div>
+            <div style="padding:16px;background:var(--coral-dk);color:var(--lino);border-radius:3px;font:500 13px/1 var(--sans);text-align:center;">Agregar</div>
+            <div style="padding:16px;background:var(--coral);color:var(--lino);border-radius:3px;font:500 13px/1 var(--sans);text-align:center;opacity:.35;">Agregar</div>
+            <div style="padding:16px;border:1px solid var(--marea);color:var(--marea);border-radius:3px;font:500 13px/1 var(--sans);text-align:center;">WhatsApp</div>
+            <div style="padding:16px;border:1px solid var(--marea);background:var(--marea);color:var(--lino);border-radius:3px;font:500 13px/1 var(--sans);text-align:center;">WhatsApp</div>
+            <div style="padding:16px;border:1px solid var(--marea);color:var(--marea);border-radius:3px;font:500 13px/1 var(--sans);text-align:center;opacity:.35;">WhatsApp</div>
+            <div style="padding:16px;border:1px solid var(--tinta);color:var(--tinta);border-radius:3px;font:500 13px/1 var(--sans);text-align:center;">Ver más</div>
+            <div style="padding:16px;border:1px solid var(--tinta);background:var(--tinta);color:var(--lino);border-radius:3px;font:500 13px/1 var(--sans);text-align:center;">Ver más</div>
+            <div style="padding:16px;border:1px solid var(--tinta);color:var(--tinta);border-radius:3px;font:500 13px/1 var(--sans);text-align:center;opacity:.35;">Ver más</div>
+          </div>
+          <div style="font:400 12px/1.6 var(--sans);color:var(--humo);">Primario coral con texto lino · secundario outline marea · terciario outline tinta. Radio 3px, sin sombra. Deshabilitado al 35% de opacidad, sin cambio de color.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:56px;align-items:flex-start;">
+        <div style="display:flex;flex-direction:column;gap:22px;width:300px;">
+          <div style="font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Card de producto · aislada</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="position:relative;aspect-ratio:3/4;background:var(--crema);border:1px solid var(--hair);border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;">
+              <span style="font:500 10px/1.5 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#A79E90;">Foto — niña, ropón encaje, cuerpo completo</span>
+              <div style="position:absolute;top:12px;left:12px;padding:6px 10px;border-radius:2px;font:500 10px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--lino);background:var(--marea);">Nuevo</div>
+              <div style="position:absolute;right:12px;bottom:10px;font:400 11px/1 var(--serif);color:rgba(31,31,29,.4);">Gaby Kids ®</div>
+            </div>
+            <div style="font:400 21px/1.25 var(--serif);color:var(--tinta);">Ropón Guadalupe — encaje chantilly</div>
+            <div style="font:500 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--humo);">0-3m · 3-6m · 6-12m</div>
+            <div style="font:500 15px/1 var(--sans);color:var(--tinta);">$1,290 MXN</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:22px;flex:1;">
+          <div style="font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--humo);">Reglas rápidas</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;font:400 14px/1.7 var(--sans);color:var(--humo);">
+            <div>Cero blanco puro fuera de las fotos. Fondo de página siempre lino; crema para secciones alternas y cards.</div>
+            <div>El coral no pasa del 10% de la superficie: CTA primario, badge de últimas piezas, precio de oferta.</div>
+            <div>Separación por espacio y hairlines de marea al 25%. Sombra únicamente en drawers y modales.</div>
+            <div>Radio 2–4px en cards y botones. Círculos perfectos solo en el rail de categorías y los swatches de color.</div>
+            <div>Badges: NUEVO en marea, ÚLTIMAS PIEZAS en coral. Nunca los dos en la misma card.</div>
+            <div>Cada foto pendiente lleva su nota <span style="color:var(--coral);">REEMPLAZAR: …</span> en el canvas.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;},&quot;displayFont&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Jost&quot;,&quot;Cormorant Garamond&quot;,&quot;Playfair Display&quot;],&quot;default&quot;:&quot;Playfair Display&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Tipografía&quot;}}">
+const ICON = (paths, extra) => React.createElement('svg', Object.assign({viewBox:'0 0 48 48', fill:'none', stroke:'currentColor', strokeWidth:1.5, strokeLinecap:'round', strokeLinejoin:'round', style:{width:'100%',height:'100%',display:'block'}}, extra||{}),
+  paths.map((d,i)=>React.createElement('path',{key:i,d})));
+
+class Component extends DCLogic {
+  renderVals() {
+
+    const destacados = [
+      {nombre:'Ropón Guadalupe — encaje chantilly', foto:'Foto — niña, ropón encaje, cuerpo completo', tallas:'0-3m · 3-6m · 6-12m', precio:'$1,290 MXN', badge:'Nuevo', badgeBg:'#7E9BA3'},
+      {nombre:'Batita Lucía — organza y satín', foto:'Foto — bebé, batita organza, cuerpo completo', tallas:'0-3m · 3-6m', precio:'$980 MXN', badge:null},
+      {nombre:'Guayabera Yucatán niño', foto:'Foto — niño, guayabera lino, cuerpo completo', tallas:'2 años · 3 años · 4 años', precio:'$1,150 MXN', badge:null},
+      {nombre:'Traje de Charro Jalisco', foto:'Foto — niño, traje charro, cuerpo completo', tallas:'3 años · 4 años', precio:'$2,450 MXN', badge:'Últimas piezas', badgeBg:'#D9694F'}
+    ];
+
+    const ocasiones = [
+      {titulo:'Bautizo', desc:'Ropones, batitas, faldón y set de veladora.', foto:'Foto — bebé en brazos, ropón largo'},
+      {titulo:'Presentación de 3 años', desc:'Vestidos de encaje y trajes con detalle bordado.', foto:'Foto — niña 3 años, vestido marfil'},
+      {titulo:'Primera Comunión', desc:'Vestidos largos, guayaberas y accesorios de altar.', foto:'Foto — niño y niña, comunión'}
+    ];
+
+    const confianza = [
+      ['Envío a todo México', ['M6 30h28v10H6z','M34 33h6l4 5v2h-10','M12 40a3 3 0 1 0 6 0','M32 40a3 3 0 1 0 6 0']],
+      ['Guía de tallas por edad', ['M8 20h32v8H8z','M14 20v4','M20 20v6','M26 20v4','M32 20v6']],
+      ['Cambios en 15 días', ['M40 24a16 16 0 1 1-5-11','M40 8v8h-8']],
+      ['Mayoreo para tiendas', ['M8 18h32v22H8z','M8 18l4-8h24l4 8','M18 26h12']]
+    ].map(([label, paths]) => ({label, icon: ICON(paths)}));
+
+    const R = (nombre, precio, tallas, foto, badge, badgeBg, oferta) => ({nombre, precio, tallas, foto, badge, badgeBg, oferta});
+    const ropones = [
+      R('Ropón Guadalupe — encaje chantilly','$1,290 MXN','0-3m · 3-6m · 6-12m','Foto — niña, ropón encaje, cuerpo completo','Nuevo','#7E9BA3'),
+      R('Ropón Sagrado Corazón — organza bordada','$1,480 MXN','0-3m · 3-6m','Foto — bebé, ropón organza, cuerpo completo'),
+      R('Ropón Rosa de Lima — satín y perlas','$1,650 MXN','3-6m · 6-12m · 12-18m','Foto — niña, ropón satín, plano completo','Últimas piezas','#D9694F'),
+      R('Batita Lucía — organza y satín','$980 MXN','0-3m · 3-6m','Foto — bebé, batita organza, cuerpo completo'),
+      R('Ropón Santa Cecilia — encaje francés','$1,890 MXN','0-3m · 3-6m · 6-12m','Foto — macro, encaje francés, detalle'),
+      R('Ropón Dolores — lino con alforzas','$1,340 MXN','6-12m · 12-18m · 2 años','Foto — niña 1 año, ropón lino'),
+      R('Ropón Refugio — tul y moño de raso','$1,120 MXN','0-3m · 3-6m','Foto — macro, moño de raso, detalle','Nuevo','#7E9BA3'),
+      R('Ropón Candelaria — capa y gorrito','$2,090 MXN','0-3m · 3-6m · 6-12m','Foto — bebé con capa, cuerpo completo'),
+      R('Batita Renata — algodón pima','$860 MXN','0-3m · 3-6m · 6-12m','Foto — bebé, batita algodón, tapete piel'),
+      R('Ropón Soledad — encaje y cinturón de flores','$1,760 MXN','6-12m · 12-18m','Foto — macro, cinturón de flores'),
+      R('Vestido Ángeles — presentación 3 años','$1,980 MXN','3 años · 4 años','Foto — niña 3 años, vestido marfil'),
+      R('Ropón Belén — organza con velo','$1,410 MXN','0-3m · 3-6m · 6-12m','Foto — bebé con velo, chimenea blanca')
+    ];
+    const accesorios = [
+      {nombre:'Veladora de bautizo grabada', precio:'$390 MXN', foto:'Foto — veladora, macro'},
+      {nombre:'Rosario de nácar en estuche', precio:'$520 MXN', foto:'Foto — rosario, macro'},
+      {nombre:'Zapatitos de piel marfil', precio:'$680 MXN', foto:'Foto — zapatitos, macro'}
+    ];
+    const resenas = [
+      {nombre:'Mariana G.', ocasion:'Bautizo de mi hija, agosto 2026', texto:'El encaje se ve mucho mejor en persona. Pedí bordado del nombre y llegó en cuatro días a Monterrey.'},
+      {nombre:'Sra. Elena R.', ocasion:'Presentación de mi nieta, julio 2026', texto:'Compré talla 6-12m siguiendo la guía y quedó perfecto. El forro de algodón no le dio calor en la iglesia.'},
+      {nombre:'Paulina M.', ocasion:'Bautizo, junio 2026', texto:'Pregunté por WhatsApp y me ayudaron con la talla el mismo día. La foto del bautizo quedó hermosa.'}
+    ];
+    const carrito = [
+      {nombre:'Ropón Guadalupe', meta:'Talla 6-12m · Marfil', cant:'1', precio:'$1,290 MXN', foto:'Foto — ropón'},
+      {nombre:'Veladora de bautizo grabada', meta:'Grabado: “Renata · 12.09.26”', cant:'1', precio:'$390 MXN', foto:'Foto — veladora'}
+    ];
+    const stacks = {
+      'Jost': "'Jost',system-ui,sans-serif",
+      'Cormorant Garamond': "'Cormorant Garamond',Georgia,serif",
+      'Playfair Display': "'Playfair Display',Georgia,serif"
+    };
+    const pick = this.props.displayFont ?? 'Jost';
+    const displayFont = stacks[pick] || stacks['Jost'];
+    return {displayFont, destacados, ocasiones, confianza, ropones, accesorios, resenas, carrito};
+  }
+}
+</script>
+</body>
+</html>

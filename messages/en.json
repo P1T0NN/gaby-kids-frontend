@@ -949,7 +949,14 @@
 			"myOrders": "My Orders",
 			"home": "Home",
 			"shop": "Shop",
-			"primaryNavigation": "Primary navigation"
+			"primaryNavigation": "Primary navigation",
+			"announcement": "Envíos a todo México · Entrega estimada 3–5 días hábiles · Mayoreo disponible",
+			"navGirls": "Niña",
+			"navBoys": "Niño",
+			"navBaptism": "Bautizo",
+			"navGuayaberas": "Guayaberas",
+			"navAccessories": "Accesorios",
+			"navWholesale": "Mayoreo"
 		},
 		"SvelteHead": {
 			"home": "Home"

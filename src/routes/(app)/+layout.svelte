@@ -1,5 +1,6 @@
 <script lang="ts">
 	// COMPONENTS
+	import Footer from '@/components/ui/custom-components/footer/footer.svelte';
 	import Header from '@/components/ui/custom-components/header/header.svelte';
 	import UpsellsDialog from '@/features/upsells/components/upsells-dialog/upsells-dialog.svelte';
 
@@ -12,6 +13,11 @@
 	setOpenUpsells((product, openCartIfEmpty) => upsellsDialog.open(product, openCartIfEmpty));
 </script>
 
-<Header />
+<div class="flex min-h-dvh flex-col">
+	<Header />
+	<div class="flex-1">
+		{@render children()}
+	</div>
+	<Footer />
+</div>
 <UpsellsDialog bind:this={upsellsDialog} />
-{@render children()}
