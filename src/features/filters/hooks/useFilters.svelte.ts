@@ -98,8 +98,12 @@ export function useFilters(options: FiltersOptions): FiltersApi {
 		return result;
 	});
 
+	const sortKeys = new Set(defs.filter((def) => def.isSort).map((def) => def.key));
 	const count = $derived(Object.keys(active).length);
 	const isActive = $derived(count > 0);
+	// Sort entries shape result order, not which rows match, so they never count as filters.
+	const filterCount = $derived(Object.keys(active).filter((key) => !sortKeys.has(key)).length);
+	const isFiltering = $derived(filterCount > 0);
 	// Canonical, order-independent serialization — sorted keys so `{status,price}`
 	// and `{price,status}` produce the same reset/cache key.
 	const identity = $derived(
@@ -133,6 +137,12 @@ export function useFilters(options: FiltersOptions): FiltersApi {
 		},
 		get isActive() {
 			return isActive;
+		},
+		get filterCount() {
+			return filterCount;
+		},
+		get isFiltering() {
+			return isFiltering;
 		},
 		get identity() {
 			return identity;

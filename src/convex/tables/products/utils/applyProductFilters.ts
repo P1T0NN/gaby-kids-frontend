@@ -9,19 +9,6 @@ export function applyProductFilters(query: ProductQuery, filters: ConvexFilter[]
 				filter.eq ? q.neq(q.field('upsellProductIds'), []) : q.eq(q.field('upsellProductIds'), [])
 			);
 		}
-		if (filter.field === 'hasImages') {
-			query = query.filter((q) => {
-				const noImages = q.or(
-					q.eq(q.field('imageKeys'), []),
-					q.and(q.eq(q.field('imageKeys'), undefined), q.eq(q.field('images'), []))
-				);
-				return filter.eq ? q.not(noImages) : noImages;
-			});
-		}
-		if (filter.field === '_creationTime' && filter.gte !== undefined) {
-			const since = filter.gte;
-			query = query.filter((q) => q.gte(q.field('_creationTime'), since));
-		}
 	}
 	return query;
 }

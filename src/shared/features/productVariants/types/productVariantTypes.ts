@@ -6,6 +6,32 @@ export type ProductVariantOption = {
 	value: string;
 };
 
+/** Anything carrying the structured option rows of one product variant. */
+export type ProductVariantOptions = {
+	options: readonly ProductVariantOption[];
+};
+
+/** Option rows plus the stock fields needed to judge whether a value can be picked. */
+export type ProductVariantOptionCandidate = ProductVariantOptions & {
+	inventory: number;
+	reservedInventory: number;
+};
+
+export type ProductVariantOptionGroup = {
+	name: string;
+	values: string[];
+};
+
+/** Why a product variant option value cannot be picked. */
+export type ProductVariantOptionUnavailableReason =
+	'incompatible' | 'sold_out' | 'temporarily_unavailable';
+
+/** The product variant a value click should land on, plus why the value is unavailable. */
+export type ProductVariantOptionResolution<T extends ProductVariantOptions> = {
+	productVariant: T | undefined;
+	unavailableReason: ProductVariantOptionUnavailableReason | undefined;
+};
+
 export type ProductVariantDraft = {
 	id?: Id<'productVariants'>;
 	options: ProductVariantOption[];
@@ -56,7 +82,7 @@ export type ProductVariantSummary = {
 };
 
 export type ProductVariantErrorField =
-	'options' | 'sku' | 'price' | 'discountedPrice' | 'inventory' | 'combination';
+	'options' | 'sku' | 'price' | 'discountedPrice' | 'inventory' | 'combination' | 'images';
 
 export type ProductVariantRowErrors = Partial<Record<ProductVariantErrorField, string>>;
 

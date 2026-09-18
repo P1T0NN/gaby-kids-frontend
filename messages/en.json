@@ -29,10 +29,10 @@
 		},
 		"ProductVariantsEditorVariantImagePicker": {
 			"images": "Images",
-			"hint": "Click an image to assign it to this variant; numbers set the gallery order.",
+			"hint": "Click an image to add it to this variant.",
 			"uploadFirst": "Upload product images first.",
 			"assignImage": "Assign image {number}",
-			"unassignImage": "Remove image {number}",
+			"allImagesApplied": "All product images are already applied to this variant.",
 			"appliedImages": "Applied images for this variant:",
 			"noAppliedImages": "No images applied to this variant yet.",
 			"applyToSameValue": "Apply to all with:"
@@ -83,6 +83,9 @@
 			"temporarilyUnavailableHint": "Temporarily unavailable — someone is completing checkout right now.",
 			"description": "About this product",
 			"upsells": "Pairs well with"
+		},
+		"ProductVariantPicker": {
+			"notAvailableWith": "Not available with {selection}"
 		},
 		"ProductUpsellItem": {
 			"add": "Add",
@@ -371,13 +374,9 @@
 		"loadingProducts": "Loading products",
 		"searchLabel": "Search products",
 		"searchPlaceholder": "Search by product name...",
-		"imagesLabel": "Product photos",
-		"allImages": "All products",
-		"withImages": "With photos",
-		"withoutImages": "Without photos",
-		"addedLabel": "Date added",
-		"anyTime": "Any time",
-		"last30Days": "Last 30 days",
+		"sortLabel": "Sort",
+		"newestFirst": "Newest first",
+		"oldestFirst": "Oldest first",
 		"clearFilters": "Clear filters",
 		"emptyTitle": "No products yet",
 		"emptyDescription": "Our collection is on its way. Check back soon.",
@@ -1047,6 +1046,7 @@
 		"duplicateProductVariantOption": "Option names must be different.",
 		"duplicateProductVariant": "Two product variants cannot use the same option values.",
 		"invalidProductVariant": "Check the product options and product variant values.",
+		"productVariantImageRequired": "Apply at least one image to this variant.",
 		"passwordsDoNotMatch": "Passwords do not match.",
 		"invalidEmail": "Please enter a valid email address.",
 		"passwordTooShort": "Password must be at least 8 characters long.",

@@ -1,6 +1,5 @@
 <script lang="ts">
 	// LIBRARIES
-	import { onMount } from 'svelte';
 	import { api } from '@convex/_generated/api';
 	import { m } from '@/lib/paraglide/messages';
 
@@ -8,7 +7,6 @@
 	import ShopProductsHeader from '@/components/pages/(unprotected)/shop/shop-products-header.svelte';
 	import ShopProductItem from '@/components/pages/(unprotected)/shop/shop-product-item.svelte';
 	import ShopProductsLoading from '@/components/pages/(unprotected)/shop/loading/shop-products-loading.svelte';
-	import { Button } from '@/components/ui/button/index.js';
 	import DataList from '@/components/ui/custom-components/data-list/data-list.svelte';
 	import EmptyData from '@/components/ui/custom-components/empty-data/empty-data.svelte';
 	import ErrorComponent from '@/components/ui/custom-components/error-component/error-component.svelte';
@@ -25,22 +23,24 @@
 
 	const search = useSearch({ mode: 'url' });
 	const filters = useFilters({ mode: 'url', defs: SHOP_PRODUCT_FILTER_DEFS });
-	let asOf = $state<number>();
-	onMount(() => {
-		asOf = Date.now();
-	});
-	const filtered = $derived(search.isActive || filters.isActive);
+
+	const filtered = $derived(search.isActive || filters.isFiltering);
+
 	const products = useConvexPagination(
 		api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic,
 		() => ({
 			search: search.term || undefined,
-			filters: filters.active,
-			asOf: filters.active.added ? asOf : undefined
+			filters: filters.active
 		}),
 		{ pageSize: 12, resetKey: () => `${search.term}\u0000${filters.identity}` }
 	);
+	
 	const paginationTotal = $derived(filtered ? null : products.total);
 </script>
+
+{#snippet clearFiltersIcon()}
+	<span class="icon-[lucide--x] size-4" data-icon="inline-start"></span>
+{/snippet}
 
 <SvelteHead title={m['ShopPage.pageTitle']()} description={m['ShopPage.description']()} />
 
@@ -71,32 +71,31 @@
 			<ErrorComponent message={m['ShopPage.loadError']()} />
 		{/snippet}
 		{#snippet empty()}
-			<div class="flex flex-col items-center gap-2 py-8">
-				<EmptyData
-					title={products.nextCursor
-						? m['ShopPage.noPageMatches']()
-						: filtered
-							? m['ShopPage.noMatches']()
-							: m['ShopPage.emptyTitle']()}
-					description={products.nextCursor
-						? m['ShopPage.noPageMatchesDescription']()
-						: filtered
-							? m['ShopPage.noMatchesDescription']()
-							: m['ShopPage.emptyDescription']()}
-				>
-					{#snippet icon()}<span class="icon-[lucide--search] size-5" aria-hidden="true"
-						></span>{/snippet}
-				</EmptyData>
-				{#if filtered}
-					<Button
-						variant="outline"
-						onclick={() => {
-							search.clear();
-							filters.clearAll();
-						}}>{m['ShopPage.clearFilters']()}</Button
-					>
-				{/if}
-			</div>
+			<EmptyData
+				title={products.nextCursor
+					? m['ShopPage.noPageMatches']()
+					: filtered
+						? m['ShopPage.noMatches']()
+						: m['ShopPage.emptyTitle']()}
+				description={products.nextCursor
+					? m['ShopPage.noPageMatchesDescription']()
+					: filtered
+						? m['ShopPage.noMatchesDescription']()
+						: m['ShopPage.emptyDescription']()}
+				action={filtered
+					? {
+							label: m['ShopPage.clearFilters'](),
+							icon: clearFiltersIcon,
+							onclick: () => {
+								search.clear();
+								filters.clearAll();
+							}
+						}
+					: undefined}
+			>
+				{#snippet icon()}<span class="icon-[lucide--search] size-5" aria-hidden="true"
+					></span>{/snippet}
+			</EmptyData>
 		{/snippet}
 	</DataList>
 </Section>

@@ -164,7 +164,7 @@
 			{/if}
 		</div>
 
-		<div class="sm:col-span-2">
+		<div class="flex flex-col gap-2 sm:col-span-2">
 			<ProductVariantsEditorVariantImagePicker
 				{productVariant}
 				{rowIndex}
@@ -172,6 +172,9 @@
 				{uploadFiles}
 				{disabled}
 			/>
+			{#if rowError?.images}
+				<p class="text-xs text-destructive">{rowError.images}</p>
+			{/if}
 		</div>
 
 		<div class="flex flex-col gap-1.5">

@@ -105,5 +105,13 @@ export const saveProductSchema = z
 				});
 			}
 			seenCombinations.add(combination);
+
+			if (productVariant.imageKeys.length === 0) {
+				ctx.addIssue({
+					code: 'custom',
+					path: ['productVariants', index, 'imageKeys'],
+					message: 'PRODUCT_VARIANT_IMAGE_REQUIRED'
+				});
+			}
 		});
 	});

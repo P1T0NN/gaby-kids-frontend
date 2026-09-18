@@ -61,12 +61,20 @@
 			<EmptyContent>
 				{#if action.href}
 					<ButtonLink variant="outline" size="sm" href={action.href}>
-						<span class="icon-[lucide--plus] size-4" data-icon="inline-start"></span>
+						{#if action.icon}
+							{@render action.icon()}
+						{:else}
+							<span class="icon-[lucide--plus] size-4" data-icon="inline-start"></span>
+						{/if}
 						{action.label}
 					</ButtonLink>
 				{:else}
 					<Button variant="outline" size="sm" onclick={action.onclick}>
-						<span class="icon-[lucide--plus] size-4" data-icon="inline-start"></span>
+						{#if action.icon}
+							{@render action.icon()}
+						{:else}
+							<span class="icon-[lucide--plus] size-4" data-icon="inline-start"></span>
+						{/if}
 						{action.label}
 					</Button>
 				{/if}

@@ -20,27 +20,15 @@ export const SHOP_PRODUCT_FILTER_DEFS = [
 		}
 	},
 	{
-		key: 'photos',
+		key: 'sort',
+		isSort: true,
 		get label() {
-			return m['ShopPage.imagesLabel']();
+			return m['ShopPage.sortLabel']();
 		},
 		get options() {
 			return [
-				{ value: '', label: m['ShopPage.allImages']() },
-				{ value: 'with', label: m['ShopPage.withImages']() },
-				{ value: 'without', label: m['ShopPage.withoutImages']() }
-			];
-		}
-	},
-	{
-		key: 'added',
-		get label() {
-			return m['ShopPage.addedLabel']();
-		},
-		get options() {
-			return [
-				{ value: '', label: m['ShopPage.anyTime']() },
-				{ value: '30d', label: m['ShopPage.last30Days']() }
+				{ value: '', label: m['ShopPage.newestFirst']() },
+				{ value: 'asc', label: m['ShopPage.oldestFirst']() }
 			];
 		}
 	}

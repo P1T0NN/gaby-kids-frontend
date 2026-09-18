@@ -29,7 +29,7 @@ test('original price must be higher than the variant price', () => {
 			{
 				options: [],
 				sku: '',
-				imageKeys: [],
+				imageKeys: ['products/test-image'],
 				priceInCents: 5999,
 				compareAtPriceInCents: 5999,
 				inventory: 0
@@ -61,7 +61,7 @@ test('rejects duplicate option names and duplicate variant combinations', () => 
 			{
 				options: [{ name: 'Color', value: 'Red' }],
 				sku: '',
-				imageKeys: [],
+				imageKeys: ['products/test-image'],
 				priceInCents: 100,
 				inventory: 0
 			}
@@ -79,14 +79,14 @@ test('rejects duplicate option names and duplicate variant combinations', () => 
 			{
 				options: [{ name: 'Color', value: 'Red' }],
 				sku: '',
-				imageKeys: [],
+				imageKeys: ['products/test-image'],
 				priceInCents: 100,
 				inventory: 0
 			},
 			{
 				options: [{ name: 'Color', value: 'red' }],
 				sku: '',
-				imageKeys: [],
+				imageKeys: ['products/test-image'],
 				priceInCents: 100,
 				inventory: 0
 			}
@@ -112,9 +112,35 @@ test.each([-1, 0.5, Number.MAX_SAFE_INTEGER + 1])('rejects invalid stock %s', (i
 			trackInventory: true,
 			categoryId: 'category',
 			productVariantOptionNames: [],
-			productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory }]
+			productVariants: [
+				{
+					options: [],
+					sku: '',
+					imageKeys: ['products/test-image'],
+					priceInCents: 100,
+					inventory
+				}
+			]
 		}).success
 	).toBe(false);
+});
+
+test('requires at least one image per product variant', () => {
+	overwriteGetLocale(() => 'en');
+	const parsed = saveProductSchema.safeParse({
+		name: 'Image product',
+		description: 'Details',
+		trackInventory: true,
+		categoryId: 'category',
+		productVariantOptionNames: [],
+		productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory: 0 }]
+	});
+	expect(parsed.success).toBe(false);
+	if (parsed.success) throw new Error('Expected a variant without images to fail validation');
+	expect(parsed.error.issues[0]?.message).toBe('PRODUCT_VARIANT_IMAGE_REQUIRED');
+	expect(toHumanMessage('PRODUCT_VARIANT_IMAGE_REQUIRED')).toBe(
+		'Apply at least one image to this variant.'
+	);
 });
 
 test('requires an explicit inventory tracking choice', () => {
@@ -123,7 +149,15 @@ test('requires an explicit inventory tracking choice', () => {
 		description: 'Description',
 		categoryId: 'category',
 		productVariantOptionNames: [],
-		productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory: 0 }]
+		productVariants: [
+			{
+				options: [],
+				sku: '',
+				imageKeys: ['products/test-image'],
+				priceInCents: 100,
+				inventory: 0
+			}
+		]
 	};
 
 	expect(saveProductSchema.safeParse(input).success).toBe(false);

@@ -17,8 +17,26 @@ import type { Id } from '../../src/convex/_generated/dataModel';
 
 const modules = import.meta.glob('../../src/convex/**/*.ts');
 
+const PRODUCT_IMAGE_KEY = 'products/test-image';
+
 function defaultProductVariant(priceInCents: number, inventory: number) {
-	return { options: [], sku: '', imageKeys: [], priceInCents, inventory };
+	return { options: [], sku: '', imageKeys: [PRODUCT_IMAGE_KEY], priceInCents, inventory };
+}
+
+async function insertProductImageUpload(
+	t: ReturnType<typeof createTestContext>,
+	ownerId: string
+): Promise<void> {
+	await t.run((ctx) =>
+		ctx.db.insert('storageUploads', {
+			ownerId,
+			key: PRODUCT_IMAGE_KEY,
+			expectedSize: 1,
+			expectedContentType: 'image/webp',
+			status: 'uploaded',
+			createdAt: Date.now()
+		})
+	);
 }
 
 test('cart returns product variant names and identifies missing, malformed, wrong-table and unpublished IDs', async () => {
@@ -95,7 +113,7 @@ test('cart returns product variant names and identifies missing, malformed, wron
 	await expect(t.query(query, { productVariantIds: Array(51).fill('invalid') })).rejects.toThrow();
 });
 
-test('shop filters combine with search and pagination without exposing unpublished products', async () => {
+test('shop sorts products newest or oldest without exposing unpublished products', async () => {
 	const t = createTestContext();
 	const asOf = Date.now();
 	vi.useFakeTimers();
@@ -125,70 +143,48 @@ test('shop filters combine with search and pagination without exposing unpublish
 				status: 'active'
 			})
 		);
-		vi.setSystemTime(asOf);
-		await t.run(async (ctx) => {
-			for (const status of ['active', 'draft', 'archived'] as const) {
-				await ctx.db.insert('products', {
-					name: `Canvas ${status}`,
-					slug: `canvas-${status}`,
-					description: 'Photo product',
+		for (const [name, daysAgo, status] of [
+			['Canvas active', 3, 'active'],
+			['Canvas cleared', 2, 'active'],
+			['Canvas plain', 1, 'active'],
+			['Canvas draft', 0, 'draft'],
+			['Canvas archived', 0, 'archived']
+		] as const) {
+			vi.setSystemTime(asOf - daysAgo * 24 * 60 * 60 * 1000);
+			await t.run((ctx) =>
+				ctx.db.insert('products', {
+					name,
+					slug: name.toLowerCase().replace(' ', '-'),
+					description: name,
 					priceInCents: 100,
 					categoryId,
-					images: ['https://example.com/photo.jpg'],
-					imageKeys: ['https://example.com/photo.jpg'],
+					images: [],
+					imageKeys: [],
 					storagePrefix: 'products',
 					trackInventory: true,
 					productVariantOptionNames: [],
 					hasPriceRange: false,
 					upsellProductIds: [],
 					status
-				});
-			}
-			await ctx.db.insert('products', {
-				name: 'Canvas cleared',
-				slug: 'canvas-cleared',
-				description: 'Removed photos',
-				priceInCents: 100,
-				categoryId,
-				images: ['https://example.com/old.jpg'],
-				imageKeys: [],
-				storagePrefix: 'products',
-				trackInventory: true,
-				productVariantOptionNames: [],
-				hasPriceRange: false,
-				upsellProductIds: [],
-				status: 'active'
-			});
-			await ctx.db.insert('products', {
-				name: 'Canvas plain',
-				slug: 'canvas-plain',
-				description: 'No photos',
-				priceInCents: 100,
-				categoryId,
-				images: [],
-				imageKeys: [],
-				storagePrefix: 'products',
-				trackInventory: true,
-				productVariantOptionNames: [],
-				hasPriceRange: false,
-				upsellProductIds: [],
-				status: 'active'
-			});
-		});
+				})
+			);
+		}
 		const query = api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic;
-		const withPhotos = await t.query(query, {
-			paginationOpts: { cursor: null, numItems: 12 },
-			filters: { photos: 'with' },
-			search: 'Canvas'
+		const newest = await t.query(query, {
+			paginationOpts: { cursor: null, numItems: 12 }
 		});
-		expect(withPhotos.items.map((product) => product.name)).toEqual(['Canvas active']);
-		expect(withPhotos.total).toBeUndefined();
-		const recent = await t.query(query, {
+		expect(newest.items.map((product) => product.name)).toEqual([
+			'Canvas plain',
+			'Canvas cleared',
+			'Canvas active',
+			'Canvas old'
+		]);
+		const oldest = await t.query(query, {
 			paginationOpts: { cursor: null, numItems: 12 },
-			filters: { added: '30d' },
-			asOf
+			filters: { sort: 'asc' }
 		});
-		expect(recent.items.map((product) => product.name).sort()).toEqual([
+		expect(oldest.items.map((product) => product.name)).toEqual([
+			'Canvas old',
 			'Canvas active',
 			'Canvas cleared',
 			'Canvas plain'
@@ -197,17 +193,15 @@ test('shop filters combine with search and pagination without exposing unpublish
 		let cursor: string | null = null;
 		for (let page = 0; page < 10; page++) {
 			const result: FunctionReturnType<typeof query> = await t.query(query, {
-				paginationOpts: { cursor, numItems: 1 },
-				filters: { photos: 'without', added: '30d' },
-				search: 'Canvas',
-				asOf
+				paginationOpts: { cursor, numItems: 2 },
+				search: 'Canvas'
 			});
 			names.push(...result.items.map((product) => product.name));
 			cursor = result.nextCursor;
 			if (!cursor) break;
 		}
 		expect(cursor).toBeNull();
-		expect(names.sort()).toEqual(['Canvas cleared', 'Canvas plain']);
+		expect(names.sort()).toEqual(['Canvas active', 'Canvas cleared', 'Canvas old', 'Canvas plain']);
 	} finally {
 		vi.useRealTimers();
 	}
@@ -259,13 +253,15 @@ test('allows only admins to create and list valid products', async () => {
 		})
 	).rejects.toMatchObject({ data: { code: 'INVALID_PRODUCT_DATA' } });
 
+	await insertProductImageUpload(t, 'product-admin');
 	const created = await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
 		name: 'Canvas backpack',
 		description: 'A durable everyday backpack.',
 		trackInventory: true,
 		categoryId: category._id,
 		productVariantOptionNames: [],
-		productVariants: [defaultProductVariant(100, 5)]
+		productVariants: [defaultProductVariant(100, 5)],
+		uploadedFiles: [PRODUCT_IMAGE_KEY]
 	});
 	const page = await admin.query(
 		api.tables.products.queries.fetchAllProductsAdmin.fetchAllProductsAdmin,
@@ -277,8 +273,8 @@ test('allows only admins to create and list valid products', async () => {
 	expect(created).toMatchObject({
 		name: 'Canvas backpack',
 		slug: 'canvas-backpack',
-		images: [],
-		imageKeys: [],
+		images: [`https://cdn.example.com/${PRODUCT_IMAGE_KEY}`],
+		imageKeys: [PRODUCT_IMAGE_KEY],
 		productVariantOptionNames: [],
 		hasPriceRange: false,
 		trackInventory: true
@@ -302,7 +298,7 @@ test('allows only admins to create and list valid products', async () => {
 		position: 0,
 		options: [],
 		sku: 'canvas-backpack',
-		imageKeys: [],
+		imageKeys: [PRODUCT_IMAGE_KEY],
 		priceInCents: 100,
 		inventory: 5,
 		reservedInventory: 0
@@ -365,12 +361,11 @@ test('allows only admins to create and list valid products', async () => {
 				...defaultProductVariant(100, createdProductVariant.inventory),
 				id: createdProductVariant._id
 			}
-		],
-		retainedFiles: []
+		]
 	});
 	expect(updated).toMatchObject({
 		name: 'Updated canvas backpack',
-		imageKeys: [],
+		imageKeys: [PRODUCT_IMAGE_KEY],
 		trackInventory: false
 	});
 
@@ -427,7 +422,7 @@ test('rejects invalid product details without creating products or consuming upl
 		trackInventory: true,
 		categoryId: category._id,
 		productVariantOptionNames: [],
-		productVariants: [defaultProductVariant(100, 0)],
+		productVariants: [{ ...defaultProductVariant(100, 0), imageKeys: [imageKey] }],
 		uploadedFiles: [imageKey]
 	};
 	await expect(
@@ -483,7 +478,11 @@ test('rejects duplicate slugs, unavailable categories, foreign uploads, and unau
 	await expect(
 		user.mutation(api.tables.products.mutations.saveProduct.saveProduct, input)
 	).rejects.toMatchObject({ data: { code: 'FORBIDDEN' } });
-	await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, input);
+	await insertProductImageUpload(t, 'guard-admin');
+	await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
+		...input,
+		uploadedFiles: [PRODUCT_IMAGE_KEY]
+	});
 	await expect(
 		admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
 			...input,
@@ -543,6 +542,7 @@ test('saves structured product variants, derives display caches, and guards rese
 	);
 	const saveProduct = api.tables.products.mutations.saveProduct.saveProduct;
 
+	await insertProductImageUpload(t, 'product-variant-admin');
 	const created = await admin.mutation(saveProduct, {
 		name: 'Variant shirt',
 		description: 'Two colors',
@@ -553,19 +553,20 @@ test('saves structured product variants, derives display caches, and guards rese
 			{
 				options: [{ name: 'Color', value: 'Red' }],
 				sku: 'SHIRT-RED',
-				imageKeys: [],
+				imageKeys: [PRODUCT_IMAGE_KEY],
 				priceInCents: 2000,
 				inventory: 2
 			},
 			{
 				options: [{ name: 'Color', value: 'Blue' }],
 				sku: '',
-				imageKeys: [],
+				imageKeys: [PRODUCT_IMAGE_KEY],
 				priceInCents: 2500,
 				compareAtPriceInCents: 3000,
 				inventory: 1
 			}
-		]
+		],
+		uploadedFiles: [PRODUCT_IMAGE_KEY]
 	});
 
 	expect(created).toMatchObject({
@@ -605,14 +606,14 @@ test('saves structured product variants, derives display caches, and guards rese
 				{
 					options: [{ name: 'Color', value: 'Red' }],
 					sku: 'DUP-SKU',
-					imageKeys: [],
+					imageKeys: [PRODUCT_IMAGE_KEY],
 					priceInCents: 2000,
 					inventory: 2
 				},
 				{
 					options: [{ name: 'Color', value: 'Blue' }],
 					sku: 'DUP-SKU',
-					imageKeys: [],
+					imageKeys: [PRODUCT_IMAGE_KEY],
 					priceInCents: 2500,
 					inventory: 1
 				}
@@ -632,14 +633,14 @@ test('saves structured product variants, derives display caches, and guards rese
 				{
 					options: [{ name: 'Color', value: 'Red' }],
 					sku: 'SHIRT-RED',
-					imageKeys: [],
+					imageKeys: [PRODUCT_IMAGE_KEY],
 					priceInCents: 2000,
 					inventory: 2
 				},
 				{
 					options: [{ name: 'Color', value: 'Red' }],
 					sku: 'SHIRT-RED-2',
-					imageKeys: [],
+					imageKeys: [PRODUCT_IMAGE_KEY],
 					priceInCents: 2100,
 					inventory: 1
 				}
@@ -679,7 +680,7 @@ test('saves structured product variants, derives display caches, and guards rese
 				id: productVariants[0]!._id,
 				options: [{ name: 'Color', value: 'Red' }],
 				sku: 'SHIRT-RED',
-				imageKeys: [],
+				imageKeys: [PRODUCT_IMAGE_KEY],
 				priceInCents: 2000,
 				inventory: 2
 			},
@@ -687,7 +688,7 @@ test('saves structured product variants, derives display caches, and guards rese
 				id: productVariants[1]!._id,
 				options: [{ name: 'Color', value: 'Blue' }],
 				sku: productVariants[1]!.sku,
-				imageKeys: [],
+				imageKeys: [PRODUCT_IMAGE_KEY],
 				priceInCents: 2500,
 				inventory: 1
 			}
@@ -725,7 +726,7 @@ test('saves structured product variants, derives display caches, and guards rese
 					id: productVariants[1]!._id,
 					options: [{ name: 'Color', value: 'Blue' }],
 					sku: productVariants[1]!.sku,
-					imageKeys: [],
+					imageKeys: [PRODUCT_IMAGE_KEY],
 					priceInCents: 2500,
 					inventory: 1
 				}
@@ -734,13 +735,15 @@ test('saves structured product variants, derives display caches, and guards rese
 	).rejects.toMatchObject({ data: { code: 'CANNOT_DELETE_RESERVED_PRODUCT_VARIANT' } });
 	await t.run((ctx) => ctx.db.patch(productVariants[0]!._id, { reservedInventory: 0 }));
 
+	await insertProductImageUpload(t, 'product-variant-admin');
 	const other = await admin.mutation(saveProduct, {
 		name: 'Plain mug',
 		description: 'No options',
 		trackInventory: true,
 		categoryId: category._id,
 		productVariantOptionNames: [],
-		productVariants: [defaultProductVariant(100, 0)]
+		productVariants: [defaultProductVariant(100, 0)],
+		uploadedFiles: [PRODUCT_IMAGE_KEY]
 	});
 	await expect(
 		admin.mutation(saveProduct, {
@@ -755,7 +758,7 @@ test('saves structured product variants, derives display caches, and guards rese
 					id: productVariants[0]!._id,
 					options: [{ name: 'Color', value: 'Red' }],
 					sku: 'SHIRT-RED',
-					imageKeys: [],
+					imageKeys: [PRODUCT_IMAGE_KEY],
 					priceInCents: 2000,
 					inventory: 2
 				}

@@ -31,7 +31,7 @@
 		filters: FiltersApi;
 	} = $props();
 
-	const filtered = $derived(search.isActive || filters.isActive);
+	const filtered = $derived(search.isActive || filters.isFiltering);
 
 	function clearFilters(): void {
 		search.clear();

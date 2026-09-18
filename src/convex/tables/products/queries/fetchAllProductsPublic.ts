@@ -1,6 +1,3 @@
-// LIBRARIES
-import { v } from 'convex/values';
-
 // WRAPPERS
 import { fetchOptimizedQuery } from '../../../wrappers/fetchOptimizedQuery.js';
 
@@ -19,23 +16,14 @@ import { getProductVariantSummary } from '../../productVariants/helpers/getProdu
 import { storefrontProductPage } from '../validators/productValidators.js';
 
 export const fetchAllProductsPublic = fetchOptimizedQuery({
-	args: { asOf: v.optional(v.number()) },
 	returns: storefrontProductPage,
 	count: productsByStatusAggregate,
 	countTotal: ({ ctx }) =>
 		getTotalSizeAggregate(ctx, productsByStatusAggregate, { namespace: 'active' }),
-	predicateFor: (key, value, args) => {
-		if (key === 'photos' && (value === 'with' || value === 'without')) {
-			return { field: 'hasImages', eq: value === 'with' };
-		}
-		const isRecentFilter = key === 'added' && value === '30d';
-		if (isRecentFilter && args.asOf !== undefined && Number.isFinite(args.asOf)) {
-			return { field: '_creationTime', gte: args.asOf - 30 * 24 * 60 * 60 * 1000 };
-		}
-		return buildProductFilter(key, value);
-	},
-	fetchPage: async ({ ctx, paginationOpts, search, filters }) => {
-		const page = await getProductPage(ctx, paginationOpts, search, filters, 'active');
+	predicateFor: buildProductFilter,
+	fetchPage: async ({ ctx, args, paginationOpts, search, filters }) => {
+		const sortOrder = args.filters?.sort === 'asc' ? 'asc' : 'desc';
+		const page = await getProductPage(ctx, paginationOpts, search, filters, 'active', sortOrder);
 		return {
 			...page,
 			items: await Promise.all(

@@ -21,6 +21,8 @@ export type FilterDef = {
 	/** First entry MUST be `{ value: '', label: 'All' }` — the inactive sentinel. */
 	options: FilterOption[];
 	placeholder?: string;
+	/** Sort control: it changes result order, not which rows match, so it never counts as a filter. */
+	isSort?: boolean;
 };
 
 /** key → selected option value; entries with `''` are treated as inactive. */
@@ -47,6 +49,9 @@ export type FiltersApi = {
 	get active(): ActiveFilters;
 	get count(): number;
 	get isActive(): boolean;
+	/** Active entries that actually filter; sort controls are excluded. */
+	get filterCount(): number;
+	get isFiltering(): boolean;
 	/** Canonical, stable serialization (sorted keys) — the pagination reset + cache key. */
 	get identity(): string;
 	clear(key: string): void;

@@ -21,6 +21,7 @@ import type { PaginationOptions } from 'convex/server';
 import type { ProductQuery } from '../../../../shared/features/products/types/productsTypes.js';
 
 type Product = Doc<'products'>;
+type SortOrder = 'asc' | 'desc';
 
 function getCategoryFilter(filters: ConvexFilter[]): string | undefined {
 	const filter = filters.find((candidate) => candidate.field === 'category');
@@ -32,20 +33,9 @@ function getCategoryFilter(filters: ConvexFilter[]): string | undefined {
 function matchesProduct(
 	product: Product,
 	search: string | undefined,
-	filters: ConvexFilter[],
 	status?: Product['status']
 ): boolean {
 	if (status && product.status !== status) return false;
-	for (const filter of filters) {
-		const hasImages = (product.imageKeys ?? product.images).length > 0;
-		if (filter.field === 'hasImages' && hasImages !== filter.eq) return false;
-		if (
-			filter.field === '_creationTime' &&
-			filter.gte !== undefined &&
-			product._creationTime < filter.gte
-		)
-			return false;
-	}
 
 	if (!search) return true;
 
@@ -59,8 +49,8 @@ async function getCategoryProductPage(
 	paginationOpts: PaginationOptions,
 	search: string | undefined,
 	categorySlug: string,
-	filters: ConvexFilter[],
-	status?: Product['status']
+	status: Product['status'] | undefined,
+	order: SortOrder
 ): Promise<ConvexPaginatedPage<Product>> {
 	const category = await ctx.db
 		.query('categories')
@@ -79,7 +69,7 @@ async function getCategoryProductPage(
 	const productsQuery = ctx.db
 		.query('products')
 		.withIndex('by_category_id', (query) => query.eq('categoryId', category._id))
-		.order('desc');
+		.order(order);
 	const items: Product[] = [];
 	let cursor = paginationOpts.cursor ?? null;
 	let isDone = false;
@@ -97,7 +87,7 @@ async function getCategoryProductPage(
 		cursor = result.continueCursor;
 
 		for (const product of result.page) {
-			if (matchesProduct(product, search, filters, status)) items.push(product);
+			if (matchesProduct(product, search, status)) items.push(product);
 			if (items.length === pageSize) break;
 		}
 	}
@@ -112,25 +102,19 @@ async function getCategoryProductPage(
 
 function getProductQuery(
 	ctx: QueryCtx,
-	filters: ConvexFilter[],
-	status?: Product['status']
+	status: Product['status'] | undefined,
+	order: SortOrder
 ): ProductQuery {
-	const since = filters.find((filter) => filter.field === '_creationTime')?.gte;
 	if (status) {
 		return ctx.db
 			.query('products')
-			.withIndex('by_status', (query) => {
-				const range = query.eq('status', status);
-				return since === undefined ? range : range.gte('_creationTime', since);
-			})
-			.order('desc');
+			.withIndex('by_status', (query) => query.eq('status', status))
+			.order(order);
 	}
 	return ctx.db
 		.query('products')
-		.withIndex('by_creation_time', (query) =>
-			since === undefined ? query : query.gte('_creationTime', since)
-		)
-		.order('desc');
+		.withIndex('by_creation_time', (query) => query)
+		.order(order);
 }
 
 export async function getProductPage(
@@ -138,7 +122,8 @@ export async function getProductPage(
 	paginationOpts: PaginationOptions,
 	search: string | undefined,
 	filters: ConvexFilter[],
-	status?: Product['status']
+	status?: Product['status'],
+	order: SortOrder = 'desc'
 ): Promise<ConvexPaginatedPage<Awaited<ReturnType<typeof toProductResult>>>> {
 	const categorySlug = getCategoryFilter(filters);
 	if (categorySlug) {
@@ -147,13 +132,13 @@ export async function getProductPage(
 			paginationOpts,
 			search,
 			categorySlug,
-			filters,
-			status
+			status,
+			order
 		);
 		return { ...page, items: await Promise.all(page.items.map(toProductResult)) };
 	}
 
-	// ponytail: non-indexable photo checks scan at most 500 rows per page; add an indexed hasImages field if the catalogue outgrows this.
+	// ponytail: non-indexable empty-array checks (upsells) scan at most 500 rows per page; add a denormalized boolean if this is reached regularly.
 	const boundedOptions = {
 		...paginationOpts,
 		maximumRowsRead: Math.min(paginationOpts.maximumRowsRead ?? 500, 500)
@@ -175,7 +160,7 @@ export async function getProductPage(
 					return applyProductFilters(query, filters);
 				}
 			})
-		: await getPagination(applyProductFilters(getProductQuery(ctx, filters, status), filters), {
+		: await getPagination(applyProductFilters(getProductQuery(ctx, status, order), filters), {
 				paginationOpts: boundedOptions
 			});
 

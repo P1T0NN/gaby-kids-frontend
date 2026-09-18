@@ -5,7 +5,7 @@
 	// COMPONENTS
 	import { Separator } from '@/components/ui/separator/index.js';
 	import AddToCartButton from '@/features/cart/components/add-to-cart-button.svelte';
-	import ProductVariantPicker from '@/components/pages/(unprotected)/product/product-variant-picker.svelte';
+	import ProductVariantPicker from '@/components/pages/(unprotected)/product/product-variant-picker/product-variant-picker.svelte';
 	import ProductUpsellItem from './product-upsell-item.svelte';
 
 	// UTILS

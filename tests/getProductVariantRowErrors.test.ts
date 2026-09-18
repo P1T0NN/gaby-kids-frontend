@@ -12,7 +12,7 @@ function createProductVariant(
 		id: '',
 		options: [],
 		sku: '',
-		imageKeys: [],
+		imageKeys: ['products/test-image.jpg'],
 		price: '10.00',
 		discountedPrice: '',
 		inventory: '5',
@@ -72,6 +72,12 @@ test('flags missing option values and duplicate combinations', () => {
 	expect(duplicates[1]?.combination).toBe(
 		'Two product variants cannot use the same option values.'
 	);
+});
+
+test('requires at least one image per product variant', () => {
+	overwriteGetLocale(() => 'en');
+	const errors = getProductVariantRowErrors([createProductVariant({ imageKeys: [] })]);
+	expect(errors[0]?.images).toBe('Apply at least one image to this variant.');
 });
 
 test('flags invalid stock and stock below reserved units', () => {

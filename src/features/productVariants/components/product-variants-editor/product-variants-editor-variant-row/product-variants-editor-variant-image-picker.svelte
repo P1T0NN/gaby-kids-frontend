@@ -32,12 +32,16 @@
 		);
 	}
 
-	function toggleProductVariantImage(previewId: string): void {
-		const imageKeys = productVariant.imageKeys.includes(previewId)
-			? productVariant.imageKeys.filter((imageId) => imageId !== previewId)
-			: [...productVariant.imageKeys, previewId];
-		updateProductVariantImageKeys(imageKeys);
+	function assignProductVariantImage(previewId: string): void {
+		updateProductVariantImageKeys([...productVariant.imageKeys, previewId]);
 	}
+
+	/** Library images not yet applied to this variant; applied ones live below. */
+	const unassignedProductVariantImages = $derived(
+		uploadFiles
+			.map((preview, libraryIndex) => ({ preview, libraryNumber: libraryIndex + 1 }))
+			.filter(({ preview }) => !productVariant.imageKeys.includes(preview.id))
+	);
 
 	const appliedProductVariantImages = $derived(
 		productVariant.imageKeys.flatMap((imageId) => {
@@ -102,37 +106,27 @@
 	</div>
 
 	{#if uploadFiles.length > 0}
-		<div class="flex flex-wrap gap-2">
-			{#each uploadFiles as preview, previewIndex (preview.id)}
-				{@const imageIndex = productVariant.imageKeys.indexOf(preview.id)}
-				<button
-					type="button"
-					aria-pressed={imageIndex !== -1}
-					aria-label={imageIndex === -1
-						? m['ProductVariantsFeature.ProductVariantsEditorVariantImagePicker.assignImage']({
-								number: previewIndex + 1
-							})
-						: m['ProductVariantsFeature.ProductVariantsEditorVariantImagePicker.unassignImage']({
-								number: previewIndex + 1
-							})}
-					{disabled}
-					class="relative size-16 shrink-0 overflow-hidden rounded-lg border transition-[border-color,box-shadow] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50 {imageIndex !==
-					-1
-						? 'border-primary ring-2 ring-primary/30'
-						: 'border-border hover:border-foreground/30'}"
-					onclick={() => toggleProductVariantImage(preview.id)}
-				>
-					<img src={preview.url} alt="" class="size-full object-cover" />
-					{#if imageIndex !== -1}
-						<span
-							class="absolute end-1 top-1 inline-flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground"
-						>
-							{imageIndex + 1}
-						</span>
-					{/if}
-				</button>
-			{/each}
-		</div>
+		{#if unassignedProductVariantImages.length > 0}
+			<div class="flex flex-wrap gap-2">
+				{#each unassignedProductVariantImages as { preview, libraryNumber } (preview.id)}
+					<button
+						type="button"
+						aria-label={m[
+							'ProductVariantsFeature.ProductVariantsEditorVariantImagePicker.assignImage'
+						]({ number: libraryNumber })}
+						{disabled}
+						class="relative size-16 shrink-0 overflow-hidden rounded-lg border border-border transition-[border-color,box-shadow] hover:border-foreground/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50"
+						onclick={() => assignProductVariantImage(preview.id)}
+					>
+						<img src={preview.url} alt="" class="size-full object-cover" />
+					</button>
+				{/each}
+			</div>
+		{:else}
+			<span class="text-xs text-muted-foreground">
+				{m['ProductVariantsFeature.ProductVariantsEditorVariantImagePicker.allImagesApplied']()}
+			</span>
+		{/if}
 
 		<div class="flex flex-col gap-2">
 			<span class="text-sm font-medium">

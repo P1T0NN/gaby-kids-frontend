@@ -82,6 +82,10 @@ export function getProductVariantRowErrors(
 		) {
 			rowError.combination = m['ValidationMessages.duplicateProductVariant']();
 		}
+
+		if (productVariant.imageKeys.length === 0) {
+			rowError.images = m['ValidationMessages.productVariantImageRequired']();
+		}
 	});
 
 	return rowErrors;

@@ -27,6 +27,24 @@ function createTestContext() {
 	return t;
 }
 
+const PRODUCT_IMAGE_KEY = 'products/test-image';
+
+async function insertProductImageUpload(
+	t: ReturnType<typeof createTestContext>,
+	ownerId: string
+): Promise<void> {
+	await t.run((ctx) =>
+		ctx.db.insert('storageUploads', {
+			ownerId,
+			key: PRODUCT_IMAGE_KEY,
+			expectedSize: 1,
+			expectedContentType: 'image/webp',
+			status: 'uploaded',
+			createdAt: Date.now()
+		})
+	);
+}
+
 test('reuses one category across products', async () => {
 	const t = createTestContext();
 	const admin = t.withIdentity({
@@ -57,26 +75,34 @@ test('reuses one category across products', async () => {
 	expect(searchedAdminPage.total).toBeUndefined();
 
 	for (const name of ['Blue T-Shirt', 'Red T-Shirt', 'Green T-Shirt']) {
+		await insertProductImageUpload(t, 'category-admin');
 		await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
 			name,
 			description: `${name} description.`,
 			trackInventory: true,
 			categoryId: category._id,
 			productVariantOptionNames: [],
-			productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory: 0 }]
+			productVariants: [
+				{ options: [], sku: '', imageKeys: [PRODUCT_IMAGE_KEY], priceInCents: 100, inventory: 0 }
+			],
+			uploadedFiles: [PRODUCT_IMAGE_KEY]
 		});
 	}
 	const otherCategory = await admin.mutation(
 		api.tables.categories.mutations.createCategory.createCategory,
 		{ name: 'Bags', status: 'active' }
 	);
+	await insertProductImageUpload(t, 'category-admin');
 	await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
 		name: 'Canvas Backpack',
 		description: 'A product in another category.',
 		trackInventory: true,
 		categoryId: otherCategory._id,
 		productVariantOptionNames: [],
-		productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory: 0 }]
+		productVariants: [
+			{ options: [], sku: '', imageKeys: [PRODUCT_IMAGE_KEY], priceInCents: 100, inventory: 0 }
+		],
+		uploadedFiles: [PRODUCT_IMAGE_KEY]
 	});
 
 	const options = await t.query(
@@ -126,13 +152,17 @@ test('validates category slugs, assignments, and archive behavior', async () => 
 		})
 	).rejects.toMatchObject({ data: { code: 'CATEGORY_SLUG_TAKEN' } });
 
+	await insertProductImageUpload(t, 'category-validation-admin');
 	const product = await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
 		name: 'Archive-safe product',
 		description: 'Its category assignment is retained when the category is archived.',
 		trackInventory: true,
 		categoryId: category._id,
 		productVariantOptionNames: [],
-		productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory: 0 }]
+		productVariants: [
+			{ options: [], sku: '', imageKeys: [PRODUCT_IMAGE_KEY], priceInCents: 100, inventory: 0 }
+		],
+		uploadedFiles: [PRODUCT_IMAGE_KEY]
 	});
 
 	await admin.mutation(api.tables.categories.mutations.updateCategory.updateCategory, {
@@ -242,6 +272,7 @@ test('blocks category deletion while products are assigned and preserves their r
 	const products = [];
 
 	for (const name of productNames) {
+		await insertProductImageUpload(t, 'category-linked-delete-admin');
 		products.push(
 			await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
 				name,
@@ -249,7 +280,10 @@ test('blocks category deletion while products are assigned and preserves their r
 				trackInventory: true,
 				categoryId: category._id,
 				productVariantOptionNames: [],
-				productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory: 0 }]
+				productVariants: [
+					{ options: [], sku: '', imageKeys: [PRODUCT_IMAGE_KEY], priceInCents: 100, inventory: 0 }
+				],
+				uploadedFiles: [PRODUCT_IMAGE_KEY]
 			})
 		);
 	}
