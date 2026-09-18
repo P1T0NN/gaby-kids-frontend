@@ -5,7 +5,7 @@
 
 	// COMPONENTS
 	import ShopProductsHeader from '@/components/pages/(unprotected)/shop/shop-products-header.svelte';
-	import ShopProductItem from '@/components/pages/(unprotected)/shop/shop-product-item.svelte';
+	import ShopProductItem from '@/features/products/components/product-card/product-card.svelte';
 	import ShopProductsLoading from '@/components/pages/(unprotected)/shop/loading/shop-products-loading.svelte';
 	import DataList from '@/components/ui/custom-components/data-list/data-list.svelte';
 	import EmptyData from '@/components/ui/custom-components/empty-data/empty-data.svelte';

@@ -2,6 +2,13 @@
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"example_message": "Hello world {username}",
 	"ProductsFeature": {
+		"ProductCard": {
+			"new": "New",
+			"lowStock": "Only {count} left",
+			"noImage": "Photo coming soon",
+			"addProduct": "Add {name} to cart",
+			"chooseOptions": "Choose options"
+		},
 		"ProductPrice": {
 			"discount": "{percent}% off",
 			"from": "From"
@@ -384,12 +391,7 @@
 		"noMatchesDescription": "Try a different name or clear your filters to browse all products.",
 		"noPageMatches": "No matches on this page",
 		"noPageMatchesDescription": "Continue to the next page or adjust your filters.",
-		"loadError": "Couldn't load products. Please try again.",
-		"ShopProductItem": {
-			"noImage": "Photo coming soon",
-			"addProduct": "Add {name} to cart",
-			"chooseOptions": "Choose options"
-		}
+		"loadError": "Couldn't load products. Please try again."
 	},
 	"AuthErrorPage": {
 		"accountBannedTitle": "Account banned",
@@ -408,6 +410,60 @@
 		"somethingWentWrong": "Something went wrong.",
 		"tryAgain": "Try again",
 		"goHome": "Go home"
+	},
+	"AdminDashboardPage": {
+		"pageTitle": "Dashboard | Admin",
+		"description": "Store performance and the tasks that need attention.",
+		"rangeToday": "Today",
+		"range7Days": "Last 7 days",
+		"range30Days": "Last 30 days",
+		"range90Days": "Last 90 days",
+		"customRangeTooLong": "Choose a period of 366 days or less.",
+		"AdminDashboardHeader": {
+			"title": "Dashboard",
+			"description": "Revenue, orders, and the actions your store needs next.",
+			"rangeAriaLabel": "Select reporting period",
+			"today": "Today",
+			"days7": "7d",
+			"days30": "30d",
+			"days90": "90d",
+			"custom": "Custom",
+			"todayAriaLabel": "Show today",
+			"presetAriaLabel": "Show the last {days} days",
+			"customAriaLabel": "Choose a custom period"
+		},
+		"AdminDashboardStats": {
+			"revenue": "Revenue",
+			"orders": "Orders",
+			"averageOrderValue": "Average order value",
+			"unitsSold": "Items sold",
+			"comparedToPrevious": "vs previous period"
+		},
+		"AdminDashboardRevenueChart": {
+			"title": "Revenue",
+			"seriesLabel": "Revenue",
+			"total": "Total revenue: {value}"
+		},
+		"AdminDashboardAttention": {
+			"title": "Needs attention",
+			"description": "Tasks that are waiting on you.",
+			"pendingOrders": "Orders to fulfill",
+			"pendingOrdersHint": "Paid orders that have not shipped yet.",
+			"lowStock": "Low stock",
+			"lowStockHint": "Products with 5 or fewer items available.",
+			"drafts": "Unpublished products",
+			"draftsHint": "Drafts that are not visible in the shop."
+		},
+		"AdminDashboardTopProducts": {
+			"title": "Top products",
+			"description": "Ranked by revenue · {range}",
+			"empty": "No sales in this period yet.",
+			"rankColumn": "Rank",
+			"productColumn": "Product",
+			"unitsColumn": "Sold",
+			"revenueColumn": "Revenue",
+			"shareColumn": "Share of revenue"
+		}
 	},
 	"AddProductPage": {
 		"pageTitle": "Add product | Admin",

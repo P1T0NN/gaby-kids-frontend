@@ -1,3 +1,5 @@
 export const PRODUCTS_CONFIG = {
-	HAS_PRODUCT_PAGE: true
+	HAS_PRODUCT_PAGE: true,
+	NEW_PRODUCT_WINDOW_MS: 14 * 24 * 60 * 60 * 1000,
+	LOW_STOCK_THRESHOLD: 5
 } as const;

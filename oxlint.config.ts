@@ -14,7 +14,9 @@ export default defineConfig({
 		'.pi/**',
 		'.roo/**',
 		'.windsurf/**',
-		'tools/oxlint/anti-slop/**'
+		'tools/oxlint/anti-slop/**',
+		'src/components/ui/chart/**',
+		'src/components/ui/custom-components/custom-charts/**'
 	],
 	jsPlugins: [
 		{ name: 'anti-slop', specifier: './tools/oxlint/anti-slop/index.ts' },

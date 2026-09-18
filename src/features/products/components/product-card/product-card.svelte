@@ -7,6 +7,7 @@
 	import { PRODUCTS_CONFIG } from '@/shared/features/products/config.js';
 
 	// COMPONENTS
+	import { Badge } from '@/components/ui/badge/index.js';
 	import * as Card from '@/components/ui/card/index.js';
 	import AddToCartButton from '@/features/cart/components/add-to-cart-button.svelte';
 	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
@@ -14,7 +15,9 @@
 	import Link from '@/components/ui/custom-components/link/link.svelte';
 
 	// UTILS
+	import { checkStockStatusLabel } from '@/shared/features/products/utils/checkStockStatusLabel.js';
 	import { getProductAvailability } from '@/shared/features/products/utils/getProductAvailability.js';
+	import { isNewProductLabel } from '@/shared/features/products/utils/isNewProductLabel.js';
 
 	// TYPES
 	import type { Doc } from '@convex/_generated/dataModel';
@@ -36,11 +39,13 @@
 			reservedInventory: product.productVariantSummary.reservedInventory
 		})
 	);
+	const isNew = $derived(isNewProductLabel(product._creationTime));
+	const lowStockQuantity = $derived(checkStockStatusLabel(availability));
 	const defaultProductVariantId = $derived(product.productVariantSummary.defaultProductVariantId);
 </script>
 
 {#snippet productContent()}
-	<div class="aspect-13/10 overflow-hidden bg-muted">
+	<div class="relative aspect-13/10 overflow-hidden bg-muted">
 		{#if image && failedImage !== image}
 			<img
 				src={image}
@@ -55,8 +60,20 @@
 		{:else}
 			<div class="flex h-full flex-col items-center justify-center gap-2 p-6 text-muted-foreground">
 				<span class="icon-[lucide--image] size-8" aria-hidden="true"></span>
-				<p class="text-sm">{m['ShopPage.ShopProductItem.noImage']()}</p>
+				<p class="text-sm">{m['ProductsFeature.ProductCard.noImage']()}</p>
 			</div>
+		{/if}
+
+		{#if isNew}
+			<Badge class="absolute start-2 top-2">{m['ProductsFeature.ProductCard.new']()}</Badge>
+		{/if}
+		{#if lowStockQuantity !== null}
+			<Badge
+				variant={lowStockQuantity === 1 ? 'destructive' : 'warning'}
+				class="absolute end-2 top-2"
+			>
+				{m['ProductsFeature.ProductCard.lowStock']({ count: lowStockQuantity })}
+			</Badge>
 		{/if}
 	</div>
 
@@ -93,7 +110,7 @@
 				productId={product._id}
 				name={product.name}
 				showUpsellsAfterAdd={Boolean(product.upsellProductIds?.length)}
-				aria-label={m['ShopPage.ShopProductItem.addProduct']({ name: product.name })}
+				aria-label={m['ProductsFeature.ProductCard.addProduct']({ name: product.name })}
 				{availability}
 				class="w-full"
 				size="lg"
@@ -105,7 +122,7 @@
 				class="w-full"
 				size="lg"
 			>
-				{m['ShopPage.ShopProductItem.chooseOptions']()}
+				{m['ProductsFeature.ProductCard.chooseOptions']()}
 			</ButtonLink>
 		{/if}
 	</Card.Footer>

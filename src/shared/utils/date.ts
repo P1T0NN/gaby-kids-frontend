@@ -1,3 +1,6 @@
+export const HOUR_MS = 60 * 60 * 1000;
+export const DAY_MS = 24 * HOUR_MS;
+
 const relativeTimeUnits = [
 	['year', 365 * 24 * 60 * 60 * 1000],
 	['month', 30 * 24 * 60 * 60 * 1000],
@@ -34,4 +37,12 @@ export function formatRelativeTime(timestamp: number, locale: string, now = Date
 		numeric: 'auto',
 		style: 'narrow'
 	}).format(Math.trunc(difference / milliseconds), unit);
+}
+
+export function startOfDay(date: Date): Date {
+	return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+export function endOfDay(date: Date): Date {
+	return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
 }
