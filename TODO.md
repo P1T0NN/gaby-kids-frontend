@@ -11,7 +11,7 @@ dependency analysis.
 ### Done in this audit
 
 - [x] `@iconify-json/lucide` is **required**: `@iconify/tailwind4` resolves the
-      `icon-[lucide--*]` classes (100+ usages) from it. It is never imported in JS,
+      lucide icon classes (100+ usages) from it. It is never imported in JS,
       so it now lives in `devDependencies` + `ignoreDependencies` instead. Verified
       the built CSS contains all lucide icon definitions.
 - [x] Moved 11 runtime deps from `devDependencies` to `dependencies`:

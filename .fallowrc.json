@@ -1,7 +1,7 @@
 {
 	"$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
 	"ignorePatterns": ["src/convex/**/_generated/**", "tools/oxlint/anti-slop/index.js"],
-	// Not imported in JS: @iconify/tailwind4 loads this collection to generate `icon-[lucide--*]` classes.
+	// Not imported in JS: @iconify/tailwind4 loads this collection to generate the lucide icon classes.
 	"ignoreDependencies": ["@iconify-json/lucide"],
 	"ignoreUnresolvedImports": [
 		"@convex/_generated/api",
