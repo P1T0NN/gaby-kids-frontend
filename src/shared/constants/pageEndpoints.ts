@@ -12,6 +12,7 @@ export const UNPROTECTED_PAGE_ENDPOINTS = {
 	MY_ORDERS: resolve('/my-orders'),
 	MY_ORDER: (code: string) => resolve('/(app)/(unprotected)/my-orders/[code]', { code }),
 	SHOP: resolve('/shop'),
+	CONTACT: resolve('/(app)/(unprotected)/contact'),
 	PRODUCT: (slug: string) => resolve('/(app)/(unprotected)/product/[slug]', { slug })
 };
 

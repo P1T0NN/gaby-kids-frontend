@@ -22,12 +22,20 @@
 	const session = authClient.useSession();
 
 	const navigation = [
-		{ label: m['Components.Header.navGirls'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
-		{ label: m['Components.Header.navBoys'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
-		{ label: m['Components.Header.navBaptism'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
-		{ label: m['Components.Header.navGuayaberas'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
-		{ label: m['Components.Header.navAccessories'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
-		{ label: m['Components.Header.navWholesale'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP }
+		{ label: m['Components.Header.navShop'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
+		{
+			label: m['Components.Header.navBaptism'](),
+			href: `${UNPROTECTED_PAGE_ENDPOINTS.SHOP}?category=bautizo`
+		},
+		{
+			label: m['Components.Header.navFirstCommunion'](),
+			href: `${UNPROTECTED_PAGE_ENDPOINTS.SHOP}?category=primera-comunion`
+		},
+		{
+			label: m['Components.Header.navGuayaberas'](),
+			href: `${UNPROTECTED_PAGE_ENDPOINTS.SHOP}?category=guayaberas`
+		},
+		{ label: m['Components.Header.navWholesale'](), href: UNPROTECTED_PAGE_ENDPOINTS.CONTACT }
 	];
 </script>
 
