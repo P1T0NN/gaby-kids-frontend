@@ -1,6 +1,3 @@
-// SVELTEKIT IMPORTS
-import { onMount } from 'svelte';
-
 // HOOKS
 import { useDebounce } from '@/hooks/useDebounce.svelte.js';
 import { useSearchParams } from '@/hooks/useSearchParams.svelte';
@@ -24,16 +21,16 @@ import type {
  * stay in lockstep.
  *
  * Deliberately `$effect`-free: immediate changes write at once, debounced
- * changes are scheduled by `setDebounced`, and external URL changes
- * (back/forward) are picked up via `useSearchParams.onPopState`. `onMount`
- * owns cleanup, so this must be called during component init (a `<script>`
- * block), never in `<script module>` or at module scope.
+ * changes are scheduled by `setDebounced`, and external URL changes — link
+ * clicks, `goto`, back/forward — are picked up via
+ * `useSearchParams.onUrlChange`. This must be called during component init (a
+ * `<script>` block), never in `<script module>` or at module scope.
  */
 export function useFilters(options: FiltersOptions): FiltersApi {
 	const { mode = 'state', defs, debounceMs = 1000 } = options;
 
 	const keys = defs.map((d) => d.key);
-	const { read, write, onPopState } = useSearchParams(keys);
+	const { read, write, onUrlChange } = useSearchParams(keys);
 
 	// Seed from the URL in `url` mode; all-inactive in `state` mode.
 	const initial = () => {
@@ -63,32 +60,26 @@ export function useFilters(options: FiltersOptions): FiltersApi {
 		writeUrl(nextValues);
 	}
 
-	// External URL changes (back/forward, manual edit) sync straight into state.
-	onMount(() => {
-		let unsubscribe: (() => void) | undefined;
-		if (mode === 'url') {
-			unsubscribe = onPopState(() => {
-				clearDebounce();
-				const next = { ...values };
-				let changed = false;
-				for (const def of defs) {
-					const fromUrl = read(def.key);
-					if (fromUrl !== next[def.key]) {
-						next[def.key] = fromUrl;
-						changed = true;
-					}
-				}
-				if (changed) {
-					values = next;
-					pendingValues = { ...next };
-				}
-			});
-		}
-		return () => {
-			unsubscribe?.();
+	// External URL changes (link clicks, `goto`, back/forward) sync straight
+	// into state. The hook's own writes are shallow, so they never re-fire here.
+	if (mode === 'url') {
+		onUrlChange(() => {
 			clearDebounce();
-		};
-	});
+			const next = { ...values };
+			let changed = false;
+			for (const def of defs) {
+				const fromUrl = read(def.key);
+				if (fromUrl !== next[def.key]) {
+					next[def.key] = fromUrl;
+					changed = true;
+				}
+			}
+			if (changed) {
+				values = next;
+				pendingValues = { ...next };
+			}
+		});
+	}
 
 	const active = $derived.by(() => {
 		const result: ActiveFilters = {};

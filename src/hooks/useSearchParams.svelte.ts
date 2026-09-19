@@ -1,5 +1,5 @@
 // SVELTEKIT IMPORTS
-import { pushState, replaceState } from '$app/navigation';
+import { afterNavigate, pushState, replaceState } from '$app/navigation';
 import { page } from '$app/state';
 
 /**
@@ -12,7 +12,8 @@ import { page } from '$app/state';
  * `read(key)` — read with `''` fallback (the string url-mode state wants).
  * `write(values)` updates the owned params (replace history by default; pass
  * `{ history: 'push' }` when each change should create a history entry).
- * `onPopState(cb)` — re-run `cb` on back/forward; returns the cnleanup.
+ * `onUrlChange(cb)` — run `cb` after any in-app navigation that reaches a new
+ * URL (link clicks, `goto`, back/forward). Call it during component init.
  */
 export function useSearchParams(
 	keys: string[] | (() => string[]) = [],
@@ -43,11 +44,9 @@ export function useSearchParams(
 		}
 	}
 
-	function onPopState(callback: () => void): () => void {
-		const handler = () => callback();
-		window.addEventListener('popstate', handler);
-		return () => window.removeEventListener('popstate', handler);
+	function onUrlChange(callback: () => void): void {
+		afterNavigate(() => callback());
 	}
 
-	return { get, read, write, onPopState };
+	return { get, read, write, onUrlChange };
 }

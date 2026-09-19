@@ -207,8 +207,9 @@ never hardcoded user-facing text. Map those codes in `validationsData.ts` to
 `toHumanMessage` helper. Keep translation imports out of shared schemas.
 
 - `useSearchParams` owns only declared URL keys, preserves all other query
-  parameters/path/hash, supports replace/push history, and exposes popstate
-  cleanup. Use it instead of hand-building query strings.
+  parameters/path/hash, supports replace/push history, and exposes
+  `onUrlChange` for syncing state after in-app navigations. Use it instead of
+  hand-building query strings.
 - `usePathname` normalizes trailing slashes and matches exact or nested paths.
 - `useFormChanges` snapshots initial values, exposes reactive `values`,
   `isDirty`, and `changedValues` for edit forms.

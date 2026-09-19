@@ -1,6 +1,3 @@
-// SVELTEKIT IMPORTS
-import { onMount } from 'svelte';
-
 // HOOKS
 import { useDebounce } from '@/hooks/useDebounce.svelte.js';
 import { useSearchParams } from '@/hooks/useSearchParams.svelte';
@@ -22,20 +19,20 @@ import type { SearchApi, SearchOptions } from '@/features/search/types/searchTyp
  *
  * Deliberately `$effect`-free: the debounce fires from the `value` setter (an
  * event handler), URL writes happen in the debounce callback, and external URL
- * changes (back/forward) are picked up via `useSearchParams.onPopState`.
- * The debounce hook owns timer cleanup, so this must be called during component
- * init (a `<script>` block) — never in `<script module>` or at module scope.
+ * changes — link clicks, `goto`, back/forward — are picked up via
+ * `useSearchParams.onUrlChange`. This must be called during component init (a
+ * `<script>` block) — never in `<script module>` or at module scope.
  */
 export function useSearch(options: SearchOptions = {}): SearchApi {
 	const { mode = 'state', param = 'q', minChars = SEARCH_MIN_CHARS, debounceMs = 300 } = options;
 
-	const { read, write, onPopState } = useSearchParams([param]);
+	const { read, write, onUrlChange } = useSearchParams([param]);
 
 	const initial = mode === 'url' ? read(param) : '';
 
 	// `value` is the live input; `debounced` is what actually drives the query
 	// (and, in url mode, the URL write). A pending debounce is cancelled by the
-	// next keystroke — and by the `onMount` cleanup on unmount.
+	// next keystroke — and by the `useDebounce` cleanup on unmount.
 	let value = $state(initial);
 	let debounced = $state(initial);
 	const debounce = useDebounce(debounceMs);
@@ -47,23 +44,15 @@ export function useSearch(options: SearchOptions = {}): SearchApi {
 		});
 	}
 
-	// External URL changes (back/forward, manual edit) sync straight into
-	// `value` and `debounced` — no debounce delay on navigation.
-	onMount(() => {
-		let unsubscribe: (() => void) | undefined;
-		if (mode === 'url') {
-			unsubscribe = onPopState(() => {
-				const fromUrl = read(param);
-				if (fromUrl !== value) {
-					value = fromUrl;
-					debounced = fromUrl;
-				}
-			});
-		}
-		return () => {
-			unsubscribe?.();
-		};
-	});
+	// External URL changes (link clicks, `goto`, back/forward) win over any
+	// pending debounce, so both values sync immediately.
+	if (mode === 'url') {
+		onUrlChange(() => {
+			debounce.cancel();
+			value = read(param);
+			debounced = value;
+		});
+	}
 
 	const term = $derived(debounced.trim().length >= minChars ? debounced.trim() : '');
 
