@@ -57,7 +57,7 @@
 		<button
 			type="button"
 			title={m['UploadFileFeature.UploadFilePreviewItem.setAsCover']()}
-			class="absolute top-1.5 left-1.5 inline-flex items-center gap-1 rounded-full bg-background/80 px-2 py-1 text-xs font-medium text-foreground shadow-sm backdrop-blur transition-colors hover:bg-background"
+			class="absolute top-1.5 left-1.5 inline-flex items-center gap-1 rounded-full bg-background/80 px-2 py-1 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-background"
 			onclick={() => onSetCover(index)}
 		>
 			<span class="icon-[lucide--star] size-3"></span>
@@ -68,7 +68,7 @@
 	<button
 		type="button"
 		title={m['UploadFileFeature.UploadFilePreviewItem.remove']()}
-		class="absolute top-1.5 right-1.5 flex items-center justify-center rounded-full bg-destructive/10 p-1 text-destructive shadow-sm backdrop-blur transition-colors hover:bg-destructive/20"
+		class="absolute top-1.5 right-1.5 flex items-center justify-center rounded-full bg-destructive/10 p-1 text-destructive shadow-sm transition-colors hover:bg-destructive/20"
 		onclick={() => onRemove(index)}
 	>
 		<span class="icon-[lucide--x] size-3.5"></span>
@@ -79,7 +79,7 @@
 			type="button"
 			title={m['UploadFileFeature.UploadFilePreviewItem.moveLeft']()}
 			disabled={index === 0}
-			class="absolute bottom-1.5 left-1.5 flex items-center justify-center rounded-full bg-background/80 p-1 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-background disabled:pointer-events-none disabled:opacity-40"
+			class="absolute bottom-1.5 left-1.5 flex items-center justify-center rounded-full bg-background/80 p-1 text-foreground shadow-sm transition-colors hover:bg-background disabled:pointer-events-none disabled:opacity-40"
 			onclick={() => onMove(index, -1)}
 		>
 			<span class="icon-[lucide--arrow-left] size-3.5"></span>
@@ -88,7 +88,7 @@
 			type="button"
 			title={m['UploadFileFeature.UploadFilePreviewItem.moveRight']()}
 			disabled={index === total - 1}
-			class="absolute right-1.5 bottom-1.5 flex items-center justify-center rounded-full bg-background/80 p-1 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-background disabled:pointer-events-none disabled:opacity-40"
+			class="absolute right-1.5 bottom-1.5 flex items-center justify-center rounded-full bg-background/80 p-1 text-foreground shadow-sm transition-colors hover:bg-background disabled:pointer-events-none disabled:opacity-40"
 			onclick={() => onMove(index, 1)}
 		>
 			<span class="icon-[lucide--arrow-right] size-3.5"></span>
