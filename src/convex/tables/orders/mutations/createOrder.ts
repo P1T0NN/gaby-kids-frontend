@@ -15,6 +15,7 @@ import { createOrderSchema } from '../../../../shared/features/orders/schemas/or
 import { allocateOrderCode } from '../helpers/allocateOrderCode.js';
 import { applyStripeCheckoutEvent } from '../../../stripe/helpers/applyStripeCheckoutEvent.js';
 import { insertOrderItems } from '../helpers/insertOrderItems.js';
+import { markEmailClaimPending } from '../../customerEmailClaims/helpers/markEmailClaimPending.js';
 
 // UTILS
 import { buildOrderCustomer } from '../../../../shared/features/orders/utils/buildOrderCustomer.js';
@@ -139,6 +140,7 @@ export const createOrder = internalMutation({
 			updatedAt: Date.now()
 		};
 		const orderId = await ctx.db.insert('orders', order);
+		await markEmailClaimPending(ctx, order.email);
 		await insertOrderItems(ctx, orderId, checkout.items);
 		await sendOrderCreatedEmails(ctx, { ...order, _id: orderId }, checkout.items);
 

@@ -8,6 +8,10 @@
 
 	// CONFIG
 	import { ADMIN_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
+	import {
+		DEFAULT_PRODUCT_AGE_GROUP,
+		DEFAULT_PRODUCT_GENDER
+	} from '@/shared/features/products/config.js';
 	import { saveProductSchema } from '@/shared/features/products/schemas/productsSchemas.js';
 
 	// UTILS
@@ -44,7 +48,9 @@
 	let values = $state<MutationValues<typeof api.tables.products.mutations.saveProduct.saveProduct>>(
 		{
 			active: true,
-			trackInventory: true
+			trackInventory: true,
+			ageGroup: DEFAULT_PRODUCT_AGE_GROUP,
+			gender: DEFAULT_PRODUCT_GENDER
 		}
 	);
 

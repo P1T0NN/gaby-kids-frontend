@@ -6,6 +6,7 @@ import { v } from 'convex/values';
 import { createOrderArgs } from '../../tables/orders/validators/orderValidators.js';
 
 export const createStripeCheckoutArgs = createOrderArgs.omit('receiptToken').extend({
+	customerRef: v.string(),
 	turnstileToken: v.optional(v.string())
 });
 

@@ -8,6 +8,10 @@
 
 	// CONFIG
 	import { ADMIN_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
+	import {
+		DEFAULT_PRODUCT_AGE_GROUP,
+		DEFAULT_PRODUCT_GENDER
+	} from '@/shared/features/products/config.js';
 
 	// UTILS
 	import {
@@ -87,6 +91,8 @@
 		name: initialProduct.name,
 		description: initialProduct.description,
 		trackInventory: initialProduct.trackInventory,
+		ageGroup: initialProduct.ageGroup ?? DEFAULT_PRODUCT_AGE_GROUP,
+		gender: initialProduct.gender ?? DEFAULT_PRODUCT_GENDER,
 		active: initialProduct.status === 'active'
 	}));
 

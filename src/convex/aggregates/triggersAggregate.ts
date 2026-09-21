@@ -8,6 +8,9 @@ import { productAggregate } from '../tables/products/aggregates/productAggregate
 import { productsByStatusAggregate } from '../tables/products/aggregates/productsByStatusAggregate.js';
 import { orderAggregate } from '../tables/orders/aggregates/orderAggregate.js';
 
+// HELPERS
+import { applyOrderChangeToDailySales } from '../analytics/helpers/applyOrderToDailySales.js';
+
 // TYPES
 import type { DataModel } from '../_generated/dataModel.js';
 
@@ -18,5 +21,8 @@ aggregateTriggers.register('products', productsByStatusAggregate.idempotentTrigg
 aggregateTriggers.register('products', productsByCategoryAggregate.idempotentTrigger());
 aggregateTriggers.register('categories', categoryAggregate.idempotentTrigger());
 aggregateTriggers.register('orders', orderAggregate.idempotentTrigger());
+aggregateTriggers.register('orders', async (ctx, change) => {
+	await applyOrderChangeToDailySales(ctx, change.oldDoc, change.newDoc);
+});
 
 export { aggregateTriggers };

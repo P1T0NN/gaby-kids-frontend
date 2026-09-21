@@ -1,7 +1,11 @@
 import { z } from 'zod';
 
 // CONFIG
+import { DEFAULT_PRODUCT_AGE_GROUP, DEFAULT_PRODUCT_GENDER } from '../config.js';
 import { PRODUCT_VARIANTS_CONFIG } from '../../productVariants/config.js';
+
+// ATTRIBUTES
+import { PRODUCT_AGE_GROUPS, PRODUCT_GENDERS } from '../data/productsData.js';
 
 // SCHEMAS
 import { productVariantSchema } from '../../productVariants/schemas/productVariantSchemas.js';
@@ -24,6 +28,8 @@ export const saveProductSchema = z
 			})
 			.optional(),
 		status: z.enum(['draft', 'active', 'archived']).optional(),
+		ageGroup: z.enum(PRODUCT_AGE_GROUPS).default(DEFAULT_PRODUCT_AGE_GROUP),
+		gender: z.enum(PRODUCT_GENDERS).default(DEFAULT_PRODUCT_GENDER),
 		name: z.string().trim().min(1).max(255),
 		description: z.string().trim().min(1).max(5_000),
 		trackInventory: z.boolean(),

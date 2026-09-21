@@ -21,8 +21,13 @@ import { mergeItemQuantities } from '../../orders/helpers/mergeItemQuantities.js
 import { createOrderSchema } from '../../../../shared/features/orders/schemas/ordersSchemas.js';
 
 // VALIDATORS
-import { createOrderArgs } from '../../orders/validators/orderValidators.js';
-import { checkoutReservationResult } from '../validators/checkoutReservationValidators.js';
+import {
+	checkoutReservationResult,
+	createCheckoutReservationArgs
+} from '../validators/checkoutReservationValidators.js';
+
+// UTILS
+import { isUuid } from '../../../../shared/utils/isUuid.js';
 
 // TYPES
 import type { Id } from '../../../_generated/dataModel.js';
@@ -89,12 +94,14 @@ async function buildReservationLines(
 }
 
 export const createCheckoutReservation = internalMutation({
-	args: createOrderArgs.fields,
+	args: createCheckoutReservationArgs.fields,
 	returns: checkoutReservationResult,
 	handler: async (ctx, args) => {
 		const parsed = createOrderSchema.safeParse(args);
 		if (!parsed.success) throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
 		const data = parsed.data;
+		if (!isUuid(args.customerRef))
+			throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
 
 		const quantities = mergeItemQuantities(data.items);
 		const { checkoutItems, reservedItems, inventoryUpdates } = await buildReservationLines(
@@ -117,7 +124,8 @@ export const createCheckoutReservation = internalMutation({
 		const checkout = {
 			...data,
 			items: checkoutItems,
-			customerId: identity?.subject,
+			// Guests keep their anonymous device id so the order can be claimed after signing in.
+			customerId: identity?.subject ?? args.customerRef,
 			shippingAddress: data.fulfillmentMethod === 'delivery' ? data.shippingAddress : undefined,
 			currency: COMPANY_DATA.CURRENCY,
 			totalInCents

@@ -1,8 +1,10 @@
 # Coding rules and reuse map
 
-This is the short, current map of the starter. Check here before creating a
-component, hook, query helper, or another state mechanism. The longer design
-notes are [`InfiniteScrollingSystemDesign.md`](./InfiniteScrollingSystemDesign.md) and
+Global engineering rules for this starter. Domain rules for the storefront,
+catalog, orders, checkout, dashboard, and admin data live in
+[`ProjectCodingRules.md`](./ProjectCodingRules.md); read both before changing
+code. The longer design notes are
+[`InfiniteScrollingSystemDesign.md`](./InfiniteScrollingSystemDesign.md) and
 [`RateLimitingSystemDesign.md`](./RateLimitingSystemDesign.md).
 
 ## Choose the existing layer first
@@ -24,7 +26,7 @@ mechanics are needed in a second feature.
 Name non-obvious boolean expressions before branching. Collection work,
 encoded checks such as duplicate detection, and multi-clause business rules
 belong in a descriptive `const` used by the `if`; keep direct guards when the
-condition is already self-explanatory, such as `if (!product)` or
+condition is already self-explanatory, such as `if (!item)` or
 `if (items.length === 0)`.
 
 ## Project shape and request flow
@@ -33,7 +35,7 @@ condition is already self-explanatory, such as `if (!product)` or
   The root `+layout.server.ts` supplies `authState` and `currentUser`; the
   `(protected)` and `/admin` server layouts redirect before rendering.
 - `src/features` owns a vertical capability (auth, search, filters,
-  pagination, uploads, validations, products). Put feature-specific text,
+  pagination, uploads, validations). Put feature-specific text,
   defaults, schemas, and types there.
 - `src/components/ui` is the reusable design-system layer. `custom-components`
   compose primitives; `native-components` prefer platform APIs and lazy-load a
@@ -49,7 +51,7 @@ condition is already self-explanatory, such as `if (!product)` or
 
 When creating or substantially changing a page, keep the route focused on data
 loading, page-level state, and composition. Put its presentational pieces under
-`src/components/pages/<page>` (for example, `admin/products`) using these
+`src/components/pages/<page>` (for example, `admin/users`) using these
 locations:
 
 - Loading UI always lives in
@@ -83,12 +85,11 @@ For `DataList` and `DataTable` headers:
   initialization, return state through getters, and pass changing inputs as
   getter functions. Destructuring a returned getter or a reactive prop freezes
   the value.
-- `$effect` is exceptional. It remains deliberately in
-  `useCachedConvexQuery.svelte.ts`, `useConvexPagination.svelte.ts`, the My Orders
-  page only for external synchronization without
-  a `useQuery` success callback, not derived state. Do not use effects for
+- `$effect` is exceptional. Use it only for external synchronization without a
+  `useQuery` success callback, never for derived state. Do not use effects for
   calculations, debouncing, URL writes, or state mirroring when an event handler,
-  `$derived`, `onMount`, or attachment works.
+  `$derived`, `onMount`, or attachment works. The current allowed effect
+  locations are listed in [`ProjectCodingRules.md`](./ProjectCodingRules.md).
 - Use `$state.snapshot` before passing a deeply reactive proxy to code that
   expects plain data (the form-change hook does this). Do not export a directly
   reassigned `$state` binding from a module; expose an object or functions.
@@ -178,15 +179,14 @@ imported directly.
 
 ## Feature components and hooks
 
-| Area             | Existing pieces and intended use                                                                                                                                                                                                                                                                                                                                                                                  |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Auth             | `SignInForm`, `SignUpForm`, `ForgotPasswordForm`, `VerifyEmailForm`, and `LogoutButton`; `useAuth` centralizes Better Auth calls, error codes, pending state, OTP/password/social flows, and redirects. Keep wording in components via `ERROR_MESSAGES`.                                                                                                                                                          |
-| Search           | `SearchInput` is an InputGroup with clear button and optional listbox snippet. `useSearch` owns raw value, debounce, trim, minimum two-character gate, and `state`/`url` mode. Pass only `search.term` to a query.                                                                                                                                                                                                |
-| Filters          | `ADMIN_USERS_FILTER_DEFS` defines symbolic options. `useFilters` owns state/URL mode, active values, count, clear methods, and stable `identity`.                                                                                                                                                                                                                                                                 |
-| Pagination       | `useConvexPagination` owns page/cursor sessions; `useConvexInfinitePagination` owns accumulated pages, duplicate protection, retry, and reset. `createConvexPaginationQuery` is their shared subscription builder.                                                                                                                                                                                                |
-| Uploads          | `UploadFile`, `UploadFileDropzone`, `UploadFilePreviewItem`, and `useUpload` manage previews, object-URL cleanup, multiple-file ordering, cover selection, and removal. `optimizeToWebp` is the browser compression step.                                                                                                                                                                                         |
-| Validation       | `validationsData` and `toHumanMessage` map validator text to safe UI copy.                                                                                                                                                                                                                                                                                                                                        |
-| Product variants | `ProductVariantsEditor` (with option input, variant row, add buttons) edits `ProductVariantFormValue` rows bound from the product forms; `ProductVariantDiscountCalculator` applies bulk discounts; `getProductVariantRowErrors` is the live row validation; `getProductVariantAvailability` and the shared `getProductVariantLabel`/`getProductVariantOptionKey` utilities serve the storefront picker and cart. |
+| Area       | Existing pieces and intended use                                                                                                                                                                                                                         |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth       | `SignInForm`, `SignUpForm`, `ForgotPasswordForm`, `VerifyEmailForm`, and `LogoutButton`; `useAuth` centralizes Better Auth calls, error codes, pending state, OTP/password/social flows, and redirects. Keep wording in components via `ERROR_MESSAGES`. |
+| Search     | `SearchInput` is an InputGroup with clear button and optional listbox snippet. `useSearch` owns raw value, debounce, trim, minimum two-character gate, and `state`/`url` mode. Pass only `search.term` to a query.                                       |
+| Filters    | Filter defs define symbolic options. `useFilters` owns state/URL mode, active values, count, clear methods, and stable `identity`.                                                                                                                       |
+| Pagination | `useConvexPagination` owns page/cursor sessions; `useConvexInfinitePagination` owns accumulated pages, duplicate protection, retry, and reset. `createConvexPaginationQuery` is their shared subscription builder.                                       |
+| Uploads    | `UploadFile`, `UploadFileDropzone`, `UploadFilePreviewItem`, and `useUpload` manage previews, object-URL cleanup, multiple-file ordering, cover selection, and removal. `optimizeToWebp` is the browser compression step.                                |
+| Validation | `validationsData` and `toHumanMessage` map validator text to safe UI copy.                                                                                                                                                                               |
 
 The admin page components are intentionally page-specific: user list/header
 rows, user profile/settings/sessions/logs tabs, ban/unban/role actions, and
@@ -194,11 +194,15 @@ their loading skeletons. Reuse the generic `DataList`, `DataTable`, `Card`,
 `Badge`, `NativeDialog`, `NativeSelect`, and query hooks inside new admin
 screens instead of copying those page components.
 
+Domain feature pieces (product variants, customer links, analytics dashboard)
+and their rules are listed in
+[`ProjectCodingRules.md`](./ProjectCodingRules.md).
+
 ## Shared hooks, state, and utilities
 
-Operation input schemas use the exact function name plus `Schema`, such as
-`saveProductSchema` and `updateCategorySchema`. Reusable data schemas keep
-descriptive names such as `productVariantSetSchema`.
+Operation input schemas use the exact function name plus `Schema`; reusable
+data schemas keep descriptive names. Domain schema names are listed in
+[`ProjectCodingRules.md`](./ProjectCodingRules.md).
 
 Leave built-in Zod validation messages at their defaults. Custom refinements
 must emit stable uppercase codes,
@@ -237,41 +241,7 @@ Convex query. Convex subscriptions are independent: three `useQuery` calls may
 render as each resolves unless the page deliberately combines their loading
 flags or waits on `Promise.all`.
 
-## Convex data model and function surface
-
-`src/convex/schema.ts` owns app tables:
-
-- `categories`: flat storefront taxonomy referenced by required
-  `products.categoryId`.
-- `products`: catalog name, slug, description, one category, an image library
-  (`imageKeys`/`images`; covers for listings, upsells, and OG tags use its first
-  image), status, `productVariantOptionNames`, and display caches
-  (`priceInCents` is the lowest product variant price, `hasPriceRange`, and a
-  shared `compareAtPriceInCents` when every product variant matches).
-  `saveProduct` creates or edits product details, product variants, and the
-  display caches in one transaction; new products default to draft and always
-  have at least one product variant. Publishing requires an active category.
-- `productVariants`: `productId`, `position`, structured `options`
-  (`name`/`value`), a catalog-unique `sku`, an ordered `imageKeys` assignment
-  from the product library (first = primary, rejected if it references a key
-  outside the library), `priceInCents`, `compareAtPriceInCents`, `inventory`,
-  and `reservedInventory`. Indexed by `by_product_id` and `by_sku`. Product
-  variant rows are the only price and stock source; backend code for them lives
-  under `src/convex/tables/productVariants`. The storefront gallery, cart line
-  images, and checkout snapshots use the selected variant's images with the
-  product library as fallback. One product's variants are always read with
-  async iteration through `by_product_id` (never `.collect()`), and deleting a
-  product queues bounded scheduled batches for its variants.
-- Upsells use an optional, ordered `products.upsellProductIds` array (maximum four).
-  `/admin/upsells` manages recommendations through `tables/upsells` admin queries
-  and `saveProductUpsells`; the public query returns only active recommendations
-  for active source products. Shared config and validation live in
-  `src/shared/features/upsells`. Saving updates only recommendations and logs the
-  admin action, without sending email. See `UpsellsSystemDesign.md`.
-- `storageUploads`: owner, object key, `pending`/`uploaded` status, timestamp,
-  and key/created-at indexes. It tracks uploads until a mutation claims them.
-- Better Auth owns its component tables (`user`, `session`, `account`,
-  `verification`, rate-limit/JWKS tables) under `betterAuth/component`.
+## Convex platform conventions
 
 Always use Convex's generated `Doc<'table'>` type from
 `src/convex/_generated/dataModel` for Convex documents across the client,
@@ -291,49 +261,14 @@ Use the custom builders in `convexFunctionBuilders.ts`:
 - `authenticatedUploadMutation` additionally validates caller-owned uploaded
   keys and removes claimed upload records on success.
 
-Current app-facing functions are:
-
-- `api.auth.getCurrentUser`;
-- public product listing/detail queries;
-- admin product listing/detail, product saving, and deletion restricted to drafts;
-- `api.storage.r2.generateUploadUrl`, `syncMetadata`, and `deleteObject`;
-- `api.search.queries.fetchSearchSuggestions` (public, normalized, minimum two
-  characters, max seven results);
-- admin users/profile/settings/sessions/logs queries and
-  `api.auditLogs.queries.fetchAuditLogsAdmin`.
-- Checkout opens Stripe through `api.stripe.actions.createStripeCheckout`.
-  Its internal preparation query validates active products and product variant
-  prices without writing an order or draft. Stripe stores customer metadata and
-  immutable line prices; only the verified paid webhook calls the internal
-  `completeCheckoutReservation` mutation. Session and Payment Intent indexes
-  prevent duplicate orders from webhook retries.
-  Each submission creates a fresh Stripe Session, without checkout retry tracking.
-  The receipt uses a server-generated random `receiptToken` solely as a guest access token.
-  Mounting a paid receipt saves guest access; the first return from Stripe clears
-  the current cart. No pre-payment cart snapshot is stored.
-
 For list queries, use `fetchOptimizedQuery`: it adds validated pagination,
 search, and symbolic filters, chooses the feature predicate registry, delegates
 the indexed page fetch, and reads an aggregate/counter total when configured.
 Use `fetchOptimizedSearchQuery` for bounded suggestions. Keep cursors opaque.
 
-The add and edit forms save content/category/images/product variants through
-`saveProduct`. Catalog edits use last-save-wins. Product variant prices and stock
-are stored as integer cents and units on `productVariants`; the product-level
-price fields are display caches only. Cart lines are keyed by `productVariantId`;
-`api.tables.productVariants.queries.fetchCart` resolves live product variant
-prices and availability for the cart and checkout summary. Storefront listings
-read one bounded product-variant summary per page item for availability and use
-the denormalized price cache for prices.
-
-`orders` stores customer, fulfillment, trusted totals, payment/fulfillment state,
-and guest receipt access; `orderItems` stores immutable product name, product
-variant label, SKU, price, and quantity snapshots. Never render order history
-from live catalog joins or cascade-delete orders/items with products. Stripe
-Checkout payment state comes only from verified webhook events.
-
-Counts and side effects already have homes: product and user totals use
-aggregates, and trigger-wrapped mutations keep these projections current.
+Counts and side effects already have homes: totals use aggregates, dashboard
+projections are written by triggers so list and dashboard reads never scan, and
+trigger-wrapped mutations keep these projections current.
 Audit events are scheduled through internal mutations; R2 abandoned-upload
 cleanup runs every five minutes with a bounded batch. Resend email rendering
 and OTP delivery stay server-side. Migrations use the shared
@@ -354,6 +289,9 @@ misconfiguration, and infrastructure failures. Return `typesBackendResult`
 only when failure is a normal business outcome the caller is expected to branch
 on. A returned `{ success: false }` does not roll back prior mutation writes, so
 return it only before any writes or when committing those writes is intentional.
+
+The app's tables and app-facing functions are listed in
+[`ProjectCodingRules.md`](./ProjectCodingRules.md).
 
 ### Translatable backend errors
 
@@ -389,15 +327,16 @@ unknown code, malformed payload, ordinary `Error`, or infrastructure failure.
 
 ## Routes and page patterns
 
-- `/` is the public home page.
-- `(app)/(unprotected)` contains the shop, product detail, cart checkout,
-  sign-in, sign-up, verify-email, and forgot-password screens.
-- `(app)/(protected)` is reserved for future authenticated storefront pages;
-  its server layout owns the authentication redirect.
-- `/admin` contains users, audit logs, and user detail tabs; its server layout
-  owns both authentication and admin-role redirects.
+- `(app)/(unprotected)` contains public app screens.
+- `(app)/(protected)` is reserved for authenticated screens; its server layout
+  owns the authentication redirect.
+- `/admin` is the admin area; its server layout owns both authentication and
+  admin-role redirects.
 - `/api/auth/[...all]` is the Better Auth HTTP handler. `hooks.server.ts`
   injects the Convex token and sanitizes unexpected/validation errors.
+
+The current route map is in
+[`ProjectCodingRules.md`](./ProjectCodingRules.md).
 
 Pages should compose existing loading/error/empty states, use `SvelteHead`, and
 keep each Convex query's loading/error branch local. Use SvelteKit server

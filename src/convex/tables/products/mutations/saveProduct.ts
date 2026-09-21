@@ -12,7 +12,12 @@ import { STORAGE_CONFIG } from '../../../../shared/features/storage/config.js';
 import { saveProductSchema } from '../../../../shared/features/products/schemas/productsSchemas.js';
 
 // VALIDATORS
-import { productResult, productStatus } from '../validators/productValidators.js';
+import {
+	productAgeGroup,
+	productGender,
+	productResult,
+	productStatus
+} from '../validators/productValidators.js';
 import { productVariantInput } from '../../productVariants/validators/productVariantValidators.js';
 
 // HELPERS
@@ -87,6 +92,8 @@ export const saveProduct = adminUploadMutation({
 		description: v.string(),
 		trackInventory: v.boolean(),
 		categoryId: v.id('categories'),
+		ageGroup: v.optional(productAgeGroup),
+		gender: v.optional(productGender),
 		productVariantOptionNames: v.array(v.string()),
 		productVariants: v.array(productVariantInput),
 		status: v.optional(productStatus)
@@ -144,6 +151,8 @@ export const saveProduct = adminUploadMutation({
 			compareAtPriceInCents: caches.compareAtPriceInCents,
 			hasPriceRange: caches.hasPriceRange,
 			categoryId: input.categoryId,
+			ageGroup: input.ageGroup,
+			gender: input.gender,
 			images: await resolveStoredFileUrls(imageKeys),
 			imageKeys,
 			storagePrefix: product?.storagePrefix ?? 'products',

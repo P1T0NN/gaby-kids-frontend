@@ -8,10 +8,11 @@
 
 ## Default Engineering Rules
 
-- Before planning or changing anything, always read `docs/CodingRules.md`. It
-  is the concise, project-specific map of existing components, hooks, feature
-  logic, routes, Convex APIs, and reuse patterns; reuse those patterns before
-  adding a new abstraction.
+- Before planning or changing anything, always read `docs/CodingRules.md`
+  (global engineering rules) and `docs/ProjectCodingRules.md` (this project's
+  domain map: routes, feature pieces, Convex tables and functions, and the
+  business rules that go with them); reuse those patterns before adding a new
+  abstraction.
 - Apply Ponytail principles to every task: use the smallest working solution, prefer the standard library, native platform features, and existing dependencies, and avoid speculative abstractions, boilerplate, and unnecessary files.
 - Do not simplify away input validation, security, accessibility, or error handling that prevents data loss.
 - After completing any code creation or modification, always run `bunx --bun oxlint`. The `--bun` flag is required because this project uses the TypeScript `oxlint.config.ts`; plain `bunx oxlint` can run Oxlint through the installed Node.js version and fail before linting. Fix reported issues and rerun it before handing off the work.

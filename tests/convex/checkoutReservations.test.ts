@@ -14,6 +14,8 @@ import type { Id } from '../../src/convex/_generated/dataModel';
 
 const modules = import.meta.glob('../../src/convex/**/*.ts');
 
+const CUSTOMER_REF = '00000000-0000-4000-8000-000000000001';
+
 const createCheckoutReservation =
 	internal.tables.checkoutReservations.mutations.createCheckoutReservation
 		.createCheckoutReservation;
@@ -129,6 +131,7 @@ test('reserves tracked stock and stores a trusted immutable checkout snapshot', 
 		});
 		const buyer = t.withIdentity({ subject: 'buyer', tokenIdentifier: 'issuer|buyer' });
 		const reservation = await buyer.mutation(createCheckoutReservation, {
+			customerRef: CUSTOMER_REF,
 			receiptToken: 'reservation-receipt',
 			items: [
 				{ productVariantId: tracked.productVariantId, quantity: 1 },
@@ -255,8 +258,16 @@ test('competing reservations cannot oversell tracked product variant inventory',
 		fulfillmentMethod: 'pickup' as const
 	};
 	const results = await Promise.allSettled([
-		t.mutation(createCheckoutReservation, { ...input, receiptToken: 'first' }),
-		t.mutation(createCheckoutReservation, { ...input, receiptToken: 'second' })
+		t.mutation(createCheckoutReservation, {
+			...input,
+			customerRef: CUSTOMER_REF,
+			receiptToken: 'first'
+		}),
+		t.mutation(createCheckoutReservation, {
+			...input,
+			customerRef: CUSTOMER_REF,
+			receiptToken: 'second'
+		})
 	]);
 
 	expect(results.filter((result) => result.status === 'fulfilled')).toHaveLength(1);
@@ -279,6 +290,7 @@ test('rejects a reservation when tracked product variant inventory is zero', asy
 	});
 	await expect(
 		t.mutation(createCheckoutReservation, {
+			customerRef: CUSTOMER_REF,
 			receiptToken: 'sold-out-reservation',
 			items: [{ productVariantId, quantity: 1 }],
 			firstName: 'Ada',
@@ -320,10 +332,12 @@ test('association, release, and expiration cleanup are idempotent', async () => 
 		};
 		const first = await t.mutation(createCheckoutReservation, {
 			...input,
+			customerRef: CUSTOMER_REF,
 			receiptToken: 'first'
 		});
 		const second = await t.mutation(createCheckoutReservation, {
 			...input,
+			customerRef: CUSTOMER_REF,
 			receiptToken: 'second',
 			items: [{ productVariantId, quantity: 2 }]
 		});
@@ -398,6 +412,7 @@ test('completes one paid reservation exactly once and skips untracked inventory'
 			inventory: 0
 		});
 		const reservation = await t.mutation(createCheckoutReservation, {
+			customerRef: CUSTOMER_REF,
 			receiptToken: 'paid-reservation',
 			items: [
 				{ productVariantId: tracked.productVariantId, quantity: 2 },
@@ -460,6 +475,7 @@ test('leaves an unpaid reservation active and refuses payment after release', as
 		inventory: 1
 	});
 	const reservation = await t.mutation(createCheckoutReservation, {
+		customerRef: CUSTOMER_REF,
 		receiptToken: 'out-of-order-reservation',
 		items: [{ productVariantId, quantity: 1 }],
 		firstName: 'Ada',
@@ -526,10 +542,12 @@ test('rejects a payment already consumed by a competing reservation', async () =
 	};
 	const first = await t.mutation(createCheckoutReservation, {
 		...input,
+		customerRef: CUSTOMER_REF,
 		receiptToken: 'competing-first'
 	});
 	const second = await t.mutation(createCheckoutReservation, {
 		...input,
+		customerRef: CUSTOMER_REF,
 		receiptToken: 'competing-second'
 	});
 	await t.mutation(associateStripeCheckoutSession, {
@@ -584,6 +602,7 @@ test('rolls back completion when reserved product variant inventory is inconsist
 		inventory: 1
 	});
 	const reservation = await t.mutation(createCheckoutReservation, {
+		customerRef: CUSTOMER_REF,
 		receiptToken: 'insufficient-reservation',
 		items: [{ productVariantId, quantity: 1 }],
 		firstName: 'Ada',
@@ -630,6 +649,7 @@ test('rejects payment created after an active reservation expires', async () => 
 		inventory: 1
 	});
 	const reservation = await t.mutation(createCheckoutReservation, {
+		customerRef: CUSTOMER_REF,
 		receiptToken: 'expired-payment-reservation',
 		items: [{ productVariantId, quantity: 1 }],
 		firstName: 'Ada',
@@ -665,4 +685,39 @@ test('rejects payment created after an active reservation expires', async () => 
 		expect(await ctx.db.get(reservation.reservationId)).toMatchObject({ status: 'active' });
 		expect(await ctx.db.query('orders').take(1)).toEqual([]);
 	});
+});
+
+test('guest reservations keep the local customer id, and a malformed one is rejected', async () => {
+	const t = createTestContext();
+	const { productVariantId } = await insertProductVariantFixture(t, {
+		name: 'Guest',
+		slug: 'guest',
+		priceInCents: 900,
+		trackInventory: false,
+		inventory: 0
+	});
+	const reservation = await t.mutation(createCheckoutReservation, {
+		customerRef: CUSTOMER_REF,
+		receiptToken: 'guest-receipt',
+		items: [{ productVariantId, quantity: 1 }],
+		firstName: 'Ada',
+		lastName: 'Lovelace',
+		email: 'ada@example.com',
+		phone: '123',
+		fulfillmentMethod: 'pickup'
+	});
+	expect(reservation.checkout.customerId).toBe(CUSTOMER_REF);
+
+	await expect(
+		t.mutation(createCheckoutReservation, {
+			customerRef: 'not-a-uuid',
+			receiptToken: 'bad-ref-receipt',
+			items: [{ productVariantId, quantity: 1 }],
+			firstName: 'Ada',
+			lastName: 'Lovelace',
+			email: 'ada@example.com',
+			phone: '123',
+			fulfillmentMethod: 'pickup'
+		})
+	).rejects.toMatchObject({ data: { code: 'INVALID_ORDER_DATA' } });
 });

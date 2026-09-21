@@ -9,11 +9,13 @@ export const trackUpsellEvent = mutation({
 		event: literals('dialog_viewed', 'product_added', 'dialog_dismissed', 'view_cart_clicked'),
 		sourceProductId: v.id('products'),
 		upsellProductId: v.optional(v.id('products')),
-		sessionRef: v.string()
+		sessionRef: v.string(),
+		customerRef: v.string()
 	},
 	returns: v.null(),
-	handler: async (ctx, { event, sourceProductId, upsellProductId, sessionRef }) => {
+	handler: async (ctx, { event, sourceProductId, upsellProductId, sessionRef, customerRef }) => {
 		if (sessionRef.length < 1 || sessionRef.length > 128) return null;
+		if (customerRef.length < 1 || customerRef.length > 128) return null;
 
 		const sourceProduct = await ctx.db.get('products', sourceProductId);
 		if (!sourceProduct || sourceProduct.status !== 'active') return null;
@@ -27,8 +29,11 @@ export const trackUpsellEvent = mutation({
 			return null;
 		}
 
+		const identity = await ctx.auth.getUserIdentity();
+
 		await analytics.track(ctx, `upsell:${event}`, {
-			subjectRef: sessionRef,
+			// Signed-in events always attribute to the account, never to a caller-supplied id.
+			subjectRef: identity?.subject ?? customerRef,
 			sessionRef,
 			props: {
 				sourceProductId,

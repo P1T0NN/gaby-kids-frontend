@@ -10,6 +10,7 @@
 	import ConfirmDeleteDialog from '@/components/ui/custom-components/confirm-delete-dialog/confirm-delete-dialog.svelte';
 	import DestructiveMenuItem from '@/components/ui/custom-components/destructive-menu-item/destructive-menu-item.svelte';
 	import NativePopover from '@/components/ui/native-components/native-popover/native-popover.svelte';
+	import { Badge } from '@/components/ui/badge/index.js';
 	import { TableCell } from '@/components/ui/table/index.js';
 	import Link from '@/components/ui/custom-components/link/link.svelte';
 	import ProductPrice from '@/features/products/components/product-price.svelte';
@@ -19,9 +20,29 @@
 	// CONSTANTS
 	import { ADMIN_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
 
+	// CONFIG
+	import { PRODUCTS_CONFIG } from '@/shared/features/products/config.js';
+
 	// UTILS
 	import { formatDate } from '@/shared/utils/date.js';
 	import { toastMessage } from '@/utils/toastMessage.js';
+
+	// TYPES
+	import type {
+		ProductAgeGroup,
+		ProductGender
+	} from '@/shared/features/products/types/productsTypes.js';
+
+	const AGE_GROUP_LABELS = {
+		kids: m['ProductsFeature.ProductAttributes.kids'],
+		adults: m['ProductsFeature.ProductAttributes.adults']
+	} satisfies Record<ProductAgeGroup, () => string>;
+
+	const GENDER_LABELS = {
+		unisex: m['ProductsFeature.ProductAttributes.unisex'],
+		male: m['ProductsFeature.ProductAttributes.male'],
+		female: m['ProductsFeature.ProductAttributes.female']
+	} satisfies Record<ProductGender, () => string>;
 
 	type Product = Doc<'products'> & {
 		categoryOption: { name: string };
@@ -118,7 +139,21 @@
 		</span>
 	{/if}
 </TableCell>
-<TableCell class="max-w-48 truncate">{product.categoryOption.name}</TableCell>
+<TableCell class="max-w-48">
+	<div class="flex flex-col gap-1.5">
+		<span class="truncate">{product.categoryOption.name}</span>
+		{#if PRODUCTS_CONFIG.HAS_AGE_GROUP || PRODUCTS_CONFIG.HAS_GENDER}
+			<div class="flex flex-wrap gap-1">
+				{#if PRODUCTS_CONFIG.HAS_AGE_GROUP && product.ageGroup}
+					<Badge variant="secondary">{AGE_GROUP_LABELS[product.ageGroup]()}</Badge>
+				{/if}
+				{#if PRODUCTS_CONFIG.HAS_GENDER && product.gender}
+					<Badge variant="outline">{GENDER_LABELS[product.gender]()}</Badge>
+				{/if}
+			</div>
+		{/if}
+	</div>
+</TableCell>
 <TableCell class="hidden whitespace-nowrap text-muted-foreground md:table-cell">
 	{formatDate(product._creationTime, getLocale())}
 </TableCell>

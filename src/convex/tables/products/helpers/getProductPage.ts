@@ -5,6 +5,12 @@ import { paginateSearch } from '../../../helpers/paginateSearch.js';
 // CONFIG
 import { CATEGORY_CONFIG } from '../../../../shared/features/categories/config.js';
 
+// FILTERS
+import {
+	SHOP_AGE_GROUP_FILTER_KEY,
+	SHOP_GENDER_FILTER_KEY
+} from '../../../../shared/features/filters/data/shopAttributeFilters.js';
+
 // PAGINATION
 import { normalizePageSize } from '../../../../shared/features/pagination/utils/normalizePageSize.js';
 
@@ -18,10 +24,19 @@ import type { QueryCtx } from '../../../_generated/server.js';
 import type { ConvexFilter } from '../../../../shared/features/filters/types/filterTypesConvex.js';
 import type { ConvexPaginatedPage } from '../../../../shared/features/pagination/types/paginationTypesConvex.js';
 import type { PaginationOptions } from 'convex/server';
+import type {
+	ProductAgeGroup,
+	ProductGender
+} from '../../../../shared/features/products/types/productsTypes.js';
 import type { ProductQuery } from '../../../../shared/features/products/types/productsTypes.js';
 
 type Product = Doc<'products'>;
 type SortOrder = 'asc' | 'desc';
+type ProductAttributes = {
+	status?: Product['status'];
+	ageGroup?: ProductAgeGroup;
+	gender?: ProductGender;
+};
 
 function getCategoryFilter(filters: ConvexFilter[]): string | undefined {
 	const filter = filters.find((candidate) => candidate.field === 'category');
@@ -30,12 +45,21 @@ function getCategoryFilter(filters: ConvexFilter[]): string | undefined {
 	return filter.eq as string;
 }
 
+function getAttributeFilter<T extends string>(filters: ConvexFilter[], key: string): T | undefined {
+	const filter = filters.find((candidate) => candidate.field === key);
+	if (!filter || filter.eq === undefined) return undefined;
+	// SAFETY: buildProductFilter only creates attribute predicates from the shared attribute codes.
+	return filter.eq as T;
+}
+
 function matchesProduct(
 	product: Product,
 	search: string | undefined,
-	status?: Product['status']
+	attributes: ProductAttributes
 ): boolean {
-	if (status && product.status !== status) return false;
+	if (attributes.status && product.status !== attributes.status) return false;
+	if (attributes.ageGroup && product.ageGroup !== attributes.ageGroup) return false;
+	if (attributes.gender && product.gender !== attributes.gender) return false;
 
 	if (!search) return true;
 
@@ -44,32 +68,14 @@ function matchesProduct(
 	return product.name.toLowerCase().includes(searchTerm);
 }
 
-async function getCategoryProductPage(
-	ctx: QueryCtx,
+/** Paginate an indexed products query, post-filtering the bounded scan for attributes and search. */
+async function getScannedProductPage(
+	productsQuery: ProductQuery,
 	paginationOpts: PaginationOptions,
 	search: string | undefined,
-	categorySlug: string,
-	status: Product['status'] | undefined,
-	order: SortOrder
+	attributes: ProductAttributes
 ): Promise<ConvexPaginatedPage<Product>> {
-	const category = await ctx.db
-		.query('categories')
-		.withIndex('by_slug', (query) => query.eq('slug', categorySlug))
-		.unique();
-	if (!category || category.status !== 'active') {
-		return {
-			items: [],
-			nextCursor: null,
-			hasNextPage: false,
-			pageSize: normalizePageSize(paginationOpts.numItems)
-		};
-	}
-
 	const pageSize = normalizePageSize(paginationOpts.numItems);
-	const productsQuery = ctx.db
-		.query('products')
-		.withIndex('by_category_id', (query) => query.eq('categoryId', category._id))
-		.order(order);
 	const items: Product[] = [];
 	let cursor = paginationOpts.cursor ?? null;
 	let isDone = false;
@@ -87,7 +93,7 @@ async function getCategoryProductPage(
 		cursor = result.continueCursor;
 
 		for (const product of result.page) {
-			if (matchesProduct(product, search, status)) items.push(product);
+			if (matchesProduct(product, search, attributes)) items.push(product);
 			if (items.length === pageSize) break;
 		}
 	}
@@ -126,15 +132,50 @@ export async function getProductPage(
 	order: SortOrder = 'desc'
 ): Promise<ConvexPaginatedPage<Awaited<ReturnType<typeof toProductResult>>>> {
 	const categorySlug = getCategoryFilter(filters);
+	const attributes: ProductAttributes = {
+		status,
+		ageGroup: getAttributeFilter<ProductAgeGroup>(filters, SHOP_AGE_GROUP_FILTER_KEY),
+		gender: getAttributeFilter<ProductGender>(filters, SHOP_GENDER_FILTER_KEY)
+	};
+	const emptyPage: ConvexPaginatedPage<Product> = {
+		items: [],
+		nextCursor: null,
+		hasNextPage: false,
+		pageSize: normalizePageSize(paginationOpts.numItems)
+	};
+
 	if (categorySlug) {
-		const page = await getCategoryProductPage(
-			ctx,
-			paginationOpts,
-			search,
-			categorySlug,
-			status,
-			order
-		);
+		const category = await ctx.db
+			.query('categories')
+			.withIndex('by_slug', (query) => query.eq('slug', categorySlug))
+			.unique();
+		if (!category || category.status !== 'active') {
+			return emptyPage;
+		}
+
+		const productsQuery = ctx.db
+			.query('products')
+			.withIndex('by_category_id', (query) => query.eq('categoryId', category._id))
+			.order(order);
+		const page = await getScannedProductPage(productsQuery, paginationOpts, search, attributes);
+		return { ...page, items: await Promise.all(page.items.map(toProductResult)) };
+	}
+
+	if (attributes.ageGroup) {
+		const productsQuery = ctx.db
+			.query('products')
+			.withIndex('by_age_group', (query) => query.eq('ageGroup', attributes.ageGroup))
+			.order(order);
+		const page = await getScannedProductPage(productsQuery, paginationOpts, search, attributes);
+		return { ...page, items: await Promise.all(page.items.map(toProductResult)) };
+	}
+
+	if (attributes.gender) {
+		const productsQuery = ctx.db
+			.query('products')
+			.withIndex('by_gender', (query) => query.eq('gender', attributes.gender))
+			.order(order);
+		const page = await getScannedProductPage(productsQuery, paginationOpts, search, attributes);
 		return { ...page, items: await Promise.all(page.items.map(toProductResult)) };
 	}
 

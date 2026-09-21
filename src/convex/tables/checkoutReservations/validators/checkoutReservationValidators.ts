@@ -4,8 +4,13 @@ import { v } from 'convex/values';
 
 // VALIDATORS
 import { checkoutSnapshot, paidOrderArgs } from '../../../stripe/validators/stripeValidators.js';
+import { createOrderArgs } from '../../orders/validators/orderValidators.js';
 
 export const checkoutReservationStatus = literals('active', 'completed', 'released');
+
+export const createCheckoutReservationArgs = createOrderArgs.extend({
+	customerRef: v.string()
+});
 
 export const reservedCheckoutItem = v.object({
 	productId: v.id('products'),

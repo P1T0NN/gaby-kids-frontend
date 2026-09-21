@@ -25,6 +25,8 @@ export const COMPANY_DATA = {
 	DOMAIN: 'companyname.com',
 	/** Currency code used by storefront price formatting. Replace for the project. */
 	CURRENCY: 'EUR',
+	/** IANA store timezone: every dashboard day boundary and bucket is computed in this zone. */
+	TIMEZONE: 'UTC',
 	LOGO: '/logo/opt/logo-1536w.webp',
 	DESCRIPTION: 'Description',
 	WHATSAPP_NUMBER,

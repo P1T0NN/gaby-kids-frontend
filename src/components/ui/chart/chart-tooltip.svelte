@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getChartContext, Tooltip as TooltipPrimitive } from "layerchart";
 	import { cn, type WithElementRef, type WithoutChildren } from "@/utils/utils.js";
-	import { getPayloadConfigFromPayload, useChart, type TooltipPayload } from "./chart-utils.js";
+	import { getPayloadConfigFromPayload, useChart, type TooltipData, type TooltipPayload } from "./chart-utils.js";
 	import type { Snippet } from "svelte";
 	import type { HTMLAttributes } from "svelte/elements";
 
@@ -56,6 +56,9 @@
 		chartCtx.tooltip.series.filter((s: TooltipPayload) => s.value !== undefined)
 	);
 
+	// SAFETY: layerchart exposes the hovered datum as a runtime record; values are read defensively.
+	const payloadData = $derived(chartCtx.tooltip.data as TooltipData | null);
+
 	const formattedLabel = $derived.by(() => {
 		if (hideLabel || !visibleSeries?.length) return null;
 
@@ -66,16 +69,11 @@
 		const dataLabel = tooltipData != null ? chartCtx.x(tooltipData) : undefined;
 
 		const key = labelKey ?? item?.label ?? item?.key ?? "value";
-		const itemConfig = getPayloadConfigFromPayload(
-			chart.config,
-			item,
-			key,
-			tooltipData as Record<string, unknown> | null
-		);
+		const itemConfig = getPayloadConfigFromPayload(chart.config, item, key, payloadData);
 
 		let value: unknown;
-		if (!labelKey && typeof label === "string") {
-			value = chart.config[label as keyof typeof chart.config]?.label ?? label;
+		if (!labelKey && label !== undefined) {
+			value = chart.config[label]?.label ?? label;
 		} else if (labelKey) {
 			value = itemConfig?.label ?? dataLabel;
 		} else {
@@ -121,7 +119,7 @@
 					chart.config,
 					item,
 					key,
-					chartCtx.tooltip.data
+					payloadData
 				)}
 				{@const indicatorColor = color || item.config?.color || item.color}
 				<div

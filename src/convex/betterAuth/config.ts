@@ -98,7 +98,7 @@ export const authComponent = createClient<DataModel, typeof authSchema>(componen
 				await ctx.scheduler.runAfter(
 					0,
 					internal.betterAuth.cleanupDeletedUserData.cleanupDeletedUserData,
-					{ ownerId }
+					{ ownerId, email: doc.email }
 				);
 			}
 		}

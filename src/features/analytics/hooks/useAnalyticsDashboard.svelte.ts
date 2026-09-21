@@ -1,129 +1,229 @@
+// SVELTEKIT IMPORTS
+import { onMount, untrack } from 'svelte';
+
 // LIBRARIES
-import { getLocalTimeZone, today } from '@internationalized/date';
-import { toast } from 'svelte-sonner';
-import { m } from '@/lib/paraglide/messages';
+import { api } from '@convex/_generated/api';
+import type { ConvexClient } from 'convex/browser';
+import type { DateValue } from '@internationalized/date';
+
+// HOOKS
+import { useSearchParams } from '@/hooks/useSearchParams.svelte.js';
 
 // CONFIG
-import { ANALYTICS_CONFIG } from '@/shared/features/analytics/config.js';
-import { ADMIN_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
+import { COMPANY_DATA } from '@/shared/config.js';
+import { DEFAULT_TIME_RANGE, MAX_RANGE_DAYS } from '@/shared/features/analytics/config.js';
+import {
+	createAnalyticsDashboardContext,
+	useAnalyticsDashboardContext
+} from '@/shared/features/analytics/contexts/useAnalyticsDashboardContext.js';
 
 // UTILS
-import { buildEmptyMetrics } from '@/shared/features/analytics/utils/buildEmptyMetrics.js';
-import { getDashboardBounds } from '@/shared/features/analytics/utils/getDashboardBounds.js';
-import { getDashboardCustomRangeDays } from '@/shared/features/analytics/utils/getDashboardCustomRangeDays.js';
-import { getDashboardPreviousBounds } from '@/shared/features/analytics/utils/getDashboardPreviousBounds.js';
-import { getDashboardRangeValue } from '@/shared/features/analytics/utils/getDashboardRangeValue.js';
-import { sumDashboardMetrics } from '@/shared/features/analytics/utils/sumDashboardMetrics.js';
+import { getPreviousRangeBounds } from '@/shared/features/analytics/utils/getPreviousRangeBounds.js';
+import {
+	DAY_MS,
+	daysInRange,
+	getStoreDayStart,
+	parseIsoDate,
+	toIsoDate
+} from '@/shared/utils/date.js';
 
 // TYPES
+import type {
+	DashboardComparison,
+	PresetTimeRange,
+	RangeBounds,
+	RevenuePoint,
+	TimeRange
+} from '@/shared/features/analytics/types/analyticsTypes.js';
 import type { DateRange } from 'bits-ui';
-import type { DashboardDateRange } from '@/shared/features/analytics/types/analyticsTypes.js';
-import type { DashboardAttentionItem, DashboardTopProduct } from '../types/analyticsTypes.js';
 
-export function useAnalyticsDashboard() {
-	const timeZone = getLocalTimeZone();
+export const PRESET_TIME_RANGES: PresetTimeRange[] = ['today', '7d', '30d', '90d'];
 
-	let groupValue = $state('30d');
-	let customRange = $state<DateRange | undefined>(undefined);
+type FetchOutcome<T> = { ok: true; value: T } | { ok: false; error: Error };
 
-	const customDateRange = $derived(toDashboardDateRange(customRange));
-	const timeRange = $derived(getDashboardRangeValue(groupValue, customDateRange));
-	const bounds = $derived(getDashboardBounds(timeRange, customDateRange));
-	const metrics = $derived(buildEmptyMetrics(timeRange, bounds));
-	const totals = $derived(sumDashboardMetrics(metrics));
-	const previousTotals = $derived(
-		sumDashboardMetrics(buildEmptyMetrics(timeRange, getDashboardPreviousBounds(bounds)))
+async function toOutcome<T>(promise: Promise<T>): Promise<FetchOutcome<T>> {
+	try {
+		return { ok: true, value: await promise };
+	} catch (cause) {
+		return { ok: false, error: cause instanceof Error ? cause : new Error(String(cause)) };
+	}
+}
+
+function isPreset(value: string | null): value is PresetTimeRange {
+	return PRESET_TIME_RANGES.some((preset) => preset === value);
+}
+
+function readCustomRange(get: (key: string) => string | null): DateRange | undefined {
+	const start = parseIsoDate(get('from'));
+	const end = parseIsoDate(get('to'));
+	if (!start || !end || start.compare(end) > 0) return undefined;
+	return daysInRange(start, end) <= MAX_RANGE_DAYS ? { start, end } : undefined;
+}
+
+function readActiveRange(
+	get: (key: string) => string | null,
+	customRange: DateRange | undefined
+): TimeRange {
+	const raw = get('timerange');
+	if (raw === 'custom') return customRange ? 'custom' : DEFAULT_TIME_RANGE;
+	return isPreset(raw) ? raw : DEFAULT_TIME_RANGE;
+}
+
+// The dashboard's day boundaries are the store's, never the viewer's browser zone.
+const TIME_ZONE = COMPANY_DATA.TIMEZONE;
+
+function customRangeBounds(range: DateRange): RangeBounds | undefined {
+	if (!range.start || !range.end) return undefined;
+
+	const from = getStoreDayStart(range.start.toDate(TIME_ZONE).getTime(), TIME_ZONE);
+	const dayAfterEnd = getStoreDayStart(range.end.toDate(TIME_ZONE).getTime() + DAY_MS, TIME_ZONE);
+	return { from: new Date(from), to: new Date(dayAfterEnd - 1) };
+}
+
+function presetRangeBounds(activeRange: PresetTimeRange): RangeBounds {
+	const now = Date.now();
+	const offset = activeRange === 'today' ? 0 : Number.parseInt(activeRange) - 1;
+	const todayStart = getStoreDayStart(now, TIME_ZONE);
+
+	return {
+		from: new Date(getStoreDayStart(todayStart - offset * DAY_MS, TIME_ZONE)),
+		to: new Date(now)
+	};
+}
+
+export class AnalyticsDashboardState {
+	#client: ConvexClient;
+	#searchParams = useSearchParams(['timerange', 'from', 'to']);
+	#requestId = 0;
+
+	customRange = $state<DateRange | undefined>(
+		untrack(() => readCustomRange(this.#searchParams.get))
 	);
-	const granularity: 'day' | 'hour' = $derived(timeRange === 'today' ? 'hour' : 'day');
+	activeRange = $state<TimeRange>(
+		untrack(() => readActiveRange(this.#searchParams.get, this.customRange))
+	);
+	selectedPreset = $state<string>(
+		untrack(() => (isPreset(this.activeRange) ? this.activeRange : ''))
+	);
 
-	const topProducts: DashboardTopProduct[] = [];
+	statsData = $state<DashboardComparison>();
+	statsError = $state<Error>();
+	statsLoading = $state(true);
+	revenueData = $state<RevenuePoint[]>();
+	revenueError = $state<Error>();
+	revenueLoading = $state(true);
 
-	const attentionItems: DashboardAttentionItem[] = $derived([
-		{
-			key: 'pendingOrders',
-			label: m['AdminDashboardPage.AdminDashboardAttention.pendingOrders'](),
-			hint: m['AdminDashboardPage.AdminDashboardAttention.pendingOrdersHint'](),
-			count: 0,
-			href: ADMIN_PAGE_ENDPOINTS.ORDERS,
-			iconClass: 'icon-[lucide--shopping-bag] size-4',
-			variant: 'default'
-		},
-		{
-			key: 'lowStock',
-			label: m['AdminDashboardPage.AdminDashboardAttention.lowStock'](),
-			hint: m['AdminDashboardPage.AdminDashboardAttention.lowStockHint'](),
-			count: 0,
-			href: ADMIN_PAGE_ENDPOINTS.PRODUCTS,
-			iconClass: 'icon-[lucide--triangle-alert] size-4',
-			variant: 'warning'
-		},
-		{
-			key: 'drafts',
-			label: m['AdminDashboardPage.AdminDashboardAttention.drafts'](),
-			hint: m['AdminDashboardPage.AdminDashboardAttention.draftsHint'](),
-			count: 0,
-			href: ADMIN_PAGE_ENDPOINTS.PRODUCTS,
-			iconClass: 'icon-[lucide--eye-off] size-4',
-			variant: 'outline'
-		}
-	]);
-
-	function toDashboardDateRange(range: DateRange | undefined): DashboardDateRange | undefined {
-		if (!range?.start || !range.end) return undefined;
-
-		return { start: range.start.toDate(timeZone), end: range.end.toDate(timeZone) };
+	constructor(client: ConvexClient) {
+		this.#client = client;
 	}
 
-	function applyCustomRange(range: DateRange | undefined): boolean {
-		const dateRange = toDashboardDateRange(range);
-		if (!dateRange) return false;
+	bounds = $derived.by<RangeBounds>(() => {
+		const custom = this.activeRange === 'custom' ? this.customRange : undefined;
+		if (custom) {
+			const bounds = customRangeBounds(custom);
+			if (bounds) return bounds;
+		}
 
-		if (getDashboardCustomRangeDays(dateRange) > ANALYTICS_CONFIG.maxCustomRangeDays) {
-			toast.error(m['AdminDashboardPage.customRangeTooLong']());
+		return presetRangeBounds(isPreset(this.activeRange) ? this.activeRange : DEFAULT_TIME_RANGE);
+	});
+
+	previousBounds = $derived.by<RangeBounds>(() => getPreviousRangeBounds(this.bounds, TIME_ZONE));
+
+	/**
+	 * One-shot read of both dashboard queries for the current range. Keeps the previous data on
+	 * screen while a new range loads, and ignores out-of-order responses from rapid range changes.
+	 */
+	load = async (): Promise<void> => {
+		const requestId = ++this.#requestId;
+		const current = { from: this.bounds.from.getTime(), to: this.bounds.to.getTime() };
+		const previous = {
+			from: this.previousBounds.from.getTime(),
+			to: this.previousBounds.to.getTime()
+		};
+
+		this.statsLoading = true;
+		this.statsError = undefined;
+		this.revenueLoading = true;
+		this.revenueError = undefined;
+
+		const [stats, revenue] = await Promise.all([
+			toOutcome(
+				this.#client.query(api.analytics.queries.fetchDashboard.fetchDashboard, {
+					current,
+					previous
+				})
+			),
+			toOutcome(
+				this.#client.query(api.analytics.queries.fetchRevenueSeries.fetchRevenueSeries, current)
+			)
+		]);
+
+		if (requestId !== this.#requestId) return;
+
+		if (stats.ok) this.statsData = stats.value;
+		else this.statsError = stats.error;
+		this.statsLoading = false;
+
+		if (revenue.ok) this.revenueData = revenue.value;
+		else this.revenueError = revenue.error;
+		this.revenueLoading = false;
+	};
+
+	refresh = (): void => {
+		void this.load();
+	};
+
+	selectPreset = (value: PresetTimeRange): void => {
+		this.customRange = undefined;
+		this.activeRange = value;
+		this.selectedPreset = value;
+		this.#searchParams.write({ timerange: value, from: '', to: '' });
+		void this.load();
+	};
+
+	handlePresetChange = (next: string): void => {
+		if (isPreset(next)) {
+			this.selectPreset(next);
+			return;
+		}
+
+		this.selectedPreset = isPreset(this.activeRange) ? this.activeRange : '';
+	};
+
+	applyCustomRange = (range: { start: DateValue; end: DateValue }): boolean => {
+		if (daysInRange(range.start, range.end) > MAX_RANGE_DAYS) {
+			this.selectPreset('today');
 			return false;
 		}
 
-		customRange = range;
-		groupValue = 'custom';
+		this.customRange = { start: range.start, end: range.end };
+		this.activeRange = 'custom';
+		this.selectedPreset = '';
+		this.#searchParams.write({
+			timerange: 'custom',
+			from: toIsoDate(range.start),
+			to: toIsoDate(range.end)
+		});
+		void this.load();
 		return true;
-	}
-
-	return {
-		get groupValue() {
-			return groupValue;
-		},
-		set groupValue(value: string) {
-			groupValue = value;
-		},
-		get customRange() {
-			return customRange;
-		},
-		set customRange(value: DateRange | undefined) {
-			customRange = value;
-		},
-		get metrics() {
-			return metrics;
-		},
-		get timeRange() {
-			return timeRange;
-		},
-		get totals() {
-			return totals;
-		},
-		get previousTotals() {
-			return previousTotals;
-		},
-		get granularity() {
-			return granularity;
-		},
-		get topProducts() {
-			return topProducts;
-		},
-		get attentionItems() {
-			return attentionItems;
-		},
-		minDate: today(timeZone).subtract({ days: ANALYTICS_CONFIG.historyDays - 1 }),
-		maxDate: today(timeZone),
-		applyCustomRange
 	};
+}
+
+/**
+ * Creates the analytics dashboard state, shares it through context, and loads the first snapshot
+ * when the owning page mounts. Descendants read it with `useAnalyticsDashboard()`.
+ */
+export function createAnalyticsDashboard(client: ConvexClient): AnalyticsDashboardState {
+	const dashboard = createAnalyticsDashboardContext(new AnalyticsDashboardState(client));
+
+	onMount(() => {
+		void dashboard.load();
+	});
+
+	return dashboard;
+}
+
+/** Reads the analytics dashboard state shared by `createAnalyticsDashboard()`. */
+export function useAnalyticsDashboard(): AnalyticsDashboardState {
+	return useAnalyticsDashboardContext<AnalyticsDashboardState>();
 }

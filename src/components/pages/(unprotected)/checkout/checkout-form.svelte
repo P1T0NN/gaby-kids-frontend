@@ -5,6 +5,7 @@
 	// LIBRARIES
 	import { api } from '@convex/_generated/api';
 	import { m } from '@/lib/paraglide/messages';
+	import { z } from 'zod';
 
 	// CONFIG
 	import { STRIPE_CHECKOUT_CAPTCHA_ACTION } from '@/shared/features/captcha/config.js';
@@ -15,6 +16,7 @@
 	import * as RadioGroup from '@/components/ui/radio-group/index.js';
 
 	// HOOKS
+	import { getCustomerIdLocal } from '@/features/analytics/hooks/useCustomerId.svelte.js';
 	import { useCart } from '@/features/cart/hooks/useCart.svelte.js';
 
 	// UTILS
@@ -49,6 +51,9 @@
 	const authenticated = $derived(page.data.authState.isAuthenticated);
 	const cart = useCart();
 
+	// The Form validates the prepared args, so the customer ref the form adds must be in the schema.
+	const checkoutFormSchema = checkoutSchema.safeExtend({ customerRef: z.string().min(1) });
+
 	const fulfillment = $derived(values.fulfillmentMethod === 'pickup' ? 'pickup' : 'delivery');
 
 	function prepareCheckoutArgs({ values }: UploadPrepareContext<CreateStripeCheckoutAction>) {
@@ -56,6 +61,7 @@
 			values.fulfillmentMethod === 'pickup' ? 'pickup' : 'delivery';
 
 		return {
+			customerRef: getCustomerIdLocal(),
 			// SAFETY: Convex validates every submitted cart ID with v.id('productVariants').
 			items: cart.items.map((item) => ({
 				productVariantId: item.productVariantId as Id<'productVariants'>,
@@ -129,7 +135,7 @@
 	functionType="action"
 	captchaAction={authenticated ? undefined : STRIPE_CHECKOUT_CAPTCHA_ACTION}
 	fields={createCheckoutFields(fulfillmentField, fulfillment)}
-	schema={checkoutSchema}
+	schema={checkoutFormSchema}
 	prepareArgs={prepareCheckoutArgs}
 	bind:values
 	bind:submitting

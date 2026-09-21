@@ -207,6 +207,126 @@ test('shop sorts products newest or oldest without exposing unpublished products
 	}
 });
 
+test('filters storefront products by age group and gender, alone and with a category', async () => {
+	const t = createTestContext();
+	const categoryId = await t.run((ctx) =>
+		ctx.db.insert('categories', { name: 'Kids shoes', slug: 'kids-shoes', status: 'active' })
+	);
+	const otherCategoryId = await t.run((ctx) =>
+		ctx.db.insert('categories', { name: 'Accessories', slug: 'accessories', status: 'active' })
+	);
+
+	async function insertProduct(
+		name: string,
+		attributes: { ageGroup?: 'kids' | 'adults'; gender?: 'unisex' | 'male' | 'female' },
+		category: Id<'categories'>
+	): Promise<void> {
+		await t.run(async (ctx) => {
+			const product = {
+				name,
+				slug: name.toLowerCase().replaceAll(' ', '-'),
+				description: name,
+				priceInCents: 100,
+				categoryId: category,
+				images: [],
+				imageKeys: [],
+				storagePrefix: 'products',
+				trackInventory: true,
+				productVariantOptionNames: [],
+				hasPriceRange: false,
+				upsellProductIds: [],
+				status: 'active' as const
+			};
+			if (attributes.ageGroup !== undefined) {
+				Object.assign(product, { ageGroup: attributes.ageGroup });
+			}
+			if (attributes.gender !== undefined) Object.assign(product, { gender: attributes.gender });
+			await ctx.db.insert('products', product);
+		});
+	}
+
+	await insertProduct('Girls runner', { ageGroup: 'kids', gender: 'female' }, categoryId);
+	await insertProduct('Boys runner', { ageGroup: 'kids', gender: 'male' }, categoryId);
+	await insertProduct('Adults runner', { ageGroup: 'adults', gender: 'unisex' }, categoryId);
+	await insertProduct('Unisex hat', { ageGroup: 'adults', gender: 'unisex' }, otherCategoryId);
+	await insertProduct('Legacy sandal', {}, categoryId);
+
+	const query = api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic;
+	const kids = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { ageGroup: 'kids' }
+	});
+	expect(kids.items.map((product) => product.name).sort()).toEqual(['Boys runner', 'Girls runner']);
+
+	const female = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { gender: 'female' }
+	});
+	expect(female.items.map((product) => product.name)).toEqual(['Girls runner']);
+
+	const kidsFemale = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { ageGroup: 'kids', gender: 'female' }
+	});
+	expect(kidsFemale.items.map((product) => product.name)).toEqual(['Girls runner']);
+
+	const categoryOnly = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { category: 'kids-shoes' }
+	});
+	expect(categoryOnly.items.map((product) => product.name).sort()).toEqual([
+		'Adults runner',
+		'Boys runner',
+		'Girls runner',
+		'Legacy sandal'
+	]);
+
+	const categoryAndAgeGroup = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { category: 'kids-shoes', ageGroup: 'kids' }
+	});
+	expect(categoryAndAgeGroup.items.map((product) => product.name).sort()).toEqual([
+		'Boys runner',
+		'Girls runner'
+	]);
+
+	const unisex = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { gender: 'unisex' }
+	});
+	expect(unisex.items.map((product) => product.name).sort()).toEqual([
+		'Adults runner',
+		'Unisex hat'
+	]);
+});
+
+test('saving a product without attributes defaults to adults and unisex', async () => {
+	const t = createTestContext();
+	const admin = t.withIdentity({
+		tokenIdentifier: 'attributes-admin',
+		subject: 'attributes-admin',
+		role: 'admin'
+	});
+	const category = await admin.mutation(
+		api.tables.categories.mutations.createCategory.createCategory,
+		{ name: 'Default attributes', status: 'active' }
+	);
+	await insertProductImageUpload(t, 'attributes-admin');
+
+	const created = await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
+		name: 'Defaults to adults unisex',
+		description: 'No attributes sent.',
+		trackInventory: true,
+		categoryId: category._id,
+		productVariantOptionNames: [],
+		productVariants: [defaultProductVariant(200, 1)],
+		uploadedFiles: [PRODUCT_IMAGE_KEY]
+	});
+
+	expect(created.ageGroup).toBe('adults');
+	expect(created.gender).toBe('unisex');
+});
+
 function createTestContext() {
 	const t = convexTest(schema, modules);
 	aggregateTest.register(t, 'productsAggregate');

@@ -2,7 +2,11 @@ import { literals } from 'convex-helpers/validators';
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
-import { productStatus } from './tables/products/validators/productValidators.js';
+import {
+	productAgeGroup,
+	productGender,
+	productStatus
+} from './tables/products/validators/productValidators.js';
 import { productVariantOption } from './tables/productVariants/validators/productVariantValidators.js';
 import {
 	checkoutReservationStatus,
@@ -28,6 +32,8 @@ export const tables = {
 		compareAtPriceInCents: v.optional(v.number()),
 		hasPriceRange: v.boolean(),
 		categoryId: v.id('categories'),
+		ageGroup: v.optional(productAgeGroup),
+		gender: v.optional(productGender),
 		images: v.array(v.string()),
 		imageKeys: v.array(v.string()),
 		storagePrefix: v.string(),
@@ -38,6 +44,8 @@ export const tables = {
 		.searchIndex('search_name', { searchField: 'name', filterFields: ['status'] })
 		.index('by_slug', ['slug'])
 		.index('by_category_id', ['categoryId'])
+		.index('by_age_group', ['ageGroup'])
+		.index('by_gender', ['gender'])
 		.index('by_status', ['status']),
 	productVariants: defineTable({
 		productId: v.id('products'),
@@ -102,6 +110,7 @@ export const tables = {
 		.index('by_stripeCheckoutSessionId', ['stripeCheckoutSessionId'])
 		.index('by_stripePaymentIntentId', ['stripePaymentIntentId'])
 		.index('by_customer_id', ['customerId'])
+		.index('by_email', ['email'])
 		.index('by_payment_status', ['paymentStatus'])
 		.index('by_fulfillment_status', ['fulfillmentStatus'])
 		.index('by_fulfillment_method', ['fulfillmentMethod'])
@@ -128,6 +137,34 @@ export const tables = {
 	})
 		.index('by_order_id', ['orderId'])
 		.index('by_product_id', ['productId']),
+	dailySales: defineTable({
+		/** UTC day start the orders were created in. */
+		day: v.number(),
+		shard: v.number(),
+		orders: v.number(),
+		paidOrders: v.number(),
+		pendingOrders: v.number(),
+		refundedOrders: v.number(),
+		cancelledOrders: v.number(),
+		revenue: v.number()
+	}).index('by_day_shard', ['day', 'shard']),
+	customerLinks: defineTable({
+		/** Anonymous device id from `analytics:customerId`. */
+		localCustomerId: v.string(),
+		/** Better Auth user id (also `identity.subject`) this local id is bound to. */
+		customerId: v.string(),
+		linkedAt: v.number()
+	})
+		.index('by_local_customer_id', ['localCustomerId'])
+		.index('by_customer_id', ['customerId']),
+	customerEmailClaims: defineTable({
+		/** Lowercased checkout email the marker belongs to. */
+		email: v.string(),
+		/** Bumped whenever an order write may need an email claim. */
+		pendingRevision: v.number(),
+		/** The pending revision the last completed scan covered. */
+		scannedRevision: v.number()
+	}).index('by_email', ['email']),
 	storageUploads: defineTable({
 		ownerId: v.string(),
 		key: v.string(),

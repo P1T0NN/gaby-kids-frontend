@@ -232,6 +232,7 @@ test('verified webhook creates an order only after payment and queues emails onc
 			} as Stripe.Response<Stripe.Checkout.Session>;
 		});
 	const input = {
+		customerRef: '00000000-0000-4000-8000-000000000002',
 		items: checkout.items.map(({ productVariantId, quantity }) => ({
 			productVariantId,
 			quantity

@@ -225,19 +225,22 @@ test('storefront upsell events track only valid product relationships', async ()
 	});
 	const track = api.tables.upsells.mutations.trackUpsellEvent.trackUpsellEvent;
 	const sessionRef = 'test-upsell-session';
+	const customerRef = '00000000-0000-4000-8000-000000000003';
 
-	await t.mutation(track, { event: 'dialog_viewed', sourceProductId, sessionRef });
+	await t.mutation(track, { event: 'dialog_viewed', sourceProductId, sessionRef, customerRef });
 	await t.mutation(track, {
 		event: 'product_added',
 		sourceProductId,
 		upsellProductId,
-		sessionRef
+		sessionRef,
+		customerRef
 	});
 	await t.mutation(track, {
 		event: 'product_added',
 		sourceProductId,
 		upsellProductId: unrelatedProductId,
-		sessionRef
+		sessionRef,
+		customerRef
 	});
 
 	expect(

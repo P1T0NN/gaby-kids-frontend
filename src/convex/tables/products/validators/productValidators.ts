@@ -5,11 +5,19 @@ import { v } from 'convex/values';
 // CATEGORIES
 import { categoryOption } from '../../categories/validators/categoryValidators.js';
 
+// ATTRIBUTES
+import {
+	PRODUCT_AGE_GROUPS,
+	PRODUCT_GENDERS
+} from '../../../../shared/features/products/data/productsData.js';
+
 // VALIDATORS
 import { pageValidator } from '../../../validators/pageValidator.js';
 import { productVariantResult } from '../../productVariants/validators/productVariantValidators.js';
 
 export const productStatus = literals('draft', 'active', 'archived');
+export const productAgeGroup = literals(...PRODUCT_AGE_GROUPS);
+export const productGender = literals(...PRODUCT_GENDERS);
 
 export const productResult = v.object({
 	_id: v.id('products'),
@@ -22,6 +30,8 @@ export const productResult = v.object({
 	compareAtPriceInCents: v.optional(v.number()),
 	hasPriceRange: v.boolean(),
 	categoryId: v.id('categories'),
+	ageGroup: v.optional(productAgeGroup),
+	gender: v.optional(productGender),
 	images: v.array(v.string()),
 	imageKeys: v.array(v.string()),
 	storagePrefix: v.string(),

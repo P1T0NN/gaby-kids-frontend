@@ -22,6 +22,8 @@ export const toProductResult = async (product: Product): Promise<ProductResult> 
 		priceInCents: product.priceInCents ?? 0,
 		hasPriceRange: product.hasPriceRange,
 		categoryId: product.categoryId,
+		ageGroup: product.ageGroup,
+		gender: product.gender,
 		images: await resolveStoredFileUrls(product.imageKeys ?? product.images),
 		imageKeys: product.imageKeys ?? product.images,
 		storagePrefix: product.storagePrefix,

@@ -14,6 +14,7 @@ import { getOrderByReceiptToken } from '../helpers/getOrderByReceiptToken.js';
 import { getOrderByStripeCheckoutSessionId } from '../helpers/getOrderByStripeCheckoutSessionId.js';
 import { getOrderByStripePaymentIntentId } from '../helpers/getOrderByStripePaymentIntentId.js';
 import { insertOrderItems } from '../../orders/helpers/insertOrderItems.js';
+import { markEmailClaimPending } from '../../customerEmailClaims/helpers/markEmailClaimPending.js';
 
 // UTILS
 import { buildOrderCustomer } from '../../../../shared/features/orders/utils/buildOrderCustomer.js';
@@ -178,6 +179,7 @@ export const completeCheckoutReservation = internalMutation({
 		};
 
 		const orderId = await ctx.db.insert('orders', order);
+		await markEmailClaimPending(ctx, order.email);
 		await insertOrderItems(ctx, orderId, reservation.items);
 		await ctx.db.patch(reservation._id, { status: 'completed' });
 

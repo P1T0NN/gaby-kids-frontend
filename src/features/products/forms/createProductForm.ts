@@ -2,11 +2,26 @@
 import { api } from '@convex/_generated/api';
 import { m } from '@/lib/paraglide/messages';
 
+// CONFIG
+import {
+	DEFAULT_PRODUCT_AGE_GROUP,
+	DEFAULT_PRODUCT_GENDER
+} from '@/shared/features/products/config.js';
+import {
+	PRODUCT_AGE_GROUPS,
+	PRODUCT_GENDERS
+} from '@/shared/features/products/data/productsData.js';
+import { PRODUCTS_CONFIG } from '@/shared/features/products/config.js';
+
 // UTILS
 import { parseOptionalPriceInCents, priceInCents } from '@/shared/utils/pricing.js';
 
 // TYPES
 import type { Snippet } from 'svelte';
+import type {
+	ProductAgeGroup,
+	ProductGender
+} from '@/shared/features/products/types/productsTypes.js';
 import type { Id } from '@convex/_generated/dataModel';
 import type {
 	CustomFieldContext,
@@ -16,6 +31,37 @@ import type {
 } from '@/components/ui/custom-components/form/formTypes.js';
 import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
 import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
+
+const AGE_GROUP_LABELS = {
+	kids: m['ProductsFeature.ProductAttributes.kids'],
+	adults: m['ProductsFeature.ProductAttributes.adults']
+} satisfies Record<ProductAgeGroup, () => string>;
+
+const GENDER_LABELS = {
+	unisex: m['ProductsFeature.ProductAttributes.unisex'],
+	male: m['ProductsFeature.ProductAttributes.male'],
+	female: m['ProductsFeature.ProductAttributes.female']
+} satisfies Record<ProductGender, () => string>;
+
+const AGE_GROUP_FIELD: FieldConfig = {
+	kind: 'select',
+	name: 'ageGroup',
+	label: m['ProductsFeature.ProductAttributes.ageGroup'](),
+	options: PRODUCT_AGE_GROUPS.map((ageGroup) => ({
+		value: ageGroup,
+		label: AGE_GROUP_LABELS[ageGroup]()
+	}))
+};
+
+const GENDER_FIELD: FieldConfig = {
+	kind: 'select',
+	name: 'gender',
+	label: m['ProductsFeature.ProductAttributes.gender'](),
+	options: PRODUCT_GENDERS.map((gender) => ({
+		value: gender,
+		label: GENDER_LABELS[gender]()
+	}))
+};
 
 /**
  * Maps form image references to stored keys. Retained previews already carry a
@@ -84,7 +130,9 @@ export function createProductFields(options: {
 					description: m['AddProductPage.categoriesDescription'](),
 					required: true,
 					render: options.categoryField
-				}
+				},
+				...(PRODUCTS_CONFIG.HAS_AGE_GROUP ? [AGE_GROUP_FIELD] : []),
+				...(PRODUCTS_CONFIG.HAS_GENDER ? [GENDER_FIELD] : [])
 			]
 		},
 		{
@@ -142,6 +190,10 @@ export function buildSaveProductArgs(options: {
 		trackInventory: options.values.trackInventory !== false,
 		// SAFETY: the shared schema and Convex validate the selected category ID.
 		categoryId: options.categoryId as Id<'categories'>,
+		// SAFETY: the shared schema validates the selected age group.
+		ageGroup: (options.values.ageGroup as ProductAgeGroup | undefined) ?? DEFAULT_PRODUCT_AGE_GROUP,
+		// SAFETY: the shared schema validates the selected gender.
+		gender: (options.values.gender as ProductGender | undefined) ?? DEFAULT_PRODUCT_GENDER,
 		status: options.values.active ? ('active' as const) : ('draft' as const),
 		productVariantOptionNames: options.productVariantOptionNames.map((optionName) =>
 			optionName.trim()

@@ -14,6 +14,7 @@
 		for (const [_theme, prefix] of Object.entries(THEMES)) {
 			let content = `${prefix} [data-chart=${id}] {\n`;
 			const color = colorConfig.map(([key, itemConfig]) => {
+				// SAFETY: _theme comes from Object.entries(THEMES), so it always names a theme key.
 				const theme = _theme as keyof typeof itemConfig.theme;
 				const color = itemConfig.theme?.[theme] || itemConfig.color;
 				return color ? `\t--color-${key}: ${color};` : null;

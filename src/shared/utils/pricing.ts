@@ -4,7 +4,7 @@ import { getLocale } from '../../lib/paraglide/runtime.js';
 // CONFIG
 import { COMPANY_DATA } from '../config.js';
 
-export type PriceInput = string | number | boolean | null | undefined;
+type PriceInput = string | number | boolean | null | undefined;
 
 export type OrderCalculationItem = {
 	unitPriceInCents: number;
@@ -13,6 +13,7 @@ export type OrderCalculationItem = {
 };
 
 const priceFormatters = new Map<string, Intl.NumberFormat>();
+const compactPriceFormatters = new Map<string, Intl.NumberFormat>();
 
 export function formatPrice(
 	priceInCents: number,
@@ -24,6 +25,25 @@ export function formatPrice(
 	if (!formatter) {
 		formatter = new Intl.NumberFormat(locale, { style: 'currency', currency });
 		priceFormatters.set(key, formatter);
+	}
+	return formatter.format(priceInCents / 100);
+}
+
+export function formatCompactPrice(
+	priceInCents: number,
+	currency: string = COMPANY_DATA.CURRENCY,
+	locale: string = getLocale()
+): string {
+	const key = `${locale}:${currency}`;
+	let formatter = compactPriceFormatters.get(key);
+	if (!formatter) {
+		formatter = new Intl.NumberFormat(locale, {
+			style: 'currency',
+			currency,
+			notation: 'compact',
+			maximumFractionDigits: 1
+		});
+		compactPriceFormatters.set(key, formatter);
 	}
 	return formatter.format(priceInCents / 100);
 }
