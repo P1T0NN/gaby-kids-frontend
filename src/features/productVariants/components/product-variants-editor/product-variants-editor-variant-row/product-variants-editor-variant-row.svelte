@@ -6,64 +6,82 @@
 	import { Button } from '@/components/ui/button/index.js';
 	import { Input } from '@/components/ui/input/index.js';
 	import { Separator } from '@/components/ui/separator/index.js';
-
-	// UTILS
-	import { priceInCents } from '@/shared/utils/pricing.js';
 	import ProductVariantDiscountCalculator from '../../product-variant-discount-calculator.svelte';
 	import ProductVariantsEditorAddOptionButton from '../product-variants-editor-add-option-button.svelte';
 	import ProductVariantsEditorOptionInput from '../product-variants-editor-option-input.svelte';
+	import ProductVariantsEditorAmountInput from './product-variants-editor-amount-input.svelte';
 	import ProductVariantsEditorVariantImagePicker from './product-variants-editor-variant-image-picker.svelte';
 	import ProductVariantsEditorVariantOptionInput from './product-variants-editor-variant-option-input.svelte';
 
+	// UTILS
+	import { getGeneratedProductVariantSku } from '@/shared/features/productVariants/utils/getGeneratedProductVariantSku.js';
+
 	// TYPES
 	import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
-	import type {
-		ProductVariantFormValue,
-		ProductVariantRowErrors
-	} from '@/shared/features/productVariants/types/productVariantTypes.js';
+	import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
 
 	type Props = {
 		productVariant: ProductVariantFormValue;
 		rowIndex: number;
-		rowError: ProductVariantRowErrors | undefined;
 		productVariants: ProductVariantFormValue[];
 		productVariantOptionNames: string[];
+		productSlug: string;
 		uploadFiles: PreviewFile[];
 		trackInventory: boolean;
 		disabled?: boolean;
-		/** Reveals every error after a failed submit, even for untouched fields. */
-		showAllErrors?: boolean;
+		/** Submit-time schema errors keyed by field path; empty until a submit fails. */
+		errors: Readonly<Record<string, string>>;
 	};
 
 	let {
 		productVariant,
 		rowIndex,
-		rowError,
 		productVariants = $bindable(),
 		productVariantOptionNames = $bindable(),
+		productSlug,
 		uploadFiles,
 		trackInventory,
 		disabled = false,
-		showAllErrors = false
+		errors
 	}: Props = $props();
 
-	const hasMissingProductVariantOptionName = $derived(
-		productVariantOptionNames.some((optionName) => !optionName.trim())
+	const rowPath = $derived(`productVariants.${rowIndex}`);
+	const optionsError = $derived(errors[`${rowPath}.options`]);
+	const combinationError = $derived(errors[rowPath]);
+	const skuError = $derived(errors[`${rowPath}.sku`]);
+	const priceError = $derived(errors[`${rowPath}.priceInCents`]);
+	const discountedPriceError = $derived(errors[`${rowPath}.compareAtPriceInCents`]);
+	const inventoryError = $derived(errors[`${rowPath}.inventory`]);
+	const imagesError = $derived(errors[`${rowPath}.imageKeys`]);
+
+	// The editor shows a regular price plus an optional discounted price; storage keeps the payable
+	// price in `priceInCents` and the regular one in `compareAtPriceInCents` when a discount exists.
+	const regularPriceInCents = $derived(
+		productVariant.compareAtPriceInCents ?? productVariant.priceInCents
 	);
-	const regularPriceInCents = $derived(priceInCents(productVariant.price));
-	const hasRegularPrice = $derived(
-		Number.isSafeInteger(regularPriceInCents) && regularPriceInCents > 0
+	const discountedPriceInCents = $derived(
+		productVariant.compareAtPriceInCents === undefined ? undefined : productVariant.priceInCents
+	);
+	const hasRegularPrice = $derived(regularPriceInCents !== undefined && regularPriceInCents > 0);
+
+	const generatedSku = $derived(
+		getGeneratedProductVariantSku({
+			slug: productSlug,
+			optionValues: productVariant.options.map((option) => option.value.trim()),
+			position: rowIndex
+		})
+	);
+	const displayedSku = $derived(
+		productVariant.skuOverridden ? productVariant.sku : productVariant.sku.trim() || generatedSku
 	);
 
-	// Every product variant error stays hidden until a submit attempt fails.
-	const showOptionsError = $derived(
-		showAllErrors && Boolean(rowError?.options) && !hasMissingProductVariantOptionName
-	);
-	const showSkuError = $derived(showAllErrors && Boolean(rowError?.sku));
-	const showPriceError = $derived(showAllErrors && Boolean(rowError?.price));
-	const showDiscountedPriceError = $derived(showAllErrors && Boolean(rowError?.discountedPrice));
-	const showInventoryError = $derived(showAllErrors && Boolean(rowError?.inventory));
-	const showCombinationError = $derived(showAllErrors && Boolean(rowError?.combination));
+	function optionNameError(optionIndex: number): string | undefined {
+		return errors[`productVariantOptionNames.${optionIndex}`];
+	}
+
+	function optionValueError(optionIndex: number): string | undefined {
+		return errors[`${rowPath}.options.${optionIndex}.value`];
+	}
 
 	function updateProductVariant(patch: Partial<ProductVariantFormValue>): void {
 		productVariants = productVariants.map((currentProductVariant, currentIndex) =>
@@ -74,6 +92,35 @@
 	function removeProductVariant(): void {
 		if (productVariants.length <= 1) return;
 		productVariants = productVariants.filter((_, currentIndex) => currentIndex !== rowIndex);
+	}
+
+	function setRegularPrice(value: number | undefined): void {
+		if (value === undefined) {
+			updateProductVariant({ priceInCents: undefined, compareAtPriceInCents: undefined });
+			return;
+		}
+
+		updateProductVariant(
+			productVariant.compareAtPriceInCents === undefined
+				? { priceInCents: value }
+				: { compareAtPriceInCents: value }
+		);
+	}
+
+	function setDiscountedPrice(value: number | undefined): void {
+		updateProductVariant({
+			compareAtPriceInCents: value === undefined ? undefined : regularPriceInCents,
+			priceInCents: value === undefined ? regularPriceInCents : value
+		});
+	}
+
+	function toggleSkuEditing(): void {
+		if (productVariant.skuOverridden) {
+			updateProductVariant({ skuOverridden: false, sku: '' });
+			return;
+		}
+
+		updateProductVariant({ skuOverridden: true, sku: displayedSku });
 	}
 </script>
 
@@ -104,15 +151,11 @@
 					bind:productVariantOptionNames
 					bind:productVariants
 					{disabled}
-					showError={showAllErrors}
+					error={optionNameError(optionIndex)}
 				/>
 			{/each}
 		</div>
-		{#if hasMissingProductVariantOptionName && showAllErrors}
-			<p class="text-xs text-destructive" role="alert">
-				{m['ProductVariantsFeature.ProductVariantsEditor.optionNameRequired']()}
-			</p>
-		{:else if productVariantOptionNames.length === 0}
+		{#if productVariantOptionNames.length === 0}
 			<p class="text-xs text-muted-foreground">
 				{m['ProductVariantsFeature.ProductVariantsEditor.noOptionsHint']()}
 			</p>
@@ -150,17 +193,17 @@
 								{optionIndex}
 								bind:productVariants
 								{disabled}
-								showError={showAllErrors}
+								error={optionValueError(optionIndex)}
 							/>
 						</div>
 					{/each}
 				</div>
 			{/if}
-			{#if showOptionsError}
-				<p class="text-xs text-destructive">{rowError?.options}</p>
+			{#if optionsError}
+				<p class="text-xs text-destructive">{optionsError}</p>
 			{/if}
-			{#if showCombinationError}
-				<p class="text-xs text-destructive">{rowError?.combination}</p>
+			{#if combinationError}
+				<p class="text-xs text-destructive">{combinationError}</p>
 			{/if}
 		</div>
 
@@ -172,8 +215,8 @@
 				{uploadFiles}
 				{disabled}
 			/>
-			{#if rowError?.images}
-				<p class="text-xs text-destructive">{rowError.images}</p>
+			{#if imagesError}
+				<p class="text-xs text-destructive">{imagesError}</p>
 			{/if}
 		</div>
 
@@ -181,17 +224,40 @@
 			<span class="text-sm font-medium">
 				{m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuColumn']()}
 			</span>
-			<Input
-				value={productVariant.sku}
-				placeholder={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuPlaceholder']()}
-				aria-label={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuColumn']()}
-				aria-invalid={showSkuError ? true : undefined}
-				{disabled}
-				class="h-9"
-				oninput={(event) => updateProductVariant({ sku: event.currentTarget.value })}
-			/>
-			{#if showSkuError}
-				<p class="text-xs text-destructive">{rowError?.sku}</p>
+			<div class="flex items-center gap-2">
+				<Input
+					value={displayedSku}
+					placeholder={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuPlaceholder']()}
+					aria-label={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuColumn']()}
+					aria-invalid={skuError ? true : undefined}
+					disabled={disabled || !productVariant.skuOverridden}
+					class="h-9 flex-1"
+					oninput={(event) => updateProductVariant({ sku: event.currentTarget.value })}
+				/>
+				<Button
+					type="button"
+					variant="ghost"
+					size="icon-sm"
+					{disabled}
+					aria-pressed={productVariant.skuOverridden}
+					aria-label={productVariant.skuOverridden
+						? m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuLock']()
+						: m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuUnlock']()}
+					onclick={toggleSkuEditing}
+				>
+					<span
+						class={productVariant.skuOverridden
+							? 'icon-[lucide--lock-open] size-4'
+							: 'icon-[lucide--lock] size-4'}
+						aria-hidden="true"
+					></span>
+				</Button>
+			</div>
+			<p class="text-xs text-muted-foreground">
+				{m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuAutoHint']()}
+			</p>
+			{#if skuError}
+				<p class="text-xs text-destructive">{skuError}</p>
 			{/if}
 		</div>
 
@@ -199,20 +265,17 @@
 			<span class="text-sm font-medium">
 				{m['ProductVariantsFeature.ProductVariantsEditorVariantRow.priceColumn']()}
 			</span>
-			<Input
-				type="number"
-				min="0.01"
-				step="0.01"
-				value={productVariant.price}
+			<ProductVariantsEditorAmountInput
+				value={regularPriceInCents}
+				decimals={2}
 				placeholder="0.00"
-				aria-label={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.priceColumn']()}
-				aria-invalid={showPriceError ? true : undefined}
+				ariaLabel={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.priceColumn']()}
+				invalid={Boolean(priceError)}
 				{disabled}
-				class="h-9"
-				oninput={(event) => updateProductVariant({ price: event.currentTarget.value })}
+				onValueChange={setRegularPrice}
 			/>
-			{#if showPriceError}
-				<p class="text-xs text-destructive">{rowError?.price}</p>
+			{#if priceError}
+				<p class="text-xs text-destructive">{priceError}</p>
 			{/if}
 		</div>
 
@@ -220,20 +283,17 @@
 			<span class="text-sm font-medium">
 				{m['ProductVariantsFeature.ProductVariantsEditorVariantRow.stockColumn']()}
 			</span>
-			<Input
-				type="number"
-				min="0"
-				step="1"
+			<ProductVariantsEditorAmountInput
 				value={productVariant.inventory}
+				decimals={0}
 				placeholder="0"
-				aria-label={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.stockColumn']()}
-				aria-invalid={showInventoryError ? true : undefined}
+				ariaLabel={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.stockColumn']()}
+				invalid={Boolean(inventoryError)}
 				disabled={disabled || !trackInventory}
-				class="h-9"
-				oninput={(event) => updateProductVariant({ inventory: event.currentTarget.value })}
+				onValueChange={(value) => updateProductVariant({ inventory: value })}
 			/>
-			{#if showInventoryError}
-				<p class="text-xs text-destructive">{rowError?.inventory}</p>
+			{#if inventoryError}
+				<p class="text-xs text-destructive">{inventoryError}</p>
 			{/if}
 		</div>
 	</div>
@@ -242,34 +302,22 @@
 
 	<div class="flex flex-col gap-3">
 		<div class="flex flex-col gap-1.5 sm:max-w-72">
-			<span class="flex flex-wrap items-baseline gap-x-2">
-				<span class="text-sm font-medium">
-					{m['ProductVariantsFeature.ProductVariantsEditorVariantRow.discountedPriceColumn']()}
-				</span>
-				{#if !hasRegularPrice}
-					<span class="text-xs text-muted-foreground">
-						{m[
-							'ProductVariantsFeature.ProductVariantsEditorVariantRow.discountedPriceRequiresPrice'
-						]()}
-					</span>
-				{/if}
+			<span class="text-sm font-medium">
+				{m['ProductVariantsFeature.ProductVariantsEditorVariantRow.discountedPriceColumn']()}
 			</span>
-			<Input
-				type="number"
-				min="0.01"
-				step="0.01"
-				value={productVariant.discountedPrice}
+			<ProductVariantsEditorAmountInput
+				value={discountedPriceInCents}
+				decimals={2}
 				placeholder="0.00"
-				aria-label={m[
+				ariaLabel={m[
 					'ProductVariantsFeature.ProductVariantsEditorVariantRow.discountedPriceColumn'
 				]()}
-				aria-invalid={showDiscountedPriceError ? true : undefined}
+				invalid={Boolean(discountedPriceError)}
 				disabled={disabled || !hasRegularPrice}
-				class="h-9"
-				oninput={(event) => updateProductVariant({ discountedPrice: event.currentTarget.value })}
+				onValueChange={setDiscountedPrice}
 			/>
-			{#if showDiscountedPriceError}
-				<p class="text-xs text-destructive">{rowError?.discountedPrice}</p>
+			{#if discountedPriceError}
+				<p class="text-xs text-destructive">{discountedPriceError}</p>
 			{/if}
 		</div>
 

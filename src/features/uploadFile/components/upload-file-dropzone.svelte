@@ -13,6 +13,7 @@
 		name,
 		id,
 		disabled = false,
+		invalid = false,
 		class: className,
 		inputRef = $bindable<HTMLInputElement | null>(null)
 	}: {
@@ -24,6 +25,8 @@
 		name?: string;
 		id?: string;
 		disabled?: boolean;
+		/** Marks the dropzone as invalid after a failed submit. */
+		invalid?: boolean;
 		class?: string;
 		inputRef?: HTMLInputElement | null;
 	} = $props();
@@ -83,7 +86,9 @@
 		'flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed p-8 text-center transition-colors',
 		dragging
 			? 'border-primary bg-primary/5'
-			: 'border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/60',
+			: invalid
+				? 'border-destructive bg-destructive/5'
+				: 'border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/60',
 		disabled && 'pointer-events-none opacity-50',
 		className
 	)}
@@ -105,6 +110,7 @@
 		name={name ? (allowMultiple ? `${name}[]` : name) : undefined}
 		multiple={allowMultiple}
 		{disabled}
+		aria-invalid={invalid ? true : undefined}
 		class="sr-only"
 		tabindex="-1"
 		onchange={onSelect}

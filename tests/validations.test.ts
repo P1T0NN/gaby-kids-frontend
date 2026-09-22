@@ -41,7 +41,7 @@ test('original price must be higher than the variant price', () => {
 	expect(parsed.error.issues[0]?.path).toEqual(['productVariants', 0, 'compareAtPriceInCents']);
 	expect(parsed.error.issues[0]?.message).toBe('COMPARE_AT_PRICE_MUST_EXCEED_PRICE');
 	expect(toHumanMessage(parsed.error.issues[0]?.message ?? '')).toBe(
-		'Discounted price must be lower than Price.'
+		'Discounted price must be lower than the price.'
 	);
 });
 

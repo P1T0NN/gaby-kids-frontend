@@ -15,6 +15,7 @@ export const MESSAGES: [RegExp, () => string][] = [
 	[/^DUPLICATE_PRODUCT_VARIANT$/, () => m['ValidationMessages.duplicateProductVariant']()],
 	[/^INVALID_PRODUCT_VARIANT$/, () => m['ValidationMessages.invalidProductVariant']()],
 	[/^PRODUCT_VARIANT_IMAGE_REQUIRED$/, () => m['ValidationMessages.productVariantImageRequired']()],
+	[/^PRODUCT_IMAGES_REQUIRED$/, () => m['ValidationMessages.productImagesRequired']()],
 	[/expected string, received undefined/, () => m['ValidationMessages.requiredValue']()],
 	[/expected .+?, received undefined/, () => m['ValidationMessages.requiredField']()],
 	[/Too small/, () => m['ValidationMessages.validValue']()]

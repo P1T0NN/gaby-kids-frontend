@@ -1,20 +1,17 @@
 // LIBRARIES
 import { api } from '@convex/_generated/api';
 import { m } from '@/lib/paraglide/messages';
+import { z } from 'zod';
 
 // CONFIG
-import {
-	DEFAULT_PRODUCT_AGE_GROUP,
-	DEFAULT_PRODUCT_GENDER
-} from '@/shared/features/products/config.js';
 import {
 	PRODUCT_AGE_GROUPS,
 	PRODUCT_GENDERS
 } from '@/shared/features/products/data/productsData.js';
 import { PRODUCTS_CONFIG } from '@/shared/features/products/config.js';
 
-// UTILS
-import { parseOptionalPriceInCents, priceInCents } from '@/shared/utils/pricing.js';
+// SCHEMAS
+import { saveProductSchema } from '@/shared/features/products/schemas/productsSchemas.js';
 
 // TYPES
 import type { Snippet } from 'svelte';
@@ -26,11 +23,15 @@ import type { Id } from '@convex/_generated/dataModel';
 import type {
 	CustomFieldContext,
 	FieldConfig,
-	MutationValues,
-	PreparedMutationArgs
+	MutationValues
 } from '@/components/ui/custom-components/form/formTypes.js';
 import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
 import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
+
+/** Client form schema: adds the product-level image requirement, then drops it from the payload. */
+export const saveProductFormSchema = saveProductSchema
+	.safeExtend({ images: z.array(z.string()).min(1, 'PRODUCT_IMAGES_REQUIRED') })
+	.transform(({ images: _images, ...args }) => args);
 
 const AGE_GROUP_LABELS = {
 	kids: m['ProductsFeature.ProductAttributes.kids'],
@@ -79,8 +80,9 @@ function buildProductVariantImageKeyMap(
 			keyByPreviewId.set(preview.id, preview.key);
 			continue;
 		}
-		keyByPreviewId.set(preview.id, uploadedFiles[uploadedIndex] ?? '');
+		const key = uploadedFiles[uploadedIndex];
 		uploadedIndex += 1;
+		if (key) keyByPreviewId.set(preview.id, key);
 	}
 
 	return keyByPreviewId;
@@ -169,61 +171,50 @@ export function createProductFields(options: {
 	] satisfies FieldConfig[];
 }
 
-export function buildSaveProductArgs(options: {
-	values: MutationValues<SaveProductMutation>;
+/** Extra saveProduct payload: resolved upload keys and the trimmed variant rows. */
+export function buildSaveProductExtraFields(options: {
 	categoryId: string;
+	status: 'active' | 'draft';
 	productVariantOptionNames: string[];
 	productVariants: ProductVariantFormValue[];
-	uploadFiles: PreviewFile[];
-	uploadedFiles: string[];
-	id?: Id<'products'>;
-}): PreparedMutationArgs<SaveProductMutation> {
+	uploadFiles: readonly PreviewFile[];
+	uploadedFiles: readonly string[];
+}): MutationValues<SaveProductMutation> {
 	const imageKeyByPreviewId = buildProductVariantImageKeyMap(
 		options.uploadFiles,
 		options.uploadedFiles
 	);
 
 	return {
-		id: options.id,
-		name: String(options.values.name ?? ''),
-		description: String(options.values.description ?? ''),
-		trackInventory: options.values.trackInventory !== false,
 		// SAFETY: the shared schema and Convex validate the selected category ID.
 		categoryId: options.categoryId as Id<'categories'>,
-		// SAFETY: the shared schema validates the selected age group.
-		ageGroup: (options.values.ageGroup as ProductAgeGroup | undefined) ?? DEFAULT_PRODUCT_AGE_GROUP,
-		// SAFETY: the shared schema validates the selected gender.
-		gender: (options.values.gender as ProductGender | undefined) ?? DEFAULT_PRODUCT_GENDER,
-		status: options.values.active ? ('active' as const) : ('draft' as const),
+		status: options.status,
+		// Client-only field; `saveProductFormSchema` validates it and strips it from the payload.
+		images: options.uploadFiles.map((preview) => preview.key ?? preview.id),
 		productVariantOptionNames: options.productVariantOptionNames.map((optionName) =>
 			optionName.trim()
 		),
-		productVariants: options.productVariants.map((productVariant) => {
-			const regularPriceInCents = priceInCents(productVariant.price);
-			const discountedPriceInCents = parseOptionalPriceInCents(productVariant.discountedPrice);
-
-			return {
-				// SAFETY: Convex's v.id('productVariants') validator remains authoritative.
-				id: productVariant.id ? (productVariant.id as Id<'productVariants'>) : undefined,
-				options: productVariant.options.map((option) => ({
-					name: option.name.trim(),
-					value: option.value.trim()
-				})),
-				sku: productVariant.sku.trim(),
-				imageKeys: [
-					...new Set(
-						productVariant.imageKeys.flatMap((imageId) => {
-							const key = imageKeyByPreviewId.get(imageId);
-							return key ? [key] : [];
-						})
-					)
-				],
-				// Stored semantics: the payable price is priceInCents and the regular price is compareAtPriceInCents.
-				priceInCents: discountedPriceInCents ?? regularPriceInCents,
-				compareAtPriceInCents:
-					discountedPriceInCents === undefined ? undefined : regularPriceInCents,
-				inventory: Number(productVariant.inventory)
-			};
-		})
+		productVariants: options.productVariants.map((productVariant) => ({
+			id: productVariant.id,
+			options: productVariant.options.map((option) => ({
+				name: option.name.trim(),
+				value: option.value.trim()
+			})),
+			sku: productVariant.sku.trim(),
+			imageKeys: [
+				...new Set(
+					productVariant.imageKeys.flatMap((imageId) => {
+						// Pending previews keep their id until the upload assigns the stored key.
+						const key = imageKeyByPreviewId.get(imageId) ?? imageId;
+						return key ? [key] : [];
+					})
+				)
+			],
+			// SAFETY: the shared schema rejects a blank price before the mutation runs.
+			priceInCents: productVariant.priceInCents as number,
+			compareAtPriceInCents: productVariant.compareAtPriceInCents,
+			// SAFETY: the shared schema rejects blank stock before the mutation runs.
+			inventory: productVariant.inventory as number
+		}))
 	};
 }

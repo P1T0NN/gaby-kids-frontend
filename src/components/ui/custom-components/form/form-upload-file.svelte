@@ -14,6 +14,8 @@
 		field: UploadField;
 		uploadFiles?: PreviewFile[];
 		submitting?: boolean;
+		/** Submit-time schema error for this upload field; empty until a submit fails. */
+		error?: string;
 		uploadProgress?: number | null;
 		preparingUpload?: boolean;
 	};
@@ -22,17 +24,19 @@
 		field,
 		uploadFiles = $bindable<PreviewFile[]>([]),
 		submitting = false,
+		error,
 		uploadProgress = null,
 		preparingUpload = false
 	}: Props = $props();
 </script>
 
-<FormField {field} disabled={submitting || field.disabled}>
+<FormField {field} disabled={submitting || field.disabled} {error}>
 	<UploadFile
 		id={field.name}
 		name={field.name}
 		accept={field.accept}
 		allowMultiple={field.mode === 'multiple'}
+		invalid={Boolean(error)}
 		bind:files={uploadFiles}
 		disabled={submitting || field.disabled}
 	/>

@@ -15,10 +15,11 @@
 
 	// UTILS
 	import {
-		buildSaveProductArgs,
-		createProductFields
+		buildSaveProductExtraFields,
+		createProductFields,
+		saveProductFormSchema
 	} from '@/features/products/forms/createProductForm.js';
-	import { formatProductVariantFormPrice } from '@/features/productVariants/utils/productVariantFormValues.js';
+	import { toProductVariantFormValue } from '@/features/productVariants/utils/toProductVariantFormValue.js';
 
 	// COMPONENTS
 	import ProductCategorySelector from '@/features/categories/components/product-category-selector.svelte';
@@ -32,58 +33,24 @@
 	// HOOKS
 	import { useFormChanges } from '@/hooks/useFormChanges.svelte.js';
 
-	// SCHEMAS
-	import { saveProductSchema } from '@/shared/features/products/schemas/productsSchemas.js';
-
 	// TYPES
+	import type { ProductDetail } from '@/features/productVariants/utils/toProductVariantFormValue.js';
 	import type { CustomFieldContext } from '@/components/ui/custom-components/form/formTypes.js';
 	import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
 	import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
-	import type { FunctionReturnType } from 'convex/server';
 
-	type Product = FunctionReturnType<
-		typeof api.tables.products.queries.fetchProductById.fetchProductById
-	>;
-
-	let { product }: { product: Product } = $props();
+	let { product }: { product: ProductDetail } = $props();
 
 	const initialProduct = untrack(() => product);
 
 	let submitting = $state(false);
 	let categoryId = $state<string>(initialProduct.categoryId);
 
-	function toProductVariantFormValue(
-		productVariant: Product['productVariants'][number]
-	): ProductVariantFormValue {
-		const regularPriceInCents = productVariant.compareAtPriceInCents ?? productVariant.priceInCents;
-		const discountedPriceInCents =
-			productVariant.compareAtPriceInCents === undefined ? undefined : productVariant.priceInCents;
-
-		return {
-			id: productVariant._id,
-			options: productVariant.options.map((option) => ({ ...option })),
-			sku: productVariant.sku,
-			imageKeys: [...productVariant.imageKeys],
-			price: formatProductVariantFormPrice(regularPriceInCents),
-			discountedPrice: formatProductVariantFormPrice(discountedPriceInCents),
-			inventory: String(productVariant.inventory),
-			reservedInventory: productVariant.reservedInventory
-		};
-	}
-
-	// Show the error as soon as any submit attempt failed, even when native
-	// validation stopped the form before the schema ran.
-	function categoryFieldError(fieldErrors: Readonly<Record<string, string>>): string {
-		if (categoryId) return '';
-		return (
-			fieldErrors.categoryId ??
-			(Object.keys(fieldErrors).length > 0 ? m['ValidationMessages.requiredValue']() : '')
-		);
-	}
-
 	let productVariantOptionNames = $state<string[]>([...initialProduct.productVariantOptionNames]);
 	let productVariants = $state<ProductVariantFormValue[]>(
-		initialProduct.productVariants.map(toProductVariantFormValue)
+		initialProduct.productVariants.map((productVariant, index) =>
+			toProductVariantFormValue({ productVariant, index, slug: initialProduct.slug })
+		)
 	);
 
 	const formChanges = useFormChanges(() => ({
@@ -105,14 +72,14 @@
 	);
 </script>
 
-{#snippet categoryField({ field, disabled, errors }: CustomFieldContext)}
+{#snippet categoryField({ field, disabled, error }: CustomFieldContext)}
 	<ProductCategorySelector
 		id={field.name}
 		bind:selectedId={categoryId}
 		initialCategory={initialProduct.categoryOption}
 		required
 		{disabled}
-		error={categoryFieldError(errors)}
+		{error}
 	/>
 {/snippet}
 
@@ -120,6 +87,7 @@
 	<ProductVariantsEditor
 		bind:productVariants
 		bind:productVariantOptionNames
+		productSlug={initialProduct.slug}
 		{uploadFiles}
 		trackInventory={formChanges.values.trackInventory !== false}
 		{disabled}
@@ -130,21 +98,20 @@
 <Form
 	function={api.tables.products.mutations.saveProduct.saveProduct}
 	fields={createProductFields({ productVariantsField, categoryField })}
-	schema={saveProductSchema}
+	schema={saveProductFormSchema}
 	uploadNamespace="products"
 	bind:values={formChanges.values}
 	bind:uploadFiles
 	bind:submitting
 	resetOnSuccess={false}
-	prepareArgs={({ values, uploadedFiles }) =>
-		buildSaveProductArgs({
-			values,
+	resolveExtraFields={({ uploadedFiles }) =>
+		buildSaveProductExtraFields({
 			categoryId,
+			status: formChanges.values.active === true ? 'active' : 'draft',
 			productVariantOptionNames,
 			productVariants,
 			uploadFiles,
-			uploadedFiles,
-			id: initialProduct._id
+			uploadedFiles
 		})}
 	onSuccess={() => gotoParaglide(ADMIN_PAGE_ENDPOINTS.PRODUCTS)}
 	successMessage={m['AdminEditProductPage.productUpdated']()}

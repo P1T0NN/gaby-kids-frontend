@@ -74,7 +74,7 @@
 				<Button
 					variant="secondary"
 					size="icon"
-					class="absolute top-1/2 left-3 -translate-y-1/2 shadow-sm"
+					class="absolute inset-y-0 left-3 my-auto shadow-sm"
 					onclick={() => api?.scrollPrev()}
 					aria-label={m['Components.ImageGallery.previousImage']()}
 				>
@@ -84,7 +84,7 @@
 				<Button
 					variant="secondary"
 					size="icon"
-					class="absolute top-1/2 right-3 -translate-y-1/2 shadow-sm"
+					class="absolute inset-y-0 right-3 my-auto shadow-sm"
 					onclick={() => api?.scrollNext()}
 					aria-label={m['Components.ImageGallery.nextImage']()}
 				>

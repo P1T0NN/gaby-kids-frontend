@@ -41,7 +41,6 @@
 			"sectionTitle": "Product variants",
 			"sectionDescription": "Sell this product in different versions, like colors or sizes. Each variant has its own SKU, price, and stock.",
 			"options": "Options",
-			"optionNameRequired": "Give every option a name.",
 			"noOptionsHint": "No options yet — customers buy this as a single default variant."
 		},
 		"ProductVariantsEditorVariantTabs": {
@@ -54,7 +53,9 @@
 			"removeOption": "Remove option"
 		},
 		"ProductVariantsEditorAddOptionButton": {
-			"addOption": "Add option"
+			"addOption": "Add option",
+			"addColor": "Add color",
+			"addSize": "Add size"
 		},
 		"ProductVariantsEditorVariantImagePicker": {
 			"images": "Images",
@@ -71,16 +72,12 @@
 			"defaultVariant": "Default",
 			"skuColumn": "SKU",
 			"skuPlaceholder": "Auto",
-			"skuDuplicate": "Use a unique SKU.",
+			"skuAutoHint": "Generated automatically from the product name and options. You can override it manually, but we don't recommend it.",
+			"skuUnlock": "Unlock SKU to edit it manually",
+			"skuLock": "Lock SKU and use the automatic value",
 			"priceColumn": "Price",
-			"priceRequired": "Enter a price.",
 			"discountedPriceColumn": "Discounted price (optional)",
-			"discountedPriceRequiresPrice": "Set the Price first.",
-			"discountedPriceInvalid": "Discounted price must be lower than the price.",
 			"stockColumn": "Stock",
-			"stockInvalid": "Enter a whole number of 0 or more.",
-			"stockBelowReserved": "{count} reserved — stock can't be lower.",
-			"optionValueRequired": "Enter a value for every option.",
 			"removeVariant": "Remove variant {number}"
 		},
 		"ProductVariantsEditorVariantOptionInput": {
@@ -1097,11 +1094,12 @@
 		"requiredValue": "Please enter a value.",
 		"requiredField": "Please fill this in.",
 		"validValue": "Please enter a valid value.",
-		"compareAtPriceMustExceedPrice": "Discounted price must be lower than Price.",
+		"compareAtPriceMustExceedPrice": "Discounted price must be lower than the price.",
 		"duplicateProductVariantOption": "Option names must be different.",
 		"duplicateProductVariant": "Two product variants cannot use the same option values.",
 		"invalidProductVariant": "Check the product options and product variant values.",
 		"productVariantImageRequired": "Apply at least one image to this variant.",
+		"productImagesRequired": "Upload at least one product image.",
 		"passwordsDoNotMatch": "Passwords do not match.",
 		"invalidEmail": "Please enter a valid email address.",
 		"passwordTooShort": "Password must be at least 8 characters long.",

@@ -1,7 +1,10 @@
 <script lang="ts">
 	// COMPONENTS
-	import Checkbox from '@/components/ui/checkbox/checkbox.svelte';
+	import { Checkbox } from '@/components/ui/checkbox/index.js';
 	import FormField from './form-field.svelte';
+
+	// UTILS
+	import { formControlAttrs } from './formControl.js';
 
 	// TYPES
 	import type { CheckboxField } from './formTypes.js';
@@ -10,16 +13,16 @@
 		field: CheckboxField;
 		checked: boolean;
 		disabled?: boolean;
+		error?: string;
 		onCheckedChange: (checked: boolean) => void;
 	};
 
-	let { field, checked, disabled = false, onCheckedChange }: Props = $props();
+	let { field, checked, disabled = false, error, onCheckedChange }: Props = $props();
 </script>
 
-<FormField {field} {disabled} labelPosition="after">
+<FormField {field} {disabled} {error} labelPosition="after">
 	<Checkbox
-		id={field.name}
-		name={field.name}
+		{...formControlAttrs(field, error)}
 		{checked}
 		{disabled}
 		onCheckedChange={(value) => onCheckedChange(value === true)}

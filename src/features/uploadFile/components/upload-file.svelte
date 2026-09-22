@@ -20,6 +20,7 @@
 		allowMultiple = false,
 		accept = 'image/*',
 		disabled = false,
+		invalid = false,
 		id,
 		name,
 		class: className
@@ -31,6 +32,8 @@
 		/** Accepted file types. */
 		accept?: string;
 		disabled?: boolean;
+		/** Marks the dropzone as invalid after a failed submit. */
+		invalid?: boolean;
 		id?: string;
 		name?: string;
 		class?: string;
@@ -47,7 +50,15 @@
 </script>
 
 <div class={cn('space-y-4', className)}>
-	<UploadFileDropzone {accept} {allowMultiple} {disabled} {id} {name} onAdd={upload.addFiles} />
+	<UploadFileDropzone
+		{accept}
+		{allowMultiple}
+		{disabled}
+		{invalid}
+		{id}
+		{name}
+		onAdd={upload.addFiles}
+	/>
 
 	{#if files.length > 0}
 		<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">

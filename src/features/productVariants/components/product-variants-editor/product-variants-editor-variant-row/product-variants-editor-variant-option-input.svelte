@@ -15,8 +15,8 @@
 		optionIndex: number;
 		productVariants: ProductVariantFormValue[];
 		disabled?: boolean;
-		/** Reveals the error after a failed submit, not while the admin is still editing. */
-		showError?: boolean;
+		/** Submit-time schema error for this option value; empty until a submit fails. */
+		error?: string;
 	};
 
 	let {
@@ -26,7 +26,7 @@
 		optionIndex,
 		productVariants = $bindable(),
 		disabled = false,
-		showError = false
+		error
 	}: Props = $props();
 
 	const isOptionNamed = $derived(Boolean(optionName.trim()));
@@ -54,8 +54,11 @@
 				name: optionName
 			})
 		: m['ProductVariantsFeature.ProductVariantsEditorVariantOptionInput.optionValuePlaceholder']()}
-	aria-invalid={!optionValue.trim() && showError ? true : undefined}
+	aria-invalid={error ? true : undefined}
 	disabled={disabled || !isOptionNamed}
 	class="h-9 w-full"
 	oninput={(event) => updateProductVariantOptionValue(event.currentTarget.value)}
 />
+{#if error}
+	<p class="text-xs text-destructive">{error}</p>
+{/if}

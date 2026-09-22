@@ -84,10 +84,6 @@
 		schema={createCategorySchema}
 		uploadNamespace="categories"
 		values={{ status: 'active' }}
-		prepareArgs={({ values }) => ({
-			name: String(values.name ?? ''),
-			status: values.status === 'archived' ? ('archived' as const) : ('active' as const)
-		})}
 		bind:submitting
 		onSuccess={() => gotoParaglide(ADMIN_PAGE_ENDPOINTS.CATEGORIES)}
 		successMessage={m['AddCategoryPage.categoryAdded']()}

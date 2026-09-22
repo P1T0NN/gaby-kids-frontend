@@ -2,9 +2,6 @@
 	// COMPONENTS
 	import ProductVariantsEditorVariantTabs from './product-variants-editor-variant-tabs.svelte';
 
-	// UTILS
-	import { getProductVariantRowErrors } from '../../utils/getProductVariantRowErrors.js';
-
 	// TYPES
 	import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
 	import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
@@ -12,15 +9,18 @@
 	type Props = {
 		productVariants: ProductVariantFormValue[];
 		productVariantOptionNames: string[];
+		productSlug: string;
 		uploadFiles: PreviewFile[];
 		trackInventory: boolean;
 		disabled?: boolean;
+		/** Submit-time schema errors keyed by field path; empty until a submit fails. */
 		errors: Readonly<Record<string, string>>;
 	};
 
 	let {
 		productVariants = $bindable(),
 		productVariantOptionNames = $bindable(),
+		productSlug,
 		uploadFiles,
 		trackInventory,
 		disabled = false,
@@ -28,11 +28,6 @@
 	}: Props = $props();
 
 	const formError = $derived(errors.productVariants || errors.productVariantOptionNames || '');
-	// Any error in the form means a submit attempt already failed, so the product
-	// variant errors must show even when native validation stopped the submit first.
-	const hasFormErrors = $derived(Object.keys(errors).length > 0);
-
-	const productVariantRowErrors = $derived(getProductVariantRowErrors(productVariants));
 </script>
 
 <div class="flex flex-col gap-5">
@@ -43,10 +38,10 @@
 	<ProductVariantsEditorVariantTabs
 		bind:productVariants
 		bind:productVariantOptionNames
-		{productVariantRowErrors}
+		{productSlug}
 		{uploadFiles}
 		{trackInventory}
 		{disabled}
-		showAllErrors={hasFormErrors}
+		{errors}
 	/>
 </div>

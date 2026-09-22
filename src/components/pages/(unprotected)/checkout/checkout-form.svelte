@@ -29,8 +29,7 @@
 	import type { Id } from '@convex/_generated/dataModel.js';
 	import type {
 		CustomFieldContext,
-		MutationValues,
-		UploadPrepareContext
+		MutationValues
 	} from '@/components/ui/custom-components/form/formTypes.js';
 
 	type CreateStripeCheckoutAction =
@@ -51,39 +50,10 @@
 	const authenticated = $derived(page.data.authState.isAuthenticated);
 	const cart = useCart();
 
-	// The Form validates the prepared args, so the customer ref the form adds must be in the schema.
+	// The Form validates the resolved extra fields, so the customer ref the form adds must be in the schema.
 	const checkoutFormSchema = checkoutSchema.safeExtend({ customerRef: z.string().min(1) });
 
 	const fulfillment = $derived(values.fulfillmentMethod === 'pickup' ? 'pickup' : 'delivery');
-
-	function prepareCheckoutArgs({ values }: UploadPrepareContext<CreateStripeCheckoutAction>) {
-		const fulfillmentMethod: 'delivery' | 'pickup' =
-			values.fulfillmentMethod === 'pickup' ? 'pickup' : 'delivery';
-
-		return {
-			customerRef: getCustomerIdLocal(),
-			// SAFETY: Convex validates every submitted cart ID with v.id('productVariants').
-			items: cart.items.map((item) => ({
-				productVariantId: item.productVariantId as Id<'productVariants'>,
-				quantity: item.quantity
-			})),
-			firstName: String(values.firstName ?? ''),
-			lastName: String(values.lastName ?? ''),
-			email: String(values.email ?? ''),
-			phone: String(values.phone ?? ''),
-			fulfillmentMethod,
-			shippingAddress:
-				fulfillmentMethod === 'delivery'
-					? {
-							street: String(values.street ?? ''),
-							apartment: String(values.apartment ?? '') || undefined,
-							postalCode: String(values.postalCode ?? ''),
-							city: String(values.city ?? ''),
-							country: String(values.country ?? '')
-						}
-					: undefined
-		};
-	}
 
 	function handleCheckoutStarted(result: { checkoutUrl: string }) {
 		window.location.assign(result.checkoutUrl);
@@ -136,7 +106,28 @@
 	captchaAction={authenticated ? undefined : STRIPE_CHECKOUT_CAPTCHA_ACTION}
 	fields={createCheckoutFields(fulfillmentField, fulfillment)}
 	schema={checkoutFormSchema}
-	prepareArgs={prepareCheckoutArgs}
+	extraFields={{
+		get customerRef() {
+			return getCustomerIdLocal();
+		},
+		get items() {
+			return cart.items.map((item) => ({
+				// SAFETY: Convex validates every submitted cart ID with v.id('productVariants').
+				productVariantId: item.productVariantId as Id<'productVariants'>,
+				quantity: item.quantity
+			}));
+		},
+		get shippingAddress() {
+			if (fulfillment !== 'delivery') return undefined;
+			return {
+				street: String(values.street ?? ''),
+				apartment: String(values.apartment ?? ''),
+				postalCode: String(values.postalCode ?? ''),
+				city: String(values.city ?? ''),
+				country: String(values.country ?? '')
+			};
+		}
+	}}
 	bind:values
 	bind:submitting
 	onSuccess={handleCheckoutStarted}

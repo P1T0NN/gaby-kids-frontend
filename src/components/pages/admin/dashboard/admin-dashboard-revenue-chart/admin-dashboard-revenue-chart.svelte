@@ -4,10 +4,10 @@
 	import { m } from '@/lib/paraglide/messages';
 
 	// COMPONENTS
+	import AdminDashboardRevenueChartLoading from '@/components/pages/admin/dashboard/loading/admin-dashboard-revenue-chart-loading.svelte';
 	import * as Chart from '@/components/ui/chart/index.js';
 	import AreaChartInteractive from '@/components/ui/custom-components/custom-charts/area-chart-interactive.svelte';
 	import ErrorComponent from '@/components/ui/custom-components/error-component/error-component.svelte';
-	import { Skeleton } from '@/components/ui/skeleton/index.js';
 
 	// CONFIG
 	import { COMPANY_DATA } from '@/shared/config.js';
@@ -97,7 +97,9 @@
 
 {#if analytics.revenueError}
 	<ErrorComponent message={m['AdminDashboardPage.RevenueChart.loadError']()} />
-{:else if analytics.revenueData}
+{:else if analytics.revenueLoading || !analytics.revenueData}
+	<AdminDashboardRevenueChartLoading />
+{:else}
 	<AreaChartInteractive
 		data={chartData}
 		x="date"
@@ -116,6 +118,4 @@
 		{xAxisFormat}
 		{tooltip}
 	/>
-{:else}
-	<Skeleton class="h-80 rounded-4xl" />
 {/if}

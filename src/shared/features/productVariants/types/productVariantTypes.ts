@@ -58,17 +58,22 @@ export type ProductVariantWrites = {
 	deletes: Id<'productVariants'>[];
 };
 
-/** Form-level draft of one product variant; prices are major-unit input strings. */
+/** Editable product variant row; mirrors the saveProduct payload plus the SKU lock flag. */
 export type ProductVariantFormValue = {
-	/** Stored product variant ID; empty for a new product variant. */
-	id: string;
+	/** Stored product variant ID; undefined for a new product variant. */
+	id: Id<'productVariants'> | undefined;
 	options: ProductVariantOption[];
 	sku: string;
+	/** True when the user chose to edit the SKU manually instead of the automatic one. */
+	skuOverridden: boolean;
 	/** Assigned library image references; stored keys, or preview IDs for new uploads. */
 	imageKeys: string[];
-	price: string;
-	discountedPrice: string;
-	inventory: string;
+	/** Payable price in cents; undefined while the price input is empty. */
+	priceInCents: number | undefined;
+	/** Compare-at (regular) price in cents; undefined when there is no discount. */
+	compareAtPriceInCents: number | undefined;
+	/** Stock count; undefined while the stock input is empty. */
+	inventory: number | undefined;
 	reservedInventory: number;
 };
 
@@ -80,11 +85,6 @@ export type ProductVariantSummary = {
 	/** Present only when the product has exactly one product variant. */
 	defaultProductVariantId?: Id<'productVariants'>;
 };
-
-export type ProductVariantErrorField =
-	'options' | 'sku' | 'price' | 'discountedPrice' | 'inventory' | 'combination' | 'images';
-
-export type ProductVariantRowErrors = Partial<Record<ProductVariantErrorField, string>>;
 
 export type ProductVariantCaches = {
 	priceInCents: number;

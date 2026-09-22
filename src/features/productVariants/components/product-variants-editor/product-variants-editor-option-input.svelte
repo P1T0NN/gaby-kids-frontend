@@ -15,8 +15,8 @@
 		productVariantOptionNames: string[];
 		productVariants: ProductVariantFormValue[];
 		disabled?: boolean;
-		/** Reveals the error after a failed submit, not while the admin is still editing. */
-		showError?: boolean;
+		/** Submit-time schema error for this option name; empty until a submit fails. */
+		error?: string;
 	};
 
 	let {
@@ -25,7 +25,7 @@
 		productVariantOptionNames = $bindable(),
 		productVariants = $bindable(),
 		disabled = false,
-		showError = false
+		error
 	}: Props = $props();
 
 	function renameProductVariantOption(name: string): void {
@@ -51,31 +51,36 @@
 	}
 </script>
 
-<div class="flex w-full items-center gap-1">
-	<Input
-		value={optionName}
-		placeholder={m['ProductVariantsFeature.ProductVariantsEditorOptionInput.optionNamePlaceholder'](
-			{
+<div class="flex w-full flex-col gap-1">
+	<div class="flex w-full items-center gap-1">
+		<Input
+			value={optionName}
+			placeholder={m[
+				'ProductVariantsFeature.ProductVariantsEditorOptionInput.optionNamePlaceholder'
+			]({
 				number: optionIndex + 1
-			}
-		)}
-		aria-label={m['ProductVariantsFeature.ProductVariantsEditorOptionInput.optionNameLabel']({
-			number: optionIndex + 1
-		})}
-		aria-invalid={!optionName.trim() && showError ? true : undefined}
-		{disabled}
-		class="h-9 max-w-72 flex-1"
-		oninput={(event) => renameProductVariantOption(event.currentTarget.value)}
-	/>
-	<Button
-		type="button"
-		variant="ghost"
-		size="icon-sm"
-		class="text-muted-foreground hover:text-destructive"
-		aria-label={m['ProductVariantsFeature.ProductVariantsEditorOptionInput.removeOption']()}
-		{disabled}
-		onclick={removeProductVariantOption}
-	>
-		<span class="icon-[lucide--x] size-4" aria-hidden="true"></span>
-	</Button>
+			})}
+			aria-label={m['ProductVariantsFeature.ProductVariantsEditorOptionInput.optionNameLabel']({
+				number: optionIndex + 1
+			})}
+			aria-invalid={error ? true : undefined}
+			{disabled}
+			class="h-9 max-w-72 flex-1"
+			oninput={(event) => renameProductVariantOption(event.currentTarget.value)}
+		/>
+		<Button
+			type="button"
+			variant="ghost"
+			size="icon-sm"
+			class="text-muted-foreground hover:text-destructive"
+			aria-label={m['ProductVariantsFeature.ProductVariantsEditorOptionInput.removeOption']()}
+			{disabled}
+			onclick={removeProductVariantOption}
+		>
+			<span class="icon-[lucide--x] size-4" aria-hidden="true"></span>
+		</Button>
+	</div>
+	{#if error}
+		<p class="text-xs text-destructive">{error}</p>
+	{/if}
 </div>

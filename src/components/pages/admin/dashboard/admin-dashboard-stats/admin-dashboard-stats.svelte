@@ -4,9 +4,9 @@
 	import { m } from '@/lib/paraglide/messages';
 
 	// COMPONENTS
+	import AdminDashboardStatsLoading from '@/components/pages/admin/dashboard/loading/admin-dashboard-stats-loading.svelte';
 	import AnalyticsStatsCard from '@/features/analytics/components/analytics-stats-card/analytics-stats-card.svelte';
 	import ErrorComponent from '@/components/ui/custom-components/error-component/error-component.svelte';
-	import { Skeleton } from '@/components/ui/skeleton/index.js';
 
 	// HOOKS
 	import { useAnalyticsDashboard } from '@/features/analytics/hooks/useAnalyticsDashboard.svelte.js';
@@ -17,8 +17,6 @@
 
 	// TYPES
 	import type { AnalyticsStat } from '@/shared/features/analytics/types/analyticsTypes.js';
-
-	const STAT_SKELETONS = [0, 1, 2];
 
 	const analytics = useAnalyticsDashboard();
 
@@ -53,16 +51,12 @@
 
 {#if analytics.statsError}
 	<ErrorComponent message={m['AdminDashboardPage.AdminDashboardStats.loadError']()} />
-{:else if stats.length > 0}
+{:else if analytics.statsLoading || stats.length === 0}
+	<AdminDashboardStatsLoading />
+{:else}
 	<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
 		{#each stats as stat (stat.title)}
 			<AnalyticsStatsCard {...stat} />
-		{/each}
-	</div>
-{:else}
-	<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-		{#each STAT_SKELETONS as skeleton (skeleton)}
-			<Skeleton class="h-40 rounded-4xl" />
 		{/each}
 	</div>
 {/if}

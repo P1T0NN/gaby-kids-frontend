@@ -12,14 +12,15 @@
 		DEFAULT_PRODUCT_AGE_GROUP,
 		DEFAULT_PRODUCT_GENDER
 	} from '@/shared/features/products/config.js';
-	import { saveProductSchema } from '@/shared/features/products/schemas/productsSchemas.js';
 
 	// UTILS
 	import {
-		buildSaveProductArgs,
-		createProductFields
+		buildSaveProductExtraFields,
+		createProductFields,
+		saveProductFormSchema
 	} from '@/features/products/forms/createProductForm.js';
 	import { createProductVariantFormValue } from '@/features/productVariants/utils/productVariantFormValues.js';
+	import { generateSlug } from '@/shared/utils/generateSlug.js';
 
 	// COMPONENTS
 	import AdminAddProductHeader from '@/components/pages/admin/add-product/admin-add-product-header.svelte';
@@ -53,27 +54,17 @@
 			gender: DEFAULT_PRODUCT_GENDER
 		}
 	);
-
-	// Show the error as soon as any submit attempt failed, even when native
-	// validation stopped the form before the schema ran.
-	function categoryFieldError(fieldErrors: Readonly<Record<string, string>>): string {
-		if (categoryId) return '';
-		return (
-			fieldErrors.categoryId ??
-			(Object.keys(fieldErrors).length > 0 ? m['ValidationMessages.requiredValue']() : '')
-		);
-	}
 </script>
 
 <SvelteHead title={m['AddProductPage.pageTitle']()} noindex />
 
-{#snippet categoryField({ field, disabled, errors }: CustomFieldContext)}
+{#snippet categoryField({ field, disabled, error }: CustomFieldContext)}
 	<ProductCategorySelector
 		id={field.name}
 		bind:selectedId={categoryId}
 		required
 		{disabled}
-		error={categoryFieldError(errors)}
+		{error}
 	/>
 {/snippet}
 
@@ -81,6 +72,7 @@
 	<ProductVariantsEditor
 		bind:productVariants
 		bind:productVariantOptionNames
+		productSlug={generateSlug(String(values.name ?? ''))}
 		{uploadFiles}
 		trackInventory={values.trackInventory !== false}
 		{disabled}
@@ -97,12 +89,12 @@
 		fields={createProductFields({ productVariantsField, categoryField })}
 		bind:values
 		bind:uploadFiles
-		schema={saveProductSchema}
+		schema={saveProductFormSchema}
 		uploadNamespace="products"
-		prepareArgs={({ values, uploadedFiles }) =>
-			buildSaveProductArgs({
-				values,
+		resolveExtraFields={({ uploadedFiles }) =>
+			buildSaveProductExtraFields({
 				categoryId,
+				status: values.active === true ? 'active' : 'draft',
 				productVariantOptionNames,
 				productVariants,
 				uploadFiles,

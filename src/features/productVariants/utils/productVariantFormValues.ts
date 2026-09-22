@@ -6,19 +6,14 @@ export function createProductVariantFormValue(
 	productVariantOptionNames: readonly string[]
 ): ProductVariantFormValue {
 	return {
-		id: '',
+		id: undefined,
 		options: productVariantOptionNames.map((name) => ({ name, value: '' })),
 		sku: '',
+		skuOverridden: false,
 		imageKeys: [],
-		price: '',
-		discountedPrice: '',
-		inventory: '0',
+		priceInCents: undefined,
+		compareAtPriceInCents: undefined,
+		inventory: 0,
 		reservedInventory: 0
 	};
-}
-
-/** Major-unit input string for a stored price; empty when the price is absent. */
-export function formatProductVariantFormPrice(priceInCents: number | undefined): string {
-	if (priceInCents === undefined) return '';
-	return (priceInCents / 100).toFixed(2);
 }

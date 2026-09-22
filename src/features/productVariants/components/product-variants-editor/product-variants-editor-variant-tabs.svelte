@@ -12,30 +12,27 @@
 
 	// TYPES
 	import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
-	import type {
-		ProductVariantFormValue,
-		ProductVariantRowErrors
-	} from '@/shared/features/productVariants/types/productVariantTypes.js';
+	import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
 
 	type Props = {
 		productVariants: ProductVariantFormValue[];
 		productVariantOptionNames: string[];
-		productVariantRowErrors: ProductVariantRowErrors[];
+		productSlug: string;
 		uploadFiles: PreviewFile[];
 		trackInventory: boolean;
 		disabled?: boolean;
-		/** Reveals every error after a failed submit, even for untouched fields. */
-		showAllErrors?: boolean;
+		/** Submit-time schema errors keyed by field path; empty until a submit fails. */
+		errors: Readonly<Record<string, string>>;
 	};
 
 	let {
 		productVariants = $bindable(),
 		productVariantOptionNames = $bindable(),
-		productVariantRowErrors,
+		productSlug,
 		uploadFiles,
 		trackInventory,
 		disabled = false,
-		showAllErrors = false
+		errors
 	}: Props = $props();
 
 	let selectedProductVariantIndex = $state(0);
@@ -44,6 +41,14 @@
 		productVariants.length === 0
 			? ''
 			: String(Math.min(selectedProductVariantIndex, productVariants.length - 1))
+	);
+
+	/** Whether a row or any of its fields carries a submit error. */
+	const productVariantHasErrors = $derived(
+		productVariants.map((_, index) => {
+			const rowPath = `productVariants.${index}`;
+			return Object.keys(errors).some((path) => path === rowPath || path.startsWith(`${rowPath}.`));
+		})
 	);
 
 	function getProductVariantTabLabel(
@@ -73,12 +78,9 @@
 	<div class="flex flex-wrap items-center gap-2">
 		<Tabs.List>
 			{#each productVariants as productVariant, index (index)}
-				{@const rowErrors = productVariantRowErrors[index]}
-				{@const hasErrors =
-					showAllErrors && rowErrors !== undefined && Object.keys(rowErrors).length > 0}
 				<Tabs.Trigger value={String(index)}>
 					{getProductVariantTabLabel(productVariant, index)}
-					{#if hasErrors}
+					{#if productVariantHasErrors[index]}
 						<span class="size-1.5 shrink-0 rounded-full bg-destructive" aria-hidden="true"></span>
 						<span class="sr-only">
 							{m['ProductVariantsFeature.ProductVariantsEditorVariantTabs.hasErrors']()}
@@ -100,13 +102,13 @@
 			<ProductVariantsEditorVariantRow
 				{productVariant}
 				rowIndex={index}
-				rowError={productVariantRowErrors[index]}
 				bind:productVariants
 				bind:productVariantOptionNames
+				{productSlug}
 				{uploadFiles}
 				{trackInventory}
 				{disabled}
-				{showAllErrors}
+				{errors}
 			/>
 		</Tabs.Content>
 	{/each}

@@ -4,8 +4,6 @@ import { getLocale } from '../../lib/paraglide/runtime.js';
 // CONFIG
 import { COMPANY_DATA } from '../config.js';
 
-type PriceInput = string | number | boolean | null | undefined;
-
 export type OrderCalculationItem = {
 	unitPriceInCents: number;
 	compareAtPriceInCents?: number;
@@ -48,13 +46,24 @@ export function formatCompactPrice(
 	return formatter.format(priceInCents / 100);
 }
 
-export function priceInCents(value: PriceInput): number {
-	return Math.round(Number(value) * 100);
+/** Formats integer minor units as a plain decimal string ("19.99"); blank when absent. */
+export function formatAmountInput(value: number | undefined, decimals: number): string {
+	return value === undefined ? '' : (value / 10 ** decimals).toFixed(decimals);
 }
 
-export function parseOptionalPriceInCents(value: PriceInput): number | undefined {
-	const normalized = String(value ?? '').trim();
-	return normalized ? priceInCents(normalized) : undefined;
+/** Keeps digits and one decimal separator, capped at the allowed decimal places. */
+export function sanitizeAmountInput(input: string, decimals: number): string {
+	const normalized = input.replace(',', '.').replace(/[^\d.]/g, '');
+	const [whole = '', ...fraction] = normalized.split('.');
+	if (decimals === 0 || fraction.length === 0) return whole;
+	return `${whole}.${fraction.join('').slice(0, decimals)}`;
+}
+
+/** Parses an editable amount string into integer minor units; undefined when blank or invalid. */
+export function parseAmountInput(input: string, decimals: number): number | undefined {
+	if (input === '' || input === '.') return undefined;
+	const amount = Number(input);
+	return Number.isFinite(amount) ? Math.round(amount * 10 ** decimals) : undefined;
 }
 
 export function getDiscountPercent(
@@ -66,6 +75,7 @@ export function getDiscountPercent(
 	return Math.round(((compareAtPriceInCents - priceInCents) / compareAtPriceInCents) * 100);
 }
 
+/** Payable price in cents after `discountPercent` off; null when the discount is unsupported. */
 export function calculateDiscountedPriceInCents(
 	priceInCents: number,
 	discountPercent: number

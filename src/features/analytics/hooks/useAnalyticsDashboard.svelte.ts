@@ -130,8 +130,8 @@ export class AnalyticsDashboardState {
 	previousBounds = $derived.by<RangeBounds>(() => getPreviousRangeBounds(this.bounds, TIME_ZONE));
 
 	/**
-	 * One-shot read of both dashboard queries for the current range. Keeps the previous data on
-	 * screen while a new range loads, and ignores out-of-order responses from rapid range changes.
+	 * One-shot read of both dashboard queries for the current range. Retains the previous snapshot
+	 * in state while a new range loads, and ignores out-of-order responses from rapid range changes.
 	 */
 	load = async (): Promise<void> => {
 		const requestId = ++this.#requestId;

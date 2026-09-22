@@ -108,7 +108,7 @@
 			{#if sidebarHeader}
 				<header
 					data-native-sidebar-header
-					class="flex min-h-12 shrink-0 items-center gap-2 overflow-hidden px-3 py-2"
+					class="flex min-h-14 shrink-0 items-center gap-2 overflow-hidden px-3 py-2"
 				>
 					<span
 						class="flex size-7 shrink-0 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground"

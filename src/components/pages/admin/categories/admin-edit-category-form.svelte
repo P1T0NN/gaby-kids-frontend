@@ -109,11 +109,6 @@
 	bind:uploadFiles
 	bind:submitting
 	resetOnSuccess={false}
-	prepareArgs={({ values }) => ({
-		id: initialCategory._id,
-		name: String(values.name ?? ''),
-		status: values.status === 'archived' ? ('archived' as const) : ('active' as const)
-	})}
 	onSuccess={() => gotoParaglide(ADMIN_PAGE_ENDPOINTS.CATEGORIES)}
 	successMessage={m['AdminEditCategoryPage.AdminEditCategoryForm.categoryUpdated']()}
 	errorMessage={m['AdminEditCategoryPage.AdminEditCategoryForm.updateError']()}

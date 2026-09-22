@@ -1,11 +1,8 @@
 // LIBRARIES
 import { ConvexError } from 'convex/values';
 
-// CONFIG
-import { PRODUCT_VARIANTS_CONFIG } from '../../../../shared/features/productVariants/config.js';
-
 // UTILS
-import { generateSlug } from '../../../../shared/utils/generateSlug.js';
+import { getGeneratedProductVariantSku } from '../../../../shared/features/productVariants/utils/getGeneratedProductVariantSku.js';
 
 // HELPERS
 import { isProductVariantSkuTaken } from './isProductVariantSkuTaken.js';
@@ -26,12 +23,11 @@ export async function resolveProductVariantSku(options: {
 	const typedSku = options.productVariant.sku.trim();
 	const base =
 		typedSku ||
-		generateSlug(
-			`${options.slug} ${options.productVariant.options.map((option) => option.value).join(' ')}`
-		)
-			.slice(0, PRODUCT_VARIANTS_CONFIG.MAX_SKU_LENGTH)
-			.replace(/-+$/g, '') ||
-		`product-${options.position + 1}`;
+		getGeneratedProductVariantSku({
+			slug: options.slug,
+			optionValues: options.productVariant.options.map((option) => option.value),
+			position: options.position
+		});
 
 	let candidate = base;
 	let suffix = 2;

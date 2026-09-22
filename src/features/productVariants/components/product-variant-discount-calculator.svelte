@@ -9,7 +9,7 @@
 
 	// UTILS
 	import { hasInvalidCustomPercent } from '@/shared/features/products/utils/hasInvalidCustomPercent.js';
-	import { calculateDiscountedPriceInCents, priceInCents } from '@/shared/utils/pricing.js';
+	import { calculateDiscountedPriceInCents } from '@/shared/utils/pricing.js';
 
 	// TYPES
 	import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
@@ -30,9 +30,13 @@
 	let customPercent = $state('');
 
 	const regularPriceInCents = $derived(
-		priceInCents(String(productVariants[rowIndex]?.price ?? ''))
+		productVariants[rowIndex]?.compareAtPriceInCents ?? productVariants[rowIndex]?.priceInCents
 	);
-	const hasPrice = $derived(Number.isSafeInteger(regularPriceInCents) && regularPriceInCents > 0);
+	const hasPrice = $derived(
+		regularPriceInCents !== undefined &&
+			Number.isSafeInteger(regularPriceInCents) &&
+			regularPriceInCents > 0
+	);
 	const customPercentNumber = $derived(Number(customPercent));
 	const customPercentIsInvalid = $derived(
 		hasInvalidCustomPercent(customPercent, customPercentNumber)
@@ -42,15 +46,19 @@
 	);
 
 	function applyProductVariantDiscount(discountPercent: number): void {
-		const discountedPriceInCents = calculateDiscountedPriceInCents(
-			regularPriceInCents,
-			discountPercent
-		);
+		const priceInCents = regularPriceInCents;
+		if (priceInCents === undefined) return;
+
+		const discountedPriceInCents = calculateDiscountedPriceInCents(priceInCents, discountPercent);
 		if (discountedPriceInCents === null) return;
 
 		productVariants = productVariants.map((productVariant, index) =>
 			index === rowIndex
-				? { ...productVariant, discountedPrice: (discountedPriceInCents / 100).toFixed(2) }
+				? {
+						...productVariant,
+						compareAtPriceInCents: priceInCents,
+						priceInCents: discountedPriceInCents
+					}
 				: productVariant
 		);
 		customPercent = String(discountPercent);

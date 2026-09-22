@@ -87,6 +87,7 @@ function snapshotFormValues<T extends FormValues>(values: T): T {
 
 export function useFormChanges<T extends FormValues>(getInitialValues: () => T): FormChanges<T> {
 	let values = $state(getInitialValues());
+
 	const initialSnapshot = untrack(() => snapshotFormValues(values));
 	const changedValues = $derived.by(() =>
 		getChangedValues(initialSnapshot, snapshotFormValues(values))

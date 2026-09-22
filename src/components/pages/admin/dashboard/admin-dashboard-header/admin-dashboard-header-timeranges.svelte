@@ -4,7 +4,7 @@
 
 	// COMPONENTS
 	import AdminDashboardHeaderCustomCalendar from './admin-dashboard-header-custom-calendar.svelte';
-	import { Button } from '@/components/ui/button/index.js';
+	import AdminDashboardHeaderRefreshButton from './admin-dashboard-header-refresh-button.svelte';
 	import * as ToggleGroup from '@/components/ui/toggle-group/index.js';
 
 	// HOOKS
@@ -52,13 +52,5 @@
 
 	<AdminDashboardHeaderCustomCalendar />
 
-	<Button
-		variant="outline"
-		size="icon-sm"
-		class="ms-2"
-		onclick={analytics.refresh}
-		aria-label={m['AdminDashboardPage.AdminDashboardHeaderTimeranges.refresh']()}
-	>
-		<span class="icon-[lucide--refresh-cw] size-4" aria-hidden="true"></span>
-	</Button>
+	<AdminDashboardHeaderRefreshButton />
 </div>

@@ -120,7 +120,3 @@
 		{/if}
 	{/snippet}
 </SearchInput>
-
-{#if error}
-	<p class="mt-1.5 text-xs text-destructive" role="alert">{error}</p>
-{/if}
