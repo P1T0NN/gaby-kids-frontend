@@ -49,7 +49,7 @@
 
 <div class="flex min-w-0 flex-col gap-8 lg:col-start-2 lg:row-start-2">
 	<div class="flex flex-col gap-5">
-		{#if productVariants.length > 1}
+		{#if product.productVariantOptionNames.length > 0}
 			<ProductVariantPicker
 				{product}
 				{productVariants}

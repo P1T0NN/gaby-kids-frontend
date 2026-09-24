@@ -46,13 +46,13 @@
 </script>
 
 {#snippet productContent()}
-	<div class="relative aspect-13/10 overflow-hidden bg-muted">
+	<div class="relative aspect-4/3 overflow-hidden bg-muted">
 		{#if image && failedImage !== image}
 			<img
 				src={image}
 				alt={product.name}
 				width="480"
-				height="480"
+				height="360"
 				loading="lazy"
 				decoding="async"
 				class="block h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
@@ -86,7 +86,6 @@
 		<ProductPrice
 			priceInCents={product.priceInCents}
 			compareAtPriceInCents={product.compareAtPriceInCents}
-			from={product.hasPriceRange}
 			priceClass="text-lg"
 		/>
 	</Card.Header>
