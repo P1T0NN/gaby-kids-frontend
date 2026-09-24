@@ -5,6 +5,7 @@
 	// CONFIG
 	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
 	import { PRODUCTS_CONFIG } from '@/shared/features/products/config.js';
+	import { UPSELLS_CONFIG } from '@/shared/features/upsells/config.js';
 
 	// COMPONENTS
 	import { Badge } from '@/components/ui/badge/index.js';
@@ -109,7 +110,8 @@
 				item={{ productVariantId: defaultProductVariantId, image: image ?? '' }}
 				productId={product._id}
 				name={product.name}
-				showUpsellsAfterAdd={Boolean(product.upsellProductIds?.length)}
+				showUpsellsAfterAdd={UPSELLS_CONFIG.HAS_UPSELLS &&
+					Boolean(product.upsellProductIds?.length)}
 				aria-label={m['ProductsFeature.ProductCard.addProduct']({ name: product.name })}
 				{availability}
 				class="w-full"

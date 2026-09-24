@@ -10,9 +10,10 @@
 	import ConfirmDeleteDialog from '@/components/ui/custom-components/confirm-delete-dialog/confirm-delete-dialog.svelte';
 	import DestructiveMenuItem from '@/components/ui/custom-components/destructive-menu-item/destructive-menu-item.svelte';
 	import NativePopover from '@/components/ui/native-components/native-popover/native-popover.svelte';
-	import { Badge } from '@/components/ui/badge/index.js';
 	import { TableCell } from '@/components/ui/table/index.js';
 	import Link from '@/components/ui/custom-components/link/link.svelte';
+	import AgeGroupBadge from '@/features/products/components/age-group-badge/age-group-badge.svelte';
+	import GenderBadge from '@/features/products/components/gender-badge/gender-badge.svelte';
 	import ProductPrice from '@/features/products/components/product-price.svelte';
 	import { m } from '@/lib/paraglide/messages';
 	import { getLocale } from '@/lib/paraglide/runtime';
@@ -26,23 +27,6 @@
 	// UTILS
 	import { formatDate } from '@/shared/utils/date.js';
 	import { toastMessage } from '@/utils/toastMessage.js';
-
-	// TYPES
-	import type {
-		ProductAgeGroup,
-		ProductGender
-	} from '@/shared/features/products/types/productsTypes.js';
-
-	const AGE_GROUP_LABELS = {
-		kids: m['ProductsFeature.ProductAttributes.kids'],
-		adults: m['ProductsFeature.ProductAttributes.adults']
-	} satisfies Record<ProductAgeGroup, () => string>;
-
-	const GENDER_LABELS = {
-		unisex: m['ProductsFeature.ProductAttributes.unisex'],
-		male: m['ProductsFeature.ProductAttributes.male'],
-		female: m['ProductsFeature.ProductAttributes.female']
-	} satisfies Record<ProductGender, () => string>;
 
 	type Product = Doc<'products'> & {
 		categoryOption: { name: string };
@@ -145,10 +129,10 @@
 		{#if PRODUCTS_CONFIG.HAS_AGE_GROUP || PRODUCTS_CONFIG.HAS_GENDER}
 			<div class="flex flex-wrap gap-1">
 				{#if PRODUCTS_CONFIG.HAS_AGE_GROUP && product.ageGroup}
-					<Badge variant="secondary">{AGE_GROUP_LABELS[product.ageGroup]()}</Badge>
+					<AgeGroupBadge value={product.ageGroup} />
 				{/if}
 				{#if PRODUCTS_CONFIG.HAS_GENDER && product.gender}
-					<Badge variant="outline">{GENDER_LABELS[product.gender]()}</Badge>
+					<GenderBadge value={product.gender} />
 				{/if}
 			</div>
 		{/if}

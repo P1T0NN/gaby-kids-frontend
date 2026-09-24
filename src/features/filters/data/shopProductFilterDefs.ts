@@ -1,6 +1,9 @@
 // LIBRARIES
 import { m } from '@/lib/paraglide/messages';
 
+// DATA
+import { AGE_GROUP_LABELS, GENDER_LABELS } from '@/features/products/data/productLabels.js';
+
 // CONFIG
 import {
 	SHOP_AGE_GROUP_FILTER_KEY,
@@ -15,10 +18,6 @@ import { PRODUCTS_CONFIG } from '@/shared/features/products/config.js';
 
 // TYPES
 import type { FilterDef } from '@/shared/features/filters/types/filterTypes.js';
-import type {
-	ProductAgeGroup,
-	ProductGender
-} from '@/shared/features/products/types/productsTypes.js';
 
 const CATEGORY_FILTER = {
 	key: SHOP_CATEGORY_FILTER_KEY,
@@ -31,11 +30,6 @@ const CATEGORY_FILTER = {
 		return [{ value: '', label: m['CategoriesFeature.CategoryOptions.allCategories']() }];
 	}
 } satisfies FilterDef;
-
-const AGE_GROUP_LABELS = {
-	kids: m['ProductsFeature.ProductAttributes.kids'],
-	adults: m['ProductsFeature.ProductAttributes.adults']
-} satisfies Record<ProductAgeGroup, () => string>;
 
 const AGE_GROUP_FILTER = {
 	key: SHOP_AGE_GROUP_FILTER_KEY,
@@ -52,12 +46,6 @@ const AGE_GROUP_FILTER = {
 		];
 	}
 } satisfies FilterDef;
-
-const GENDER_LABELS = {
-	unisex: m['ProductsFeature.ProductAttributes.unisex'],
-	male: m['ProductsFeature.ProductAttributes.male'],
-	female: m['ProductsFeature.ProductAttributes.female']
-} satisfies Record<ProductGender, () => string>;
 
 const GENDER_FILTER = {
 	key: SHOP_GENDER_FILTER_KEY,

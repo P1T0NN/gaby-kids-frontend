@@ -8,6 +8,9 @@
 	import ProductVariantPicker from '@/components/pages/(unprotected)/product/product-variant-picker/product-variant-picker.svelte';
 	import ProductUpsellItem from './product-upsell-item.svelte';
 
+	// CONFIG
+	import { UPSELLS_CONFIG } from '@/shared/features/upsells/config.js';
+
 	// UTILS
 	import { getProductVariantAvailability } from '@/features/productVariants/utils/getProductVariantAvailability.js';
 
@@ -65,7 +68,7 @@
 				productId={product._id}
 				name={product.name}
 				openCartAfterAdd
-				showUpsellsAfterAdd={product.upsells.length > 0}
+				showUpsellsAfterAdd={UPSELLS_CONFIG.HAS_UPSELLS && product.upsells.length > 0}
 				{disabled}
 				{availability}
 				size="lg"
@@ -78,7 +81,7 @@
 		</div>
 	</div>
 
-	{#if product.upsells.length > 0}
+	{#if UPSELLS_CONFIG.HAS_UPSELLS && product.upsells.length > 0}
 		<Separator />
 		<section aria-labelledby="product-upsells" class="flex flex-col gap-4">
 			<h2 id="product-upsells" class="text-base font-semibold">

@@ -8,6 +8,7 @@
 
 	// TYPES
 	import type { Snippet } from 'svelte';
+	import type { HTMLButtonAttributes } from 'svelte/elements';
 
 	type TooltipSide = 'top' | 'bottom' | 'left' | 'right';
 	type NativeTooltipFallbackComponent = typeof import('./native-tooltip-fallback.svelte').default;
@@ -19,8 +20,10 @@
 		class: className,
 		side = 'top',
 		sideOffset = 8,
-		triggerLabel
-	}: {
+		triggerLabel,
+		triggerClass,
+		...restProps
+	}: HTMLButtonAttributes & {
 		id: string;
 		trigger: Snippet;
 		children: Snippet;
@@ -28,6 +31,8 @@
 		side?: TooltipSide;
 		sideOffset?: number;
 		triggerLabel?: string;
+		/** Extra classes for the trigger button. */
+		triggerClass?: string;
 	} = $props();
 
 	let nativeSupported = $state<boolean | null>(null);
@@ -95,11 +100,15 @@
 
 {#if nativeSupported !== false}
 	<button
+		{...restProps}
 		type="button"
 		interestfor={id}
 		aria-describedby={id}
 		aria-label={triggerLabel}
-		class="inline-flex cursor-help items-center justify-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+		class={cn(
+			'inline-flex cursor-help items-center justify-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring/40',
+			triggerClass
+		)}
 	>
 		{@render trigger()}
 	</button>
@@ -119,7 +128,16 @@
 {:else if fallbackComponent}
 	{@const NativeTooltipFallback = fallbackComponent}
 
-	<NativeTooltipFallback {id} {trigger} {side} {sideOffset} {triggerLabel} class={className}>
+	<NativeTooltipFallback
+		{id}
+		{trigger}
+		{side}
+		{sideOffset}
+		{triggerLabel}
+		{triggerClass}
+		class={className}
+		{...restProps}
+	>
 		{@render children()}
 	</NativeTooltipFallback>
 {:else if fallbackError}

@@ -3,6 +3,9 @@ import { api } from '@convex/_generated/api';
 import { m } from '@/lib/paraglide/messages';
 import { z } from 'zod';
 
+// DATA
+import { AGE_GROUP_LABELS, GENDER_LABELS } from '@/features/products/data/productLabels.js';
+
 // CONFIG
 import {
 	PRODUCT_AGE_GROUPS,
@@ -15,10 +18,6 @@ import { saveProductSchema } from '@/shared/features/products/schemas/productsSc
 
 // TYPES
 import type { Snippet } from 'svelte';
-import type {
-	ProductAgeGroup,
-	ProductGender
-} from '@/shared/features/products/types/productsTypes.js';
 import type { Id } from '@convex/_generated/dataModel';
 import type {
 	CustomFieldContext,
@@ -31,18 +30,7 @@ import type { ProductVariantFormValue } from '@/shared/features/productVariants/
 /** Client form schema: adds the product-level image requirement, then drops it from the payload. */
 export const saveProductFormSchema = saveProductSchema
 	.safeExtend({ images: z.array(z.string()).min(1, 'PRODUCT_IMAGES_REQUIRED') })
-	.transform(({ images: _images, ...args }) => args);
-
-const AGE_GROUP_LABELS = {
-	kids: m['ProductsFeature.ProductAttributes.kids'],
-	adults: m['ProductsFeature.ProductAttributes.adults']
-} satisfies Record<ProductAgeGroup, () => string>;
-
-const GENDER_LABELS = {
-	unisex: m['ProductsFeature.ProductAttributes.unisex'],
-	male: m['ProductsFeature.ProductAttributes.male'],
-	female: m['ProductsFeature.ProductAttributes.female']
-} satisfies Record<ProductGender, () => string>;
+	.transform((values) => saveProductSchema.parse(values));
 
 const AGE_GROUP_FIELD: FieldConfig = {
 	kind: 'select',

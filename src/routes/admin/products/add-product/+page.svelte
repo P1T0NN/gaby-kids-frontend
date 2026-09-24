@@ -49,7 +49,7 @@
 	let values = $state<MutationValues<typeof api.tables.products.mutations.saveProduct.saveProduct>>(
 		{
 			active: true,
-			trackInventory: true,
+			trackInventory: false,
 			ageGroup: DEFAULT_PRODUCT_AGE_GROUP,
 			gender: DEFAULT_PRODUCT_GENDER
 		}

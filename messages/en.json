@@ -27,10 +27,14 @@
 		"ProductAttributes": {
 			"ageGroup": "Age group",
 			"allAgeGroups": "All ages",
-			"kids": "Kids",
-			"adults": "Adults",
 			"gender": "Gender",
-			"allGenders": "All genders",
+			"allGenders": "All genders"
+		},
+		"AgeGroupBadge": {
+			"kids": "Kids",
+			"adults": "Adults"
+		},
+		"GenderBadge": {
 			"unisex": "Unisex",
 			"male": "Male",
 			"female": "Female"
@@ -78,7 +82,8 @@
 			"priceColumn": "Price",
 			"discountedPriceColumn": "Discounted price (optional)",
 			"stockColumn": "Stock",
-			"removeVariant": "Remove variant {number}"
+			"deleteVariant": "Delete",
+			"removeVariant": "Delete variant {number}"
 		},
 		"ProductVariantsEditorVariantOptionInput": {
 			"optionValuePlaceholder": "Value",

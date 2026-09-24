@@ -21,6 +21,8 @@ export async function getStorefrontUpsells(
 	ctx: QueryCtx,
 	product: Doc<'products'>
 ): Promise<StorefrontUpsell[]> {
+	if (!UPSELLS_CONFIG.HAS_UPSELLS) return [];
+
 	const recommendations = await Promise.all(
 		product.upsellProductIds
 			.slice(0, UPSELLS_CONFIG.maxProducts)

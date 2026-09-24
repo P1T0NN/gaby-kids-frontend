@@ -6,6 +6,7 @@
 	import { Button } from '@/components/ui/button/index.js';
 	import { Input } from '@/components/ui/input/index.js';
 	import { Separator } from '@/components/ui/separator/index.js';
+	import NativeTooltip from '@/components/ui/native-components/native-tooltip/native-tooltip.svelte';
 	import ProductVariantDiscountCalculator from '../../product-variant-discount-calculator.svelte';
 	import ProductVariantsEditorAddOptionButton from '../product-variants-editor-add-option-button.svelte';
 	import ProductVariantsEditorOptionInput from '../product-variants-editor-option-input.svelte';
@@ -75,6 +76,12 @@
 		productVariant.skuOverridden ? productVariant.sku : productVariant.sku.trim() || generatedSku
 	);
 
+	const skuEditingLabel = $derived(
+		productVariant.skuOverridden
+			? m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuLock']()
+			: m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuUnlock']()
+	);
+
 	function optionNameError(optionIndex: number): string | undefined {
 		return errors[`productVariantOptionNames.${optionIndex}`];
 	}
@@ -124,47 +131,59 @@
 	}
 </script>
 
-<div class="relative flex flex-col gap-4 rounded-xl border border-border p-4 pe-12">
-	<Button
-		type="button"
-		variant="ghost"
-		size="icon-sm"
-		class="absolute end-2 top-2 text-muted-foreground hover:text-destructive"
-		aria-label={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.removeVariant']({
-			number: rowIndex + 1
-		})}
-		disabled={disabled || productVariants.length <= 1}
-		onclick={removeProductVariant}
-	>
-		<span class="icon-[lucide--trash-2] size-4" aria-hidden="true"></span>
-	</Button>
+{#snippet skuEditingTrigger()}
+	<span
+		class={productVariant.skuOverridden
+			? 'icon-[lucide--lock-open] size-4'
+			: 'icon-[lucide--lock] size-4'}
+		aria-hidden="true"
+	></span>
+{/snippet}
 
-	<div class="flex flex-col gap-2">
-		<span class="text-sm font-medium">
-			{m['ProductVariantsFeature.ProductVariantsEditor.options']()}
-		</span>
-		<div class="flex flex-col gap-2">
-			{#each productVariantOptionNames as optionName, optionIndex (optionIndex)}
-				<ProductVariantsEditorOptionInput
-					{optionName}
-					{optionIndex}
-					bind:productVariantOptionNames
-					bind:productVariants
-					{disabled}
-					error={optionNameError(optionIndex)}
-				/>
-			{/each}
+<div class="flex flex-col gap-4 rounded-xl border border-border p-4">
+	<div class="flex items-start justify-between gap-3">
+		<div class="flex min-w-0 flex-1 flex-col gap-2">
+			<span class="text-sm font-medium">
+				{m['ProductVariantsFeature.ProductVariantsEditor.options']()}
+			</span>
+			<div class="flex flex-col gap-2">
+				{#each productVariantOptionNames as optionName, optionIndex (optionIndex)}
+					<ProductVariantsEditorOptionInput
+						{optionName}
+						{optionIndex}
+						bind:productVariantOptionNames
+						bind:productVariants
+						{disabled}
+						error={optionNameError(optionIndex)}
+					/>
+				{/each}
+			</div>
+			{#if productVariantOptionNames.length === 0}
+				<p class="text-xs text-muted-foreground">
+					{m['ProductVariantsFeature.ProductVariantsEditor.noOptionsHint']()}
+				</p>
+			{/if}
+			<ProductVariantsEditorAddOptionButton
+				bind:productVariantOptionNames
+				bind:productVariants
+				{disabled}
+			/>
 		</div>
-		{#if productVariantOptionNames.length === 0}
-			<p class="text-xs text-muted-foreground">
-				{m['ProductVariantsFeature.ProductVariantsEditor.noOptionsHint']()}
-			</p>
-		{/if}
-		<ProductVariantsEditorAddOptionButton
-			bind:productVariantOptionNames
-			bind:productVariants
-			{disabled}
-		/>
+
+		<Button
+			type="button"
+			variant="destructive"
+			size="sm"
+			class="shrink-0"
+			aria-label={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.removeVariant']({
+				number: rowIndex + 1
+			})}
+			disabled={disabled || productVariants.length <= 1}
+			onclick={removeProductVariant}
+		>
+			<span class="icon-[lucide--trash-2] size-4" aria-hidden="true"></span>
+			{m['ProductVariantsFeature.ProductVariantsEditorVariantRow.deleteVariant']()}
+		</Button>
 	</div>
 
 	<Separator />
@@ -234,24 +253,17 @@
 					class="h-9 flex-1"
 					oninput={(event) => updateProductVariant({ sku: event.currentTarget.value })}
 				/>
-				<Button
-					type="button"
-					variant="ghost"
-					size="icon-sm"
+				<NativeTooltip
+					id={`sku-editing-${rowIndex}`}
+					trigger={skuEditingTrigger}
+					triggerLabel={skuEditingLabel}
+					triggerClass="size-8 cursor-pointer rounded-4xl hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
 					{disabled}
 					aria-pressed={productVariant.skuOverridden}
-					aria-label={productVariant.skuOverridden
-						? m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuLock']()
-						: m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuUnlock']()}
 					onclick={toggleSkuEditing}
 				>
-					<span
-						class={productVariant.skuOverridden
-							? 'icon-[lucide--lock-open] size-4'
-							: 'icon-[lucide--lock] size-4'}
-						aria-hidden="true"
-					></span>
-				</Button>
+					{skuEditingLabel}
+				</NativeTooltip>
 			</div>
 			<p class="text-xs text-muted-foreground">
 				{m['ProductVariantsFeature.ProductVariantsEditorVariantRow.skuAutoHint']()}
