@@ -291,23 +291,25 @@
 			{/if}
 		</div>
 
-		<div class="flex flex-col gap-1.5">
-			<span class="text-sm font-medium">
-				{m['ProductVariantsFeature.ProductVariantsEditorVariantRow.stockColumn']()}
-			</span>
-			<ProductVariantsEditorAmountInput
-				value={productVariant.inventory}
-				decimals={0}
-				placeholder="0"
-				ariaLabel={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.stockColumn']()}
-				invalid={Boolean(inventoryError)}
-				disabled={disabled || !trackInventory}
-				onValueChange={(value) => updateProductVariant({ inventory: value })}
-			/>
-			{#if inventoryError}
-				<p class="text-xs text-destructive">{inventoryError}</p>
-			{/if}
-		</div>
+		{#if trackInventory}
+			<div class="flex flex-col gap-1.5">
+				<span class="text-sm font-medium">
+					{m['ProductVariantsFeature.ProductVariantsEditorVariantRow.stockColumn']()}
+				</span>
+				<ProductVariantsEditorAmountInput
+					value={productVariant.inventory}
+					decimals={0}
+					placeholder="0"
+					ariaLabel={m['ProductVariantsFeature.ProductVariantsEditorVariantRow.stockColumn']()}
+					invalid={Boolean(inventoryError)}
+					{disabled}
+					onValueChange={(value) => updateProductVariant({ inventory: value })}
+				/>
+				{#if inventoryError}
+					<p class="text-xs text-destructive">{inventoryError}</p>
+				{/if}
+			</div>
+		{/if}
 	</div>
 
 	<Separator />
