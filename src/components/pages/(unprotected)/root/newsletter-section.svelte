@@ -13,7 +13,7 @@
 	class="bg-secondary py-19"
 	size="none"
 	width="full"
-	containerClass="flex max-w-7xl items-end justify-between gap-12 px-6 sm:px-12"
+	containerClass="flex max-w-7xl flex-col justify-between gap-12 px-6 sm:px-12 lg:flex-row lg:items-end"
 >
 	<div class="flex max-w-lg flex-col gap-2.5">
 		<h2 class="font-serif text-4xl text-foreground">Recibe primero los nuevos modelos</h2>
@@ -21,13 +21,16 @@
 			Un correo al mes con los ropones y guayaberas recién salidos del taller.
 		</p>
 	</div>
-	<form class="flex items-stretch gap-3" onsubmit={handleSubscribe}>
+	<form
+		class="flex w-full max-w-lg flex-col items-stretch gap-3 sm:flex-row lg:w-auto lg:shrink-0"
+		onsubmit={handleSubscribe}
+	>
 		<Input
 			type="email"
 			name="email"
 			placeholder="tu@correo.com"
 			aria-label="Correo electrónico"
-			class="h-auto w-80 rounded-sm border-border bg-background p-4 text-sm"
+			class="h-auto w-full rounded-sm border-border bg-background p-4 text-sm sm:w-80"
 		/>
 		<Button type="submit" class="h-auto rounded-sm px-8 py-4">Suscribirme</Button>
 	</form>

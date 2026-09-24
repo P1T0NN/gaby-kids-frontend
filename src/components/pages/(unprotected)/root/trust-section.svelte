@@ -25,7 +25,7 @@
 	class="border-b border-border py-14"
 	size="none"
 	width="full"
-	containerClass="grid max-w-7xl grid-cols-4 gap-6 px-6 sm:px-12"
+	containerClass="grid max-w-7xl grid-cols-1 gap-6 px-6 sm:grid-cols-2 sm:px-12 lg:grid-cols-4"
 >
 	{#each confianza as item (item.label)}
 		<div class="flex items-center gap-3.5">
@@ -39,7 +39,7 @@
 				stroke-linejoin="round"
 				aria-hidden="true"
 			>
-				{#each item.paths as path}
+				{#each item.paths as path (path)}
 					<path d={path}></path>
 				{/each}
 			</svg>

@@ -11,7 +11,11 @@
 	width="full"
 	containerClass="max-w-7xl px-6 sm:px-12"
 >
-	<StaticImage src="/root/hero-image-2.png" alt="" class="absolute inset-0 size-full object-cover" />
+	<StaticImage
+		src="/root/hero-image-2.png"
+		alt=""
+		class="absolute inset-0 size-full object-cover"
+	/>
 	<div
 		class="absolute inset-0 bg-linear-to-b from-background/35 via-background/62 to-background/45"
 	></div>
@@ -25,7 +29,7 @@
 		<p class="max-w-xl text-lg leading-relaxed text-muted-foreground">
 			Ropones, batitas y guayaberas para bautizos, presentaciones y primeras comuniones.
 		</p>
-		<div class="flex justify-center gap-3.5 pt-2">
+		<div class="flex flex-wrap justify-center gap-3.5 pt-2">
 			<ButtonLink href="/shop" class="h-auto rounded-sm px-8 py-4 leading-none tracking-wide">
 				Ver colección
 			</ButtonLink>

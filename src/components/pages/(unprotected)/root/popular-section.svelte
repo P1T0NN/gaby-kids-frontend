@@ -51,11 +51,11 @@
 	width="full"
 	containerClass="flex max-w-7xl flex-col gap-8 px-6 sm:px-12"
 >
-	<div class="flex items-end justify-between">
+	<div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
 		<h2 class="font-serif text-5xl text-foreground">Lo más pedido esta temporada</h2>
 		<Link href="/shop" class="text-sm font-medium text-accent">Ver los 124 modelos →</Link>
 	</div>
-	<div class="grid grid-cols-4 gap-6">
+	<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
 		{#each destacados as producto (producto.nombre)}
 			<article class="flex flex-col gap-3">
 				<div class="relative aspect-3/4 rounded-sm border border-border bg-secondary">

@@ -9,7 +9,7 @@
 	class="bg-foreground text-background"
 	size="none"
 	width="full"
-	containerClass="grid min-h-[520px] grid-cols-2 px-0 sm:px-0"
+	containerClass="grid min-h-[520px] grid-cols-1 px-0 sm:px-0 md:grid-cols-2"
 >
 	<div class="overflow-hidden">
 		<StaticImage
@@ -18,7 +18,7 @@
 			class="size-full object-cover opacity-90"
 		/>
 	</div>
-	<div class="flex flex-col justify-center gap-6 px-18 py-20">
+	<div class="flex flex-col justify-center gap-6 px-6 py-20 sm:px-12 lg:px-18">
 		<svg width="150" height="46" viewBox="0 0 150 46" aria-hidden="true">
 			<path
 				d="M18 10v22M11 17h14M18 32c-5 0-9-3.5-9-8"

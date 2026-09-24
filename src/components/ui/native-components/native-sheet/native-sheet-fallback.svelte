@@ -50,7 +50,6 @@
 	{/if}
 
 	<Sheet.Content
-		forceMount
 		side="right"
 		class={cn(
 			'box-border flex h-dvh max-h-none w-full max-w-md flex-col overflow-hidden border bg-sidebar p-6 pt-14 text-sidebar-foreground',

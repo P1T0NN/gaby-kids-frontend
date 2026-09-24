@@ -95,6 +95,7 @@ import type * as tables_categories_migrations_backfillProductsByCategoryAggregat
 import type * as tables_categories_mutations_createCategory from "../tables/categories/mutations/createCategory.js";
 import type * as tables_categories_mutations_deleteCategory from "../tables/categories/mutations/deleteCategory.js";
 import type * as tables_categories_mutations_updateCategory from "../tables/categories/mutations/updateCategory.js";
+import type * as tables_categories_queries_fetchCategories from "../tables/categories/queries/fetchCategories.js";
 import type * as tables_categories_queries_fetchCategoriesAdmin from "../tables/categories/queries/fetchCategoriesAdmin.js";
 import type * as tables_categories_queries_fetchCategoriesSearch from "../tables/categories/queries/fetchCategoriesSearch.js";
 import type * as tables_categories_queries_fetchCategory from "../tables/categories/queries/fetchCategory.js";
@@ -272,6 +273,7 @@ declare const fullApi: ApiFromModules<{
   "tables/categories/mutations/createCategory": typeof tables_categories_mutations_createCategory;
   "tables/categories/mutations/deleteCategory": typeof tables_categories_mutations_deleteCategory;
   "tables/categories/mutations/updateCategory": typeof tables_categories_mutations_updateCategory;
+  "tables/categories/queries/fetchCategories": typeof tables_categories_queries_fetchCategories;
   "tables/categories/queries/fetchCategoriesAdmin": typeof tables_categories_queries_fetchCategoriesAdmin;
   "tables/categories/queries/fetchCategoriesSearch": typeof tables_categories_queries_fetchCategoriesSearch;
   "tables/categories/queries/fetchCategory": typeof tables_categories_queries_fetchCategory;

@@ -251,6 +251,56 @@ test('stores one optional category image in the category namespace', async () =>
 	expect(fetched.image).toBe(`https://cdn.example.com/${imageKey}`);
 });
 
+test('fetches every active category with its resolved image, sorted by name', async () => {
+	const t = createTestContext();
+	const admin = t.withIdentity({
+		tokenIdentifier: 'category-fetch-admin',
+		subject: 'category-fetch-admin',
+		role: 'admin'
+	});
+	const imageKey = 'categories/fetch-categories-image';
+
+	await t.run((ctx) =>
+		ctx.db.insert('storageUploads', {
+			ownerId: 'category-fetch-admin',
+			key: imageKey,
+			expectedSize: 1,
+			expectedContentType: 'image/webp',
+			status: 'uploaded',
+			createdAt: Date.now()
+		})
+	);
+
+	await admin.mutation(api.tables.categories.mutations.createCategory.createCategory, {
+		name: 'Zeta',
+		status: 'active',
+		uploadedFiles: [imageKey]
+	});
+	await admin.mutation(api.tables.categories.mutations.createCategory.createCategory, {
+		name: 'Alpha',
+		status: 'active'
+	});
+	const archived = await admin.mutation(
+		api.tables.categories.mutations.createCategory.createCategory,
+		{ name: 'Archived', status: 'active' }
+	);
+	await admin.mutation(api.tables.categories.mutations.updateCategory.updateCategory, {
+		id: archived._id,
+		name: archived.name,
+		status: 'archived'
+	});
+
+	const categories = await t.query(
+		api.tables.categories.queries.fetchCategories.fetchCategories,
+		{}
+	);
+
+	expect(categories.map((category) => category.name)).toEqual(['Alpha', 'Zeta']);
+	expect(categories.find((category) => category.name === 'Zeta')).toMatchObject({
+		image: `https://cdn.example.com/${imageKey}`
+	});
+});
+
 test('blocks category deletion while products are assigned and preserves their references', async () => {
 	const t = createTestContext();
 	const admin = t.withIdentity({
