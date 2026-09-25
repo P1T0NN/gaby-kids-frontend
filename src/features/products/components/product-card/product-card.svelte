@@ -46,7 +46,7 @@
 </script>
 
 {#snippet productContent()}
-	<div class="relative aspect-5/4 overflow-hidden bg-muted">
+	<div class="relative h-96 overflow-hidden bg-muted">
 		{#if image && failedImage !== image}
 			<img
 				src={image}

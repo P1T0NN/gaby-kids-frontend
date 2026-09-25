@@ -12,20 +12,20 @@
 	class="bg-foreground text-background"
 	size="none"
 	width="full"
-	containerClass="grid min-h-[520px] grid-cols-1 px-0 sm:px-0 md:grid-cols-2"
+	containerClass="grid min-h-[700px] grid-cols-1 px-0 sm:px-0 md:grid-cols-2"
 >
-	<div class="overflow-hidden">
+	<div class="relative h-88 overflow-hidden md:h-auto">
 		<StaticImage
 			src="/root/featured-guayaberas.png"
 			alt=""
-			class="size-full object-cover opacity-90"
+			class="absolute inset-0 size-full object-contain opacity-90"
 		/>
 	</div>
-	<div class="flex flex-col justify-center gap-6 px-6 py-20 sm:px-12 lg:px-18">
+	<div class="flex flex-col justify-center gap-6 px-6 py-10 sm:px-12 lg:px-18">
 		<StaticImage
 			src="/logo/logo-guayabera-transparent.png"
 			alt=""
-			class="h-12 w-auto self-start"
+			class="h-32 w-auto self-start"
 		/>
 		<h2 class="font-serif text-4xl">Lino natural, bordado a mano</h2>
 		<p class="max-w-md text-base leading-relaxed text-background/75">
