@@ -1,4 +1,7 @@
 <script lang="ts">
+	// CONFIG
+	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
+
 	// COMPONENTS
 	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Section from '@/components/ui/custom-components/section/section.svelte';
@@ -19,25 +22,18 @@
 		/>
 	</div>
 	<div class="flex flex-col justify-center gap-6 px-6 py-20 sm:px-12 lg:px-18">
-		<svg width="150" height="46" viewBox="0 0 150 46" aria-hidden="true">
-			<path
-				d="M18 10v22M11 17h14M18 32c-5 0-9-3.5-9-8"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.3"
-			></path>
-			<circle cx="18" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.3"></circle>
-			<text x="38" y="30" class="fill-current font-serif" font-size="26" letter-spacing="1">
-				gabybera
-			</text>
-		</svg>
+		<StaticImage
+			src="/logo/logo-guayabera-transparent.png"
+			alt=""
+			class="h-12 w-auto self-start"
+		/>
 		<h2 class="font-serif text-4xl">Lino natural, bordado a mano</h2>
 		<p class="max-w-md text-base leading-relaxed text-background/75">
 			Guayaberas de niño hechas en lino fresco, con alforzas cosidas una por una y bordado del
 			nombre sin costo. Su propia etiqueta, la misma casa.
 		</p>
 		<ButtonLink
-			href="/shop"
+			href={`${UNPROTECTED_PAGE_ENDPOINTS.SHOP}?category=guayaberas`}
 			variant="outline"
 			class="mt-2.5 h-auto self-start rounded-sm border-background bg-transparent px-8 py-4 hover:bg-background/10"
 		>

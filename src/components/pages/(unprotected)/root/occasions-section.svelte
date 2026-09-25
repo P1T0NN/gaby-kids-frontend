@@ -1,4 +1,7 @@
 <script lang="ts">
+	// CONFIG
+	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
+
 	// COMPONENTS
 	import * as Card from '@/components/ui/card/index.js';
 	import Link from '@/components/ui/custom-components/link/link.svelte';
@@ -10,21 +13,30 @@
 			titulo: 'Bautizo',
 			img: '/root/occasions-bautizo.png',
 			desc: 'Ropones, batitas, faldón y set de veladora.',
-			foto: 'Foto — bebé en brazos, ropón largo'
+			foto: 'Foto — bebé en brazos, ropón largo',
+			category: 'bautizo'
 		},
 		{
 			titulo: 'Presentación de 3 años',
 			img: '/root/occasions-presentacion.png',
 			desc: 'Vestidos de encaje y trajes con detalle bordado.',
-			foto: 'Foto — niña 3 años, vestido marfil'
+			foto: 'Foto — niña 3 años, vestido marfil',
+			category: null
 		},
 		{
 			titulo: 'Primera Comunión',
 			img: '/root/occasions-comunion.png',
 			desc: 'Vestidos largos, guayaberas y accesorios de altar.',
-			foto: 'Foto — niño y niña, comunión'
+			foto: 'Foto — niño y niña, comunión',
+			category: 'primera-comunion'
 		}
 	];
+
+	function getOccasionHref(category: string | null): string {
+		return category
+			? `${UNPROTECTED_PAGE_ENDPOINTS.SHOP}?category=${category}`
+			: UNPROTECTED_PAGE_ENDPOINTS.SHOP;
+	}
 </script>
 
 <Section
@@ -43,16 +55,21 @@
 	</div>
 	<div class="grid grid-cols-3 gap-6">
 		{#each ocasiones as ocasion (ocasion.titulo)}
-			<Card.Root class="gap-0 rounded-sm border border-border py-0 shadow-none ring-0">
-				<div class="h-65 overflow-hidden border-b border-border bg-secondary">
-					<StaticImage src={ocasion.img} alt={ocasion.titulo} class="size-full object-cover" />
-				</div>
-				<Card.Content class="flex flex-col gap-2.5 px-7 pt-6 pb-8">
-					<h3 class="font-serif text-3xl text-foreground">{ocasion.titulo}</h3>
-					<p class="text-sm leading-relaxed text-muted-foreground">{ocasion.desc}</p>
-					<Link href="/shop" class="pt-2 text-sm font-medium text-accent">Ver todo →</Link>
-				</Card.Content>
-			</Card.Root>
+			<Link
+				href={getOccasionHref(ocasion.category)}
+				class="block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+			>
+				<Card.Root class="gap-0 rounded-sm border border-border py-0 shadow-none ring-0">
+					<div class="h-65 overflow-hidden border-b border-border bg-secondary">
+						<StaticImage src={ocasion.img} alt={ocasion.titulo} class="size-full object-cover" />
+					</div>
+					<Card.Content class="flex flex-col gap-2.5 px-7 pt-6 pb-8">
+						<h3 class="font-serif text-3xl text-foreground">{ocasion.titulo}</h3>
+						<p class="text-sm leading-relaxed text-muted-foreground">{ocasion.desc}</p>
+						<span class="pt-2 text-sm font-medium text-accent">Ver todo →</span>
+					</Card.Content>
+				</Card.Root>
+			</Link>
 		{/each}
 	</div>
 </Section>
