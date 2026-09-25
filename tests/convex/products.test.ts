@@ -300,7 +300,7 @@ test('filters storefront products by age group and gender, alone and with a cate
 	]);
 });
 
-test('saving a product without attributes defaults to adults and unisex', async () => {
+test('saving a product without attributes defaults to kids and unisex', async () => {
 	const t = createTestContext();
 	const admin = t.withIdentity({
 		tokenIdentifier: 'attributes-admin',
@@ -323,7 +323,7 @@ test('saving a product without attributes defaults to adults and unisex', async 
 		uploadedFiles: [PRODUCT_IMAGE_KEY]
 	});
 
-	expect(created.ageGroup).toBe('adults');
+	expect(created.ageGroup).toBe('kids');
 	expect(created.gender).toBe('unisex');
 });
 

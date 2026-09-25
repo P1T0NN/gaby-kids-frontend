@@ -91,6 +91,8 @@ export type UploadField = BaseField & {
 	mode?: UploadMode;
 	/** Accepted file types. */
 	accept?: string;
+	/** Byte limit shown beside the uploader for aggregate upload progress. */
+	progressLimitBytes?: number;
 };
 
 export type FormControlField =

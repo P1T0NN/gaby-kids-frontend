@@ -58,7 +58,8 @@
 		name: initialProduct.name,
 		description: initialProduct.description,
 		trackInventory: initialProduct.trackInventory,
-		ageGroup: initialProduct.ageGroup ?? DEFAULT_PRODUCT_AGE_GROUP,
+		// The store sells kids only, so legacy adult values normalize to the single option on save.
+		ageGroup: DEFAULT_PRODUCT_AGE_GROUP,
 		gender: initialProduct.gender ?? DEFAULT_PRODUCT_GENDER,
 		active: initialProduct.status === 'active'
 	}));

@@ -451,7 +451,7 @@
 		"description": "Description",
 		"descriptionPlaceholder": "Describe the product",
 		"images": "Images",
-		"imagesDescription": "Upload every product image here, then assign them per variant.",
+		"imagesDescription": "Upload every product image here, then assign them per variant. Each image must not exceed 20 MB.",
 		"categories": "Category",
 		"categoriesDescription": "Place this product in a storefront category.",
 		"ProductCategorySelector": {

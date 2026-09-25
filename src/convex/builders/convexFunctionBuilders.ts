@@ -31,7 +31,8 @@ import { enforceRateLimit } from '../rateLimits/helpers/enforceRateLimit.js';
 import { getUploadByKey } from '../storage/getUploadByKey.js';
 
 // CONFIG
-import { exceedsUploadBatchLimit, STORAGE_CONFIG } from '../../shared/features/storage/config.js';
+import { STORAGE_CONFIG } from '../../shared/features/storage/config.js';
+import { exceedsUploadBatchLimit } from '../../shared/features/storage/utils/exceedsUploadBatchLimit.js';
 
 // TYPES
 import type { Doc } from '../_generated/dataModel.js';

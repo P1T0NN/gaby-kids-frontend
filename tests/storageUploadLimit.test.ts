@@ -1,9 +1,7 @@
 import { expect, test } from 'vitest';
 
-import {
-	exceedsUploadBatchLimit,
-	STORAGE_CONFIG
-} from '../src/shared/features/storage/config.js';
+import { exceedsUploadBatchLimit } from '../src/shared/features/storage/utils/exceedsUploadBatchLimit.js';
+import { STORAGE_CONFIG } from '../src/shared/features/storage/config.js';
 
 test('limits combined image bytes without limiting image count', () => {
 	const maxBytes = STORAGE_CONFIG.maxTotalUploadBytes;

@@ -46,13 +46,13 @@
 </script>
 
 {#snippet productContent()}
-	<div class="relative aspect-4/3 overflow-hidden bg-muted">
+	<div class="relative aspect-5/4 overflow-hidden bg-muted">
 		{#if image && failedImage !== image}
 			<img
 				src={image}
 				alt={product.name}
 				width="480"
-				height="360"
+				height="384"
 				loading="lazy"
 				decoding="async"
 				class="block h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"

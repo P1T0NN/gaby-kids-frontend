@@ -24,7 +24,3 @@ export const STORAGE_CONFIG = {
 	/** Failed or abandoned submissions remain retryable until this age. */
 	uploadTtlMinutes: 60
 } as const;
-
-export function exceedsUploadBatchLimit(sizes: readonly number[]): boolean {
-	return sizes.reduce((total, size) => total + size, 0) > STORAGE_CONFIG.maxTotalUploadBytes;
-}

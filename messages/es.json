@@ -451,7 +451,7 @@
 		"description": "Descripción",
 		"descriptionPlaceholder": "Describe el producto",
 		"images": "Imágenes",
-		"imagesDescription": "Sube aquí todas las imágenes del producto y asígnalas a cada variante.",
+		"imagesDescription": "Sube aquí todas las imágenes del producto y asígnalas a cada variante. Cada imagen no debe superar los 20 MB.",
 		"categories": "Categoría",
 		"categoriesDescription": "Coloca este producto en una categoría de la tienda.",
 		"ProductCategorySelector": {

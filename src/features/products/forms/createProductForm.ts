@@ -2,16 +2,14 @@
 import { api } from '@convex/_generated/api';
 import { m } from '@/lib/paraglide/messages';
 import { z } from 'zod';
+import { STORAGE_CONFIG } from '@/shared/features/storage/config.js';
 
 // DATA
 import { AGE_GROUP_LABELS, GENDER_LABELS } from '@/features/products/data/productLabels.js';
 
 // CONFIG
-import {
-	PRODUCT_AGE_GROUPS,
-	PRODUCT_GENDERS
-} from '@/shared/features/products/data/productsData.js';
-import { PRODUCTS_CONFIG } from '@/shared/features/products/config.js';
+import { PRODUCT_GENDERS } from '@/shared/features/products/data/productsData.js';
+import { DEFAULT_PRODUCT_AGE_GROUP, PRODUCTS_CONFIG } from '@/shared/features/products/config.js';
 
 // SCHEMAS
 import { saveProductSchema } from '@/shared/features/products/schemas/productsSchemas.js';
@@ -36,10 +34,9 @@ const AGE_GROUP_FIELD: FieldConfig = {
 	kind: 'select',
 	name: 'ageGroup',
 	label: m['ProductsFeature.ProductAttributes.ageGroup'](),
-	options: PRODUCT_AGE_GROUPS.map((ageGroup) => ({
-		value: ageGroup,
-		label: AGE_GROUP_LABELS[ageGroup]()
-	}))
+	options: [
+		{ value: DEFAULT_PRODUCT_AGE_GROUP, label: AGE_GROUP_LABELS[DEFAULT_PRODUCT_AGE_GROUP]() }
+	]
 };
 
 const GENDER_FIELD: FieldConfig = {
@@ -111,6 +108,7 @@ export function createProductFields(options: {
 					name: 'images',
 					label: m['AddProductPage.images'](),
 					description: m['AddProductPage.imagesDescription'](),
+					progressLimitBytes: STORAGE_CONFIG.maxTotalUploadBytes,
 					mode: 'multiple'
 				},
 				{

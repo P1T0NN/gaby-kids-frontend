@@ -3,6 +3,7 @@
 	import FormField from './form-field.svelte';
 	import { Progress } from '@/components/ui/progress/index.js';
 	import UploadFile from '@/features/uploadFile/components/upload-file.svelte';
+	import UploadProgressLimit from '@/features/uploadFile/components/upload-progress-limit.svelte';
 	import { Spinner } from '../../spinner/index.js';
 	import { m } from '@/lib/paraglide/messages';
 
@@ -17,6 +18,7 @@
 		/** Submit-time schema error for this upload field; empty until a submit fails. */
 		error?: string;
 		uploadProgress?: number | null;
+		uploadProgressBytes?: number;
 		preparingUpload?: boolean;
 	};
 
@@ -26,11 +28,18 @@
 		submitting = false,
 		error,
 		uploadProgress = null,
+		uploadProgressBytes = 0,
 		preparingUpload = false
 	}: Props = $props();
 </script>
 
 <FormField {field} disabled={submitting || field.disabled} {error}>
+	{#if field.progressLimitBytes !== undefined}
+		<UploadProgressLimit
+			uploadedBytes={uploadProgressBytes}
+			limitBytes={field.progressLimitBytes}
+		/>
+	{/if}
 	<UploadFile
 		id={field.name}
 		name={field.name}
@@ -52,15 +61,17 @@
 					{/if}
 				</span>
 
-				{#if !preparingUpload}
+				{#if !preparingUpload && field.progressLimitBytes === undefined}
 					<span class="text-muted-foreground tabular-nums">{uploadProgress}%</span>
 				{/if}
 			</div>
 
-			<Progress
-				value={uploadProgress}
-				aria-label={m['Components.FormUploadFile.uploadProgress']()}
-			/>
+			{#if field.progressLimitBytes === undefined}
+				<Progress
+					value={uploadProgress}
+					aria-label={m['Components.FormUploadFile.uploadProgress']()}
+				/>
+			{/if}
 		</div>
 	{/if}
 </FormField>

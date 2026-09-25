@@ -1,4 +1,7 @@
 <script lang="ts">
+	// CONFIG
+	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
+
 	// COMPONENTS
 	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Section from '@/components/ui/custom-components/section/section.svelte';
@@ -34,7 +37,7 @@
 				Ver colección
 			</ButtonLink>
 			<ButtonLink
-				href="/shop"
+				href={`${UNPROTECTED_PAGE_ENDPOINTS.SHOP}?category=guayaberas`}
 				variant="outline"
 				class="h-auto rounded-sm border-foreground bg-transparent px-8 py-4 leading-none tracking-wide hover:bg-background/20"
 			>

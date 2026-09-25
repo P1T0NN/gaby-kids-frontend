@@ -19,7 +19,6 @@
 	import NativeSidebarPageHeader from '@/components/ui/native-components/native-sidebar/native-sidebar-page-header.svelte';
 	import NativeSidebarSection from '@/components/ui/native-components/native-sidebar/native-sidebar-section.svelte';
 	import NativeSidebarUser from '@/components/ui/native-components/native-sidebar/native-sidebar-user.svelte';
-	import LanguageSwitcher from '@/components/ui/custom-components/language-switcher/language-switcher.svelte';
 
 	let { children } = $props();
 	let mobileSidebarOpen = $state(false);
@@ -44,10 +43,7 @@
 		{/snippet}
 
 		{#snippet sidebarFooter()}
-			<div class="flex flex-col gap-2">
-				<LanguageSwitcher />
-				<NativeSidebarUser />
-			</div>
+			<NativeSidebarUser />
 		{/snippet}
 
 		{#snippet navSecondary()}

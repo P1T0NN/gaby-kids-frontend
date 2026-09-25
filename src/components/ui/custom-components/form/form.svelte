@@ -173,6 +173,7 @@
 			{submitting}
 			error={form.errors[field.name]}
 			uploadProgress={form.uploadProgress}
+			uploadProgressBytes={form.uploadProgressBytes}
 			preparingUpload={form.preparingUpload}
 		/>
 	{:else if field.kind === 'section'}

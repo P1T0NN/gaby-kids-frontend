@@ -11,7 +11,8 @@ import { optimizeToWebp } from '@/features/storage/utils/optimizeToWebp.js';
 import { aggregateUploadProgress } from '@/features/uploadFile/utils/aggregateUploadProgress.js';
 import { uploadWithProgress } from '@/features/uploadFile/utils/uploadWithProgress.js';
 import { linearFind } from '@/shared/lib/algorithms/index.js';
-import { exceedsUploadBatchLimit, STORAGE_CONFIG } from '@/shared/features/storage/config.js';
+import { exceedsUploadBatchLimit } from '@/shared/features/storage/utils/exceedsUploadBatchLimit.js';
+import { STORAGE_CONFIG } from '@/shared/features/storage/config.js';
 import { toastMessage } from '@/utils/toastMessage.js';
 import { focusFirstError } from '@/utils/focusFirstError.js';
 import { formValidationErrors, getFormValue, setFormValue } from './formValues.js';
@@ -79,6 +80,7 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 
 	let errors = $state<Record<string, string>>({});
 	let uploadProgress = $state<number | null>(null);
+	let uploadProgressBytes = $state(0);
 	let preparingUpload = $state(false);
 	let pendingCaptchaForm: HTMLFormElement | undefined;
 
@@ -170,6 +172,7 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 
 		preparingUpload = true;
 		uploadProgress = 0;
+		uploadProgressBytes = 0;
 
 		const files = await Promise.all(
 			localFiles.map(async (file) =>
@@ -192,6 +195,7 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 				uploadFile(file, (loaded, total) => {
 					progress[index] = { loaded, total };
 					uploadProgress = aggregateUploadProgress(progress);
+					uploadProgressBytes = progress.reduce((sum, item) => sum + item.loaded, 0);
 				})
 			)
 		);
@@ -299,6 +303,7 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 			bindings.submitting = false;
 			preparingUpload = false;
 			uploadProgress = null;
+			uploadProgressBytes = 0;
 
 			if (captchaUsed) captcha.reset();
 
@@ -330,6 +335,9 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 		},
 		get uploadProgress() {
 			return uploadProgress;
+		},
+		get uploadProgressBytes() {
+			return uploadProgressBytes;
 		},
 		get preparingUpload() {
 			return preparingUpload;
