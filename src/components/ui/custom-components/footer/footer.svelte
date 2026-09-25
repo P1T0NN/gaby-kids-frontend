@@ -2,28 +2,29 @@
 	// CONSTANTS
 	import { COMPANY_DATA } from '@/shared/config';
 	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints';
+	import { m } from '@/lib/paraglide/messages';
 
 	// COMPONENTS
 	import Link from '@/components/ui/custom-components/link/link.svelte';
 	import Section from '@/components/ui/custom-components/section/section.svelte';
 
-	type FooterLink = { label: string; href?: string; external?: boolean };
+	type FooterLink = { label: string; href: string; external?: boolean };
 
 	const year = new Date().getFullYear();
 
 	const columns: { title: string; links: FooterLink[] }[] = [
 		{
-			title: 'Comprar',
+			title: m['Components.Footer.shopTitle'](),
 			links: [
-				{ label: 'Ropones niña', href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
-				{ label: 'Batitas bautizo', href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
-				{ label: 'Guayaberas gabybera', href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
-				{ label: 'Primera comunión', href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
-				{ label: 'Trajes de charro', href: UNPROTECTED_PAGE_ENDPOINTS.SHOP }
+				{ label: m['Components.Footer.girlsGowns'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
+				{ label: m['Components.Footer.baptismDresses'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
+				{ label: m['Components.Footer.guayaberas'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
+				{ label: m['Components.Footer.firstCommunion'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP },
+				{ label: m['Components.Footer.charroSuits'](), href: UNPROTECTED_PAGE_ENDPOINTS.SHOP }
 			]
 		},
 		{
-			title: 'Redes',
+			title: m['Components.Footer.socialTitle'](),
 			links: [
 				{ label: 'Instagram', href: COMPANY_DATA.INSTAGRAM_URL, external: true },
 				{ label: 'Facebook', href: COMPANY_DATA.FACEBOOK_URL, external: true },
@@ -44,7 +45,7 @@
 		<div class="flex flex-col gap-3.5 sm:col-span-2 lg:col-span-1">
 			<p class="font-serif text-3xl">Gaby Kids ®</p>
 			<p class="max-w-xs text-sm leading-relaxed text-background/75">
-				Confort y Elegancia en Ropa para Niños. Taller propio en Jalisco desde 1998.
+				{m['Components.Footer.tagline']()}
 			</p>
 			<p class="text-xs font-medium tracking-widest text-accent uppercase">@gabykids_mex</p>
 		</div>
@@ -55,17 +56,20 @@
 				</p>
 				<div class="flex flex-col text-sm leading-loose text-background/90">
 					{#each column.links as link (link.label)}
-						{#if link.href}
-							<Link
+						{#if link.external}
+							<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+							<a
 								href={link.href}
-								target={link.external ? '_blank' : undefined}
-								rel={link.external ? 'noopener noreferrer' : undefined}
+								target="_blank"
+								rel="noopener noreferrer"
 								class="transition-colors hover:text-background"
 							>
 								{link.label}
-							</Link>
+							</a>
 						{:else}
-							<span>{link.label}</span>
+							<Link href={link.href} class="transition-colors hover:text-background">
+								{link.label}
+							</Link>
 						{/if}
 					{/each}
 				</div>
@@ -75,7 +79,9 @@
 	<div
 		class="flex flex-col gap-2 border-t border-background/15 pt-6 text-xs text-background/60 sm:flex-row sm:items-center sm:justify-between"
 	>
-		<p>© {year} Gaby Kids ® · Aviso de Privacidad · Términos</p>
+		<p>
+			© {year} Gaby Kids ® · {m['Components.Footer.privacy']()} · {m['Components.Footer.terms']()}
+		</p>
 		<p>Visa · Mastercard · Amex · OXXO · Mercado Pago · SPEI</p>
 	</div>
 </Section>

@@ -6,6 +6,7 @@
 	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Section from '@/components/ui/custom-components/section/section.svelte';
 	import StaticImage from '@/components/ui/custom-components/static-image/static-image.svelte';
+	import { m } from '@/lib/paraglide/messages';
 </script>
 
 <Section
@@ -27,17 +28,16 @@
 			alt=""
 			class="h-32 w-auto self-start"
 		/>
-		<h2 class="font-serif text-4xl">Lino natural, bordado a mano</h2>
+		<h2 class="font-serif text-4xl">{m['HomePage.FeaturedSection.heading']()}</h2>
 		<p class="max-w-md text-base leading-relaxed text-background/75">
-			Guayaberas de niño hechas en lino fresco, con alforzas cosidas una por una y bordado del
-			nombre sin costo. Su propia etiqueta, la misma casa.
+			{m['HomePage.FeaturedSection.description']()}
 		</p>
 		<ButtonLink
 			href={`${UNPROTECTED_PAGE_ENDPOINTS.SHOP}?category=guayaberas`}
 			variant="outline"
 			class="mt-2.5 h-auto self-start rounded-sm border-background bg-transparent px-8 py-4 hover:bg-background/10"
 		>
-			Conocer gabybera
+			{m['HomePage.FeaturedSection.cta']()}
 		</ButtonLink>
 	</div>
 </Section>

@@ -6,9 +6,10 @@
 	import OccasionsSection from '@/components/pages/(unprotected)/root/occasions-section.svelte';
 	import FeaturedSection from '@/components/pages/(unprotected)/root/featured-section.svelte';
 	import TrustSection from '@/components/pages/(unprotected)/root/trust-section.svelte';
+	import { m } from '@/lib/paraglide/messages';
 </script>
 
-<SvelteHead title="Home" />
+<SvelteHead title={m['Components.SvelteHead.home']()} />
 
 <HeroSection />
 <CategorySection />

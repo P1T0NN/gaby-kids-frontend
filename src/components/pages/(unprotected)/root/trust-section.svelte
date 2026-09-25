@@ -1,23 +1,37 @@
 <script lang="ts">
+	// CONFIG
+	import { COMPANY_DATA } from '@/shared/config';
+
 	// COMPONENTS
 	import Section from '@/components/ui/custom-components/section/section.svelte';
+	import { m } from '@/lib/paraglide/messages';
 
-	const confianza = [
+	type TrustItem = {
+		icon: string;
+		title: () => string;
+		description: () => string;
+		cta?: () => string;
+		href?: string;
+	};
+
+	const confianza: TrustItem[] = [
 		{
-			label: 'Envío a todo México',
-			paths: [
-				'M6 30h28v10H6z',
-				'M34 33h6l4 5v2h-10',
-				'M12 40a3 3 0 1 0 6 0',
-				'M32 40a3 3 0 1 0 6 0'
-			]
+			icon: 'icon-[lucide--truck]',
+			title: () => m['HomePage.TrustSection.shipping'](),
+			description: () => m['HomePage.TrustSection.shippingDescription']()
 		},
 		{
-			label: 'Guía de tallas por edad',
-			paths: ['M8 20h32v8H8z', 'M14 20v4', 'M20 20v6', 'M26 20v4', 'M32 20v6']
+			icon: 'icon-[lucide--scissors]',
+			title: () => m['HomePage.TrustSection.handmade'](),
+			description: () => m['HomePage.TrustSection.handmadeDescription']()
 		},
-		{ label: 'Cambios en 15 días', paths: ['M40 24a16 16 0 1 1-5-11', 'M40 8v8h-8'] },
-		{ label: 'Mayoreo para tiendas', paths: ['M8 18h32v22H8z', 'M8 18l4-8h24l4 8', 'M18 26h12'] }
+		{
+			icon: 'icon-[lucide--briefcase]',
+			title: () => m['HomePage.TrustSection.wholesale'](),
+			description: () => m['HomePage.TrustSection.wholesaleDescription'](),
+			cta: () => m['HomePage.TrustSection.wholesaleCta'](),
+			href: COMPANY_DATA.WHATSAPP_CONTACT_URL
+		}
 	];
 </script>
 
@@ -25,25 +39,31 @@
 	class="border-b border-border py-14"
 	size="none"
 	width="full"
-	containerClass="grid max-w-7xl grid-cols-1 gap-6 px-6 sm:grid-cols-2 sm:px-12 lg:grid-cols-4"
+	containerClass="grid max-w-7xl grid-cols-1 gap-10 px-6 sm:grid-cols-3 sm:px-12"
 >
-	{#each confianza as item (item.label)}
-		<div class="flex items-center gap-3.5">
-			<svg
-				class="size-8 flex-none text-accent"
-				viewBox="0 0 48 48"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.5"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
+	{#each confianza as item (item.icon)}
+		<div class="flex items-start gap-4">
+			<div
+				class="grid size-14 flex-none place-content-center rounded-full bg-secondary text-muted-foreground"
 			>
-				{#each item.paths as path (path)}
-					<path d={path}></path>
-				{/each}
-			</svg>
-			<p class="text-sm text-foreground">{item.label}</p>
+				<span class="{item.icon} size-6" aria-hidden="true"></span>
+			</div>
+			<div class="flex flex-col gap-1">
+				<p class="font-medium text-foreground">{item.title()}</p>
+				<p class="text-sm leading-relaxed text-muted-foreground">{item.description()}</p>
+				{#if item.cta && item.href}
+					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+					<a
+						href={item.href}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="mt-1.5 inline-flex items-center gap-1 self-start text-sm font-medium text-foreground underline underline-offset-4 transition-colors hover:text-accent"
+					>
+						{item.cta()}
+						<span class="icon-[lucide--arrow-right] size-4" aria-hidden="true"></span>
+					</a>
+				{/if}
+			</div>
 		</div>
 	{/each}
 </Section>

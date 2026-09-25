@@ -5,6 +5,7 @@
 	// COMPONENTS
 	import CategorySectionItem from '@/components/pages/(unprotected)/root/category-section/category-section-item.svelte';
 	import Section from '@/components/ui/custom-components/section/section.svelte';
+	import { m } from '@/lib/paraglide/messages';
 
 	// HOOKS
 	import { useCachedConvexQuery } from '@/hooks/useCachedConvexQuery.svelte.js';
@@ -22,9 +23,8 @@
 	containerClass="flex max-w-7xl flex-col gap-7 px-6 sm:px-12"
 >
 	<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-		Compra por categoría
+		{m['HomePage.CategorySection.eyebrow']()}
 	</p>
-	
 	{#if categories.data}
 		<div class="marquee flex w-max gap-6">
 			{#each [...categories.data, ...categories.data] as category, index (index)}

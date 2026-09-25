@@ -1013,6 +1013,34 @@
 		},
 		"SvelteHead": {
 			"home": "Home"
+		},
+		"AdminSidebar": {
+			"pageTitle": "Admin",
+			"navigationLabel": "Admin navigation",
+			"secondaryNavigationLabel": "Secondary navigation",
+			"backToShop": "Back to shop",
+			"generalSection": "General",
+			"productsSection": "Products",
+			"securitySection": "Security",
+			"dashboard": "Dashboard",
+			"users": "Users",
+			"orders": "Orders",
+			"products": "Products",
+			"categories": "Categories",
+			"logs": "Logs",
+			"openNavigation": "Open admin navigation"
+		},
+		"Footer": {
+			"shopTitle": "Shop",
+			"socialTitle": "Social",
+			"girlsGowns": "Girls' christening gowns",
+			"baptismDresses": "Baptism baby dresses",
+			"guayaberas": "gabybera guayaberas",
+			"firstCommunion": "First communion",
+			"charroSuits": "Charro suits",
+			"tagline": "Comfort and elegance in children's clothing. Our own workshop in Jalisco since 1998.",
+			"privacy": "Privacy Notice",
+			"terms": "Terms"
 		}
 	},
 	"UpsellsFeature": {
@@ -1155,5 +1183,42 @@
 		"invalidUploadNamespace": "The upload location is invalid.",
 		"invalidUpload": "The selected file is invalid.",
 		"uploadBatchTooLarge": "The combined image upload cannot exceed {maxSizeMB} MB."
+	},
+	"HomePage": {
+		"HeroSection": {
+			"eyebrow": "Made in Mexico",
+			"title": "For the day you'll remember forever",
+			"description": "Christening gowns, baby dresses, and guayaberas for baptisms, presentations, and first communions.",
+			"collectionCta": "View collection",
+			"guayaberasCta": "gabybera guayaberas"
+		},
+		"CategorySection": {
+			"eyebrow": "Shop by category"
+		},
+		"OccasionsSection": {
+			"eyebrow": "Shop by occasion",
+			"heading": "The event has a date. We meet it.",
+			"cta": "View all →",
+			"bautizoTitle": "Baptism",
+			"bautizoDescription": "Christening gowns, baby dresses, skirts, and candle sets.",
+			"presentacionTitle": "3-Year Presentation",
+			"presentacionDescription": "Lace dresses and suits with embroidered details.",
+			"comunionTitle": "First Communion",
+			"comunionDescription": "Long dresses, guayaberas, and altar accessories."
+		},
+		"FeaturedSection": {
+			"heading": "Natural linen, hand-embroidered",
+			"description": "Boys' guayaberas made from cool linen, with pintucks sewn one by one and free name embroidery. Their own label, the same house.",
+			"cta": "Discover gabybera"
+		},
+		"TrustSection": {
+			"shipping": "Shipping across Mexico",
+			"shippingDescription": "Arrives in 3 to 5 business days, with a tracking number.",
+			"handmade": "Handmade in Mexico",
+			"handmadeDescription": "Every piece is cut, sewn, and embroidered by hand in our workshop.",
+			"wholesale": "Wholesale for stores",
+			"wholesaleDescription": "Special prices for boutiques and baptism shops.",
+			"wholesaleCta": "Get a quote on WhatsApp"
+		}
 	}
 }

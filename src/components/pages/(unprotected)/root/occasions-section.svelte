@@ -7,28 +7,26 @@
 	import Link from '@/components/ui/custom-components/link/link.svelte';
 	import Section from '@/components/ui/custom-components/section/section.svelte';
 	import StaticImage from '@/components/ui/custom-components/static-image/static-image.svelte';
+	import { m } from '@/lib/paraglide/messages';
 
 	const ocasiones = [
 		{
-			titulo: 'Bautizo',
 			img: '/root/opt/occasions-bautizo-960w.webp',
-			desc: 'Ropones, batitas, faldón y set de veladora.',
-			foto: 'Foto — bebé en brazos, ropón largo',
-			category: 'bautizo'
+			category: 'bautizo',
+			title: () => m['HomePage.OccasionsSection.bautizoTitle'](),
+			description: () => m['HomePage.OccasionsSection.bautizoDescription']()
 		},
 		{
-			titulo: 'Presentación de 3 años',
 			img: '/root/opt/occasions-presentacion-960w.webp',
-			desc: 'Vestidos de encaje y trajes con detalle bordado.',
-			foto: 'Foto — niña 3 años, vestido marfil',
-			category: null
+			category: null,
+			title: () => m['HomePage.OccasionsSection.presentacionTitle'](),
+			description: () => m['HomePage.OccasionsSection.presentacionDescription']()
 		},
 		{
-			titulo: 'Primera Comunión',
 			img: '/root/opt/occasions-comunion-960w.webp',
-			desc: 'Vestidos largos, guayaberas y accesorios de altar.',
-			foto: 'Foto — niño y niña, comunión',
-			category: 'primera-comunion'
+			category: 'primera-comunion',
+			title: () => m['HomePage.OccasionsSection.comunionTitle'](),
+			description: () => m['HomePage.OccasionsSection.comunionDescription']()
 		}
 	];
 
@@ -47,26 +45,28 @@
 >
 	<div class="flex flex-col gap-2.5">
 		<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-			Compra por ocasión
+			{m['HomePage.OccasionsSection.eyebrow']()}
 		</p>
 		<h2 class="font-serif text-5xl text-foreground">
-			El evento tiene fecha. Nosotros la cumplimos.
+			{m['HomePage.OccasionsSection.heading']()}
 		</h2>
 	</div>
 	<div class="grid grid-cols-3 gap-6">
-		{#each ocasiones as ocasion (ocasion.titulo)}
+		{#each ocasiones as ocasion (ocasion.img)}
 			<Link
 				href={getOccasionHref(ocasion.category)}
 				class="block h-full rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
 			>
 				<Card.Root class="h-full gap-0 rounded-sm border border-border py-0 shadow-none ring-0">
 					<div class="h-65 overflow-hidden border-b border-border bg-secondary">
-						<StaticImage src={ocasion.img} alt={ocasion.titulo} class="size-full object-cover" />
+						<StaticImage src={ocasion.img} alt={ocasion.title()} class="size-full object-cover" />
 					</div>
 					<Card.Content class="flex flex-1 flex-col gap-2.5 px-7 pt-6 pb-8">
-						<h3 class="font-serif text-3xl text-foreground">{ocasion.titulo}</h3>
-						<p class="text-sm leading-relaxed text-muted-foreground">{ocasion.desc}</p>
-						<span class="mt-auto pt-2 text-sm font-medium text-accent">Ver todo →</span>
+						<h3 class="font-serif text-3xl text-foreground">{ocasion.title()}</h3>
+						<p class="text-sm leading-relaxed text-muted-foreground">{ocasion.description()}</p>
+						<span class="mt-auto pt-2 text-sm font-medium text-accent">
+							{m['HomePage.OccasionsSection.cta']()}
+						</span>
 					</Card.Content>
 				</Card.Root>
 			</Link>

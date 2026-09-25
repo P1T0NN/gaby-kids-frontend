@@ -6,6 +6,7 @@
 	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import Section from '@/components/ui/custom-components/section/section.svelte';
 	import StaticImage from '@/components/ui/custom-components/static-image/static-image.svelte';
+	import { m } from '@/lib/paraglide/messages';
 </script>
 
 <Section
@@ -24,24 +25,24 @@
 	></div>
 	<div class="relative flex w-full flex-col items-center gap-6 text-center">
 		<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-			Hecho en México
+			{m['HomePage.HeroSection.eyebrow']()}
 		</p>
 		<h1 class="max-w-4xl font-serif text-7xl tracking-tight text-pretty text-foreground">
-			Para el día que se recuerda toda la vida
+			{m['HomePage.HeroSection.title']()}
 		</h1>
 		<p class="max-w-xl text-lg leading-relaxed text-muted-foreground">
-			Ropones, batitas y guayaberas para bautizos, presentaciones y primeras comuniones.
+			{m['HomePage.HeroSection.description']()}
 		</p>
 		<div class="flex flex-wrap justify-center gap-3.5 pt-2">
 			<ButtonLink href="/shop" class="h-auto rounded-sm px-8 py-4 leading-none tracking-wide">
-				Ver colección
+				{m['HomePage.HeroSection.collectionCta']()}
 			</ButtonLink>
 			<ButtonLink
 				href={`${UNPROTECTED_PAGE_ENDPOINTS.SHOP}?category=guayaberas`}
 				variant="outline"
 				class="h-auto rounded-sm border-foreground bg-transparent px-8 py-4 leading-none tracking-wide hover:bg-background/20"
 			>
-				Guayaberas gabybera
+				{m['HomePage.HeroSection.guayaberasCta']()}
 			</ButtonLink>
 		</div>
 	</div>

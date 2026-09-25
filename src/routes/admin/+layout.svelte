@@ -33,11 +33,14 @@
 </script>
 
 <svelte:head>
-	<title>Admin</title>
+	<title>{m['Components.AdminSidebar.pageTitle']()}</title>
 </svelte:head>
 
 <div class="flex min-h-screen w-full bg-sidebar">
-	<NativeSidebar label="Admin navigation" bind:openMobile={mobileSidebarOpen}>
+	<NativeSidebar
+		label={m['Components.AdminSidebar.navigationLabel']()}
+		bind:openMobile={mobileSidebarOpen}
+	>
 		{#snippet sidebarHeader()}
 			<span class="truncate text-sm font-semibold">{COMPANY_DATA.NAME}</span>
 		{/snippet}
@@ -47,39 +50,42 @@
 		{/snippet}
 
 		{#snippet navSecondary()}
-			<nav aria-label="Secondary navigation">
+			<nav aria-label={m['Components.AdminSidebar.secondaryNavigationLabel']()}>
 				<NativeSidebarLink href="/" exact>
 					<span class="icon-[lucide--arrow-left] size-4" aria-hidden="true"></span>
-					<span>Back to Shop</span>
+					<span>{m['Components.AdminSidebar.backToShop']()}</span>
 				</NativeSidebarLink>
 			</nav>
 		{/snippet}
 
 		<div class="flex flex-col gap-4 p-3">
-			<nav aria-label="Admin" class="flex flex-col gap-1">
-				<NativeSidebarSection title="General">
+			<nav
+				aria-label={m['Components.AdminSidebar.navigationLabel']()}
+				class="flex flex-col gap-1"
+			>
+				<NativeSidebarSection title={m['Components.AdminSidebar.generalSection']()}>
 					<NativeSidebarLink href="/admin/dashboard">
 						<span class="icon-[lucide--layout-dashboard] size-4" aria-hidden="true"></span>
-						<span>Dashboard</span>
+						<span>{m['Components.AdminSidebar.dashboard']()}</span>
 					</NativeSidebarLink>
 					<NativeSidebarLink href="/admin/users">
 						<span class="icon-[lucide--users] size-4" aria-hidden="true"></span>
-						<span>Users</span>
+						<span>{m['Components.AdminSidebar.users']()}</span>
 					</NativeSidebarLink>
 					<NativeSidebarLink href="/admin/orders">
 						<span class="icon-[lucide--shopping-bag] size-4" aria-hidden="true"></span>
-						<span>Orders</span>
+						<span>{m['Components.AdminSidebar.orders']()}</span>
 					</NativeSidebarLink>
 				</NativeSidebarSection>
 
-				<NativeSidebarSection title="Products">
+				<NativeSidebarSection title={m['Components.AdminSidebar.productsSection']()}>
 					<NativeSidebarLink href="/admin/products">
 						<span class="icon-[lucide--package] size-4" aria-hidden="true"></span>
-						<span>Products</span>
+						<span>{m['Components.AdminSidebar.products']()}</span>
 					</NativeSidebarLink>
 					<NativeSidebarLink href="/admin/categories">
 						<span class="icon-[lucide--folder-tree] size-4" aria-hidden="true"></span>
-						<span>Categories</span>
+						<span>{m['Components.AdminSidebar.categories']()}</span>
 					</NativeSidebarLink>
 					{#if UPSELLS_CONFIG.HAS_UPSELLS}
 						<NativeSidebarLink href={ADMIN_PAGE_ENDPOINTS.UPSELLS}>
@@ -89,10 +95,10 @@
 					{/if}
 				</NativeSidebarSection>
 
-				<NativeSidebarSection title="Security">
+				<NativeSidebarSection title={m['Components.AdminSidebar.securitySection']()}>
 					<NativeSidebarLink href="/admin/logs">
 						<span class="icon-[lucide--scroll-text] size-4" aria-hidden="true"></span>
-						<span>Logs</span>
+						<span>{m['Components.AdminSidebar.logs']()}</span>
 					</NativeSidebarLink>
 				</NativeSidebarSection>
 			</nav>
@@ -101,10 +107,10 @@
 
 	<main class="flex min-w-0 flex-1 flex-col bg-background md:overflow-hidden md:rounded-s-2xl">
 		<NativeSidebarPageHeader
-			title="Admin"
+			title={m['Components.AdminSidebar.pageTitle']()}
 			rootHref="/admin/dashboard"
 			pageName={breadcrumbUser.data?.name}
-			sidebarLabel="Open admin navigation"
+			sidebarLabel={m['Components.AdminSidebar.openNavigation']()}
 			onOpenSidebar={() => (mobileSidebarOpen = true)}
 		/>
 
