@@ -1,5 +1,6 @@
 // LIBRARIES
 import { useAction, useMutation } from 'convex-svelte';
+import { ConvexError } from 'convex/values';
 import { api } from '@convex/_generated/api';
 import { tick } from 'svelte';
 import { toast } from 'svelte-sonner';
@@ -10,7 +11,7 @@ import { optimizeToWebp } from '@/features/storage/utils/optimizeToWebp.js';
 import { aggregateUploadProgress } from '@/features/uploadFile/utils/aggregateUploadProgress.js';
 import { uploadWithProgress } from '@/features/uploadFile/utils/uploadWithProgress.js';
 import { linearFind } from '@/shared/lib/algorithms/index.js';
-import { STORAGE_CONFIG } from '@/shared/features/storage/config.js';
+import { exceedsUploadBatchLimit, STORAGE_CONFIG } from '@/shared/features/storage/config.js';
 import { toastMessage } from '@/utils/toastMessage.js';
 import { focusFirstError } from '@/utils/focusFirstError.js';
 import { formValidationErrors, getFormValue, setFormValue } from './formValues.js';
@@ -29,6 +30,7 @@ import type {
 	UploadContext
 } from './formTypes.js';
 import type { FunctionArgs, FunctionReference, FunctionReturnType } from 'convex/server';
+import type { BackendErrorData } from '@/shared/types/types.js';
 
 type FormBindings<Mutation extends FunctionReference<'mutation' | 'action'>> = {
 	values: MutationValues<Mutation>;
@@ -164,12 +166,6 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 
 	const uploadSelectedFiles = async () => {
 		const uploadFiles = bindings.uploadFiles;
-		if (uploadFiles.length > STORAGE_CONFIG.maxFilesPerUpload) {
-			throw new Error(
-				m['BackendMessages.tooManyFiles']({ maxFiles: STORAGE_CONFIG.maxFilesPerUpload })
-			);
-		}
-
 		const localFiles = uploadFiles.flatMap((preview) => (preview.file ? [preview.file] : []));
 
 		preparingUpload = true;
@@ -182,6 +178,12 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 		);
 
 		preparingUpload = false;
+		if (exceedsUploadBatchLimit(files.map((file) => file.size))) {
+			throw new ConvexError<BackendErrorData>({
+				code: 'UPLOAD_BATCH_TOO_LARGE',
+				maxSizeMB: STORAGE_CONFIG.maxTotalUploadBytes / (1024 * 1024)
+			});
+		}
 
 		const progress = files.map((file) => ({ loaded: 0, total: file.size }));
 

@@ -18,7 +18,10 @@ export default defineConfig({
 			urlPatterns: [
 				{
 					pattern: ':protocol://:domain(.*)::port?/:path(.*)?',
-					localized: [['en', ':protocol://:domain(.*)::port?/en/:path(.*)?']]
+					localized: [
+						['en', ':protocol://:domain(.*)::port?/en/:path(.*)?'],
+						['es', ':protocol://:domain(.*)::port?/es/:path(.*)?']
+					]
 				}
 			]
 		}),

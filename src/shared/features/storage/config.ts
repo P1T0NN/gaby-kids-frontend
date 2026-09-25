@@ -11,9 +11,9 @@ export const STORAGE_CLIENT_OPTIMIZE_CONFIG = {
 
 /** Object storage. */
 export const STORAGE_CONFIG = {
-	/** Hard boundary for one form submission. */
-	maxFilesPerUpload: 10,
-	/** Hard server boundary for one stored file (20 MiB / 20 MB). */
+	/** Hard boundary for the total bytes transferred in one form submission (50 MiB). */
+	maxTotalUploadBytes: 50 * 1024 * 1024,
+	/** Hard server boundary for one stored file (20 MiB). */
 	maxFileSizeBytes: 20 * 1024 * 1024,
 	/** File signatures accepted by the server. */
 	allowedImageTypes: ['image/gif', 'image/jpeg', 'image/png', 'image/webp'],
@@ -24,3 +24,7 @@ export const STORAGE_CONFIG = {
 	/** Failed or abandoned submissions remain retryable until this age. */
 	uploadTtlMinutes: 60
 } as const;
+
+export function exceedsUploadBatchLimit(sizes: readonly number[]): boolean {
+	return sizes.reduce((total, size) => total + size, 0) > STORAGE_CONFIG.maxTotalUploadBytes;
+}

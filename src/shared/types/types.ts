@@ -47,7 +47,7 @@ export const backendErrorDataSchema = z.discriminatedUnion('code', [
 	z.object({ code: z.literal('UPLOAD_NOT_FOUND') }),
 	z.object({ code: z.literal('INVALID_UPLOAD_NAMESPACE') }),
 	z.object({ code: z.literal('INVALID_UPLOAD') }),
-	z.object({ code: z.literal('TOO_MANY_FILES'), maxFiles: z.number() })
+	z.object({ code: z.literal('UPLOAD_BATCH_TOO_LARGE'), maxSizeMB: z.number() })
 ]);
 
 export type BackendErrorData = z.infer<typeof backendErrorDataSchema>;

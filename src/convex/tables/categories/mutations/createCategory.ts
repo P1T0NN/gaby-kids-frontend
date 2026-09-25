@@ -14,6 +14,9 @@ import { logAuditEvent } from '../../../auditLogs/helpers/logAuditEvent.js';
 // HELPERS
 import { getCategoryImageKey } from '../helpers/getCategoryImageKey.js';
 
+// STORAGE
+import { resolveStoredFileUrls } from '../../../storage/r2.js';
+
 // VALIDATORS
 import { categoryResult } from '../validators/categoryValidators.js';
 
@@ -60,7 +63,10 @@ export const createCategory = adminUploadMutation({
 			slug,
 			status: parsed.data.status
 		};
-		if (imageKey) category.imageKey = imageKey;
+		if (imageKey) {
+			category.image = (await resolveStoredFileUrls([imageKey]))[0];
+			category.imageKey = imageKey;
+		}
 		const categoryId = await ctx.db.insert('categories', category);
 
 		await logAuditEvent(ctx, ctx.identity, {

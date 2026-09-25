@@ -942,6 +942,9 @@
 		"NativeSelect": {
 			"select": "Select…"
 		},
+		"LanguageSwitcher": {
+			"label": "Language"
+		},
 		"ImageGallery": {
 			"carouselLabel": "Product images",
 			"previousImage": "Previous image",
@@ -1151,6 +1154,6 @@
 		"uploadNotFound": "The upload could not be found.",
 		"invalidUploadNamespace": "The upload location is invalid.",
 		"invalidUpload": "The selected file is invalid.",
-		"tooManyFiles": "You can upload at most {maxFiles} files."
+		"uploadBatchTooLarge": "The combined image upload cannot exceed {maxSizeMB} MB."
 	}
 }

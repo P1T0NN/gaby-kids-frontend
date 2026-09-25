@@ -13,6 +13,7 @@
 	import Cart from '@/features/cart/components/cart/cart.svelte';
 	import LogoutButton from '@/features/auth/components/logout-button/logout-button.svelte';
 	import Logo from '@/components/ui/custom-components/logo/logo.svelte';
+	import LanguageSwitcher from '@/components/ui/custom-components/language-switcher/language-switcher.svelte';
 	import NativeAvatar from '@/components/ui/native-components/native-avatar/native-avatar.svelte';
 	import NativePopover from '@/components/ui/native-components/native-popover/native-popover.svelte';
 	import { Separator } from '@/components/ui/separator/index.js';
@@ -67,6 +68,7 @@
 		</nav>
 
 		<div class="flex items-center gap-5">
+			<LanguageSwitcher />
 			<Cart />
 			{#if $session.data?.user?.role === 'admin'}
 				<NativePopover id="user-menu" align="end" trigger={avatar} class="w-56" closeOnClick>

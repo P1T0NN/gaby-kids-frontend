@@ -63,6 +63,7 @@ import type * as emails_types_emailTypes from "../emails/types/emailTypes.js";
 import type * as helpers_getPagination from "../helpers/getPagination.js";
 import type * as helpers_paginateSearch from "../helpers/paginateSearch.js";
 import type * as http from "../http.js";
+import type * as migrations_backfillCategoryImages from "../migrations/backfillCategoryImages.js";
 import type * as migrations_backfillOrderCodes from "../migrations/backfillOrderCodes.js";
 import type * as migrations_backfillOwnerIds from "../migrations/backfillOwnerIds.js";
 import type * as migrations_backfillProductSlugs from "../migrations/backfillProductSlugs.js";
@@ -148,6 +149,7 @@ import type * as tables_productVariants_helpers_loadSellableProductVariant from 
 import type * as tables_productVariants_helpers_resolveProductVariantSku from "../tables/productVariants/helpers/resolveProductVariantSku.js";
 import type * as tables_productVariants_helpers_resolveProductVariants from "../tables/productVariants/helpers/resolveProductVariants.js";
 import type * as tables_productVariants_mappers_toProductVariantResult from "../tables/productVariants/mappers/toProductVariantResult.js";
+import type * as tables_productVariants_migrations_backfillProductVariantSkus from "../tables/productVariants/migrations/backfillProductVariantSkus.js";
 import type * as tables_productVariants_mutations_deleteProductVariantsBatch from "../tables/productVariants/mutations/deleteProductVariantsBatch.js";
 import type * as tables_productVariants_queries_fetchCart from "../tables/productVariants/queries/fetchCart.js";
 import type * as tables_productVariants_validators_productVariantValidators from "../tables/productVariants/validators/productVariantValidators.js";
@@ -241,6 +243,7 @@ declare const fullApi: ApiFromModules<{
   "helpers/getPagination": typeof helpers_getPagination;
   "helpers/paginateSearch": typeof helpers_paginateSearch;
   http: typeof http;
+  "migrations/backfillCategoryImages": typeof migrations_backfillCategoryImages;
   "migrations/backfillOrderCodes": typeof migrations_backfillOrderCodes;
   "migrations/backfillOwnerIds": typeof migrations_backfillOwnerIds;
   "migrations/backfillProductSlugs": typeof migrations_backfillProductSlugs;
@@ -326,6 +329,7 @@ declare const fullApi: ApiFromModules<{
   "tables/productVariants/helpers/resolveProductVariantSku": typeof tables_productVariants_helpers_resolveProductVariantSku;
   "tables/productVariants/helpers/resolveProductVariants": typeof tables_productVariants_helpers_resolveProductVariants;
   "tables/productVariants/mappers/toProductVariantResult": typeof tables_productVariants_mappers_toProductVariantResult;
+  "tables/productVariants/migrations/backfillProductVariantSkus": typeof tables_productVariants_migrations_backfillProductVariantSkus;
   "tables/productVariants/mutations/deleteProductVariantsBatch": typeof tables_productVariants_mutations_deleteProductVariantsBatch;
   "tables/productVariants/queries/fetchCart": typeof tables_productVariants_queries_fetchCart;
   "tables/productVariants/validators/productVariantValidators": typeof tables_productVariants_validators_productVariantValidators;

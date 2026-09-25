@@ -17,7 +17,7 @@ import { logAuditEvent } from '../../../auditLogs/helpers/logAuditEvent.js';
 import { getCategoryImageKey } from '../helpers/getCategoryImageKey.js';
 
 // STORAGE
-import { deleteStoredFiles } from '../../../storage/r2.js';
+import { deleteStoredFiles, resolveStoredFileUrls } from '../../../storage/r2.js';
 
 // UTILS
 import { generateSlug } from '../../../../shared/utils/generateSlug.js';
@@ -68,7 +68,10 @@ export const updateCategory = adminUploadMutation({
 			slug,
 			status: parsed.data.status
 		};
-		if (imageKey) nextCategory.imageKey = imageKey;
+		if (imageKey) {
+			nextCategory.image = (await resolveStoredFileUrls([imageKey]))[0];
+			nextCategory.imageKey = imageKey;
+		}
 		await ctx.db.replace(args.id, nextCategory);
 		if (category.imageKey && category.imageKey !== imageKey) {
 			await deleteStoredFiles(ctx, [category.imageKey]);

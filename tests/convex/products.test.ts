@@ -417,7 +417,7 @@ test('allows only admins to create and list valid products', async () => {
 	expect(createdProductVariant).toMatchObject({
 		position: 0,
 		options: [],
-		sku: 'canvas-backpack',
+		sku: 'CAN-BAC',
 		imageKeys: [PRODUCT_IMAGE_KEY],
 		priceInCents: 100,
 		inventory: 5,
@@ -711,7 +711,7 @@ test('saves structured product variants, derives display caches, and guards rese
 		}))
 	).toEqual([
 		{ position: 0, sku: 'SHIRT-RED', price: 2000, compareAt: undefined },
-		{ position: 1, sku: 'variant-shirt-blue', price: 2500, compareAt: 3000 }
+		{ position: 1, sku: 'VAR-SHI-BLU', price: 2500, compareAt: 3000 }
 	]);
 
 	await expect(
@@ -829,7 +829,7 @@ test('saves structured product variants, derives display caches, and guards rese
 		}))
 	).toEqual([
 		{ position: 0, sku: 'SHIRT-RED' },
-		{ position: 1, sku: 'variant-shirt-blue' }
+		{ position: 1, sku: 'VAR-SHI-BLU' }
 	]);
 
 	await t.run((ctx) => ctx.db.patch(productVariants[0]!._id, { reservedInventory: 1 }));

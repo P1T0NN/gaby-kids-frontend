@@ -18,6 +18,7 @@ export const tables = {
 		name: v.string(),
 		slug: v.string(),
 		status: literals('active', 'archived'),
+		image: v.optional(v.string()),
 		imageKey: v.optional(v.string())
 	})
 		.searchIndex('search_name', { searchField: 'name' })

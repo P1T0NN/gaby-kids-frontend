@@ -1,0 +1,1159 @@
+{
+	"$schema": "https://inlang.com/schema/inlang-message-format",
+	"example_message": "Hola mundo {username}",
+	"AnalyticsFeature": {
+		"AnalyticsData": {
+			"revenue": "Ingresos",
+			"orders": "Pedidos",
+			"averageOrderValue": "Valor promedio del pedido"
+		},
+		"AnalyticsStatsCard": {
+			"vsPreviousPeriod": "vs. periodo anterior",
+			"noPreviousData": "Sin datos del periodo anterior"
+		}
+	},
+	"ProductsFeature": {
+		"ProductCard": {
+			"new": "Nuevo",
+			"lowStock": "Solo quedan {count}",
+			"noImage": "Foto próximamente",
+			"addProduct": "Agregar {name} al carrito",
+			"chooseOptions": "Elegir opciones"
+		},
+		"ProductPrice": {
+			"discount": "{percent}% de descuento",
+			"from": "Desde"
+		},
+		"ProductAttributes": {
+			"ageGroup": "Grupo de edad",
+			"allAgeGroups": "Todas las edades",
+			"gender": "Género",
+			"allGenders": "Todos los géneros"
+		},
+		"AgeGroupBadge": {
+			"kids": "Niños",
+			"adults": "Adultos"
+		},
+		"GenderBadge": {
+			"unisex": "Unisex",
+			"male": "Masculino",
+			"female": "Femenino"
+		}
+	},
+	"ProductVariantsFeature": {
+		"ProductVariantsEditor": {
+			"sectionTitle": "Variantes del producto",
+			"sectionDescription": "Vende este producto en distintas versiones, como colores o tallas. Cada variante tiene su propio SKU, precio y existencias.",
+			"options": "Opciones",
+			"noOptionsHint": "Aún no hay opciones: los clientes compran este producto como una sola variante predeterminada."
+		},
+		"ProductVariantsEditorVariantTabs": {
+			"variantLabel": "Variante {number}",
+			"hasErrors": "Tiene errores"
+		},
+		"ProductVariantsEditorOptionInput": {
+			"optionNamePlaceholder": "Primero agrega un nombre para la opción {number}",
+			"optionNameLabel": "Nombre de la opción {number}",
+			"removeOption": "Eliminar opción"
+		},
+		"ProductVariantsEditorAddOptionButton": {
+			"addOption": "Agregar opción",
+			"addColor": "Agregar color",
+			"addSize": "Agregar talla"
+		},
+		"ProductVariantsEditorVariantImagePicker": {
+			"images": "Imágenes",
+			"hint": "Haz clic en una imagen para agregarla a esta variante.",
+			"uploadFirst": "Primero sube las imágenes del producto.",
+			"assignImage": "Asignar imagen {number}",
+			"allImagesApplied": "Todas las imágenes del producto ya están aplicadas a esta variante.",
+			"appliedImages": "Imágenes aplicadas a esta variante:",
+			"noAppliedImages": "Aún no hay imágenes aplicadas a esta variante.",
+			"applyToSameValue": "Aplicar a todas con:"
+		},
+		"ProductVariantsEditorVariantRow": {
+			"variantColumn": "Variante",
+			"defaultVariant": "Predeterminada",
+			"skuColumn": "SKU",
+			"skuPlaceholder": "Automático",
+			"skuAutoHint": "Se genera automáticamente a partir del nombre del producto y las opciones. Puedes cambiarlo manualmente, pero no lo recomendamos.",
+			"skuUnlock": "Desbloquear SKU para editarlo manualmente",
+			"skuLock": "Bloquear SKU y usar el valor automático",
+			"priceColumn": "Precio",
+			"discountedPriceColumn": "Precio con descuento (opcional)",
+			"stockColumn": "Existencias",
+			"deleteVariant": "Eliminar",
+			"removeVariant": "Eliminar variante {number}"
+		},
+		"ProductVariantsEditorVariantOptionInput": {
+			"optionValuePlaceholder": "Valor",
+			"optionValueLabel": "Valor para {name}"
+		},
+		"ProductVariantsEditorAddVariantButton": {
+			"addVariant": "Agregar variante"
+		},
+		"ProductVariantDiscountCalculator": {
+			"presets": "Descuentos predefinidos",
+			"customDiscount": "Descuento personalizado (%)",
+			"customDiscountDescription": "Usa un múltiplo de 5, del 5% al 95%.",
+			"apply": "Aplicar",
+			"stepError": "Escribe un múltiplo de 5 entre 5% y 95%.",
+			"enterPriceFirst": "Escribe un precio para habilitar los atajos de descuento."
+		}
+	},
+	"ProductPage": {
+		"pageTitle": "Detalles del producto",
+		"backToShop": "Volver a la tienda",
+		"loadError": "No pudimos cargar este producto. Inténtalo de nuevo.",
+		"notFoundTitle": "Producto no disponible",
+		"notFoundDescription": "Es posible que este producto se haya eliminado o ya no esté disponible. Vuelve a la tienda para explorar la colección.",
+		"ProductDetails": {
+			"addProduct": "Agregar {name} al carrito",
+			"cartHint": "Puedes ajustar las cantidades en tu carrito.",
+			"soldOutHint": "Este producto está agotado.",
+			"temporarilyUnavailableHint": "No disponible por el momento: alguien está completando su compra ahora mismo.",
+			"description": "Acerca de este producto",
+			"upsells": "Combina bien con"
+		},
+		"ProductVariantPicker": {
+			"notAvailableWith": "No disponible con {selection}"
+		},
+		"ProductUpsellItem": {
+			"add": "Agregar",
+			"addProduct": "Agregar {name} al carrito",
+			"viewOptions": "Ver opciones"
+		},
+		"ProductLoading": {
+			"loading": "Cargando detalles del producto"
+		}
+	},
+	"CheckoutPage": {
+		"title": "Finalizar compra",
+		"description": "Tus datos, tu entrega y luego el pago en línea.",
+		"CheckoutHeader": {
+			"back": "Seguir comprando",
+			"title": "Finalizar compra",
+			"description": "Tus datos, tu entrega y luego el pago en línea."
+		},
+		"CheckoutForm": {
+			"contact": "Datos de contacto",
+			"contactHint": "Usaremos estos datos para confirmar tu pedido y mantenerte al tanto.",
+			"firstName": "Nombre",
+			"lastName": "Apellido",
+			"email": "Correo electrónico",
+			"phone": "Teléfono",
+			"fulfillment": "¿Cómo quieres recibir tu pedido?",
+			"delivery": "Envío",
+			"deliveryHint": "Recíbelo en tu domicilio",
+			"pickup": "Recoger en tienda",
+			"pickupHint": "Recógelo tú mismo",
+			"address": "Datos de envío",
+			"street": "Calle y número",
+			"apartment": "Apartamento, departamento, etc. (opcional)",
+			"postalCode": "Código postal",
+			"city": "Ciudad",
+			"country": "País",
+			"pickupInfo": "No necesitas dirección de envío. La ubicación para recoger tu pedido y los detalles de entrega estarán disponibles antes del pago.",
+			"payment": "Pago en línea",
+			"paymentHint": "Paga en línea tanto para envío como para recoger en tienda.",
+			"orderCreated": "Iniciando el pago seguro.",
+			"orderCreateError": "No pudimos iniciar el pago seguro. Inténtalo de nuevo.",
+			"checkoutSessionError": "No pudimos iniciar el pago seguro. Tu carrito sigue disponible."
+		},
+		"CheckoutSummary": {
+			"summary": "Resumen del pedido",
+			"delivery": "Envío",
+			"pickup": "Recoger en tienda",
+			"subtotal": "Subtotal",
+			"youSave": "Ahorro total",
+			"deliveryPending": "Se confirma antes del pago",
+			"total": "Total",
+			"estimatedTotal": "Total antes del envío",
+			"continue": "Continuar al pago",
+			"creatingOrder": "Preparando el pago...",
+			"paymentUnavailable": "Continuarás a Stripe para completar el pago de forma segura.",
+			"unavailable": "Algunos artículos ya no están disponibles. Elimínalos para revisar tu total actualizado.",
+			"removeUnavailable": "Eliminar artículos no disponibles"
+		},
+		"CheckoutSummaryItem": {
+			"quantity": "Cant. {quantity}"
+		},
+		"CheckoutSummaryLoading": {
+			"loading": "Cargando el resumen de tu pedido"
+		}
+	},
+	"CheckoutSuccessPage": {
+		"title": "Tu pedido",
+		"description": "Consulta tu pago y la confirmación de tu pedido.",
+		"paymentPendingHint": "Estamos esperando la confirmación del pago. Tu pedido aparecerá aquí automáticamente cuando el pago se realice. Algunos métodos de pago tardan más. Puedes salir de esta página con tranquilidad; te enviaremos un correo cuando tu pedido esté confirmado.",
+		"back": "Seguir comprando",
+		"loadError": "No pudimos cargar tu pedido.",
+		"notFoundTitle": "Pedido no encontrado",
+		"notFoundDescription": "No encontramos este pedido. Es posible que el enlace no sea válido o que el pedido se haya eliminado.",
+		"CheckoutSuccessHeader": {
+			"confirmedTitle": "¡Gracias, tu pedido está confirmado!",
+			"confirmedDescription": "Recibimos tu pedido y te mantendremos al tanto de su avance.",
+			"orderReference": "Referencia del pedido:",
+			"emailSentTo": "Enviamos un correo de confirmación a {email}."
+		},
+		"CheckoutSuccessOrderSummary": {
+			"summary": "Resumen del pedido",
+			"quantity": "Cant. {quantity}",
+			"subtotal": "Subtotal",
+			"total": "Total"
+		},
+		"CheckoutSuccessOrderDetails": {
+			"details": "Detalles del pedido",
+			"email": "Correo electrónico",
+			"phone": "Teléfono",
+			"fulfillment": "Método de entrega",
+			"delivery": "Envío",
+			"pickup": "Recoger en tienda",
+			"shippingAddress": "Dirección de envío"
+		},
+		"CheckoutSuccessLoading": {
+			"loading": "Cargando tu pedido"
+		}
+	},
+	"MyOrdersPage": {
+		"pageTitle": "Mis pedidos",
+		"pageDescription": "Revisa tus pedidos recientes y su estado actual.",
+		"loadError": "No pudimos cargar tus pedidos.",
+		"storageError": "No se pudieron leer tus pedidos guardados en este dispositivo.",
+		"emptyTitle": "Aún no hay pedidos",
+		"signedInEmptyDescription": "Aquí aparecerán los pedidos que hagas con tu sesión iniciada.",
+		"guestEmptyDescription": "Aquí aparecerán los pedidos que hagas en este dispositivo.",
+		"noMatchingOrders": "No hay pedidos que coincidan",
+		"filtersEmptyDescription": "Ningún pedido coincide con los filtros seleccionados.",
+		"paymentFilterLabel": "Estado del pago",
+		"fulfillmentFilterLabel": "Estado de entrega",
+		"methodFilterLabel": "Método de entrega",
+		"sortLabel": "Fecha",
+		"newestFirst": "Más recientes primero",
+		"oldestFirst": "Más antiguos primero",
+		"allPaymentStatuses": "Todos los estados",
+		"allFulfillmentStatuses": "Todos los estados",
+		"allMethods": "Todos los métodos",
+		"clearFilters": "Limpiar filtros ({count})",
+		"MyOrdersHeader": {
+			"eyebrow": "Historial de pedidos",
+			"heading": "Mis pedidos",
+			"signedInDescription": "Da seguimiento a todos los pedidos vinculados con tu cuenta.",
+			"guestDescription": "Estos son los pedidos guardados de forma segura en este dispositivo. Inicia sesión para acceder a los pedidos de tu cuenta desde cualquier lugar."
+		},
+		"MyOrdersItem": {
+			"cancelled": "Cancelado",
+			"delivery": "Envío",
+			"pickup": "Recoger en tienda",
+			"viewOrder": "Ver pedido"
+		}
+	},
+	"MyOrderPage": {
+		"pageTitle": "Pedido {code}",
+		"loadError": "No pudimos cargar este pedido.",
+		"storageError": "No se pudo leer el acceso guardado a tu pedido en este dispositivo.",
+		"notFoundTitle": "Pedido no encontrado",
+		"notFoundDescription": "Este pedido no pertenece a tu cuenta ni a este dispositivo, o el enlace no es válido.",
+		"back": "Volver a mis pedidos",
+		"MyOrderHeader": {
+			"back": "Todos los pedidos",
+			"eyebrow": "Detalles del pedido",
+			"cancelled": "Cancelado"
+		}
+	},
+	"AuthFeature": {
+		"AuthData": {
+			"indefinitely": "Indefinidamente",
+			"oneDay": "1 día",
+			"sevenDays": "7 días",
+			"thirtyDays": "30 días"
+		},
+		"ForgotPasswordForm": {
+			"forgotYourPassword": "¿Olvidaste tu contraseña?",
+			"emailResetDescription": "Escribe tu correo y te enviaremos un código para restablecer tu contraseña.",
+			"setNewPassword": "Establece una nueva contraseña",
+			"resetCodeDescription": "Escribe el código que te enviamos por correo y elige una nueva contraseña.",
+			"email": "Correo electrónico",
+			"verificationCode": "Código de verificación",
+			"newPassword": "Nueva contraseña",
+			"passwordLengthDescription": "Debe tener al menos 8 caracteres.",
+			"confirmPassword": "Confirmar contraseña",
+			"sendResetCode": "Enviar código de restablecimiento",
+			"resetPassword": "Restablecer contraseña",
+			"backToSignIn": "Volver a iniciar sesión"
+		},
+		"LogoutButton": {
+			"signedOutSuccessfully": "Sesión cerrada correctamente",
+			"signingOut": "Cerrando sesión",
+			"signingOutEllipsis": "Cerrando sesión..."
+		},
+		"SignInForm": {
+			"welcomeBack": "Bienvenido de nuevo",
+			"loginDescription": "Escribe tu correo para iniciar sesión en tu cuenta",
+			"email": "Correo electrónico",
+			"password": "Contraseña",
+			"rememberSession": "Recuerda tu sesión.",
+			"forgotYourPassword": "¿Olvidaste tu contraseña?",
+			"signIn": "Iniciar sesión",
+			"continueWithGoogle": "Continuar con Google",
+			"noAccount": "¿No tienes una cuenta?",
+			"signUp": "Regístrate"
+		},
+		"SignUpForm": {
+			"createAccount": "Crea una cuenta",
+			"createAccountDescription": "Completa tus datos para crear tu cuenta",
+			"fullName": "Nombre completo",
+			"fullNamePlaceholder": "Juan Pérez",
+			"email": "Correo electrónico",
+			"emailDescription": "Lo usaremos para contactarte. No compartiremos tu correo con nadie más.",
+			"password": "Contraseña",
+			"passwordLengthDescription": "Debe tener al menos 8 caracteres.",
+			"confirmPassword": "Confirmar contraseña",
+			"confirmPasswordDescription": "Confirma tu contraseña.",
+			"continueWithGoogle": "Continuar con Google",
+			"alreadyHaveAccount": "¿Ya tienes una cuenta?",
+			"signIn": "Iniciar sesión",
+			"verificationCodeToast": "Revisa tu correo para encontrar el código de verificación."
+		},
+		"VerifyEmailForm": {
+			"verifyYourEmail": "Verifica tu correo",
+			"verifyEmailDescription": "Enviamos un código de 6 dígitos a tu correo. Escríbelo a continuación para terminar tu registro.",
+			"email": "Correo electrónico",
+			"emailPlaceholder": "m@example.com",
+			"verificationCode": "Código de verificación",
+			"verifyEmail": "Verificar correo",
+			"didntReceiveCode": "¿No recibiste el código?",
+			"resendCodeIn": "Reenviar código en {seconds}s",
+			"resendCode": "Reenviar código",
+			"anotherVerificationCode": "Te enviamos otro código de verificación.",
+			"backToSignIn": "Volver a iniciar sesión"
+		}
+	},
+	"SearchFeature": {
+		"SearchInput": {
+			"searchPlaceholder": "Buscar...",
+			"clearSearch": "Limpiar búsqueda"
+		}
+	},
+	"CategoriesFeature": {
+		"CategoryOptions": {
+			"category": "Categoría",
+			"allCategories": "Todas las categorías"
+		}
+	},
+	"UploadFileFeature": {
+		"UploadFileDropzone": {
+			"clickOrDragAndDrop": "Haz clic o arrastra y suelta",
+			"addOneOrMoreImages": "Agrega una o varias imágenes",
+			"addOneImage": "Agrega una imagen"
+		},
+		"UploadFilePreviewItem": {
+			"uploadedImage": "Imagen subida",
+			"coverImage": "Imagen de portada",
+			"setAsCover": "Usar como portada",
+			"cover": "Portada",
+			"remove": "Eliminar",
+			"moveLeft": "Mover a la izquierda",
+			"moveRight": "Mover a la derecha"
+		}
+	},
+	"CartFeature": {
+		"Cart": {
+			"addToCart": "Agregar al carrito",
+			"soldOut": "Agotado",
+			"temporarilyUnavailable": "No disponible por el momento",
+			"onlyLeft": "Solo {count} disponibles",
+			"saveError": "No pudimos guardar tu carrito. Inténtalo de nuevo o permite el almacenamiento del navegador.",
+			"title": "Carrito",
+			"openCart": "Abrir carrito de compras",
+			"emptyTitle": "Tu carrito está vacío",
+			"emptyDescription": "Los artículos que agregues aparecerán aquí.",
+			"maxItemsReached": "Tu carrito puede contener hasta {maxItems} artículos. Elimina uno antes de agregar más.",
+			"loading": "Cargando carrito",
+			"loadError": "No pudimos cargar los artículos del carrito.",
+			"unavailableItemsRemoved": "Algunos productos ya no están disponibles y se eliminaron de tu carrito.",
+			"remove": "Eliminar",
+			"increaseQuantity": "Aumentar cantidad",
+			"decreaseQuantity": "Disminuir cantidad",
+			"each": "cada uno",
+			"addSuccess": "{name} se agregó al carrito correctamente",
+			"total": "Total",
+			"youSave": "Ahorras",
+			"goToCheckout": "Finalizar compra",
+			"removeSuccess": "El producto {name} se eliminó correctamente del carrito"
+		}
+	},
+	"OrdersFeature": {
+		"OrdersPaymentStatusBadge": {
+			"pending": "Pendiente",
+			"paid": "Pagado",
+			"refundPending": "Reembolso pendiente",
+			"refunded": "Reembolsado"
+		},
+		"OrdersFulfillmentStatusBadge": {
+			"unfulfilled": "Sin entregar",
+			"fulfilled": "Entregado"
+		}
+	},
+	"ShopPage": {
+		"pageTitle": "Tienda",
+		"description": "Explora nuestros productos y encuentra tu próximo favorito.",
+		"products": "Productos",
+		"found": "encontrados",
+		"filtered": "Filtrado",
+		"loadingCount": "Cargando cantidad de productos",
+		"loadingProducts": "Cargando productos",
+		"searchLabel": "Buscar productos",
+		"searchPlaceholder": "Busca por nombre del producto...",
+		"sortLabel": "Ordenar",
+		"newestFirst": "Más recientes primero",
+		"oldestFirst": "Más antiguos primero",
+		"clearFilters": "Limpiar filtros",
+		"emptyTitle": "Aún no hay productos",
+		"emptyDescription": "Nuestra colección está en camino. Vuelve pronto.",
+		"noMatches": "No hay productos que coincidan",
+		"noMatchesDescription": "Prueba con otro nombre o limpia los filtros para ver todos los productos.",
+		"noPageMatches": "No hay coincidencias en esta página",
+		"noPageMatchesDescription": "Continúa a la página siguiente o ajusta los filtros.",
+		"loadError": "No pudimos cargar los productos. Inténtalo de nuevo."
+	},
+	"AuthErrorPage": {
+		"accountBannedTitle": "Cuenta bloqueada",
+		"authenticationErrorTitle": "Error de autenticación",
+		"accessBlocked": "Acceso bloqueado",
+		"yourAccountIsBanned": "Tu cuenta está bloqueada",
+		"bannedDescription": "Se te ha prohibido el acceso a esta aplicación. Contacta a soporte si crees que es un error.",
+		"genericDescription": "Algo salió mal. Inténtalo de nuevo.",
+		"remaining": "Restante: {time}.",
+		"banEnds": "El bloqueo termina: {date}.",
+		"banDoesNotExpire": "Este bloqueo no vence.",
+		"tryAgain": "Intentar de nuevo",
+		"goHome": "Ir al inicio"
+	},
+	"ErrorPage": {
+		"somethingWentWrong": "Algo salió mal.",
+		"tryAgain": "Intentar de nuevo",
+		"goHome": "Ir al inicio"
+	},
+	"AddProductPage": {
+		"pageTitle": "Agregar producto | Admin",
+		"adminLabel": "Admin",
+		"title": "Agregar producto",
+		"pageDescription": "Agrega los detalles, el contenido multimedia, las variantes, los precios y las existencias del producto.",
+		"basicInfoSectionTitle": "Información básica del producto",
+		"basicInfoSectionDescription": "El nombre, la descripción, las imágenes y la categoría que verá el cliente.",
+		"visibilitySectionTitle": "Visibilidad",
+		"visibilitySectionDescription": "Guarda este producto como borrador o publícalo en la tienda.",
+		"name": "Nombre",
+		"namePlaceholder": "Nombre del producto",
+		"trackInventory": "Controlar inventario",
+		"trackInventoryDescription": "Desactívalo para productos que se pueden vender sin límite de existencias.",
+		"description": "Descripción",
+		"descriptionPlaceholder": "Describe el producto",
+		"images": "Imágenes",
+		"imagesDescription": "Sube aquí todas las imágenes del producto y asígnalas a cada variante.",
+		"categories": "Categoría",
+		"categoriesDescription": "Coloca este producto en una categoría de la tienda.",
+		"ProductCategorySelector": {
+			"searchLabel": "Buscar categorías de productos",
+			"searchPlaceholder": "Buscar categorías...",
+			"categoriesLoading": "Cargando categorías...",
+			"searchError": "No pudimos cargar las categorías.",
+			"noMatchingCategories": "No hay categorías que coincidan.",
+			"archivedCategory": "Archivada"
+		},
+		"productAdded": "Producto agregado.",
+		"addError": "No pudimos agregar este producto.",
+		"cancel": "Cancelar",
+		"addProduct": "Agregar producto",
+		"draftHint": "Guardado como borrador; no es visible en la tienda.",
+		"activeHint": "Visible en la tienda al guardar.",
+		"statusActive": "Activo",
+		"statusDescription": "Desactívalo para guardarlo como borrador, oculto en la tienda."
+	},
+	"AdminProductsPage": {
+		"pageTitle": "Productos | Admin",
+		"searchPlaceholder": "Buscar productos...",
+		"productColumn": "Producto",
+		"priceColumn": "Precio",
+		"stockColumn": "Inventario",
+		"categoryColumn": "Categoría",
+		"createdColumn": "Creado",
+		"actionsColumn": "Acciones",
+		"loadError": "No pudimos cargar los productos.",
+		"noMatchingProducts": "No hay productos que coincidan",
+		"noProductsYet": "Aún no hay productos",
+		"searchEmptyDescription": "No hay nada que coincida con \"{term}\".",
+		"emptyDescription": "Crea el primer producto de tu catálogo.",
+		"addProduct": "Agregar producto",
+		"AdminProductsTableItem": {
+			"variants": "Variantes",
+			"stockOnHand": "En existencia",
+			"reservedStock": "Reservado",
+			"availableStock": "Disponible",
+			"unlimitedStock": "Ilimitado",
+			"openProductActions": "Abrir acciones para {name}",
+			"editProduct": "Editar producto",
+			"deleteProduct": "Eliminar producto",
+			"deleteConfirmationTitle": "¿Estás seguro?",
+			"deleteConfirmationDescription": "Esto elimina permanentemente {name} y sus imágenes.",
+			"productDeleted": "Producto eliminado.",
+			"deleteError": "No pudimos eliminar este producto.",
+			"cancel": "Cancelar"
+		},
+		"AdminProductsHeader": {
+			"adminLabel": "Admin",
+			"productsFound": "Productos: {count} encontrados",
+			"productsLabel": "Productos",
+			"foundLabel": "encontrados",
+			"filteredLabel": "Productos: resultados de búsqueda",
+			"description": "Gestiona el contenido, las categorías y las imágenes de los productos.",
+			"addProduct": "Agregar producto"
+		}
+	},
+	"AdminEditProductPage": {
+		"pageTitle": "Editar producto | Admin",
+		"adminLabel": "Admin",
+		"heading": "Editar producto",
+		"description": "Actualiza los datos del catálogo de {name}.",
+		"loadError": "No pudimos cargar este producto.",
+		"productUpdated": "Producto actualizado.",
+		"updateError": "No pudimos actualizar este producto.",
+		"cancel": "Cancelar",
+		"saveChanges": "Guardar cambios"
+	},
+	"AddCategoryPage": {
+		"pageTitle": "Agregar categoría | Admin",
+		"title": "Agregar categoría",
+		"pageDescription": "Crea una categoría para organizar los productos en la tienda.",
+		"detailsTitle": "Detalles de la categoría",
+		"detailsDescription": "Usa un nombre claro para el cliente. El slug de la URL se genera automáticamente.",
+		"name": "Nombre",
+		"namePlaceholder": "Nombre de la categoría",
+		"image": "Imagen",
+		"imageDescription": "Opcional. Sube una imagen para esta categoría.",
+		"status": "Estado",
+		"statusActive": "Activa",
+		"statusArchived": "Archivada",
+		"statusDescription": "Las categorías archivadas se ocultan de la tienda, pero conservan la asignación de productos.",
+		"categoryAdded": "Categoría agregada.",
+		"addError": "No pudimos agregar esta categoría.",
+		"cancel": "Cancelar",
+		"addCategory": "Agregar categoría",
+		"AdminCategoryFormHeader": {
+			"adminLabel": "Admin"
+		}
+	},
+	"AdminCategoriesPage": {
+		"pageTitle": "Categorías | Admin",
+		"searchPlaceholder": "Buscar categorías...",
+		"nameColumn": "Categoría",
+		"slugColumn": "Slug",
+		"statusColumn": "Estado",
+		"actionsColumn": "Acciones",
+		"loadError": "No pudimos cargar las categorías.",
+		"noMatchingCategories": "No hay categorías que coincidan",
+		"noCategoriesYet": "Aún no hay categorías",
+		"searchEmptyDescription": "No hay nada que coincida con \"{term}\".",
+		"emptyDescription": "Crea la primera categoría de tu catálogo.",
+		"addCategory": "Agregar categoría",
+		"AdminCategoriesTableItem": {
+			"active": "Activa",
+			"archived": "Archivada",
+			"openCategoryActions": "Abrir acciones para {name}",
+			"editCategory": "Editar categoría",
+			"deleteCategory": "Eliminar categoría",
+			"deleteConfirmationTitle": "¿Eliminar categoría?",
+			"deleteConfirmationDescription": "Esto elimina permanentemente {name} y su imagen. Los productos no se ven afectados, pero la categoría no debe estar asignada a ningún producto.",
+			"categoryDeleted": "Categoría eliminada.",
+			"deleteError": "No pudimos eliminar esta categoría.",
+			"cancel": "Cancelar"
+		},
+		"AdminCategoriesHeader": {
+			"adminLabel": "Admin",
+			"categoriesFound": "Categorías: {count} encontradas",
+			"categoriesLabel": "Categorías",
+			"foundLabel": "encontradas",
+			"filteredLabel": "Categorías: resultados de búsqueda",
+			"description": "Organiza los productos en categorías reutilizables de la tienda.",
+			"addCategory": "Agregar categoría"
+		}
+	},
+	"AdminEditCategoryPage": {
+		"pageTitle": "Editar categoría | Admin",
+		"heading": "Editar categoría",
+		"description": "Actualiza la organización y la visibilidad de {name} en la tienda.",
+		"loadError": "No pudimos cargar esta categoría.",
+		"AdminCategoryFormHeader": {
+			"adminLabel": "Admin"
+		},
+		"AdminEditCategoryForm": {
+			"detailsTitle": "Detalles de la categoría",
+			"detailsDescription": "Usa un nombre claro para el cliente. El slug de la URL se actualiza automáticamente.",
+			"name": "Nombre",
+			"namePlaceholder": "Nombre de la categoría",
+			"image": "Imagen",
+			"imageDescription": "Opcional. Sube una imagen para esta categoría.",
+			"status": "Estado",
+			"statusActive": "Activa",
+			"statusArchived": "Archivada",
+			"statusDescription": "Las categorías archivadas se ocultan de la tienda, pero conservan la asignación de productos.",
+			"categoryUpdated": "Categoría actualizada.",
+			"updateError": "No pudimos actualizar esta categoría.",
+			"cancel": "Cancelar",
+			"saveChanges": "Guardar cambios"
+		}
+	},
+	"AdminUsersPage": {
+		"pageTitle": "Usuarios | Admin",
+		"searchPlaceholder": "Busca nombres o correos...",
+		"clearFilters": "Limpiar filtros ({count})",
+		"userColumn": "Usuario",
+		"roleColumn": "Rol",
+		"statusColumn": "Estado",
+		"joinedColumn": "Registro",
+		"loadError": "No pudimos cargar los usuarios.",
+		"noMatchingUsers": "No hay usuarios que coincidan",
+		"noUsersYet": "Aún no hay usuarios",
+		"searchEmptyDescription": "No hay nada que coincida con \"{term}\".",
+		"filtersEmptyDescription": "Nada coincide con estos filtros.",
+		"emptyDescription": "No hay cuentas para mostrar.",
+		"AdminUsersHeader": {
+			"adminLabel": "Admin",
+			"usersFound": "Usuarios: {count} encontrados",
+			"usersLabel": "Usuarios",
+			"foundLabel": "encontrados",
+			"filteredLabel": "Usuarios: filtrados",
+			"description": "Revisa cuentas, roles y estado de verificación."
+		},
+		"AdminUsersTableItem": {
+			"suspended": "Suspendido",
+			"verified": "Verificado",
+			"unverified": "Sin verificar"
+		}
+	},
+	"AdminUserPage": {
+		"pageTitle": "Usuario | Admin",
+		"AdminUserHeader": {
+			"backToUsers": "Volver a usuarios"
+		},
+		"AdminUserTabs": {
+			"userDetails": "Detalles del usuario",
+			"profile": "Perfil",
+			"settings": "Configuración",
+			"sessions": "Sesiones",
+			"logs": "Registros"
+		},
+		"AdminUserTabsProfile": {
+			"loadError": "No pudimos cargar el perfil de este usuario.",
+			"userNotFound": "Usuario no encontrado",
+			"userNotFoundDescription": "Es posible que esta cuenta se haya eliminado o que el enlace no sea válido."
+		},
+		"AdminUserTabsProfileBanned": {
+			"accountBanned": "Esta cuenta está bloqueada",
+			"expires": "Vence",
+			"noExpirationSet": "Sin vencimiento",
+			"reason": "Motivo"
+		},
+		"AdminUserTabsProfileData": {
+			"verified": "Verificado",
+			"unverified": "Sin verificar",
+			"banned": "Bloqueado",
+			"active": "Activo",
+			"id": "ID",
+			"copyUserId": "Copiar ID de usuario",
+			"appId": "ID de la app",
+			"copyAppUserId": "Copiar ID de usuario de la app"
+		},
+		"AdminUserTabsProfileLifecycle": {
+			"lifecycle": "Ciclo de vida",
+			"created": "Creado",
+			"lastUpdated": "Última actualización"
+		},
+		"AdminUserTabsSessions": {
+			"sessions": "Sesiones",
+			"description": "Sesiones de inicio de sesión registradas para este usuario.",
+			"loadError": "No pudimos cargar las sesiones de este usuario.",
+			"noSessions": "Sin sesiones",
+			"noSessionsDescription": "No hay sesiones de inicio de sesión registradas para este usuario."
+		},
+		"AdminUserTabsSessionsItem": {
+			"active": "Activa",
+			"expired": "Vencida",
+			"impersonated": "Suplantada",
+			"ipUnavailable": "IP no disponible",
+			"userAgentUnavailable": "Agente de usuario no disponible",
+			"impersonatedBy": "por {user}",
+			"started": "Inició",
+			"lastActive": "Última actividad",
+			"expires": "Vence"
+		},
+		"AdminUserTabsLogs": {
+			"logs": "Registros",
+			"description": "Actividad de auditoría registrada para este usuario.",
+			"loadError": "No pudimos cargar los registros de auditoría de este usuario.",
+			"noActivity": "Aún no hay actividad",
+			"noActivityDescription": "No hay registros de auditoría para este usuario."
+		},
+		"AdminUserTabsLogsItem": {
+			"resource": "Recurso",
+			"resourceWithId": "{type} {id}"
+		},
+		"AdminUserTabsSettings": {
+			"loadError": "No pudimos cargar la configuración de este usuario.",
+			"userNotFound": "Usuario no encontrado",
+			"userNotFoundDescription": "Es posible que esta cuenta se haya eliminado o que el enlace no sea válido."
+		},
+		"AdminUserTabsSettingsAccess": {
+			"userRole": "Usuario",
+			"adminRole": "Admin",
+			"access": "Acceso",
+			"description": "Gestiona el rol y el acceso de este usuario.",
+			"role": "Rol",
+			"pendingRoleChange": "Pendiente: guarda para cambiar el rol a {role}.",
+			"adminsCanManage": "Los administradores pueden gestionar usuarios desde esta área.",
+			"accountAccess": "Acceso a la cuenta",
+			"banned": "Bloqueado",
+			"active": "Activo",
+			"accessBlockedUntil": "Acceso bloqueado hasta {date}.",
+			"accessBlockedNoExpiration": "El acceso está bloqueado sin vencimiento.",
+			"userCanSignIn": "El usuario puede iniciar sesión con normalidad."
+		},
+		"AdminUserTabsSettingsDangerZone": {
+			"userDeleted": "Usuario eliminado.",
+			"deleteError": "No pudimos eliminar este usuario.",
+			"dangerZone": "Zona de peligro",
+			"description": "Acciones permanentes sobre la cuenta. No se pueden deshacer.",
+			"deleteAccount": "Eliminar cuenta",
+			"deleteDescription": "Elimina la cuenta, las sesiones y las cuentas de autenticación vinculadas.",
+			"deleteConfirmationTitle": "¿Eliminar a {name}?",
+			"deleteConfirmationDescription": "Esto elimina permanentemente la cuenta y todas sus sesiones y cuentas vinculadas.",
+			"typeToConfirm": "Escribe {email} para confirmar",
+			"cancel": "Cancelar"
+		},
+		"BanUserDialog": {
+			"userBanned": "Usuario bloqueado.",
+			"banError": "No pudimos bloquear a este usuario.",
+			"banUser": "Bloquear usuario",
+			"banTitle": "¿Bloquear a {name}?",
+			"banDescription": "Bloquear al usuario finaliza de inmediato sus sesiones activas.",
+			"reason": "Motivo",
+			"reasonPlaceholder": "Motivo opcional para el registro de auditoría",
+			"duration": "Duración",
+			"cancel": "Cancelar"
+		},
+		"SaveRoleButton": {
+			"roleUpdateError": "No pudimos actualizar el rol de este usuario.",
+			"roleUpdated": "Rol del usuario actualizado.",
+			"saveRole": "Guardar rol"
+		},
+		"UnbanUserButton": {
+			"unbanError": "No pudimos desbloquear a este usuario.",
+			"userUnbanned": "Usuario desbloqueado.",
+			"unbanUser": "Desbloquear usuario"
+		}
+	},
+	"AdminDashboardPage": {
+		"pageTitle": "Panel | Admin",
+		"adminLabel": "Admin",
+		"dashboard": "Panel",
+		"AdminDashboardStats": {
+			"loadError": "No pudimos cargar las estadísticas del panel."
+		},
+		"AdminDashboardHeaderTimeranges": {
+			"timeRangeLabel": "Periodo",
+			"today": "Hoy",
+			"last7Days": "7d",
+			"last30Days": "30d",
+			"last90Days": "90d",
+			"refresh": "Actualizar"
+		},
+		"AdminDashboardHeaderCustomCalendar": {
+			"custom": "Personalizado",
+			"rangeTooLong": "No puedes seleccionar más de 366 días a la vez"
+		},
+		"RevenueChart": {
+			"title": "Ingresos",
+			"descriptionPrefix": "Mostrando ingresos totales de",
+			"loadError": "No pudimos cargar la gráfica de ingresos."
+		}
+	},
+	"AdminLogsPage": {
+		"pageTitle": "Registros | Admin",
+		"adminLabel": "Admin",
+		"auditLogs": "Registros de auditoría",
+		"description": "Revisa la actividad registrada en toda la aplicación.",
+		"eventColumn": "Evento",
+		"severityColumn": "Severidad",
+		"actorColumn": "Actor",
+		"resourceColumn": "Recurso",
+		"timeColumn": "Fecha",
+		"actor": "Actor: {actor}",
+		"system": "Sistema",
+		"resource": "Recurso",
+		"resourceWithId": "{type} {id}",
+		"none": "Ninguno",
+		"loadError": "No pudimos cargar los registros de auditoría.",
+		"noActivity": "Aún no hay actividad",
+		"noActivityDescription": "No se han registrado eventos de auditoría."
+	},
+	"AdminOrdersPage": {
+		"pageTitle": "Pedidos | Admin",
+		"loadError": "No pudimos cargar los pedidos.",
+		"noOrders": "Aún no hay pedidos",
+		"noOrdersDescription": "Aquí aparecerán los nuevos pedidos del checkout.",
+		"noMatchingOrders": "No hay pedidos que coincidan",
+		"filtersEmptyDescription": "Ningún pedido coincide con los filtros seleccionados.",
+		"paymentFilterLabel": "Estado del pago",
+		"allPaymentStatuses": "Todos los estados",
+		"fulfillmentFilterLabel": "Estado de entrega",
+		"allFulfillmentStatuses": "Todos los estados",
+		"methodFilterLabel": "Método de entrega",
+		"allMethods": "Todos los métodos",
+		"clearFilters": "Limpiar filtros ({count})",
+		"orderColumn": "Pedido",
+		"customerColumn": "Cliente",
+		"totalColumn": "Total",
+		"paymentColumn": "Pago",
+		"fulfillmentColumn": "Entrega",
+		"createdColumn": "Creado",
+		"actionsColumn": "Acciones",
+		"AdminOrdersHeader": {
+			"adminLabel": "Admin",
+			"heading": "Pedidos",
+			"description": "Revisa los pedidos de los clientes, el estado del pago y de la entrega."
+		},
+		"AdminOrdersTableItem": {
+			"openOrderActions": "Abrir acciones para el pedido {reference}",
+			"manageOrder": "Gestionar pedido",
+			"pending": "Pendiente",
+			"paid": "Pagado",
+			"refundPending": "Reembolso pendiente",
+			"refunded": "Reembolsado",
+			"unfulfilled": "Sin entregar",
+			"fulfilled": "Entregado",
+			"cancelled": "Cancelado",
+			"delivery": "Envío",
+			"pickup": "Recoger en tienda"
+		}
+	},
+	"AdminEditOrderPage": {
+		"pageTitle": "Pedido | Admin",
+		"loadError": "No pudimos cargar este pedido.",
+		"AdminEditOrderHeader": {
+			"back": "Volver a pedidos",
+			"heading": "Pedido {id}",
+			"description": "Revisa el resumen del pedido y gestiona su entrega.",
+			"adminLabel": "Admin"
+		},
+		"AdminEditOrderSummary": {
+			"customer": "Cliente",
+			"name": "Nombre",
+			"email": "Correo electrónico",
+			"phone": "Teléfono",
+			"fulfillment": "Forma de entrega",
+			"delivery": "Envío",
+			"pickup": "Recoger en tienda",
+			"shippingAddress": "Dirección de envío",
+			"items": "Artículos",
+			"quantity": "Cant. {quantity}",
+			"subtotal": "Subtotal",
+			"total": "Total"
+		},
+		"AdminEditOrderActions": {
+			"management": "Acciones del pedido",
+			"managementDescription": "La cancelación y el reembolso son acciones independientes. Cancelar nunca reembolsa un pago.",
+			"paymentStatus": "Estado del pago",
+			"fulfillmentStatus": "Estado de entrega",
+			"cancelled": "Cancelado"
+		},
+		"AdminEditOrderCancelButton": {
+			"cancelOrder": "Cancelar pedido",
+			"confirmationTitle": "¿Estás seguro?",
+			"cancelConfirmation": "Esto marcará el pedido como cancelado e impedirá que se entregue.",
+			"cancelNoRefund": "Cancelar no reembolsará al cliente.",
+			"cancelRefundInstruction": "Si tienes la intención de reembolsar el pago, elige primero el botón “Reembolsar pedido”. La cancelación por sí sola nunca reembolsa al cliente.",
+			"keepCurrentStatus": "Mantener estado actual",
+			"updated": "Pedido actualizado.",
+			"updateError": "No pudimos actualizar este pedido.",
+			"processing": "Procesando..."
+		},
+		"AdminEditOrderFulfillmentStatusButton": {
+			"markFulfilled": "Marcar como entregado",
+			"markUnfulfilled": "Marcar como pendiente de entrega",
+			"confirmationTitle": "¿Estás seguro?",
+			"fulfillConfirmation": "¿Marcar este pedido como entregado?",
+			"unfulfillConfirmation": "¿Volver a marcar este pedido como pendiente de entrega?",
+			"keepCurrentStatus": "Mantener estado actual",
+			"updated": "Pedido actualizado.",
+			"updateError": "No pudimos actualizar este pedido.",
+			"processing": "Procesando..."
+		},
+		"AdminEditOrderRefundButton": {
+			"refundOrder": "Reembolsar pedido",
+			"confirmationTitle": "¿Estás seguro?",
+			"refundConfirmation": "Esto emitirá un reembolso total al método de pago original.",
+			"refundRequested": "Solicitud de reembolso enviada a Stripe.",
+			"refundError": "No pudimos reembolsar este pedido.",
+			"keepCurrentStatus": "Mantener estado actual",
+			"processing": "Procesando..."
+		}
+	},
+	"Components": {
+		"DataTable": {
+			"emptyTitle": "Aún no hay elementos",
+			"emptyDescription": "Todavía no hay nada que mostrar."
+		},
+		"DataList": {
+			"emptyTitle": "Aún no hay elementos",
+			"emptyDescription": "Todavía no hay nada que mostrar."
+		},
+		"ErrorComponent": {
+			"somethingWentWrong": "Algo salió mal.",
+			"retry": "Reintentar"
+		},
+		"PaginatedData": {
+			"page": "Página {page}",
+			"pageWithTotal": "Página {page} / {total}",
+			"previousPage": "Página anterior",
+			"nextPage": "Página siguiente"
+		},
+		"DataTableItem": {
+			"selectRow": "Seleccionar fila"
+		},
+		"DataTableSelectionBar": {
+			"selected": "Seleccionados",
+			"item": "elemento",
+			"items": "elementos",
+			"clearSelection": "Limpiar selección",
+			"clear": "Limpiar"
+		},
+		"InfiniteScroll": {
+			"error": "No se pudieron cargar más elementos.",
+			"loading": "Cargando más elementos...",
+			"loadMore": "Cargar más",
+			"retry": "Intentar de nuevo",
+			"end": "No hay más elementos."
+		},
+		"PasswordInput": {
+			"hidePassword": "Ocultar contraseña",
+			"showPassword": "Mostrar contraseña"
+		},
+		"NativeSelect": {
+			"select": "Selecciona…"
+		},
+		"LanguageSwitcher": {
+			"label": "Idioma"
+		},
+		"ImageGallery": {
+			"carouselLabel": "Imágenes del producto",
+			"previousImage": "Imagen anterior",
+			"nextImage": "Imagen siguiente",
+			"thumbnailLabel": "Miniaturas de las imágenes del producto",
+			"selectImage": "Ver imagen {index}",
+			"noImages": "No hay imágenes disponibles"
+		},
+		"NativeSheet": {
+			"close": "Cerrar",
+			"fallbackError": "Este navegador no puede mostrar el panel nativo y no se pudo cargar su alternativa."
+		},
+		"NativeDialog": {
+			"close": "Cerrar"
+		},
+		"NativeSheetFallback": {
+			"open": "Abrir panel",
+			"description": "Muestra el contenido del panel."
+		},
+		"NativeTooltip": {
+			"fallbackError": "Este navegador no puede mostrar la descripción emergente nativa y no se pudo cargar su alternativa."
+		},
+		"NativeSidebar": {
+			"label": "Barra lateral",
+			"mobileNavigation": "Navegación móvil"
+		},
+		"NativeSidebarUser": {
+			"user": "Usuario",
+			"openAccountMenu": "Abrir menú de cuenta",
+			"logOut": "Cerrar sesión"
+		},
+		"NativeSidebarPageHeader": {
+			"title": "Espacio de trabajo",
+			"openNavigation": "Abrir navegación"
+		},
+		"CopyValue": {
+			"copy": "Copiar {label}",
+			"copied": "{label} copiado"
+		},
+		"Form": {
+			"savedSuccessfully": "Guardado correctamente.",
+			"somethingWentWrong": "Algo salió mal.",
+			"fixHighlightedFields": "Corrige los campos resaltados.",
+			"uploadFailed": "No se pudo subir el archivo.",
+			"uploadCancelled": "Se canceló la subida del archivo."
+		},
+		"FormUploadFile": {
+			"preparingFiles": "Preparando archivos...",
+			"uploadingFiles": "Subiendo archivos",
+			"uploadProgress": "Progreso de subida de archivos"
+		},
+		"Header": {
+			"signOut": "Cerrar sesión",
+			"signIn": "Iniciar sesión",
+			"adminDashboard": "Panel de administración",
+			"myOrders": "Mis pedidos",
+			"home": "Inicio",
+			"shop": "Tienda",
+			"primaryNavigation": "Navegación principal",
+			"announcement": "Envíos a todo México · Entrega estimada 3–5 días hábiles · Venta al por mayor disponible",
+			"navShop": "Comprar",
+			"navBaptism": "Bautizo",
+			"navFirstCommunion": "Primera Comunión",
+			"navGuayaberas": "Guayaberas",
+			"navWholesale": "Al por mayor"
+		},
+		"SvelteHead": {
+			"home": "Inicio"
+		}
+	},
+	"UpsellsFeature": {
+		"UpsellsDialog": {
+			"open": "Abrir recomendaciones de productos",
+			"title": "Agregado a tu carrito",
+			"heading": "Combina bien con tu compra",
+			"description": "Extras opcionales para {name}. Agrega los que quieras o ve directo a tu carrito.",
+			"allAdded": "Todo lo recomendado ya está en tu carrito.",
+			"keepShopping": "Seguir comprando",
+			"viewCart": "Ver carrito"
+		},
+		"UpsellsDialogItem": {
+			"add": "Agregar",
+			"addProduct": "Agregar {name} al carrito",
+			"viewOptions": "Ver opciones"
+		},
+		"ManageUpsellsDialog": {
+			"addUpsell": "Agregar venta adicional",
+			"title": "Agregar venta adicional",
+			"editUpsells": "Editar ventas adicionales",
+			"editTitle": "Editar ventas adicionales",
+			"cancel": "Cancelar",
+			"addUpsells": "Agregar ventas adicionales",
+			"saveUpsells": "Guardar ventas adicionales",
+			"addingUpsells": "Agregando ventas adicionales...",
+			"savingUpsells": "Guardando ventas adicionales...",
+			"upsellsAdded": "Ventas adicionales agregadas.",
+			"upsellsUpdated": "Ventas adicionales actualizadas.",
+			"loadError": "No pudimos cargar estas ventas adicionales.",
+			"addError": "No pudimos agregar estas ventas adicionales.",
+			"updateError": "No pudimos actualizar estas ventas adicionales."
+		},
+		"ManageUpsellsDialogSelectProduct": {
+			"productLabel": "Producto al que quieres agregar ventas adicionales",
+			"searchPlaceholder": "Buscar productos...",
+			"loading": "Buscando productos...",
+			"searchError": "No pudimos buscar productos. Inténtalo de nuevo.",
+			"noMatches": "No hay productos que coincidan"
+		},
+		"ManageUpsellsDialogSelectedProduct": {
+			"change": "Cambiar",
+			"upsellLabel": "Busca productos para usar como ventas adicionales",
+			"upsellSearchPlaceholder": "Buscar productos...",
+			"minimumUpsells": "Elige al menos un producto de venta adicional antes de guardar."
+		},
+		"ManageUpsellsDialogSelectedUpsellItem": {
+			"remove": "Eliminar",
+			"removeLabel": "Eliminar {name} de las ventas adicionales"
+		},
+		"DeleteUpsellsDialog": {
+			"deleteUpsell": "Eliminar venta adicional",
+			"title": "¿Estás seguro?",
+			"description": "Esto eliminará todas las ventas adicionales configuradas para {name}.",
+			"editInstead": "¿Quieres eliminar solo algunas ventas adicionales? Cancela y elige Editar ventas adicionales.",
+			"cancel": "Cancelar",
+			"delete": "Eliminar",
+			"deleting": "Eliminando...",
+			"upsellsDeleted": "Ventas adicionales eliminadas.",
+			"deleteError": "No pudimos eliminar estas ventas adicionales."
+		}
+	},
+	"AdminUpsellsPage": {
+		"pageTitle": "Ventas adicionales",
+		"searchPlaceholder": "Busca un producto con ventas adicionales...",
+		"loadError": "No pudimos cargar estos productos. Inténtalo de nuevo.",
+		"noUpsells": "Aún no hay ventas adicionales",
+		"noUpsellsDescription": "Agrega una venta adicional para empezar a recomendar productos en conjunto.",
+		"noMatches": "No hay productos que coincidan",
+		"noMatchesDescription": "Prueba con otro nombre de producto o limpia tu búsqueda.",
+		"AdminUpsellsHeader": {
+			"adminLabel": "Productos",
+			"title": "Ventas adicionales",
+			"description": "Gestiona los productos que ya tienen ventas adicionales configuradas."
+		},
+		"AdminUpsellsProductItem": {
+			"mainProduct": "Producto principal",
+			"upsellProducts": "Productos de venta adicional",
+			"loadError": "No pudimos cargar estos productos de venta adicional.",
+			"draft": "Borrador",
+			"archived": "Archivado",
+			"deleted": "Producto eliminado"
+		}
+	},
+	"ValidationMessages": {
+		"fallback": "Revisa este campo.",
+		"requiredValue": "Escribe un valor.",
+		"requiredField": "Completa este campo.",
+		"validValue": "Escribe un valor válido.",
+		"compareAtPriceMustExceedPrice": "El precio con descuento debe ser menor que el precio.",
+		"duplicateProductVariantOption": "Los nombres de las opciones deben ser diferentes.",
+		"duplicateProductVariant": "Dos variantes del producto no pueden usar los mismos valores de opciones.",
+		"invalidProductVariant": "Revisa las opciones del producto y los valores de las variantes.",
+		"productVariantImageRequired": "Asigna al menos una imagen a esta variante.",
+		"productImagesRequired": "Sube al menos una imagen del producto.",
+		"passwordsDoNotMatch": "Las contraseñas no coinciden.",
+		"invalidEmail": "Escribe un correo electrónico válido.",
+		"passwordTooShort": "La contraseña debe tener al menos 8 caracteres.",
+		"userAlreadyExists": "Ya existe una cuenta con este correo electrónico.",
+		"invalidOtp": "El código es incorrecto. Revísalo e inténtalo de nuevo.",
+		"otpExpired": "El código venció. Solicita uno nuevo.",
+		"tooManyAttempts": "Demasiados intentos. Inténtalo de nuevo en unos minutos.",
+		"somethingWentWrong": "Algo salió mal. Inténtalo de nuevo."
+	},
+	"BackendMessages": {
+		"rateLimitSingle": "Alcanzaste el límite de solicitudes. Inténtalo de nuevo en 1 segundo.",
+		"rateLimitMultiple": "Alcanzaste el límite de solicitudes. Inténtalo de nuevo en {seconds} segundos.",
+		"unauthenticated": "Inicia sesión e inténtalo de nuevo.",
+		"forbidden": "No tienes permiso para hacer eso.",
+		"captchaFailed": "Completa la verificación de seguridad e inténtalo de nuevo.",
+		"invalidProductData": "Revisa los datos del producto e inténtalo de nuevo.",
+		"productSlugTaken": "Ya existe un producto con esta URL. Elige otro nombre para el producto.",
+		"productDeleteRestricted": "Solo los productos en borrador se pueden eliminar permanentemente.",
+		"productNotFound": "No se encontró este producto.",
+		"cannotDisableInventoryWithReservations": "No se puede desactivar el control de inventario mientras haya unidades reservadas.",
+		"invalidProductVariant": "Una de las variantes del producto no es válida. Revisa las opciones y los valores.",
+		"invalidProductVariantImage": "Una variante del producto hace referencia a una imagen que ya no está en las imágenes del producto. Vuelve a asignarla y guarda de nuevo.",
+		"productVariantSkuTaken": "Ese SKU ya lo usa otra variante del producto. Elige otro.",
+		"productVariantStockBelowReserved": "Las existencias de la variante no pueden ser menores que la cantidad reservada actualmente.",
+		"cannotDeleteReservedProductVariant": "No se puede eliminar una variante con unidades reservadas. Espera a que el pago termine o venza.",
+		"invalidUpsellData": "Elige hasta cuatro productos diferentes, sin incluir el producto de origen.",
+		"upsellProductUnavailable": "Uno de los productos recomendados ya no está activo. Elimínalo o elige otro producto.",
+		"invalidOrderData": "Revisa los datos del pedido e inténtalo de nuevo.",
+		"orderProductUnavailable": "Uno o más productos ya no están disponibles.",
+		"orderRetryConflict": "Este intento de compra ya no coincide con tu carrito. Inténtalo de nuevo.",
+		"orderNotFound": "No se encontró este pedido.",
+		"orderPaymentUnavailable": "Este pedido no se puede pagar en su estado actual.",
+		"orderPaymentRequired": "El pedido debe estar pagado antes de poder entregarse.",
+		"orderRefundUnavailable": "Este pedido no se puede reembolsar en su estado de pago actual.",
+		"orderRefundFailed": "Stripe no pudo completar el reembolso. Revisa Stripe e inténtalo de nuevo.",
+		"orderCancelled": "Un pedido cancelado no se puede entregar.",
+		"invalidCategoryData": "Revisa los datos de la categoría e inténtalo de nuevo.",
+		"categoryNotFound": "No se encontró esta categoría.",
+		"categorySlugTaken": "Ese slug de categoría ya está en uso.",
+		"categoryHasProducts": "No se puede eliminar esta categoría porque está asignada a {productCount} producto(s): {productNames}. Primero quita la categoría de esos productos.",
+		"invalidRetainedImage": "Una de las imágenes seleccionadas ya no es válida.",
+		"duplicateRetainedImage": "No se puede seleccionar la misma imagen más de una vez.",
+		"duplicateUploadKey": "No se puede enviar la misma subida más de una vez.",
+		"uploadNotFound": "No se encontró la subida.",
+		"invalidUploadNamespace": "La ubicación de la subida no es válida.",
+		"invalidUpload": "El archivo seleccionado no es válido.",
+		"uploadBatchTooLarge": "El tamaño total de las imágenes no puede superar {maxSizeMB} MB."
+	}
+}

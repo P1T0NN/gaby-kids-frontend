@@ -5,9 +5,6 @@ import { ConvexError, v } from 'convex/values';
 // BUILDERS
 import { adminUploadMutation } from '../../../builders/convexFunctionBuilders.js';
 
-// CONFIG
-import { STORAGE_CONFIG } from '../../../../shared/features/storage/config.js';
-
 // SCHEMAS
 import { saveProductSchema } from '../../../../shared/features/products/schemas/productsSchemas.js';
 
@@ -74,13 +71,6 @@ function resolveImageKeys(options: {
 	}
 
 	const imageKeys = [...retained, ...(options.uploadedFiles ?? [])];
-	if (imageKeys.length > STORAGE_CONFIG.maxFilesPerUpload) {
-		throw new ConvexError<BackendErrorData>({
-			code: 'TOO_MANY_FILES',
-			maxFiles: STORAGE_CONFIG.maxFilesPerUpload
-		});
-	}
-
 	return { retained, imageKeys };
 }
 

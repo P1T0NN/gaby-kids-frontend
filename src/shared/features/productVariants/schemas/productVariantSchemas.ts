@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 // CONFIG
 import { PRODUCT_VARIANTS_CONFIG } from '../config.js';
-import { STORAGE_CONFIG } from '../../storage/config.js';
 
 // TYPES
 import type { Id } from '../../../../convex/_generated/dataModel.js';
@@ -25,7 +24,7 @@ export const productVariantSchema = z.object({
 	id: productVariantIdSchema.optional(),
 	options: z.array(productVariantOptionSchema).max(PRODUCT_VARIANTS_CONFIG.MAX_OPTION_COUNT),
 	sku: z.string().trim().max(PRODUCT_VARIANTS_CONFIG.MAX_SKU_LENGTH),
-	imageKeys: z.array(z.string().trim().min(1)).max(STORAGE_CONFIG.maxFilesPerUpload),
+	imageKeys: z.array(z.string().trim().min(1)),
 	priceInCents: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
 	compareAtPriceInCents: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER).optional(),
 	inventory: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER)

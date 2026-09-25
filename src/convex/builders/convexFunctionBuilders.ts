@@ -31,7 +31,7 @@ import { enforceRateLimit } from '../rateLimits/helpers/enforceRateLimit.js';
 import { getUploadByKey } from '../storage/getUploadByKey.js';
 
 // CONFIG
-import { STORAGE_CONFIG } from '../../shared/features/storage/config.js';
+import { exceedsUploadBatchLimit, STORAGE_CONFIG } from '../../shared/features/storage/config.js';
 
 // TYPES
 import type { Doc } from '../_generated/dataModel.js';
@@ -121,14 +121,6 @@ const authenticatedUploadContext = (
 		if (rateLimited) await enforceRateLimit(ctx, options.rateLimit, identity);
 		const authenticated = { db: aggregateTriggers.wrapDB(ctx).db, identity };
 		const keys = args.uploadedFiles;
-		const hasTooManyUploadKeys =
-			keys !== undefined && keys.length > STORAGE_CONFIG.maxFilesPerUpload;
-		if (hasTooManyUploadKeys) {
-			throw new ConvexError<BackendErrorData>({
-				code: 'TOO_MANY_FILES',
-				maxFiles: STORAGE_CONFIG.maxFilesPerUpload
-			});
-		}
 		const hasDuplicateUploadKeys = keys !== undefined && new Set(keys).size !== keys.length;
 		if (hasDuplicateUploadKeys) {
 			throw new ConvexError<BackendErrorData>({ code: 'DUPLICATE_UPLOAD_KEY' });
@@ -145,6 +137,12 @@ const authenticatedUploadContext = (
 				throw new ConvexError<BackendErrorData>({ code: 'UPLOAD_NOT_FOUND' });
 			}
 			uploads.push(upload);
+		}
+		if (exceedsUploadBatchLimit(uploads.map((upload) => upload.expectedSize))) {
+			throw new ConvexError<BackendErrorData>({
+				code: 'UPLOAD_BATCH_TOO_LARGE',
+				maxSizeMB: STORAGE_CONFIG.maxTotalUploadBytes / (1024 * 1024)
+			});
 		}
 
 		return {
