@@ -162,13 +162,13 @@
 		},
 		"CheckoutSummary": {
 			"summary": "Resumen del pedido",
-			"delivery": "Envío",
 			"pickup": "Recoger en tienda",
 			"subtotal": "Subtotal",
 			"youSave": "Ahorro total",
-			"deliveryPending": "Se confirma antes del pago",
+			"shipping": "Envío",
+			"freeShipping": "Envío gratis",
+			"free": "Gratis",
 			"total": "Total",
-			"estimatedTotal": "Total antes del envío",
 			"continue": "Continuar al pago",
 			"creatingOrder": "Preparando el pago...",
 			"paymentUnavailable": "Continuarás a Stripe para completar el pago de forma segura.",
@@ -200,6 +200,8 @@
 			"summary": "Resumen del pedido",
 			"quantity": "Cant. {quantity}",
 			"subtotal": "Subtotal",
+			"shipping": "Envío",
+			"freeShipping": "Envío gratis",
 			"total": "Total"
 		},
 		"CheckoutSuccessOrderDetails": {
@@ -393,6 +395,12 @@
 		"OrdersFulfillmentStatusBadge": {
 			"unfulfilled": "Sin surtir",
 			"fulfilled": "Surtido"
+		},
+		"FreeShippingNudge": {
+			"remaining": "Agrega {amount} más para el envío gratis",
+			"almostThere": "Estás a solo {amount} del envío gratis",
+			"unlocked": "Has desbloqueado el envío gratis",
+			"progressLabel": "Progreso hacia el envío gratis"
 		}
 	},
 	"ShopPage": {
@@ -858,6 +866,8 @@
 			"items": "Artículos",
 			"quantity": "Cant. {quantity}",
 			"subtotal": "Subtotal",
+			"shipping": "Envío",
+			"freeShipping": "Envío gratis",
 			"total": "Total"
 		},
 		"AdminEditOrderActions": {

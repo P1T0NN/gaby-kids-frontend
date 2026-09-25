@@ -120,9 +120,10 @@ export const completeCheckoutReservation = internalMutation({
 		if (!payment) return null;
 
 		const data = createOrderSchema.parse(checkout);
-		const total = calculateOrderTotalInCents(checkout.items);
-		const hasInvalidSnapshot = hasInvalidCheckoutSnapshot(checkout, total);
+		const subtotal = calculateOrderTotalInCents(checkout.items);
+		const hasInvalidSnapshot = hasInvalidCheckoutSnapshot(checkout, subtotal);
 		if (hasInvalidSnapshot) throw new Error('Stripe order snapshot invariant violated.');
+		const total = subtotal + checkout.shippingInCents;
 
 		const reservation = await ctx.db.get(reservationId);
 		if (!reservation) {
@@ -168,7 +169,8 @@ export const completeCheckoutReservation = internalMutation({
 			code,
 			lineFingerprint: JSON.stringify(checkout.items),
 			currency: checkout.currency,
-			subtotalInCents: total,
+			subtotalInCents: subtotal,
+			shippingInCents: checkout.shippingInCents,
 			totalInCents: total,
 			paymentStatus: 'paid' as const,
 			fulfillmentStatus: 'unfulfilled' as const,

@@ -93,6 +93,7 @@ export const tables = {
 			})
 		),
 		subtotalInCents: v.number(),
+		shippingInCents: v.optional(v.number()),
 		totalInCents: v.number(),
 		paymentStatus: literals('pending', 'paid', 'refund_pending', 'refunded'),
 		stripeCheckoutSessionId: v.optional(v.string()),

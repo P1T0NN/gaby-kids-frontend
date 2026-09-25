@@ -20,6 +20,7 @@ import { markEmailClaimPending } from '../../customerEmailClaims/helpers/markEma
 // UTILS
 import { buildOrderCustomer } from '../../../../shared/features/orders/utils/buildOrderCustomer.js';
 import { calculateOrderTotalInCents } from '../../../../shared/utils/pricing.js';
+import { calculateShippingInCents } from '../../../../shared/features/orders/utils/calculateShippingInCents.js';
 import { hasInvalidOrderItems } from '../../../../shared/features/orders/utils/hasInvalidOrderItems.js';
 import { hasInvalidStripeOrderPayment } from '../../../stripe/utils/hasInvalidStripeOrderPayment.js';
 
@@ -36,11 +37,21 @@ type PaymentEvent = PaidOrderArgs['payment'];
 type AppliedPayment = NonNullable<ReturnType<typeof applyStripeCheckoutEvent>>;
 
 /** Reject snapshots whose items, total, or payment details are not internally consistent. */
-function assertValidSnapshot(checkout: CheckoutSnapshot, event: PaymentEvent, total: number): void {
+function assertValidSnapshot(
+	checkout: CheckoutSnapshot,
+	event: PaymentEvent,
+	subtotal: number
+): void {
+	const total = subtotal + checkout.shippingInCents;
 	const hasInvalidSnapshot =
 		hasInvalidOrderItems(checkout.items) ||
+		!Number.isSafeInteger(subtotal) ||
+		subtotal <= 0 ||
+		subtotal !== checkout.subtotalInCents ||
+		!Number.isSafeInteger(checkout.shippingInCents) ||
+		checkout.shippingInCents < 0 ||
+		checkout.shippingInCents !== calculateShippingInCents(subtotal, checkout.fulfillmentMethod) ||
 		!Number.isSafeInteger(total) ||
-		total <= 0 ||
 		total !== checkout.totalInCents ||
 		new Set(checkout.items.map((item) => item.productVariantId)).size !== checkout.items.length ||
 		checkout.items.some((item) => !item.name.trim() || item.quantity > ORDER_CONFIG.maxQuantity);
@@ -110,8 +121,9 @@ export const createOrder = internalMutation({
 		if (!payment) return null;
 
 		const data = createOrderSchema.parse(checkout);
-		const total = calculateOrderTotalInCents(checkout.items);
-		assertValidSnapshot(checkout, event, total);
+		const subtotal = calculateOrderTotalInCents(checkout.items);
+		assertValidSnapshot(checkout, event, subtotal);
+		const total = subtotal + checkout.shippingInCents;
 
 		const existingOrderId = await resolveExistingOrder(ctx, {
 			event,
@@ -130,7 +142,8 @@ export const createOrder = internalMutation({
 			code,
 			lineFingerprint: JSON.stringify(checkout.items),
 			currency: checkout.currency,
-			subtotalInCents: total,
+			subtotalInCents: subtotal,
+			shippingInCents: checkout.shippingInCents,
 			totalInCents: total,
 			paymentStatus: 'paid' as const,
 			fulfillmentStatus: 'unfulfilled' as const,

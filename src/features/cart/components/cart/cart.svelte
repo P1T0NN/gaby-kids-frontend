@@ -15,6 +15,7 @@
 	import ButtonLink from '@/components/ui/custom-components/button-link/button-link.svelte';
 	import EmptyData from '@/components/ui/custom-components/empty-data/empty-data.svelte';
 	import NativeSheet from '@/components/ui/native-components/native-sheet/native-sheet.svelte';
+	import FreeShippingNudge from '@/features/orders/components/free-shipping-nudge.svelte';
 	import CartItems from './cart-items.svelte';
 	import CartLoading from './cart-loading.svelte';
 
@@ -88,6 +89,7 @@
 {#snippet footer()}
 	{#if cart.items.length > 0}
 		<footer class="flex shrink-0 flex-col gap-4 border-t pt-4">
+			<FreeShippingNudge subtotalInCents={totalPriceInCents} />
 			{#if totalSavingsInCents > 0}
 				<div class="flex items-center justify-between text-sm text-success">
 					<span>{m['CartFeature.Cart.youSave']()}</span>

@@ -17,6 +17,7 @@ import { createOrderSchema } from '../../../../shared/features/orders/schemas/or
 
 // UTILS
 import { calculateOrderTotalInCents } from '../../../../shared/utils/pricing.js';
+import { calculateShippingInCents } from '../../../../shared/features/orders/utils/calculateShippingInCents.js';
 
 // TYPES
 import type { Id } from '../../../_generated/dataModel.js';
@@ -53,10 +54,11 @@ export const fetchCheckoutOrder = internalQuery({
 
 		const quantities = mergeItemQuantities(data.items);
 		const items = await buildCheckoutItems(ctx, quantities);
-		const totalInCents = calculateOrderTotalInCents(items);
-		if (!Number.isSafeInteger(totalInCents) || totalInCents <= 0) {
+		const subtotalInCents = calculateOrderTotalInCents(items);
+		if (!Number.isSafeInteger(subtotalInCents) || subtotalInCents <= 0) {
 			throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
 		}
+		const shippingInCents = calculateShippingInCents(subtotalInCents, data.fulfillmentMethod);
 
 		const identity = await ctx.auth.getUserIdentity();
 		return {
@@ -66,7 +68,9 @@ export const fetchCheckoutOrder = internalQuery({
 			customerId: identity?.subject,
 			shippingAddress: data.fulfillmentMethod === 'delivery' ? data.shippingAddress : undefined,
 			currency: COMPANY_DATA.CURRENCY,
-			totalInCents
+			subtotalInCents,
+			shippingInCents,
+			totalInCents: subtotalInCents + shippingInCents
 		};
 	}
 });

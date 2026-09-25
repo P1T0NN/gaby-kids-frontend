@@ -57,6 +57,8 @@ function buildCheckoutMetadata(options: {
 		city: address?.city ?? '',
 		country: address?.country ?? '',
 		currency: checkout.currency,
+		subtotalInCents: String(checkout.subtotalInCents),
+		shippingInCents: String(checkout.shippingInCents),
 		totalInCents: String(checkout.totalInCents),
 		itemCount: String(checkout.items.length)
 	};
@@ -102,7 +104,11 @@ export const createStripeCheckout = action({
 				adaptive_pricing: { enabled: false },
 				integration_identifier: 'convex_checkout_hxqplmzr',
 				customer_email: checkout.email,
-				line_items: buildCheckoutLineItems(checkout.currency.toLowerCase(), checkout.items),
+				line_items: buildCheckoutLineItems(
+					checkout.currency.toLowerCase(),
+					checkout.items,
+					checkout.shippingInCents
+				),
 				expires_at: stripeExpiresAt,
 				metadata,
 				success_url: successUrl.toString() + '&session_id={CHECKOUT_SESSION_ID}',

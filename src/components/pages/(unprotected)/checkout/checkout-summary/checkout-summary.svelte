@@ -7,6 +7,7 @@
 	// COMPONENTS
 	import CheckoutSummaryItem from '@/components/pages/(unprotected)/checkout/checkout-summary-item.svelte';
 	import CheckoutSummaryLoading from '@/components/pages/(unprotected)/checkout/loading/checkout-summary-loading.svelte';
+	import FreeShippingNudge from '@/features/orders/components/free-shipping-nudge.svelte';
 	import { Button } from '@/components/ui/button/index.js';
 	import EmptyData from '@/components/ui/custom-components/empty-data/empty-data.svelte';
 	import ErrorComponent from '@/components/ui/custom-components/error-component/error-component.svelte';
@@ -20,6 +21,7 @@
 		calculateOrderTotalInCents,
 		formatPrice
 	} from '@/shared/utils/pricing.js';
+	import { calculateShippingInCents } from '@/shared/features/orders/utils/calculateShippingInCents.js';
 	import { getProductAvailability } from '@/shared/features/products/utils/getProductAvailability.js';
 
 	// TYPES
@@ -63,6 +65,8 @@
 	);
 	const total = $derived(calculateOrderTotalInCents(pricingItems));
 	const totalSavingsInCents = $derived(calculateOrderSavingsInCents(pricingItems));
+	const shippingInCents = $derived(calculateShippingInCents(total, fulfillment));
+	const orderTotalInCents = $derived(total + shippingInCents);
 
 	const loading = $derived(!cart.loaded || productVariants.isLoading || productVariants.isStale);
 
@@ -108,6 +112,9 @@
 		<ul class="divide-y divide-border">
 			{#each items as item (item.productVariantId)}<CheckoutSummaryItem {item} />{/each}
 		</ul>
+		{#if fulfillment === 'delivery'}
+			<FreeShippingNudge subtotalInCents={total} class="mt-5 mb-6" />
+		{/if}
 		<dl class="flex flex-col gap-3 border-t pt-5 text-sm">
 			<div class="flex justify-between gap-4">
 				<dt class="text-muted-foreground">{m['CheckoutPage.CheckoutSummary.subtotal']()}</dt>
@@ -122,22 +129,20 @@
 			<div class="flex justify-between gap-4">
 				<dt class="text-muted-foreground">
 					{fulfillment === 'delivery'
-						? m['CheckoutPage.CheckoutSummary.delivery']()
+						? m['CheckoutPage.CheckoutSummary.shipping']()
 						: m['CheckoutPage.CheckoutSummary.pickup']()}
 				</dt>
 				<dd class="text-right">
 					{fulfillment === 'delivery'
-						? m['CheckoutPage.CheckoutSummary.deliveryPending']()
-						: formatPrice(0)}
+						? shippingInCents === 0
+							? m['CheckoutPage.CheckoutSummary.freeShipping']()
+							: formatPrice(shippingInCents)
+						: m['CheckoutPage.CheckoutSummary.free']()}
 				</dd>
 			</div>
 			<div class="mt-2 flex items-baseline justify-between gap-4 border-t pt-5 font-semibold">
-				<dt>
-					{fulfillment === 'delivery'
-						? m['CheckoutPage.CheckoutSummary.estimatedTotal']()
-						: m['CheckoutPage.CheckoutSummary.total']()}
-				</dt>
-				<dd class="text-2xl tracking-tight tabular-nums">{formatPrice(total)}</dd>
+				<dt>{m['CheckoutPage.CheckoutSummary.total']()}</dt>
+				<dd class="text-2xl tracking-tight tabular-nums">{formatPrice(orderTotalInCents)}</dd>
 			</div>
 		</dl>
 	{/if}

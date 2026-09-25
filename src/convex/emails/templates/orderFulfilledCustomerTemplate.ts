@@ -18,7 +18,7 @@ export function renderOrderFulfilledCustomerTemplate(
 	const message =
 		order.fulfillmentMethod === 'pickup'
 			? 'Your order has been marked fulfilled and is ready for pickup.'
-			: 'Your order has been marked fulfilled.';
+			: 'Your order is on its way.';
 
 	return {
 		subject: `Order ${order.code} fulfilled`,

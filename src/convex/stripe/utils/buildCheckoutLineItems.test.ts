@@ -41,6 +41,35 @@ describe('buildCheckoutLineItems', () => {
 			}
 		]);
 	});
+	it('appends one tagged shipping line when delivery has a fee', () => {
+		// SAFETY: this pure formatter never performs a database lookup; the test uses opaque IDs.
+		const items = [
+			{
+				productId: 'product' as Id<'products'>,
+				productVariantId: 'productVariant' as Id<'productVariants'>,
+				name: 'Stored name',
+				productVariantLabel: 'Red / M',
+				sku: 'SHIRT-R-M',
+				unitPriceInCents: 1299,
+				quantity: 2,
+				imageUrl: 'https://cdn.example.com/product.webp'
+			}
+		];
+
+		expect(buildCheckoutLineItems('eur', items, 3000)).toHaveLength(2);
+		expect(buildCheckoutLineItems('eur', items, 3000)[1]).toEqual({
+			price_data: {
+				currency: 'eur',
+				unit_amount: 3000,
+				product_data: {
+					name: 'Shipping',
+					metadata: { kind: 'shipping' }
+				}
+			},
+			quantity: 1
+		});
+		expect(buildCheckoutLineItems('eur', items, 0)).toHaveLength(1);
+	});
 });
 
 describe('calculateOrderSavingsInCents', () => {

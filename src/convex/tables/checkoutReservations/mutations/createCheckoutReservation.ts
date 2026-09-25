@@ -10,6 +10,7 @@ import { internalMutation } from '../../../builders/convexFunctionBuilders.js';
 
 // UTILS
 import { calculateOrderTotalInCents } from '../../../../shared/utils/pricing.js';
+import { calculateShippingInCents } from '../../../../shared/features/orders/utils/calculateShippingInCents.js';
 import { getProductVariantLabel } from '../../../../shared/features/productVariants/utils/getProductVariantLabel.js';
 
 // HELPERS
@@ -109,10 +110,12 @@ export const createCheckoutReservation = internalMutation({
 			quantities
 		);
 
-		const totalInCents = calculateOrderTotalInCents(checkoutItems);
-		if (!Number.isSafeInteger(totalInCents) || totalInCents <= 0) {
+		const subtotalInCents = calculateOrderTotalInCents(checkoutItems);
+		if (!Number.isSafeInteger(subtotalInCents) || subtotalInCents <= 0) {
 			throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
 		}
+		const shippingInCents = calculateShippingInCents(subtotalInCents, data.fulfillmentMethod);
+		const totalInCents = subtotalInCents + shippingInCents;
 
 		for (const update of inventoryUpdates) {
 			await ctx.db.patch(update.productVariantId, {
@@ -128,6 +131,8 @@ export const createCheckoutReservation = internalMutation({
 			customerId: identity?.subject ?? args.customerRef,
 			shippingAddress: data.fulfillmentMethod === 'delivery' ? data.shippingAddress : undefined,
 			currency: COMPANY_DATA.CURRENCY,
+			subtotalInCents,
+			shippingInCents,
 			totalInCents
 		};
 

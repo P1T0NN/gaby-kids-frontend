@@ -14,6 +14,7 @@ export function toCustomerOrder(order: Doc<'orders'>) {
 		fulfillmentMethod: order.fulfillmentMethod,
 		shippingAddress: order.shippingAddress,
 		subtotalInCents: order.subtotalInCents,
+		shippingInCents: order.shippingInCents,
 		totalInCents: order.totalInCents,
 		paymentStatus: order.paymentStatus,
 		fulfillmentStatus: order.fulfillmentStatus,

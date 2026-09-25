@@ -18,8 +18,14 @@ function buildCheckoutLineItemName(item: OrderItem): string {
 	return item.productVariantLabel ? `${item.name} — ${item.productVariantLabel}` : item.name;
 }
 
-export function buildCheckoutLineItems(currency: string, items: OrderItem[]) {
-	return items.map((item) => ({
+/**
+ * Product lines plus one tagged shipping line when delivery has a fee. Shipping
+ * stays a line item (not `shipping_options`) because this app collects the
+ * address itself; a tagged line keeps Stripe's `amount_total` equal to the
+ * trusted order total without making Checkout collect the address again.
+ */
+export function buildCheckoutLineItems(currency: string, items: OrderItem[], shippingInCents = 0) {
+	const productLineItems = items.map((item) => ({
 		price_data: {
 			currency,
 			unit_amount: item.unitPriceInCents,
@@ -37,4 +43,21 @@ export function buildCheckoutLineItems(currency: string, items: OrderItem[]) {
 		},
 		quantity: item.quantity
 	}));
+
+	if (shippingInCents <= 0) return productLineItems;
+
+	return [
+		...productLineItems,
+		{
+			price_data: {
+				currency,
+				unit_amount: shippingInCents,
+				product_data: {
+					name: 'Shipping',
+					metadata: { kind: 'shipping' }
+				}
+			},
+			quantity: 1
+		}
+	];
 }

@@ -62,7 +62,7 @@
 							<img
 								src={image}
 								alt={index === activeIndex ? alt : ''}
-								class="size-full object-contain p-4 sm:p-8"
+								class="size-full object-cover"
 								loading={index === 0 ? 'eager' : 'lazy'}
 							/>
 						</div>

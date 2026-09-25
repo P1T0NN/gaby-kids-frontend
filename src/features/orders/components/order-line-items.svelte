@@ -8,16 +8,22 @@
 	let {
 		items,
 		subtotalInCents,
+		shippingInCents,
 		totalInCents,
 		quantityLabel,
 		subtotalLabel,
+		shippingLabel,
+		freeShippingLabel,
 		totalLabel
 	}: {
 		items: Doc<'orderItems'>[];
 		subtotalInCents: number;
+		shippingInCents?: number;
 		totalInCents: number;
 		quantityLabel: (quantity: number) => string;
 		subtotalLabel: string;
+		shippingLabel?: string;
+		freeShippingLabel?: string;
 		totalLabel: string;
 	} = $props();
 </script>
@@ -46,6 +52,14 @@
 		<dt class="text-muted-foreground">{subtotalLabel}</dt>
 		<dd class="tabular-nums">{formatPrice(subtotalInCents)}</dd>
 	</div>
+	{#if shippingInCents !== undefined && shippingLabel && freeShippingLabel}
+		<div class="flex justify-between">
+			<dt class="text-muted-foreground">{shippingLabel}</dt>
+			<dd class="tabular-nums">
+				{shippingInCents === 0 ? freeShippingLabel : formatPrice(shippingInCents)}
+			</dd>
+		</div>
+	{/if}
 	<div class="flex justify-between text-base font-semibold">
 		<dt>{totalLabel}</dt>
 		<dd class="tabular-nums">{formatPrice(totalInCents)}</dd>

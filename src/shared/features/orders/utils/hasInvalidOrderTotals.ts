@@ -1,13 +1,17 @@
 type OrderTotals = {
 	subtotalInCents: number;
+	shippingInCents?: number;
 	totalInCents: number;
 };
 
-export function hasInvalidOrderTotals(calculatedTotalInCents: number, order: OrderTotals): boolean {
+export function hasInvalidOrderTotals(
+	calculatedSubtotalInCents: number,
+	order: OrderTotals
+): boolean {
 	return (
-		!Number.isSafeInteger(calculatedTotalInCents) ||
-		calculatedTotalInCents <= 0 ||
-		calculatedTotalInCents !== order.subtotalInCents ||
-		calculatedTotalInCents !== order.totalInCents
+		!Number.isSafeInteger(calculatedSubtotalInCents) ||
+		calculatedSubtotalInCents <= 0 ||
+		calculatedSubtotalInCents !== order.subtotalInCents ||
+		calculatedSubtotalInCents + (order.shippingInCents ?? 0) !== order.totalInCents
 	);
 }

@@ -55,7 +55,11 @@
 				<p class="text-xs text-muted-foreground">
 					{m['AdminEditOrderPage.AdminEditOrderSummary.fulfillment']()}
 				</p>
-				<p class="font-medium capitalize">{order.fulfillmentMethod}</p>
+				<p class="font-medium">
+					{order.fulfillmentMethod === 'delivery'
+						? m['AdminOrdersPage.AdminOrdersTableItem.delivery']()
+						: m['AdminOrdersPage.AdminOrdersTableItem.pickup']()}
+				</p>
 			</div>
 
 			<OrderShippingAddress
@@ -73,10 +77,13 @@
 			<OrderLineItems
 				{items}
 				subtotalInCents={order.subtotalInCents}
+				shippingInCents={order.shippingInCents ?? 0}
 				totalInCents={order.totalInCents}
 				quantityLabel={(quantity) =>
 					m['AdminEditOrderPage.AdminEditOrderSummary.quantity']({ quantity })}
 				subtotalLabel={m['AdminEditOrderPage.AdminEditOrderSummary.subtotal']()}
+				shippingLabel={m['AdminEditOrderPage.AdminEditOrderSummary.shipping']()}
+				freeShippingLabel={m['AdminEditOrderPage.AdminEditOrderSummary.freeShipping']()}
 				totalLabel={m['AdminEditOrderPage.AdminEditOrderSummary.total']()}
 			/>
 		</Card.Content>

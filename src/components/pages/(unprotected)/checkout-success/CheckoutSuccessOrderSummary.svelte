@@ -10,7 +10,7 @@
 	import type { Doc } from '@convex/_generated/dataModel';
 
 	type Props = {
-		order: Pick<Doc<'orders'>, 'subtotalInCents' | 'totalInCents'>;
+		order: Pick<Doc<'orders'>, 'subtotalInCents' | 'shippingInCents' | 'totalInCents'>;
 		items: Doc<'orderItems'>[];
 	};
 
@@ -25,10 +25,13 @@
 		<OrderLineItems
 			{items}
 			subtotalInCents={order.subtotalInCents}
+			shippingInCents={order.shippingInCents ?? 0}
 			totalInCents={order.totalInCents}
 			quantityLabel={(quantity) =>
 				m['CheckoutSuccessPage.CheckoutSuccessOrderSummary.quantity']({ quantity })}
 			subtotalLabel={m['CheckoutSuccessPage.CheckoutSuccessOrderSummary.subtotal']()}
+			shippingLabel={m['CheckoutSuccessPage.CheckoutSuccessOrderSummary.shipping']()}
+			freeShippingLabel={m['CheckoutSuccessPage.CheckoutSuccessOrderSummary.freeShipping']()}
 			totalLabel={m['CheckoutSuccessPage.CheckoutSuccessOrderSummary.total']()}
 		/>
 	</Card.Content>

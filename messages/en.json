@@ -162,13 +162,13 @@
 		},
 		"CheckoutSummary": {
 			"summary": "Order summary",
-			"delivery": "Delivery",
 			"pickup": "Pick up",
 			"subtotal": "Subtotal",
 			"youSave": "Total savings",
-			"deliveryPending": "Confirmed before payment",
+			"shipping": "Shipping",
+			"freeShipping": "Free shipping",
+			"free": "Free",
 			"total": "Total",
-			"estimatedTotal": "Total before delivery",
 			"continue": "Continue to payment",
 			"creatingOrder": "Preparing payment...",
 			"paymentUnavailable": "You'll continue to Stripe to complete payment securely.",
@@ -200,6 +200,8 @@
 			"summary": "Order summary",
 			"quantity": "Qty {quantity}",
 			"subtotal": "Subtotal",
+			"shipping": "Shipping",
+			"freeShipping": "Free shipping",
 			"total": "Total"
 		},
 		"CheckoutSuccessOrderDetails": {
@@ -393,6 +395,12 @@
 		"OrdersFulfillmentStatusBadge": {
 			"unfulfilled": "Unfulfilled",
 			"fulfilled": "Fulfilled"
+		},
+		"FreeShippingNudge": {
+			"remaining": "Add {amount} more for free shipping",
+			"almostThere": "You're only {amount} away from free shipping",
+			"unlocked": "You've unlocked free shipping",
+			"progressLabel": "Progress toward free shipping"
 		}
 	},
 	"ShopPage": {
@@ -858,6 +866,8 @@
 			"items": "Items",
 			"quantity": "Qty {quantity}",
 			"subtotal": "Subtotal",
+			"shipping": "Shipping",
+			"freeShipping": "Free shipping",
 			"total": "Total"
 		},
 		"AdminEditOrderActions": {

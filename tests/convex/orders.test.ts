@@ -269,7 +269,7 @@ test('verified webhook creates an order only after payment and queues emails onc
 		status: 'complete',
 		payment_status: 'paid',
 		payment_intent: 'pi_webhook',
-		amount_total: 2400,
+		amount_total: 5400,
 		currency: checkout.currency.toLowerCase(),
 		metadata
 	};
@@ -335,6 +335,56 @@ test('verified webhook creates an order only after payment and queues emails onc
 						url: null
 					}
 				}
+			},
+			{
+				id: 'li_shipping',
+				object: 'item',
+				adjustable_quantity: null,
+				amount_discount: 0,
+				amount_subtotal: 3000,
+				amount_tax: 0,
+				metadata: {},
+				description: 'Shipping',
+				quantity: 1,
+				amount_total: 3000,
+				currency: session.currency,
+				price: {
+					id: 'price_shipping',
+					object: 'price',
+					active: true,
+					billing_scheme: 'per_unit',
+					created: 1000,
+					custom_unit_amount: null,
+					livemode: false,
+					lookup_key: null,
+					metadata: {},
+					nickname: null,
+					recurring: null,
+					tax_behavior: null,
+					tiers_mode: null,
+					transform_quantity: null,
+					type: 'one_time',
+					unit_amount_decimal: null,
+					unit_amount: 3000,
+					currency: session.currency,
+					product: {
+						id: 'prod_shipping',
+						object: 'product',
+						active: true,
+						created: 1000,
+						description: null,
+						images: [],
+						livemode: false,
+						marketing_features: [],
+						metadata: { kind: 'shipping' },
+						name: 'Shipping',
+						package_dimensions: null,
+						shippable: null,
+						type: 'service',
+						updated: 1000,
+						url: null
+					}
+				}
 			}
 		]
 	};
@@ -393,7 +443,9 @@ test('verified webhook creates an order only after payment and queues emails onc
 		});
 		expect(receipt?.order).toMatchObject({
 			paymentStatus: 'paid',
-			totalInCents: 2400,
+			subtotalInCents: 2400,
+			shippingInCents: 3000,
+			totalInCents: 5400,
 			shippingAddress: { street: 'Street', city: 'City' }
 		});
 		expect(await t.run((ctx) => ctx.db.query('orders').collect())).toHaveLength(1);

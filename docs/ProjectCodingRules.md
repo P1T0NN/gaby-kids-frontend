@@ -66,6 +66,12 @@ notes are [`UpsellsSystemDesign.md`](./UpsellsSystemDesign.md) and
   product variant label, SKU, price, and quantity snapshots. Never render order
   history from live catalog joins or cascade-delete orders/items with products.
   Stripe Checkout payment state comes only from verified webhook events.
+  Delivery orders add `ORDER_CONFIG.shippingFeeInCents` to the merchandise
+  subtotal unless it reaches `ORDER_CONFIG.freeShippingThresholdInCents`; pickup
+  is always free. The fee is stored as `shippingInCents` and charged as a tagged
+  Stripe line item, so the verified session total still equals the order total.
+  The storefront nudge (`FreeShippingNudge`) shows the exact remaining amount in
+  the cart and the checkout summary.
 - `dailySales` is the dashboard's per-store-day rollup
   (`COMPANY_DATA.TIMEZONE`, four order-id shards per day) holding order counts
   by status and paid revenue. Revenue is booked on the store day the order was

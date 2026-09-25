@@ -12,6 +12,9 @@ import * as emailService from '../../src/convex/emails/sendEmail';
 // TYPES
 import type { Id } from '../../src/convex/_generated/dataModel';
 
+// CONFIG
+import { ORDER_CONFIG } from '../../src/shared/features/orders/config';
+
 const modules = import.meta.glob('../../src/convex/**/*.ts');
 
 const CUSTOMER_REF = '00000000-0000-4000-8000-000000000001';
@@ -238,6 +241,34 @@ test('reserves tracked stock and stores a trusted immutable checkout snapshot', 
 	} finally {
 		vi.useRealTimers();
 	}
+});
+
+test('delivery reservations add the flat shipping fee below the free-shipping threshold', async () => {
+	const t = createTestContext();
+	const { productVariantId } = await insertProductVariantFixture(t, {
+		name: 'Delivery product',
+		slug: 'delivery-product',
+		priceInCents: 1000,
+		trackInventory: false,
+		inventory: 0
+	});
+	const reservation = await t.mutation(createCheckoutReservation, {
+		customerRef: CUSTOMER_REF,
+		receiptToken: 'delivery-receipt',
+		items: [{ productVariantId, quantity: 1 }],
+		firstName: 'Ada',
+		lastName: 'Lovelace',
+		email: 'ada@example.com',
+		phone: '123',
+		fulfillmentMethod: 'delivery',
+		shippingAddress: { street: 'Street', city: 'City', postalCode: '123', country: 'US' }
+	});
+
+	expect(reservation.checkout).toMatchObject({
+		subtotalInCents: 1000,
+		shippingInCents: ORDER_CONFIG.shippingFeeInCents,
+		totalInCents: 1000 + ORDER_CONFIG.shippingFeeInCents
+	});
 });
 
 test('competing reservations cannot oversell tracked product variant inventory', async () => {
