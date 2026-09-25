@@ -16,14 +16,14 @@
 >
 	<div class="relative h-88 overflow-hidden md:h-auto">
 		<StaticImage
-			src="/root/featured-guayaberas.png"
+			src="/root/opt/featured-guayaberas-1280w.webp"
 			alt=""
 			class="absolute inset-0 size-full object-contain opacity-90"
 		/>
 	</div>
 	<div class="flex flex-col justify-center gap-6 px-6 py-10 sm:px-12 lg:px-18">
 		<StaticImage
-			src="/logo/logo-guayabera-transparent.png"
+			src="/logo/opt/logo-guayabera-transparent-500w.webp"
 			alt=""
 			class="h-32 w-auto self-start"
 		/>

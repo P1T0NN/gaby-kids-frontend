@@ -9,7 +9,7 @@
  *
  * Per-project checklist: NAME · EMAIL · RESEND_EMAIL (must be a domain-verified sender before
  * production — see EmailSystemDesign.md §7.2) · DOMAIN · LOGO (replace the asset in
- * `static/logo/`) · DESCRIPTION · WHATSAPP_NUMBER · ADDRESS · HOURS · INSTAGRAM_URL · PHONE ·
+ * `static/logo/`) · DESCRIPTION · WHATSAPP_NUMBER · ADDRESS · HOURS · INSTAGRAM_URL · FACEBOOK_URL · PHONE ·
  * OG_IMAGE (replace the asset in `static/assets/`).
  */
 const WHATSAPP_NUMBER = '+1 555 555 0100';
@@ -31,7 +31,8 @@ export const COMPANY_DATA = {
 	DESCRIPTION: 'Description',
 	WHATSAPP_NUMBER,
 	WHATSAPP_CONTACT_URL: `https://wa.me/${WHATSAPP_NUMBER}`,
-	INSTAGRAM_URL: 'https://www.instagram.com/companyname/',
+	INSTAGRAM_URL: 'https://www.instagram.com/gabykids_mex/',
+	FACEBOOK_URL: 'https://www.facebook.com/profile.php?id=100034975432904',
 	/** Display phone, INCLUDING the country code — structured data strips the spaces to build
 	 *  the E.164 `telephone`, so the country must live here rather than in code. */
 	PHONE: '+1 555 555 0100',

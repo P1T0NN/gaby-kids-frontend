@@ -105,7 +105,7 @@
 			opens: h.OPENS,
 			closes: h.CLOSES
 		})),*/
-		sameAs: [COMPANY_DATA.INSTAGRAM_URL]
+		sameAs: [COMPANY_DATA.INSTAGRAM_URL, COMPANY_DATA.FACEBOOK_URL]
 	});
 
 	// `<` is escaped so a string containing a closing script tag can't break out of it. `TAG` is

@@ -15,7 +15,7 @@
 	containerClass="max-w-7xl px-6 sm:px-12"
 >
 	<StaticImage
-		src="/root/hero-image-2.png"
+		src="/root/opt/hero-image-2-1536w.webp"
 		alt=""
 		class="absolute inset-0 size-full object-cover"
 	/>

@@ -62,6 +62,19 @@ function hasUploadField(fields: FieldConfig[]): boolean {
 	);
 }
 
+function findUploadProgressLimit(fields: FieldConfig[]): number | undefined {
+	for (const field of fields) {
+		if (field.kind === 'upload' && field.progressLimitBytes !== undefined) {
+			return field.progressLimitBytes;
+		}
+		if (field.kind === 'section') {
+			const limit = findUploadProgressLimit(field.fields);
+			if (limit !== undefined) return limit;
+		}
+	}
+	return undefined;
+}
+
 export function useForm<Mutation extends FunctionReference<'mutation' | 'action'>>(
 	getOptions: () => UseFormOptions<Mutation>,
 	bindings: FormBindings<Mutation>,
@@ -82,6 +95,7 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 	let uploadProgress = $state<number | null>(null);
 	let uploadProgressBytes = $state(0);
 	let preparingUpload = $state(false);
+	const uploadProgressLimitBytes = $derived(findUploadProgressLimit(options.fields));
 	let pendingCaptchaForm: HTMLFormElement | undefined;
 
 	const { function: convexFunction, functionType } = getOptions();
@@ -341,6 +355,9 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 		},
 		get preparingUpload() {
 			return preparingUpload;
+		},
+		get uploadProgressLimitBytes() {
+			return uploadProgressLimitBytes;
 		},
 		setValue,
 		inputValue,

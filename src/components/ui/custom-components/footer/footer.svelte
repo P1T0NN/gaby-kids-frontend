@@ -23,19 +23,10 @@
 			]
 		},
 		{
-			title: 'Ayuda',
-			links: [
-				{ label: 'Envíos' },
-				{ label: 'Cambios y devoluciones' },
-				{ label: 'Guía de tallas por edad' },
-				{ label: 'Contacto', href: COMPANY_DATA.WHATSAPP_CONTACT_URL, external: true }
-			]
-		},
-		{
 			title: 'Redes',
 			links: [
 				{ label: 'Instagram', href: COMPANY_DATA.INSTAGRAM_URL, external: true },
-				{ label: 'Facebook' },
+				{ label: 'Facebook', href: COMPANY_DATA.FACEBOOK_URL, external: true },
 				{ label: 'WhatsApp', href: COMPANY_DATA.WHATSAPP_CONTACT_URL, external: true }
 			]
 		}
