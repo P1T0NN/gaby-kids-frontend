@@ -6,7 +6,6 @@
 	import OccasionsSection from '@/components/pages/(unprotected)/root/occasions-section.svelte';
 	import FeaturedSection from '@/components/pages/(unprotected)/root/featured-section.svelte';
 	import TrustSection from '@/components/pages/(unprotected)/root/trust-section.svelte';
-	import NewsletterSection from '@/components/pages/(unprotected)/root/newsletter-section.svelte';
 </script>
 
 <SvelteHead title="Home" />
@@ -16,4 +15,3 @@
 <OccasionsSection />
 <FeaturedSection />
 <TrustSection />
-<NewsletterSection />
