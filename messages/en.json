@@ -49,7 +49,9 @@
 		},
 		"ProductVariantsEditorVariantTabs": {
 			"variantLabel": "Variant {number}",
-			"hasErrors": "Has errors"
+			"hasErrors": "Has errors",
+			"previousVariants": "Previous variants",
+			"nextVariants": "Next variants"
 		},
 		"ProductVariantsEditorOptionInput": {
 			"optionNamePlaceholder": "Add a name for option {number} first",

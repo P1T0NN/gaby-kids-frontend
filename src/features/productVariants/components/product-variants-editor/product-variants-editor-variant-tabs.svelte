@@ -1,8 +1,12 @@
 <script lang="ts">
+	// SVELTEKIT IMPORTS
+	import { tick } from 'svelte';
+
 	// LIBRARIES
 	import { m } from '@/lib/paraglide/messages';
 
 	// COMPONENTS
+	import { Button } from '@/components/ui/button/index.js';
 	import * as Tabs from '@/components/ui/tabs/index.js';
 	import ProductVariantsEditorAddVariantButton from './product-variants-editor-add-variant-button.svelte';
 	import ProductVariantsEditorVariantRow from './product-variants-editor-variant-row/product-variants-editor-variant-row.svelte';
@@ -11,6 +15,7 @@
 	import { getProductVariantLabel } from '@/shared/features/productVariants/utils/getProductVariantLabel.js';
 
 	// TYPES
+	import type { Attachment } from 'svelte/attachments';
 	import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
 	import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
 
@@ -36,6 +41,7 @@
 	}: Props = $props();
 
 	let selectedProductVariantIndex = $state(0);
+	let productVariantsListElement: HTMLElement | null = null;
 
 	const activeProductVariantKey = $derived(
 		productVariants.length === 0
@@ -51,6 +57,29 @@
 		})
 	);
 
+	/** More product variants than this switch the tab strip into a scrollable carousel with arrows. */
+	const PRODUCT_VARIANT_TABS_CAROUSEL_THRESHOLD = 6;
+
+	const showProductVariantTabsCarousel = $derived(
+		productVariants.length > PRODUCT_VARIANT_TABS_CAROUSEL_THRESHOLD
+	);
+
+	/** Captures the tab strip element so the arrow buttons can scroll it. */
+	const captureProductVariantsListElement: Attachment<HTMLElement> = (listElement) => {
+		productVariantsListElement = listElement;
+
+		return () => {
+			productVariantsListElement = null;
+		};
+	};
+
+	function scrollProductVariants(direction: -1 | 1): void {
+		const listElement = productVariantsListElement;
+		if (!listElement) return;
+
+		listElement.scrollBy({ left: direction * listElement.clientWidth * 0.75 });
+	}
+
 	function getProductVariantTabLabel(
 		productVariant: ProductVariantFormValue,
 		index: number
@@ -65,8 +94,13 @@
 		});
 	}
 
-	function handleProductVariantAdded(productVariantIndex: number): void {
+	async function handleProductVariantAdded(productVariantIndex: number): Promise<void> {
 		selectedProductVariantIndex = productVariantIndex;
+		await tick();
+
+		const listElement = productVariantsListElement;
+		if (!listElement) return;
+		listElement.scrollTo({ left: listElement.scrollWidth });
 	}
 </script>
 
@@ -76,19 +110,50 @@
 	class="gap-4"
 >
 	<div class="flex flex-wrap items-center gap-2">
-		<Tabs.List>
-			{#each productVariants as productVariant, index (index)}
-				<Tabs.Trigger value={String(index)}>
-					{getProductVariantTabLabel(productVariant, index)}
-					{#if productVariantHasErrors[index]}
-						<span class="size-1.5 shrink-0 rounded-full bg-destructive" aria-hidden="true"></span>
-						<span class="sr-only">
-							{m['ProductVariantsFeature.ProductVariantsEditorVariantTabs.hasErrors']()}
-						</span>
-					{/if}
-				</Tabs.Trigger>
-			{/each}
-		</Tabs.List>
+		<div class="flex min-w-0 items-center gap-1">
+			{#if showProductVariantTabsCarousel}
+				<Button
+					variant="outline"
+					size="icon-sm"
+					class="shrink-0"
+					onclick={() => scrollProductVariants(-1)}
+					aria-label={m[
+						'ProductVariantsFeature.ProductVariantsEditorVariantTabs.previousVariants'
+					]()}
+				>
+					<span class="icon-[lucide--chevron-left] size-4" aria-hidden="true"></span>
+				</Button>
+			{/if}
+
+			<Tabs.List
+				class="min-w-0 [scrollbar-width:none] overflow-x-auto motion-safe:scroll-smooth [&::-webkit-scrollbar]:hidden"
+				{@attach captureProductVariantsListElement}
+			>
+				{#each productVariants as productVariant, index (index)}
+					<Tabs.Trigger value={String(index)}>
+						{getProductVariantTabLabel(productVariant, index)}
+						{#if productVariantHasErrors[index]}
+							<span class="size-1.5 shrink-0 rounded-full bg-destructive" aria-hidden="true"></span>
+							<span class="sr-only">
+								{m['ProductVariantsFeature.ProductVariantsEditorVariantTabs.hasErrors']()}
+							</span>
+						{/if}
+					</Tabs.Trigger>
+				{/each}
+			</Tabs.List>
+
+			{#if showProductVariantTabsCarousel}
+				<Button
+					variant="outline"
+					size="icon-sm"
+					class="shrink-0"
+					onclick={() => scrollProductVariants(1)}
+					aria-label={m['ProductVariantsFeature.ProductVariantsEditorVariantTabs.nextVariants']()}
+				>
+					<span class="icon-[lucide--chevron-right] size-4" aria-hidden="true"></span>
+				</Button>
+			{/if}
+		</div>
 		<ProductVariantsEditorAddVariantButton
 			bind:productVariants
 			{productVariantOptionNames}
