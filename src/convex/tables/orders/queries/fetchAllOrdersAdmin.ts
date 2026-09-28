@@ -1,24 +1,33 @@
-// WRAPPERS
-import { fetchOptimizedQuery } from '../../../wrappers/fetchOptimizedQuery.js';
+// CONVEX
+import { adminQuery } from '../../../builders/convexFunctionBuilders.js';
 
 // AGGREGATES
 import { orderAggregate } from '../aggregates/orderAggregate.js';
 
-// HELPERS
-import { getPagination } from '../../../helpers/getPagination.js';
-import { getOrderQuery } from '../helpers/getOrderQuery.js';
+// AGGREGATE HELPERS
+import { getTotalSizeAggregate } from '../../../aggregates/helpers/getTotalSizeAggregate.js';
 
-// FILTERS
-import { buildOrderFilter } from '../../../../shared/features/orders/utils/buildOrderFilter.js';
+// HELPERS
+import { getOrderPage } from '../helpers/getOrderPage.js';
+import { readOrderFilters } from '../helpers/readOrderFilters.js';
 
 // VALIDATORS
+import { listPageArgs } from '../../../validators/listPageArgs.js';
 import { orderPage } from '../validators/orderValidators.js';
 
-export const fetchAllOrdersAdmin = fetchOptimizedQuery({
-	auth: 'admin',
+export const fetchAllOrdersAdmin = adminQuery({
+	args: listPageArgs,
 	returns: orderPage,
-	count: orderAggregate,
-	predicateFor: buildOrderFilter,
-	fetchPage: ({ ctx, paginationOpts, filters }) =>
-		getPagination(getOrderQuery(ctx, filters), { paginationOpts })
+	handler: async (ctx, args) => {
+		const search = args.search?.trim() || undefined;
+		const filters = readOrderFilters(args.filters);
+		const hasFilters = Boolean(
+			filters.paymentStatus || filters.fulfillmentStatus || filters.fulfillmentMethod
+		);
+		const canCountTotal = !search && !hasFilters;
+		const page = await getOrderPage({ ctx, paginationOpts: args.paginationOpts, filters });
+		const total = canCountTotal ? await getTotalSizeAggregate(ctx, orderAggregate) : undefined;
+
+		return { ...page, total };
+	}
 });

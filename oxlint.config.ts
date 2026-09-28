@@ -15,6 +15,8 @@ export default defineConfig({
 		'.roo/**',
 		'.windsurf/**',
 		'tools/oxlint/anti-slop/**',
+		// Generated design exports, maintained outside the application.
+		'testHtml/**',
 		'src/components/ui/chart/**',
 		'src/components/ui/custom-components/custom-charts/**'
 	],

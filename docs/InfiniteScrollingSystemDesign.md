@@ -149,9 +149,9 @@ cursor as an offset.
 - The client never treats `items.length` as the total.
 
 For the current project, `getPagination` adapts native Convex pagination to
-the page shape, and `fetchOptimizedQuery` attaches `total` when an appropriate
-count source is configured. Infinite scrolling should reuse that contract
-instead of introducing a second pagination protocol.
+the page shape, and each list query attaches `total` from its aggregate when the
+active search and filters do not cover that count source. Infinite scrolling
+should reuse that contract instead of introducing a second pagination protocol.
 
 ## The total count is a separate concern
 
@@ -609,7 +609,7 @@ The current project already has the main server-side pieces:
 | Default page size                 | `src/shared/features/pagination/config.ts`, value `10`           |
 | Convex page adapter               | `src/convex/helpers/getPagination.ts`                            |
 | Count read helper                 | `src/convex/aggregates/helpers/getTotalSizeAggregate.ts`         |
-| Shared optimized query contract   | `src/convex/wrappers/fetchOptimizedQuery.ts`                     |
+| Shared list page envelope         | `src/convex/validators/pageValidator.ts`                         |
 | Unfiltered count usage            | Product aggregate via `@convex-dev/aggregate`                    |
 | Classic previous/next client flow | `src/features/pagination/hooks/useConvexPagination.svelte.ts`    |
 | Existing list/table renderers     | `src/components/ui/custom-components/data-list` and `data-table` |

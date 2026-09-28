@@ -38,6 +38,13 @@
 			"unisex": "Unisex",
 			"male": "Male",
 			"female": "Female"
+		},
+		"ProductOptionFilterOptions": {
+			"all": "All"
+		},
+		"ProductOptionFilterLabels": {
+			"color": "Color",
+			"age": "Age"
 		}
 	},
 	"ProductVariantsFeature": {

@@ -4,12 +4,14 @@ import aggregateTest from '@convex-dev/aggregate/test';
 import actionRetrierTest from '@convex-dev/action-retrier/test';
 import rateLimiterTest from '@convex-dev/rate-limiter/test';
 import r2Test from '@convex-dev/r2/test';
+import migrationsTest from '@convex-dev/migrations/test';
+import { runToCompletion } from '@convex-dev/migrations';
 import auditLogTest from 'convex-audit-log/test';
 import { convexTest } from 'convex-test';
 import type { FunctionReturnType } from 'convex/server';
 import { expect, test, vi } from 'vitest';
 
-import { api } from '../../src/convex/_generated/api';
+import { api, components, internal } from '../../src/convex/_generated/api';
 import schema from '../../src/convex/schema';
 
 // TYPES
@@ -299,6 +301,86 @@ test('filters storefront products by age group and gender, alone and with a cate
 		'Unisex hat'
 	]);
 });
+
+test.each([undefined, 'Attribute'])(
+	'paginates storefront attribute filters with search %s',
+	async (search) => {
+		const t = createTestContext();
+		const categoryId = await t.run((ctx) =>
+			ctx.db.insert('categories', {
+				name: 'Paginated attributes',
+				slug: 'paginated-attributes',
+				status: 'active'
+			})
+		);
+
+		for (let i = 0; i < 26; i++) {
+			await t.run((ctx) =>
+				ctx.db.insert('products', {
+					name: `Attribute product ${i}`,
+					slug: `attribute-product-${i}`,
+					description: '',
+					priceInCents: 100,
+					categoryId,
+					ageGroup: i < 14 ? 'kids' : 'adults',
+					gender: i % 2 === 0 ? 'female' : 'unisex',
+					images: [],
+					imageKeys: [],
+					storagePrefix: 'products',
+					trackInventory: true,
+					productVariantOptionNames: [],
+					hasPriceRange: false,
+					upsellProductIds: [],
+					status: 'active'
+				})
+			);
+		}
+
+		const query = api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic;
+
+		// 14 products match the combined filter, so the first page must fill exactly
+		// 12 items and the second page must hold the remaining 2 without gaps.
+		const kidsPageOne = await t.query(query, {
+			paginationOpts: { cursor: null, numItems: 12 },
+			search,
+			filters: { category: 'paginated-attributes', ageGroup: 'kids' }
+		});
+		expect(kidsPageOne.items).toHaveLength(12);
+		expect(kidsPageOne.hasNextPage).toBe(true);
+
+		const kidsPageTwo = await t.query(query, {
+			paginationOpts: { cursor: kidsPageOne.nextCursor, numItems: 12 },
+			search,
+			filters: { category: 'paginated-attributes', ageGroup: 'kids' }
+		});
+		expect(kidsPageTwo.items).toHaveLength(2);
+		expect(kidsPageTwo.hasNextPage).toBe(false);
+
+		const kidIds = new Set(
+			[...kidsPageOne.items, ...kidsPageTwo.items].map((product) => product._id)
+		);
+		expect(kidIds.size).toBe(14);
+
+		// All three attributes must apply before pagination.
+		const kidsFemale = await t.query(query, {
+			paginationOpts: { cursor: null, numItems: 12 },
+			search,
+			filters: { category: 'paginated-attributes', ageGroup: 'kids', gender: 'female' }
+		});
+		expect(kidsFemale.items).toHaveLength(7);
+		expect(kidsFemale.hasNextPage).toBe(false);
+		expect(kidsFemale.items.every((product) => product.ageGroup === 'kids')).toBe(true);
+
+		// Search combined with an attribute filter still paginates through the search index.
+		const searched = await t.query(query, {
+			paginationOpts: { cursor: null, numItems: 12 },
+			search: 'Attribute product',
+			filters: { category: 'paginated-attributes' }
+		});
+		expect(searched.items).toHaveLength(12);
+		expect(searched.hasNextPage).toBe(true);
+	}
+);
 
 test('saving a product without attributes defaults to kids and unisex', async () => {
 	const t = createTestContext();
@@ -900,4 +982,585 @@ test('saves structured product variants, derives display caches, and guards rese
 				.collect()
 		)
 	).toEqual([]);
+});
+
+type ProductOptionSaveInput = {
+	name: string;
+	categoryId: Id<'categories'>;
+	variants: { options: { name: string; value: string }[] }[];
+	status?: 'draft' | 'active' | 'archived';
+	ageGroup?: 'kids' | 'adults';
+	gender?: 'unisex' | 'male' | 'female';
+};
+
+async function saveOptionProduct(
+	t: ReturnType<typeof createTestContext>,
+	ownerId: string,
+	input: ProductOptionSaveInput
+): Promise<Id<'products'>> {
+	const admin = t.withIdentity({ tokenIdentifier: ownerId, subject: ownerId, role: 'admin' });
+	await insertProductImageUpload(t, ownerId);
+
+	const created = await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
+		name: input.name,
+		description: input.name,
+		trackInventory: true,
+		categoryId: input.categoryId,
+		ageGroup: input.ageGroup ?? 'adults',
+		gender: input.gender ?? 'unisex',
+		productVariantOptionNames: input.variants[0]?.options.map((option) => option.name) ?? [],
+		productVariants: input.variants.map((variant) => ({
+			options: variant.options,
+			sku: '',
+			imageKeys: [PRODUCT_IMAGE_KEY],
+			priceInCents: 100,
+			inventory: 5
+		})),
+		uploadedFiles: [PRODUCT_IMAGE_KEY],
+		status: input.status ?? 'active'
+	});
+
+	return created._id;
+}
+
+test('keeps product option search names and variant selections current on save', async () => {
+	const t = createTestContext();
+	const ownerId = 'product-option-admin';
+	const admin = t.withIdentity({ tokenIdentifier: ownerId, subject: ownerId, role: 'admin' });
+	const category = await admin.mutation(
+		api.tables.categories.mutations.createCategory.createCategory,
+		{ name: 'Option filters', status: 'active' }
+	);
+	const productId = await saveOptionProduct(t, ownerId, {
+		name: 'Two color option shirt',
+		categoryId: category._id,
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '5' }
+				]
+			},
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '3' }
+				]
+			},
+			{
+				options: [
+					{ name: 'Color', value: 'ROJO' },
+					{ name: 'Size', value: '4' }
+				]
+			}
+		]
+	});
+
+	const product = await t.run((ctx) => ctx.db.get(productId));
+
+	const indexRows = await t.run((ctx) =>
+		ctx.db
+			.query('productOptionIndex')
+			.withIndex('by_product_id', (query) => query.eq('productId', productId))
+			.collect()
+	);
+	expect(indexRows.map((row) => row.optionKey).sort()).toEqual([
+		'color:rojo',
+		'color:rojo|size:3',
+		'color:rojo|size:4',
+		'color:rojo|size:5',
+		'size:3',
+		'size:4',
+		'size:5'
+	]);
+	expect(indexRows.every((row) => row.status === 'active' && row.categoryId === category._id)).toBe(
+		true
+	);
+	expect(indexRows.every((row) => row.productCreatedAt === product?._creationTime)).toBe(true);
+	expect(indexRows.every((row) => row.name === product?.name)).toBe(true);
+
+	// Saving only Rojo/5 drops the removed index rows.
+	await admin.mutation(api.tables.products.mutations.saveProduct.saveProduct, {
+		id: productId,
+		name: 'Renamed boots',
+		description: 'Two color option shirt',
+		trackInventory: true,
+		categoryId: category._id,
+		gender: 'unisex',
+		productVariantOptionNames: ['Color', 'Size'],
+		productVariants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '5' }
+				],
+				sku: '',
+				imageKeys: [PRODUCT_IMAGE_KEY],
+				priceInCents: 100,
+				inventory: 5
+			}
+		],
+		status: 'active'
+	});
+
+	const updatedRows = await t.run((ctx) =>
+		ctx.db
+			.query('productOptionIndex')
+			.withIndex('by_product_id', (query) => query.eq('productId', productId))
+			.collect()
+	);
+	expect(updatedRows.map((row) => row.optionKey).sort()).toEqual([
+		'color:rojo',
+		'color:rojo|size:5',
+		'size:5'
+	]);
+	expect(updatedRows.every((row) => row.name === 'Renamed boots')).toBe(true);
+	const query = api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic;
+	const renamed = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		search: 'boots',
+		filters: { color: 'rojo', age: '5' }
+	});
+	expect(renamed.items.map((item) => item._id)).toEqual([productId]);
+	const oldName = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		search: 'shirt',
+		filters: { color: 'rojo' }
+	});
+	expect(oldName.items).toEqual([]);
+});
+
+test('filters storefront products by selected option values with category and attribute conjunction', async () => {
+	const t = createTestContext();
+	const ownerId = 'option-query-admin';
+	const admin = t.withIdentity({ tokenIdentifier: ownerId, subject: ownerId, role: 'admin' });
+	const women = await admin.mutation(
+		api.tables.categories.mutations.createCategory.createCategory,
+		{
+			name: 'Women',
+			status: 'active'
+		}
+	);
+	const men = await admin.mutation(api.tables.categories.mutations.createCategory.createCategory, {
+		name: 'Men',
+		status: 'active'
+	});
+
+	await saveOptionProduct(t, ownerId, {
+		name: 'Red large women shirt',
+		categoryId: women._id,
+		gender: 'female',
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '5' }
+				]
+			}
+		]
+	});
+	await saveOptionProduct(t, ownerId, {
+		name: 'Red small women shirt',
+		categoryId: women._id,
+		gender: 'female',
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '3' }
+				]
+			}
+		]
+	});
+	await saveOptionProduct(t, ownerId, {
+		name: 'Blue medium women shirt',
+		categoryId: women._id,
+		gender: 'female',
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Azul' },
+					{ name: 'Size', value: '4' }
+				]
+			}
+		]
+	});
+	await saveOptionProduct(t, ownerId, {
+		name: 'Red large men shirt',
+		categoryId: men._id,
+		gender: 'male',
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '5' }
+				]
+			}
+		]
+	});
+	await saveOptionProduct(t, ownerId, {
+		name: 'Red large girls shirt',
+		categoryId: women._id,
+		gender: 'female',
+		ageGroup: 'kids',
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '5' }
+				]
+			}
+		]
+	});
+
+	const query = api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic;
+	const namesOf = (items: { name: string }[]) => items.map((product) => product.name).sort();
+
+	const red = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { color: 'rojo' }
+	});
+	expect(namesOf(red.items)).toEqual([
+		'Red large girls shirt',
+		'Red large men shirt',
+		'Red large women shirt',
+		'Red small women shirt'
+	]);
+	expect(red.total).toBeUndefined();
+
+	const redLarge = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { color: 'rojo', age: '5' }
+	});
+	expect(namesOf(redLarge.items)).toEqual([
+		'Red large girls shirt',
+		'Red large men shirt',
+		'Red large women shirt'
+	]);
+
+	const redSmall = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { color: 'rojo', age: '3' }
+	});
+	expect(namesOf(redSmall.items)).toEqual(['Red small women shirt']);
+
+	const redMedium = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { color: 'rojo', age: '4' }
+	});
+	expect(redMedium.items).toEqual([]);
+
+	const womenRed = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { category: 'women', color: 'rojo' }
+	});
+	expect(namesOf(womenRed.items)).toEqual([
+		'Red large girls shirt',
+		'Red large women shirt',
+		'Red small women shirt'
+	]);
+
+	const femaleRed = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { color: 'rojo', gender: 'female' }
+	});
+	expect(namesOf(femaleRed.items)).toEqual([
+		'Red large girls shirt',
+		'Red large women shirt',
+		'Red small women shirt'
+	]);
+
+	const kidsRed = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		filters: { color: 'rojo', ageGroup: 'kids' }
+	});
+	expect(namesOf(kidsRed.items)).toEqual(['Red large girls shirt']);
+
+	const unfiltered = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 }
+	});
+	expect(unfiltered.total).toBe(5);
+});
+
+test.each([undefined, 'Boots'])(
+	'paginates option filters with search %s without gaps',
+	async (search) => {
+		const t = createTestContext();
+		const ownerId = 'option-pagination-admin';
+		const admin = t.withIdentity({ tokenIdentifier: ownerId, subject: ownerId, role: 'admin' });
+		const category = await admin.mutation(
+			api.tables.categories.mutations.createCategory.createCategory,
+			{ name: 'Option pagination', status: 'active' }
+		);
+
+		const expectedIds: Id<'products'>[] = [];
+		for (let index = 0; index < 25; index += 1) {
+			expectedIds.push(
+				await saveOptionProduct(t, `${ownerId}-${index}`, {
+					name: `Boots pagination product ${index}`,
+					categoryId: category._id,
+					variants: ['5', '3'].map((size) => ({
+						options: [
+							{ name: 'Color', value: 'Rojo' },
+							{ name: 'Size', value: size }
+						]
+					}))
+				})
+			);
+		}
+		for (const status of ['active', 'draft', 'archived'] as const) {
+			await saveOptionProduct(t, ownerId, {
+				name: `Boots excluded ${status}`,
+				categoryId: category._id,
+				status,
+				variants: [{ options: [{ name: 'Color', value: status === 'active' ? 'Azul' : 'Rojo' }] }]
+			});
+		}
+
+		const query = api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic;
+		const firstPage = await t.query(query, {
+			paginationOpts: { cursor: null, numItems: 12 },
+			search,
+			filters: { color: 'rojo' }
+		});
+		expect(firstPage.items).toHaveLength(12);
+		expect(firstPage.hasNextPage).toBe(true);
+		expect(firstPage.total).toBeUndefined();
+
+		const secondPage = await t.query(query, {
+			paginationOpts: { cursor: firstPage.nextCursor, numItems: 12 },
+			search,
+			filters: { color: 'rojo' }
+		});
+		expect(secondPage.items).toHaveLength(12);
+		expect(secondPage.hasNextPage).toBe(true);
+		const thirdPage = await t.query(query, {
+			paginationOpts: { cursor: secondPage.nextCursor, numItems: 12 },
+			search,
+			filters: { color: 'rojo' }
+		});
+		expect(thirdPage.items).toHaveLength(1);
+		expect(thirdPage.hasNextPage).toBe(false);
+		expect(thirdPage.nextCursor).toBeNull();
+		const ids = [...firstPage.items, ...secondPage.items, ...thirdPage.items].map(
+			(item) => item._id
+		);
+		expect(ids.sort()).toEqual(expectedIds.sort());
+		expect(new Set(ids).size).toBe(25);
+		const previous = await t.query(query, {
+			paginationOpts: { cursor: firstPage.nextCursor, numItems: 12 },
+			search,
+			filters: { color: 'rojo' }
+		});
+		expect(previous.items.map((item) => item._id)).toEqual(
+			secondPage.items.map((item) => item._id)
+		);
+	}
+);
+
+test('combines search with option filters and requires all options on one variant', async () => {
+	const t = createTestContext();
+	const ownerId = 'option-search-admin';
+	const admin = t.withIdentity({ tokenIdentifier: ownerId, subject: ownerId, role: 'admin' });
+	const category = await admin.mutation(
+		api.tables.categories.mutations.createCategory.createCategory,
+		{ name: 'Option search', status: 'active' }
+	);
+
+	await saveOptionProduct(t, ownerId, {
+		name: 'Canvas red jacket',
+		categoryId: category._id,
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '5' }
+				]
+			}
+		]
+	});
+	await saveOptionProduct(t, ownerId, {
+		name: 'Canvas red shorts',
+		categoryId: category._id,
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '3' }
+				]
+			}
+		]
+	});
+	await saveOptionProduct(t, ownerId, {
+		name: 'Canvas blue cap',
+		categoryId: category._id,
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Azul' },
+					{ name: 'Size', value: '4' }
+				]
+			}
+		]
+	});
+	await saveOptionProduct(t, ownerId, {
+		name: 'Other red shoes',
+		categoryId: category._id,
+		variants: [{ options: [{ name: 'Color', value: 'Rojo' }] }]
+	});
+
+	const query = api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic;
+	const searched = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		search: 'Canvas',
+		filters: { color: 'rojo' }
+	});
+	expect(searched.items.map((product) => product.name).sort()).toEqual([
+		'Canvas red jacket',
+		'Canvas red shorts'
+	]);
+	expect(searched.total).toBeUndefined();
+	const split = await saveOptionProduct(t, ownerId, {
+		name: 'Canvas split options',
+		categoryId: category._id,
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '3' }
+				]
+			},
+			{
+				options: [
+					{ name: 'Color', value: 'Azul' },
+					{ name: 'Size', value: '5' }
+				]
+			}
+		]
+	});
+	const combined = await t.query(query, {
+		paginationOpts: { cursor: null, numItems: 12 },
+		search: 'Canvas',
+		filters: {
+			color: 'rojo',
+			age: '5',
+			category: category.slug,
+			gender: 'unisex',
+			ageGroup: 'adults'
+		}
+	});
+	expect(combined.items.map((item) => item.name)).toEqual(['Canvas red jacket']);
+	expect(combined.items.some((item) => item._id === split)).toBe(false);
+	const excludedFilters: Record<string, string>[] = [
+		{ color: 'verde' },
+		{ color: 'rojo', age: '4' },
+		{ color: 'rojo', category: 'missing' },
+		{ color: 'rojo', ageGroup: 'kids' },
+		{ color: 'rojo', gender: 'female' },
+		{ color: 'rojo', ageGroup: 'invalid' },
+		{ color: 'rojo', gender: 'invalid' },
+		{ ageGroup: 'invalid' },
+		{ gender: 'invalid' }
+	];
+	for (const filters of excludedFilters) {
+		const empty = await t.query(query, {
+			paginationOpts: { cursor: null, numItems: 12 },
+			search: 'Canvas',
+			filters
+		});
+		expect(empty.items).toEqual([]);
+		expect(empty.nextCursor).toBeNull();
+	}
+});
+
+test('removes product option index rows when a product is deleted', async () => {
+	const t = createTestContext();
+	const ownerId = 'option-delete-admin';
+	const admin = t.withIdentity({ tokenIdentifier: ownerId, subject: ownerId, role: 'admin' });
+	const category = await admin.mutation(
+		api.tables.categories.mutations.createCategory.createCategory,
+		{ name: 'Option deletion', status: 'active' }
+	);
+
+	const firstId = await saveOptionProduct(t, ownerId, {
+		name: 'First red shirt',
+		categoryId: category._id,
+		status: 'draft',
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '5' }
+				]
+			}
+		]
+	});
+	const secondId = await saveOptionProduct(t, ownerId, {
+		name: 'Second red shirt',
+		categoryId: category._id,
+		status: 'draft',
+		variants: [
+			{
+				options: [
+					{ name: 'Color', value: 'Rojo' },
+					{ name: 'Size', value: '3' }
+				]
+			}
+		]
+	});
+
+	await admin.mutation(api.tables.products.mutations.deleteProduct.deleteProduct, {
+		id: firstId
+	});
+	const remainingRows = await t.run((ctx) => ctx.db.query('productOptionIndex').collect());
+	expect(remainingRows).toHaveLength(3);
+	expect(remainingRows.every((row) => row.productId === secondId)).toBe(true);
+
+	await admin.mutation(api.tables.products.mutations.deleteProduct.deleteProduct, {
+		id: secondId
+	});
+	await new Promise((resolve) => setTimeout(resolve, 0));
+	await t.finishInProgressScheduledFunctions();
+	expect(await t.run((ctx) => ctx.db.query('productOptionIndex').collect())).toEqual([]);
+});
+
+test('backfills search names in place for existing option rows', async () => {
+	const t = createTestContext();
+	migrationsTest.register(t);
+	const categoryId = await t.run((ctx) =>
+		ctx.db.insert('categories', {
+			name: 'Backfill',
+			slug: 'backfill',
+			status: 'active'
+		})
+	);
+	const productId = await saveOptionProduct(t, 'backfill-admin', {
+		name: 'Legacy boots',
+		categoryId,
+		variants: [{ options: [{ name: 'Color', value: 'Rojo' }] }]
+	});
+	const before = await t.run(async (ctx) => {
+		const rows = await ctx.db.query('productOptionIndex').collect();
+		for (const row of rows) await ctx.db.patch(row._id, { name: undefined });
+		return rows;
+	});
+	await t.run(async (ctx) => {
+		await runToCompletion(
+			ctx,
+			components.migrations,
+			internal.tables.productOptionIndex.migrations.backfillProductOptionIndex
+				.backfillProductOptionNames
+		);
+	});
+	const after = await t.run((ctx) => ctx.db.query('productOptionIndex').collect());
+	expect(after).toEqual(before);
+	const result = await t.query(
+		api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic,
+		{
+			paginationOpts: { cursor: null, numItems: 12 },
+			search: 'boots',
+			filters: { color: 'rojo' }
+		}
+	);
+	expect(result.items.map((item) => item._id)).toEqual([productId]);
 });

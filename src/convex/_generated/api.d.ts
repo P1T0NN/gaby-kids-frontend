@@ -127,9 +127,11 @@ import type * as tables_orders_emails_sendOrderStatusEmail from "../tables/order
 import type * as tables_orders_helpers_allocateOrderCode from "../tables/orders/helpers/allocateOrderCode.js";
 import type * as tables_orders_helpers_buildCheckoutLine from "../tables/orders/helpers/buildCheckoutLine.js";
 import type * as tables_orders_helpers_createOrderCode from "../tables/orders/helpers/createOrderCode.js";
+import type * as tables_orders_helpers_getOrderPage from "../tables/orders/helpers/getOrderPage.js";
 import type * as tables_orders_helpers_getOrderQuery from "../tables/orders/helpers/getOrderQuery.js";
 import type * as tables_orders_helpers_insertOrderItems from "../tables/orders/helpers/insertOrderItems.js";
 import type * as tables_orders_helpers_mergeItemQuantities from "../tables/orders/helpers/mergeItemQuantities.js";
+import type * as tables_orders_helpers_readOrderFilters from "../tables/orders/helpers/readOrderFilters.js";
 import type * as tables_orders_helpers_toCustomerOrder from "../tables/orders/helpers/toCustomerOrder.js";
 import type * as tables_orders_mutations_applyStripeRefund from "../tables/orders/mutations/applyStripeRefund.js";
 import type * as tables_orders_mutations_createOrder from "../tables/orders/mutations/createOrder.js";
@@ -141,8 +143,14 @@ import type * as tables_orders_queries_fetchMyOrders from "../tables/orders/quer
 import type * as tables_orders_queries_fetchOrderAdmin from "../tables/orders/queries/fetchOrderAdmin.js";
 import type * as tables_orders_queries_fetchOrderForRefund from "../tables/orders/queries/fetchOrderForRefund.js";
 import type * as tables_orders_queries_fetchOrderReceipt from "../tables/orders/queries/fetchOrderReceipt.js";
-import type * as tables_orders_utils_applyOrderFilters from "../tables/orders/utils/applyOrderFilters.js";
 import type * as tables_orders_validators_orderValidators from "../tables/orders/validators/orderValidators.js";
+import type * as tables_productOptionIndex_helpers_createProductOptionIndex from "../tables/productOptionIndex/helpers/createProductOptionIndex.js";
+import type * as tables_productOptionIndex_helpers_getProductOptionPage from "../tables/productOptionIndex/helpers/getProductOptionPage.js";
+import type * as tables_productOptionIndex_helpers_readProductOptionIndexRows from "../tables/productOptionIndex/helpers/readProductOptionIndexRows.js";
+import type * as tables_productOptionIndex_helpers_removeProductOptionIndex from "../tables/productOptionIndex/helpers/removeProductOptionIndex.js";
+import type * as tables_productOptionIndex_migrations_backfillProductOptionIndex from "../tables/productOptionIndex/migrations/backfillProductOptionIndex.js";
+import type * as tables_productOptionIndex_utils_buildProductOptionKeys from "../tables/productOptionIndex/utils/buildProductOptionKeys.js";
+import type * as tables_productOptionIndex_utils_resolveProductOptionSelection from "../tables/productOptionIndex/utils/resolveProductOptionSelection.js";
 import type * as tables_productVariants_helpers_getProductVariantSummary from "../tables/productVariants/helpers/getProductVariantSummary.js";
 import type * as tables_productVariants_helpers_isProductVariantSkuTaken from "../tables/productVariants/helpers/isProductVariantSkuTaken.js";
 import type * as tables_productVariants_helpers_loadSellableProductVariant from "../tables/productVariants/helpers/loadSellableProductVariant.js";
@@ -155,6 +163,7 @@ import type * as tables_productVariants_queries_fetchCart from "../tables/produc
 import type * as tables_productVariants_validators_productVariantValidators from "../tables/productVariants/validators/productVariantValidators.js";
 import type * as tables_products_aggregates_productAggregate from "../tables/products/aggregates/productAggregate.js";
 import type * as tables_products_aggregates_productsByStatusAggregate from "../tables/products/aggregates/productsByStatusAggregate.js";
+import type * as tables_products_helpers_enrichProductPage from "../tables/products/helpers/enrichProductPage.js";
 import type * as tables_products_helpers_getProductPage from "../tables/products/helpers/getProductPage.js";
 import type * as tables_products_mappers_toProductResult from "../tables/products/mappers/toProductResult.js";
 import type * as tables_products_mutations_deleteProduct from "../tables/products/mutations/deleteProduct.js";
@@ -164,9 +173,8 @@ import type * as tables_products_queries_fetchAllProductsPublic from "../tables/
 import type * as tables_products_queries_fetchProductById from "../tables/products/queries/fetchProductById.js";
 import type * as tables_products_queries_fetchProductBySlug from "../tables/products/queries/fetchProductBySlug.js";
 import type * as tables_products_queries_fetchProductsSearch from "../tables/products/queries/fetchProductsSearch.js";
-import type * as tables_products_utils_applyProductFilters from "../tables/products/utils/applyProductFilters.js";
-import type * as tables_products_utils_filterPredicates from "../tables/products/utils/filterPredicates.js";
 import type * as tables_products_validators_productValidators from "../tables/products/validators/productValidators.js";
+import type * as tables_upsells_helpers_enrichUpsellPage from "../tables/upsells/helpers/enrichUpsellPage.js";
 import type * as tables_upsells_helpers_getStorefrontUpsells from "../tables/upsells/helpers/getStorefrontUpsells.js";
 import type * as tables_upsells_mutations_saveProductUpsells from "../tables/upsells/mutations/saveProductUpsells.js";
 import type * as tables_upsells_mutations_trackUpsellEvent from "../tables/upsells/mutations/trackUpsellEvent.js";
@@ -175,10 +183,9 @@ import type * as tables_upsells_queries_fetchUpsellForEdit from "../tables/upsel
 import type * as tables_upsells_queries_fetchUpsellsAdmin from "../tables/upsells/queries/fetchUpsellsAdmin.js";
 import type * as tables_upsells_validators_upsellValidators from "../tables/upsells/validators/upsellValidators.js";
 import type * as turnstile_verifyTurnstile from "../turnstile/verifyTurnstile.js";
-import type * as utils_buildFilterWhere from "../utils/buildFilterWhere.js";
 import type * as utils_cursorPagination from "../utils/cursorPagination.js";
+import type * as validators_listPageArgs from "../validators/listPageArgs.js";
 import type * as validators_pageValidator from "../validators/pageValidator.js";
-import type * as wrappers_fetchOptimizedQuery from "../wrappers/fetchOptimizedQuery.js";
 import type * as wrappers_fetchOptimizedSearchQuery from "../wrappers/fetchOptimizedSearchQuery.js";
 
 import type {
@@ -307,9 +314,11 @@ declare const fullApi: ApiFromModules<{
   "tables/orders/helpers/allocateOrderCode": typeof tables_orders_helpers_allocateOrderCode;
   "tables/orders/helpers/buildCheckoutLine": typeof tables_orders_helpers_buildCheckoutLine;
   "tables/orders/helpers/createOrderCode": typeof tables_orders_helpers_createOrderCode;
+  "tables/orders/helpers/getOrderPage": typeof tables_orders_helpers_getOrderPage;
   "tables/orders/helpers/getOrderQuery": typeof tables_orders_helpers_getOrderQuery;
   "tables/orders/helpers/insertOrderItems": typeof tables_orders_helpers_insertOrderItems;
   "tables/orders/helpers/mergeItemQuantities": typeof tables_orders_helpers_mergeItemQuantities;
+  "tables/orders/helpers/readOrderFilters": typeof tables_orders_helpers_readOrderFilters;
   "tables/orders/helpers/toCustomerOrder": typeof tables_orders_helpers_toCustomerOrder;
   "tables/orders/mutations/applyStripeRefund": typeof tables_orders_mutations_applyStripeRefund;
   "tables/orders/mutations/createOrder": typeof tables_orders_mutations_createOrder;
@@ -321,8 +330,14 @@ declare const fullApi: ApiFromModules<{
   "tables/orders/queries/fetchOrderAdmin": typeof tables_orders_queries_fetchOrderAdmin;
   "tables/orders/queries/fetchOrderForRefund": typeof tables_orders_queries_fetchOrderForRefund;
   "tables/orders/queries/fetchOrderReceipt": typeof tables_orders_queries_fetchOrderReceipt;
-  "tables/orders/utils/applyOrderFilters": typeof tables_orders_utils_applyOrderFilters;
   "tables/orders/validators/orderValidators": typeof tables_orders_validators_orderValidators;
+  "tables/productOptionIndex/helpers/createProductOptionIndex": typeof tables_productOptionIndex_helpers_createProductOptionIndex;
+  "tables/productOptionIndex/helpers/getProductOptionPage": typeof tables_productOptionIndex_helpers_getProductOptionPage;
+  "tables/productOptionIndex/helpers/readProductOptionIndexRows": typeof tables_productOptionIndex_helpers_readProductOptionIndexRows;
+  "tables/productOptionIndex/helpers/removeProductOptionIndex": typeof tables_productOptionIndex_helpers_removeProductOptionIndex;
+  "tables/productOptionIndex/migrations/backfillProductOptionIndex": typeof tables_productOptionIndex_migrations_backfillProductOptionIndex;
+  "tables/productOptionIndex/utils/buildProductOptionKeys": typeof tables_productOptionIndex_utils_buildProductOptionKeys;
+  "tables/productOptionIndex/utils/resolveProductOptionSelection": typeof tables_productOptionIndex_utils_resolveProductOptionSelection;
   "tables/productVariants/helpers/getProductVariantSummary": typeof tables_productVariants_helpers_getProductVariantSummary;
   "tables/productVariants/helpers/isProductVariantSkuTaken": typeof tables_productVariants_helpers_isProductVariantSkuTaken;
   "tables/productVariants/helpers/loadSellableProductVariant": typeof tables_productVariants_helpers_loadSellableProductVariant;
@@ -335,6 +350,7 @@ declare const fullApi: ApiFromModules<{
   "tables/productVariants/validators/productVariantValidators": typeof tables_productVariants_validators_productVariantValidators;
   "tables/products/aggregates/productAggregate": typeof tables_products_aggregates_productAggregate;
   "tables/products/aggregates/productsByStatusAggregate": typeof tables_products_aggregates_productsByStatusAggregate;
+  "tables/products/helpers/enrichProductPage": typeof tables_products_helpers_enrichProductPage;
   "tables/products/helpers/getProductPage": typeof tables_products_helpers_getProductPage;
   "tables/products/mappers/toProductResult": typeof tables_products_mappers_toProductResult;
   "tables/products/mutations/deleteProduct": typeof tables_products_mutations_deleteProduct;
@@ -344,9 +360,8 @@ declare const fullApi: ApiFromModules<{
   "tables/products/queries/fetchProductById": typeof tables_products_queries_fetchProductById;
   "tables/products/queries/fetchProductBySlug": typeof tables_products_queries_fetchProductBySlug;
   "tables/products/queries/fetchProductsSearch": typeof tables_products_queries_fetchProductsSearch;
-  "tables/products/utils/applyProductFilters": typeof tables_products_utils_applyProductFilters;
-  "tables/products/utils/filterPredicates": typeof tables_products_utils_filterPredicates;
   "tables/products/validators/productValidators": typeof tables_products_validators_productValidators;
+  "tables/upsells/helpers/enrichUpsellPage": typeof tables_upsells_helpers_enrichUpsellPage;
   "tables/upsells/helpers/getStorefrontUpsells": typeof tables_upsells_helpers_getStorefrontUpsells;
   "tables/upsells/mutations/saveProductUpsells": typeof tables_upsells_mutations_saveProductUpsells;
   "tables/upsells/mutations/trackUpsellEvent": typeof tables_upsells_mutations_trackUpsellEvent;
@@ -355,10 +370,9 @@ declare const fullApi: ApiFromModules<{
   "tables/upsells/queries/fetchUpsellsAdmin": typeof tables_upsells_queries_fetchUpsellsAdmin;
   "tables/upsells/validators/upsellValidators": typeof tables_upsells_validators_upsellValidators;
   "turnstile/verifyTurnstile": typeof turnstile_verifyTurnstile;
-  "utils/buildFilterWhere": typeof utils_buildFilterWhere;
   "utils/cursorPagination": typeof utils_cursorPagination;
+  "validators/listPageArgs": typeof validators_listPageArgs;
   "validators/pageValidator": typeof validators_pageValidator;
-  "wrappers/fetchOptimizedQuery": typeof wrappers_fetchOptimizedQuery;
   "wrappers/fetchOptimizedSearchQuery": typeof wrappers_fetchOptimizedSearchQuery;
 }>;
 

@@ -1,38 +1,28 @@
-// UTILS
-import { isFulfillmentMethod } from '../../../../shared/features/orders/utils/isFulfillmentMethod.js';
-import { isFulfillmentStatus } from '../../../../shared/features/orders/utils/isFulfillmentStatus.js';
-import { isPaymentStatus } from '../../../../shared/features/orders/utils/isPaymentStatus.js';
-
 // TYPES
 import type { Doc } from '../../../_generated/dataModel.js';
 import type { QueryCtx } from '../../../_generated/server.js';
-import type { ConvexFilter } from '../../../../shared/features/filters/types/filterTypesConvex.js';
 import type { ConvexPaginatedSource } from '../../../../shared/features/pagination/types/paginationTypesConvex.js';
+import type { OrderFilters } from './readOrderFilters.js';
 
 type Order = Doc<'orders'>;
 
-export function getOrderQuery(
-	ctx: QueryCtx,
-	filters: ConvexFilter[]
-): ConvexPaginatedSource<Order> {
-	const paymentStatus = filters.find((filter) => filter.field === 'paymentStatus')?.eq;
-	const fulfillmentStatus = filters.find((filter) => filter.field === 'fulfillmentStatus')?.eq;
-	const fulfillmentMethod = filters.find((filter) => filter.field === 'fulfillmentMethod')?.eq;
-	const method = isFulfillmentMethod(fulfillmentMethod) ? fulfillmentMethod : undefined;
+/** Pick the most specific orders index for the active filters. */
+export function getOrderQuery(ctx: QueryCtx, filters: OrderFilters): ConvexPaginatedSource<Order> {
+	const { paymentStatus, fulfillmentStatus, fulfillmentMethod } = filters;
 
-	if (isPaymentStatus(paymentStatus) && isFulfillmentStatus(fulfillmentStatus) && method) {
+	if (paymentStatus && fulfillmentStatus && fulfillmentMethod) {
 		return ctx.db
 			.query('orders')
 			.withIndex('by_payment_status_and_fulfillment_status_and_fulfillment_method', (query) =>
 				query
 					.eq('paymentStatus', paymentStatus)
 					.eq('fulfillmentStatus', fulfillmentStatus)
-					.eq('fulfillmentMethod', method)
+					.eq('fulfillmentMethod', fulfillmentMethod)
 			)
 			.order('desc');
 	}
 
-	if (isPaymentStatus(paymentStatus) && isFulfillmentStatus(fulfillmentStatus)) {
+	if (paymentStatus && fulfillmentStatus) {
 		return ctx.db
 			.query('orders')
 			.withIndex('by_payment_status_and_fulfillment_status', (query) =>
@@ -41,32 +31,32 @@ export function getOrderQuery(
 			.order('desc');
 	}
 
-	if (isPaymentStatus(paymentStatus) && method) {
+	if (paymentStatus && fulfillmentMethod) {
 		return ctx.db
 			.query('orders')
 			.withIndex('by_payment_status_and_fulfillment_method', (query) =>
-				query.eq('paymentStatus', paymentStatus).eq('fulfillmentMethod', method)
+				query.eq('paymentStatus', paymentStatus).eq('fulfillmentMethod', fulfillmentMethod)
 			)
 			.order('desc');
 	}
 
-	if (isFulfillmentStatus(fulfillmentStatus) && method) {
+	if (fulfillmentStatus && fulfillmentMethod) {
 		return ctx.db
 			.query('orders')
 			.withIndex('by_fulfillment_status_and_fulfillment_method', (query) =>
-				query.eq('fulfillmentStatus', fulfillmentStatus).eq('fulfillmentMethod', method)
+				query.eq('fulfillmentStatus', fulfillmentStatus).eq('fulfillmentMethod', fulfillmentMethod)
 			)
 			.order('desc');
 	}
 
-	if (isPaymentStatus(paymentStatus)) {
+	if (paymentStatus) {
 		return ctx.db
 			.query('orders')
 			.withIndex('by_payment_status', (query) => query.eq('paymentStatus', paymentStatus))
 			.order('desc');
 	}
 
-	if (isFulfillmentStatus(fulfillmentStatus)) {
+	if (fulfillmentStatus) {
 		return ctx.db
 			.query('orders')
 			.withIndex('by_fulfillment_status', (query) =>
@@ -75,10 +65,12 @@ export function getOrderQuery(
 			.order('desc');
 	}
 
-	if (method) {
+	if (fulfillmentMethod) {
 		return ctx.db
 			.query('orders')
-			.withIndex('by_fulfillment_method', (query) => query.eq('fulfillmentMethod', method))
+			.withIndex('by_fulfillment_method', (query) =>
+				query.eq('fulfillmentMethod', fulfillmentMethod)
+			)
 			.order('desc');
 	}
 

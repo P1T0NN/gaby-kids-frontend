@@ -38,6 +38,13 @@
 			"unisex": "Unisex",
 			"male": "Niños",
 			"female": "Niñas"
+		},
+		"ProductOptionFilterOptions": {
+			"all": "Todos"
+		},
+		"ProductOptionFilterLabels": {
+			"color": "Color",
+			"age": "Edad"
 		}
 	},
 	"ProductVariantsFeature": {

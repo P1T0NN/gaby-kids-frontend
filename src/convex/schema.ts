@@ -42,7 +42,10 @@ export const tables = {
 		upsellProductIds: v.array(v.id('products')),
 		status: productStatus
 	})
-		.searchIndex('search_name', { searchField: 'name', filterFields: ['status'] })
+		.searchIndex('search_name', {
+			searchField: 'name',
+			filterFields: ['status', 'categoryId', 'ageGroup', 'gender']
+		})
 		.index('by_slug', ['slug'])
 		.index('by_category_id', ['categoryId'])
 		.index('by_age_group', ['ageGroup'])
@@ -62,6 +65,34 @@ export const tables = {
 	})
 		.index('by_product_id', ['productId'])
 		.index('by_sku', ['sku']),
+	productOptionIndex: defineTable({
+		productId: v.id('products'),
+		/** Optional during rollout; backfillProductOptionNames fills existing rows. */
+		name: v.optional(v.string()),
+		/** Canonical selection key; one row per product and non-empty option subset. */
+		optionKey: v.string(),
+		status: productStatus,
+		categoryId: v.id('categories'),
+		ageGroup: v.optional(productAgeGroup),
+		gender: v.optional(productGender),
+		productCreatedAt: v.number()
+	})
+		.searchIndex('search_name', {
+			searchField: 'name',
+			filterFields: ['status', 'optionKey', 'categoryId', 'ageGroup', 'gender']
+		})
+		.index('by_product_id', ['productId'])
+		.index('by_status_and_option_key_and_product_created_at', [
+			'status',
+			'optionKey',
+			'productCreatedAt'
+		])
+		.index('by_status_and_category_id_and_option_key_and_product_created_at', [
+			'status',
+			'categoryId',
+			'optionKey',
+			'productCreatedAt'
+		]),
 	checkoutReservations: defineTable({
 		status: checkoutReservationStatus,
 		expiresAt: v.number(),

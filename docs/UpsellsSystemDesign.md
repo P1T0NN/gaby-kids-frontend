@@ -84,10 +84,11 @@ the shared optimized pagination path, keeps only products whose
 in the same query result. List items do not start their own display queries.
 
 Convex cannot index whether an array is empty, so the current `hasUpsells`
-predicate is a bounded post-filter rather than an indexed lookup. If catalog
-size makes that scan measurable, add a denormalized `hasUpsells` boolean to
-`products`, maintain it in `saveProductUpsells`, backfill existing products, and
-query an index on that field. This optimization does not require a separate
+predicate is a post-filter inside the paginated query rather than an indexed
+lookup. If catalog size makes that scan measurable, add a denormalized
+`hasUpsells` boolean to `products`, maintain it in `saveProductUpsells`,
+backfill existing products, and query an index on that field. This optimization
+does not require a separate
 upsells table.
 
 `fetchUpsellForEdit` is an on-demand admin query for the shared dialog. It loads

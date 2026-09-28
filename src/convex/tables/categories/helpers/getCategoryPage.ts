@@ -11,16 +11,19 @@ import type { PaginationOptions } from 'convex/server';
 type Category = Doc<'categories'>;
 export type AdminCategory = Category;
 
-export async function getCategoryPage(
-	ctx: QueryCtx,
-	paginationOpts: PaginationOptions,
-	search: string | undefined
-): Promise<ConvexPaginatedPage<AdminCategory>> {
+export async function getCategoryPage({
+	ctx,
+	paginationOpts,
+	search
+}: {
+	ctx: QueryCtx;
+	paginationOpts: PaginationOptions;
+	search?: string;
+}): Promise<ConvexPaginatedPage<AdminCategory>> {
 	const page = search
 		? await paginateSearch<Category>({
 				ctx,
 				search,
-				filters: [],
 				paginationOpts,
 				buildQuery: ({ ctx, search }) =>
 					ctx.db

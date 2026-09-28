@@ -14,6 +14,9 @@ import { logAuditEvent } from '../../../auditLogs/helpers/logAuditEvent.js';
 // STORAGE
 import { deleteStoredFiles } from '../../../storage/r2.js';
 
+// OPTIONS
+import { removeProductOptionIndex } from '../../productOptionIndex/helpers/removeProductOptionIndex.js';
+
 // TYPES
 import type { BackendErrorData } from '../../../../shared/types/types.js';
 
@@ -31,6 +34,8 @@ export const deleteProduct = adminMutation({
 		}
 
 		await ctx.db.delete(args.id);
+
+		await removeProductOptionIndex(ctx, args.id);
 
 		const productImageKeys = product.imageKeys ?? product.images;
 		await deleteStoredFiles(ctx, productImageKeys);

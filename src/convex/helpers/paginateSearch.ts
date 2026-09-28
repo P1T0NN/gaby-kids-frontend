@@ -8,22 +8,16 @@ import type { QueryCtx } from '../_generated/server';
 import { getPagination } from './getPagination.js';
 
 // TYPES
-import type { ConvexFilter } from '../../shared/features/filters/types/filterTypesConvex.js';
 import type {
 	ConvexPaginatedPage,
 	ConvexPaginatedSource
 } from '../../shared/features/pagination/types/paginationTypesConvex.js';
 
-type BuildSearchQuery<T> = (args: {
-	ctx: QueryCtx;
-	search: string;
-	filters: ConvexFilter[];
-}) => ConvexPaginatedSource<T>;
+type BuildSearchQuery<T> = (args: { ctx: QueryCtx; search: string }) => ConvexPaginatedSource<T>;
 
 type PaginateSearchOptions<T> = {
 	ctx: QueryCtx;
 	search: string;
-	filters: ConvexFilter[];
 	paginationOpts: PaginationOptions;
 	buildQuery: BuildSearchQuery<T>;
 };
@@ -31,7 +25,6 @@ type PaginateSearchOptions<T> = {
 export function paginateSearch<T>({
 	ctx,
 	search,
-	filters,
 	paginationOpts,
 	buildQuery
 }: PaginateSearchOptions<T>): Promise<ConvexPaginatedPage<T>> {
@@ -41,5 +34,5 @@ export function paginateSearch<T>({
 	const searchTokens = search.trim().split(/\s+/);
 	const searchTerm = searchTokens[searchTokens.length - 1] || search;
 
-	return getPagination(buildQuery({ ctx, search: searchTerm, filters }), { paginationOpts });
+	return getPagination(buildQuery({ ctx, search: searchTerm }), { paginationOpts });
 }

@@ -24,6 +24,9 @@ import { deleteStoredFiles, resolveStoredFileUrls } from '../../../storage/r2.js
 import { resolveProductVariants } from '../../productVariants/helpers/resolveProductVariants.js';
 import { generateSlug } from '../../../../shared/utils/generateSlug.js';
 
+// OPTIONS
+import { createProductOptionIndex } from '../../productOptionIndex/helpers/createProductOptionIndex.js';
+
 // TYPES
 import type { Doc } from '../../../_generated/dataModel.js';
 import type { MutationCtx } from '../../../_generated/server.js';
@@ -163,6 +166,12 @@ export const saveProduct = adminUploadMutation({
 		for (const variantId of writes.deletes) {
 			await ctx.db.delete(variantId);
 		}
+
+		await createProductOptionIndex({
+			ctx,
+			product: (await ctx.db.get(productId))!,
+			variants: input.productVariants
+		});
 
 		await deleteStoredFiles(
 			ctx,

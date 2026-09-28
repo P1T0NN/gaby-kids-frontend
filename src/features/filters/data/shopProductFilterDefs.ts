@@ -9,6 +9,10 @@ import { SHOP_GENDER_FILTER_KEY } from '@/shared/features/filters/data/shopAttri
 import { SHOP_CATEGORY_FILTER_KEY } from '@/shared/features/filters/data/shopCategoryFilter.js';
 import { PRODUCT_GENDERS } from '@/shared/features/products/data/productsData.js';
 import { PRODUCTS_CONFIG } from '@/shared/features/products/config.js';
+import { PRODUCT_OPTION_FILTERS } from '@/shared/features/productVariants/data/productOptionFilters.js';
+
+// UTILS
+import { normalizeProductOptionText } from '@/shared/features/productVariants/utils/normalizeProductOptionText.js';
 
 // TYPES
 import type { FilterDef } from '@/shared/features/filters/types/filterTypes.js';
@@ -41,7 +45,37 @@ const GENDER_FILTER = {
 	}
 } satisfies FilterDef;
 
+// Filter labels are UI text, translated per configured key with the config
+// label as fallback; option names and values are admin data and stay
+// untranslated.
+type ProductOptionFilterLabels = Partial<
+	Record<(typeof PRODUCT_OPTION_FILTERS)[number]['key'], () => string>
+>;
+
+const OPTION_FILTER_LABELS = {
+	color: m['ProductsFeature.ProductOptionFilterLabels.color'],
+	age: m['ProductsFeature.ProductOptionFilterLabels.age']
+} satisfies ProductOptionFilterLabels;
+
+// The filter offers exactly the values declared in the static config.
+const OPTION_FILTERS = PRODUCT_OPTION_FILTERS.map(({ key, label, values }) => ({
+	key,
+	get label() {
+		return OPTION_FILTER_LABELS[key]?.() ?? label;
+	},
+	get options() {
+		return [
+			{ value: '', label: m['ProductsFeature.ProductOptionFilterOptions.all']() },
+			...values.map((value) => ({
+				value: normalizeProductOptionText(value),
+				label: value
+			}))
+		];
+	}
+})) satisfies FilterDef[];
+
 export const SHOP_PRODUCT_FILTER_DEFS = [
 	CATEGORY_FILTER,
-	...(PRODUCTS_CONFIG.HAS_GENDER ? [GENDER_FILTER] : [])
+	...(PRODUCTS_CONFIG.HAS_GENDER ? [GENDER_FILTER] : []),
+	...OPTION_FILTERS
 ] satisfies FilterDef[];

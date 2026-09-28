@@ -1,36 +1,27 @@
-// WRAPPERS
-import { fetchOptimizedQuery } from '../../../wrappers/fetchOptimizedQuery.js';
+// CONVEX
+import { adminQuery } from '../../../builders/convexFunctionBuilders.js';
 
 // HELPERS
 import { getProductPage } from '../../products/helpers/getProductPage.js';
-
-// MAPPERS
-import { toProductResult } from '../../products/mappers/toProductResult.js';
+import { withResolvedUpsellProducts } from '../helpers/enrichUpsellPage.js';
 
 // VALIDATORS
+import { listPageArgs } from '../../../validators/listPageArgs.js';
 import { upsellsAdminPage } from '../validators/upsellValidators.js';
 
-export const fetchUpsellsAdmin = fetchOptimizedQuery({
-	auth: 'admin',
+export const fetchUpsellsAdmin = adminQuery({
+	args: listPageArgs,
 	returns: upsellsAdminPage,
-	fetchPage: async ({ ctx, paginationOpts, search }) => {
-		const page = await getProductPage(ctx, paginationOpts, search, [
-			{ field: 'hasUpsells', eq: true }
-		]);
-		const items = await Promise.all(
-			page.items.map(async (product) => ({
-				product,
-				upsells: await Promise.all(
-					product.upsellProductIds.map(async (productId) => {
-						const upsell = await ctx.db.get('products', productId);
-						return {
-							productId,
-							product: upsell ? await toProductResult(upsell) : null
-						};
-					})
-				)
-			}))
-		);
+	handler: async (ctx, args) => {
+		const search = args.search?.trim() || undefined;
+		const page = await getProductPage({
+			ctx,
+			paginationOpts: args.paginationOpts,
+			search,
+			attributeFilters: {},
+			hasUpsells: true
+		});
+		const items = await withResolvedUpsellProducts({ ctx, items: page.items });
 
 		return { ...page, items };
 	}

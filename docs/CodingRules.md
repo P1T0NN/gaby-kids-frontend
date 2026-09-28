@@ -4,8 +4,9 @@ Global engineering rules for this starter. Domain rules for the storefront,
 catalog, orders, checkout, dashboard, and admin data live in
 [`ProjectCodingRules.md`](./ProjectCodingRules.md); read both before changing
 code. The longer design notes are
-[`InfiniteScrollingSystemDesign.md`](./InfiniteScrollingSystemDesign.md) and
-[`RateLimitingSystemDesign.md`](./RateLimitingSystemDesign.md).
+[`InfiniteScrollingSystemDesign.md`](./InfiniteScrollingSystemDesign.md),
+[`RateLimitingSystemDesign.md`](./RateLimitingSystemDesign.md), and
+[`ProductOptionFiltersDesign.md`](./ProductOptionFiltersDesign.md).
 
 ## Choose the existing layer first
 
@@ -261,10 +262,12 @@ Use the custom builders in `convexFunctionBuilders.ts`:
 - `authenticatedUploadMutation` additionally validates caller-owned uploaded
   keys and removes claimed upload records on success.
 
-For list queries, use `fetchOptimizedQuery`: it adds validated pagination,
-search, and symbolic filters, chooses the feature predicate registry, delegates
-the indexed page fetch, and reads an aggregate/counter total when configured.
-Use `fetchOptimizedSearchQuery` for bounded suggestions. Keep cursors opaque.
+For list queries, use the explicit cursor-list pattern: validate args with
+`listPageArgs` (`src/convex/validators/listPageArgs.ts`), build one indexed page
+through the owning table's page helper, enrich rows (joins, summaries) after the
+fetch with the table's `enrichXPage` helpers, and attach `total` only when no
+search/filters are active. Use `fetchOptimizedSearchQuery` for bounded
+suggestions. Keep cursors opaque.
 
 Counts and side effects already have homes: totals use aggregates, dashboard
 projections are written by triggers so list and dashboard reads never scan, and

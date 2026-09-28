@@ -40,10 +40,15 @@ notes are [`UpsellsSystemDesign.md`](./UpsellsSystemDesign.md) and
   display caches in one transaction; new products default to draft and always
   have at least one product variant. Publishing requires an active category.
   `ageGroup` (`kids`/`adults`) and `gender` (`unisex`/`male`/`female`) are the
-  optional indexed storefront facets: filterable alone or combined, where one
-  facet uses its index and the rest are post-filtered in the bounded scan.
-  `PRODUCTS_CONFIG.HAS_AGE_GROUP` / `HAS_GENDER` hide them from the admin form
-  and shop filters; the optional columns always exist.
+  optional indexed storefront attributes: filterable alone or in any combination
+  through a single indexed paginated query, with the remaining attributes
+  applied as in-query filters (Convex allows only one `.paginate()` per
+  function). Storefront option filters (variant options such as Color and
+  Size) are served by the `productOptionIndex` projection, written by
+  `saveProduct`; see [`ProductOptionFiltersDesign.md`](./ProductOptionFiltersDesign.md).
+  `PRODUCTS_CONFIG.HAS_AGE_GROUP` /
+  `HAS_GENDER` hide them from the admin form and shop filters; the optional
+  columns always exist.
 - `productVariants`: `productId`, `position`, structured `options`
   (`name`/`value`), a catalog-unique `sku`, an ordered `imageKeys` assignment
   from the product library (first = primary, rejected if it references a key
@@ -55,6 +60,15 @@ notes are [`UpsellsSystemDesign.md`](./UpsellsSystemDesign.md) and
   product library as fallback. One product's variants are always read with
   async iteration through `by_product_id` (never `.collect()`), and deleting a
   product queues bounded scheduled batches for its variants.
+- `productOptionIndex` is the storefront option-filter projection: one row per
+  product and selection key (every non-empty subset of a product variant's
+  configured option pairs from the static `PRODUCT_OPTION_FILTERS` config),
+  copying `name`, `status`, `categoryId`, `ageGroup`, `gender`, and `productCreatedAt`
+  so one indexed paginate answers a selection. Its name search index combines
+  search with option and attribute filters before pagination. `saveProduct` and
+  `deleteProduct` keep the table current through `createProductOptionIndex` and
+  `removeProductOptionIndex`; the `backfillProductOptionIndex` migration rebuilds
+  it; `backfillProductOptionNames` adds search names to existing rows in place.
 - Upsells use an optional, ordered `products.upsellProductIds` array (maximum
   four). `/admin/upsells` manages recommendations through `tables/upsells` admin
   queries and `saveProductUpsells`; the public query returns only active
@@ -97,7 +111,8 @@ notes are [`UpsellsSystemDesign.md`](./UpsellsSystemDesign.md) and
 Current app-facing functions are:
 
 - `api.auth.getCurrentUser`;
-- public product listing/detail queries;
+- public product listing/detail queries, including the storefront option
+  filters declared in `PRODUCT_OPTION_FILTERS`;
 - `api.analytics.queries.fetchDashboard` (current vs previous period stats) and
   `api.analytics.queries.fetchRevenueSeries` (zero-filled daily revenue) read the
   `dailySales` rollup for the admin dashboard;

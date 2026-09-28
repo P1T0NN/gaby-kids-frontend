@@ -6,7 +6,7 @@
 	import { Button } from '@/components/ui/button/index.js';
 	import * as Field from '@/components/ui/field/index.js';
 	import NativeSelect from '@/components/ui/native-components/native-select/native-select.svelte';
-	import Spinner from '@/components/ui/spinner/spinner.svelte';
+	import { Spinner } from '@/components/ui/spinner/index.js';
 	import CategoryOptions from '@/features/categories/components/category-options/category-options.svelte';
 	import SearchInput from '@/features/search/components/search-input.svelte';
 
@@ -32,6 +32,8 @@
 	} = $props();
 
 	const filtered = $derived(search.isActive || filters.isFiltering);
+	// Search uses relevance order; keep the chosen date order for browsing.
+	const visibleFilters = $derived(filters.defs.filter((def) => !search.isActive || !def.isSort));
 
 	function clearFilters(): void {
 		search.clear();
@@ -71,7 +73,7 @@
 			class="sm:max-w-md"
 		/>
 		<Field.Group class="flex-row flex-wrap items-end gap-3">
-			{#each filters.defs as def (def.key)}
+			{#each visibleFilters as def (def.key)}
 				<Field.Field class="w-auto min-w-40 flex-1 gap-2 sm:flex-none">
 					<Field.Label for={`shop-${def.key}`}>{def.label}</Field.Label>
 					{#if def.key === SHOP_CATEGORY_FILTER_KEY}
@@ -97,7 +99,7 @@
 			<Button
 				type="button"
 				variant="ghost"
-				disabled={!filtered && !search.value}
+				disabled={!filters.isActive && !search.value}
 				onclick={clearFilters}
 			>
 				{m['ShopPage.clearFilters']()}
