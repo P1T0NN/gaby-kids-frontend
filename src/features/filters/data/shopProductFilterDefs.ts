@@ -41,22 +41,7 @@ const GENDER_FILTER = {
 	}
 } satisfies FilterDef;
 
-const SORT_FILTER = {
-	key: 'sort',
-	isSort: true,
-	get label() {
-		return m['ShopPage.sortLabel']();
-	},
-	get options() {
-		return [
-			{ value: '', label: m['ShopPage.newestFirst']() },
-			{ value: 'asc', label: m['ShopPage.oldestFirst']() }
-		];
-	}
-} satisfies FilterDef;
-
 export const SHOP_PRODUCT_FILTER_DEFS = [
 	CATEGORY_FILTER,
-	...(PRODUCTS_CONFIG.HAS_GENDER ? [GENDER_FILTER] : []),
-	SORT_FILTER
+	...(PRODUCTS_CONFIG.HAS_GENDER ? [GENDER_FILTER] : [])
 ] satisfies FilterDef[];

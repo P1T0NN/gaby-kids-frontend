@@ -9,7 +9,7 @@ export const PRODUCTS_CONFIG = {
 	 * Optional product attributes. The columns always exist as optional fields; flipping a flag to
 	 * false hides it from the admin form (and the shop filter for gender).
 	 */
-	HAS_AGE_GROUP: true,
+	HAS_AGE_GROUP: false,
 	HAS_GENDER: true
 } as const;
 
