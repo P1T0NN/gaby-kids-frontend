@@ -36,8 +36,8 @@
 		},
 		"GenderBadge": {
 			"unisex": "Unisex",
-			"male": "Masculino",
-			"female": "Femenino"
+			"male": "Niños",
+			"female": "Niñas"
 		}
 	},
 	"ProductVariantsFeature": {
