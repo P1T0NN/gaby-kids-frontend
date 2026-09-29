@@ -68,46 +68,48 @@
 	<div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-12">
 		<ShopFilters {filters} canClear={canClearFilters} onClear={clearFilters} />
 
-		<DataList
-			pagination={products}
-			total={paginationTotal}
-			placement="above"
-			key={(product) => product._id}
-			class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
-		>
-			{#snippet children(product)}
-				<ShopProductItem {product} />
-			{/snippet}
-			{#snippet loadingSnippet()}
-				<ShopProductsLoading />
-			{/snippet}
-			{#snippet errorSnippet()}
-				<ErrorComponent message={m['ShopPage.loadError']()} />
-			{/snippet}
-			{#snippet empty()}
-				<EmptyData
-					title={products.nextCursor
-						? m['ShopPage.noPageMatches']()
-						: filtered
-							? m['ShopPage.noMatches']()
-							: m['ShopPage.emptyTitle']()}
-					description={products.nextCursor
-						? m['ShopPage.noPageMatchesDescription']()
-						: filtered
-							? m['ShopPage.noMatchesDescription']()
-							: m['ShopPage.emptyDescription']()}
-					action={filtered
-						? {
-								label: m['ShopPage.clearFilters'](),
-								icon: clearFiltersIcon,
-								onclick: clearFilters
-							}
-						: undefined}
-				>
-					{#snippet icon()}<span class="icon-[lucide--search] size-5" aria-hidden="true"
-						></span>{/snippet}
-				</EmptyData>
-			{/snippet}
-		</DataList>
+		<div>
+			<DataList
+				pagination={products}
+				total={paginationTotal}
+				placement="above"
+				key={(product) => product._id}
+				class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+			>
+				{#snippet children(product)}
+					<ShopProductItem {product} />
+				{/snippet}
+				{#snippet loadingSnippet()}
+					<ShopProductsLoading />
+				{/snippet}
+				{#snippet errorSnippet()}
+					<ErrorComponent message={m['ShopPage.loadError']()} />
+				{/snippet}
+				{#snippet empty()}
+					<EmptyData
+						title={products.nextCursor
+							? m['ShopPage.noPageMatches']()
+							: filtered
+								? m['ShopPage.noMatches']()
+								: m['ShopPage.emptyTitle']()}
+						description={products.nextCursor
+							? m['ShopPage.noPageMatchesDescription']()
+							: filtered
+								? m['ShopPage.noMatchesDescription']()
+								: m['ShopPage.emptyDescription']()}
+						action={filtered
+							? {
+									label: m['ShopPage.clearFilters'](),
+									icon: clearFiltersIcon,
+									onclick: clearFilters
+								}
+							: undefined}
+					>
+						{#snippet icon()}<span class="icon-[lucide--search] size-5" aria-hidden="true"
+							></span>{/snippet}
+					</EmptyData>
+				{/snippet}
+			</DataList>
+		</div>
 	</div>
 </Section>
