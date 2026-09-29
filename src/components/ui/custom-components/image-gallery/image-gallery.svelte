@@ -23,6 +23,7 @@
 
 	let api = $state<CarouselAPI>();
 	let activeIndex = $state(0);
+	let thumbnails: HTMLDivElement | undefined = $state();
 	let activeImage = $derived(images[activeIndex]);
 
 	function selectImage(index: number): void {
@@ -40,6 +41,27 @@
 
 	function updateActiveIndex(): void {
 		activeIndex = api?.selectedScrollSnap() ?? 0;
+		scrollThumbnailIntoView(activeIndex);
+	}
+
+	function scrollThumbnailIntoView(index: number): void {
+		const container = thumbnails;
+		const thumbnail = container?.children[index];
+		if (!container || !(thumbnail instanceof HTMLElement)) return;
+
+		const containerRect = container.getBoundingClientRect();
+		const thumbnailRect = thumbnail.getBoundingClientRect();
+		// Center the active thumbnail; scrollTo clamps at the start and end of the strip.
+		const target =
+			container.scrollLeft +
+			thumbnailRect.left -
+			containerRect.left -
+			(container.clientWidth - thumbnailRect.width) / 2;
+
+		container.scrollTo({
+			left: target,
+			behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+		});
 	}
 
 	onDestroy(() => api?.off('select', updateActiveIndex));
@@ -62,7 +84,7 @@
 							<img
 								src={image}
 								alt={index === activeIndex ? alt : ''}
-								class="size-full object-cover"
+								class="size-full object-contain"
 								loading={index === 0 ? 'eager' : 'lazy'}
 							/>
 						</div>
@@ -95,7 +117,8 @@
 
 		{#if images.length > 1}
 			<div
-				class="flex w-full gap-3 overflow-x-auto pb-1"
+				bind:this={thumbnails}
+				class="flex w-full [scrollbar-width:none] gap-3 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
 				role="group"
 				aria-label={m['Components.ImageGallery.thumbnailLabel']()}
 			>
@@ -111,7 +134,7 @@
 						aria-label={m['Components.ImageGallery.selectImage']({ index: index + 1 })}
 						aria-pressed={index === activeIndex}
 					>
-						<img src={image} alt="" class="size-full object-cover" loading="lazy" />
+						<img src={image} alt="" class="size-full object-contain" loading="lazy" />
 					</Button>
 				{/each}
 			</div>
