@@ -38,20 +38,20 @@
 </script>
 
 <Section
-	class="bg-secondary py-20"
+	class="bg-secondary py-14 sm:py-20"
 	size="none"
 	width="full"
-	containerClass="flex max-w-7xl flex-col gap-9 px-6 sm:px-12"
+	containerClass="flex max-w-7xl flex-col gap-7 px-6 sm:gap-9 sm:px-12"
 >
 	<div class="flex flex-col gap-2.5">
 		<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
 			{m['HomePage.OccasionsSection.eyebrow']()}
 		</p>
-		<h2 class="font-serif text-5xl text-foreground">
+		<h2 class="font-serif text-3xl text-foreground sm:text-4xl lg:text-5xl">
 			{m['HomePage.OccasionsSection.heading']()}
 		</h2>
 	</div>
-	<div class="grid grid-cols-3 gap-6">
+	<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
 		{#each ocasiones as ocasion (ocasion.img)}
 			<Link
 				href={getOccasionHref(ocasion.category)}
@@ -61,8 +61,8 @@
 					<div class="h-65 overflow-hidden border-b border-border bg-secondary">
 						<StaticImage src={ocasion.img} alt={ocasion.title()} class="size-full object-cover" />
 					</div>
-					<Card.Content class="flex flex-1 flex-col gap-2.5 px-7 pt-6 pb-8">
-						<h3 class="font-serif text-3xl text-foreground">{ocasion.title()}</h3>
+					<Card.Content class="flex flex-1 flex-col gap-2.5 px-5 pt-6 pb-8 sm:px-7">
+						<h3 class="font-serif text-2xl text-foreground sm:text-3xl">{ocasion.title()}</h3>
 						<p class="text-sm leading-relaxed text-muted-foreground">{ocasion.description()}</p>
 						<span class="mt-auto pt-2 text-sm font-medium text-accent">
 							{m['HomePage.OccasionsSection.cta']()}

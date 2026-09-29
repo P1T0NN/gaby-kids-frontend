@@ -8,4 +8,8 @@ export type ClientOptimizeOptions = {
 	maxSizeMB?: number;
 	/** Output quality 0–1. */
 	quality?: number;
+	/** Target width/height ratio of the output; the image is padded, never cropped. */
+	aspectRatio?: number;
+	/** Padding color used when the source ratio differs from the target ratio. */
+	background?: string;
 };

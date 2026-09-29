@@ -6,7 +6,10 @@ import type { ClientOptimizeOptions } from './types/storageTypes';
 export const STORAGE_CLIENT_OPTIMIZE_CONFIG = {
 	maxWidthOrHeight: 1920,
 	maxSizeMB: 2,
-	quality: 0.8
+	quality: 0.8,
+	/** Uploads are normalized to the display frame ratio (square product images). */
+	aspectRatio: 1,
+	background: '#ffffff'
 } satisfies ClientOptimizeOptions;
 
 /** Object storage. */

@@ -46,16 +46,16 @@
 </script>
 
 {#snippet productContent()}
-	<div class="relative h-96 overflow-hidden bg-muted">
+	<div class="relative aspect-square overflow-hidden bg-background">
 		{#if image && failedImage !== image}
 			<img
 				src={image}
 				alt={product.name}
 				width="480"
-				height="384"
+				height="480"
 				loading="lazy"
 				decoding="async"
-				class="block h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
+				class="block size-full object-contain transition-transform duration-200 group-hover:scale-[1.02]"
 				onerror={() => (failedImage = image)}
 			/>
 		{:else}
