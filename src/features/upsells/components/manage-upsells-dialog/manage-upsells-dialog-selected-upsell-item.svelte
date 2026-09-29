@@ -7,13 +7,13 @@
 	import { m } from '@/lib/paraglide/messages';
 
 	// TYPES
-	import type { Doc } from '@convex/_generated/dataModel.js';
+	import type { ProductResult } from '@/shared/features/products/types/productsTypes.js';
 
 	let {
 		product,
 		onRemove
 	}: {
-		product: Doc<'products'>;
+		product: ProductResult;
 		onRemove: () => void;
 	} = $props();
 </script>

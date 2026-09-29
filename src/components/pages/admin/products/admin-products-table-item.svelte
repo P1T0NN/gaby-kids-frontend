@@ -4,7 +4,7 @@
 
 	// LIBRARIES
 	import { useMutation } from 'convex-svelte';
-	import type { Doc } from '@convex/_generated/dataModel';
+	import type { ProductResult } from '@/shared/features/products/types/productsTypes.js';
 
 	// COMPONENTS
 	import ConfirmDeleteDialog from '@/components/ui/custom-components/confirm-delete-dialog/confirm-delete-dialog.svelte';
@@ -28,7 +28,7 @@
 	import { formatDate } from '@/shared/utils/date.js';
 	import { toastMessage } from '@/utils/toastMessage.js';
 
-	type Product = Doc<'products'> & {
+	type Product = ProductResult & {
 		categoryOption: { name: string };
 		productVariantSummary: { count: number; inventory: number; reservedInventory: number };
 	};
@@ -68,9 +68,9 @@
 
 <TableCell>
 	<div class="flex min-w-0 items-center gap-3">
-		{#if product.images[0]}
+		{#if product.images?.[0]}
 			<img
-				src={product.images[0]}
+				src={product.images?.[0] ?? ''}
 				alt=""
 				width="40"
 				height="40"

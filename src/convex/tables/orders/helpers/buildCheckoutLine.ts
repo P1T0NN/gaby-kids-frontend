@@ -24,7 +24,7 @@ export async function buildCheckoutLine(
 	productVariant: Doc<'productVariants'>,
 	quantity: number
 ): Promise<CheckoutLine> {
-	const imageKey = productVariant.imageKeys[0] ?? (product.imageKeys ?? product.images)[0];
+	const imageKey = productVariant.imageKeys[0] ?? product.imageKeys[0];
 	const imageUrl = imageKey ? (await resolveStoredFileUrls([imageKey]))[0] : undefined;
 
 	return {

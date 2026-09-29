@@ -1239,5 +1239,19 @@
 			"wholesaleDescription": "Special prices for boutiques and baptism shops.",
 			"wholesaleCta": "Get a quote on WhatsApp"
 		}
+	},
+	"ContactPage": {
+		"pageTitle": "Contact",
+		"description": "Questions about an order or about wholesale? Message us and we'll help you.",
+		"ContactSection": {
+			"eyebrow": "Contact",
+			"heading": "Let's talk about your order or your store.",
+			"emailLabel": "Email",
+			"phoneLabel": "Phone",
+			"whatsappLabel": "WhatsApp",
+			"whatsappLink": "Message us directly",
+			"socialLabel": "Follow us",
+			"cta": "Message us on WhatsApp"
+		}
 	}
 }

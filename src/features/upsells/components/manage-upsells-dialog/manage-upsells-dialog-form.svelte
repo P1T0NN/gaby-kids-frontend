@@ -11,9 +11,9 @@
 	import { m } from '@/lib/paraglide/messages';
 	import { toastMessage } from '@/utils/toastMessage.js';
 
-	import type { Doc } from '@convex/_generated/dataModel.js';
+	import type { ProductResult } from '@/shared/features/products/types/productsTypes.js';
 
-	type Product = Doc<'products'>;
+	type Product = ProductResult;
 
 	let {
 		initialProduct,

@@ -17,7 +17,8 @@
 	import { formatPrice } from '@/shared/utils/pricing.js';
 
 	// TYPES
-	import type { Doc, Id } from '@convex/_generated/dataModel.js';
+	import type { Id } from '@convex/_generated/dataModel.js';
+	import type { ProductResult } from '@/shared/features/products/types/productsTypes.js';
 
 	let {
 		onSelect,
@@ -26,7 +27,7 @@
 		excludedProductIds = [],
 		activeOnly = false
 	}: {
-		onSelect: (product: Doc<'products'>) => void;
+		onSelect: (product: ProductResult) => void;
 		label?: string;
 		placeholder?: string;
 		excludedProductIds?: Id<'products'>[];
@@ -47,7 +48,7 @@
 		)
 	);
 
-	function selectProduct(product: Doc<'products'>): void {
+	function selectProduct(product: ProductResult): void {
 		if ((activeOnly && product.status !== 'active') || excludedProductIds.includes(product._id))
 			return;
 		onSelect(product);

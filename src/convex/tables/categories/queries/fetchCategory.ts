@@ -3,6 +3,9 @@ import { ConvexError, v } from 'convex/values';
 // BUILDERS
 import { adminQuery } from '../../../builders/convexFunctionBuilders.js';
 
+// MAPPERS
+import { toCategoryResult } from '../mappers/toCategoryResult.js';
+
 // VALIDATORS
 import { categoryResult } from '../validators/categoryValidators.js';
 
@@ -18,6 +21,6 @@ export const fetchCategory = adminQuery({
 			throw new ConvexError<BackendErrorData>({ code: 'CATEGORY_NOT_FOUND' });
 		}
 
-		return category;
+		return toCategoryResult(category);
 	}
 });

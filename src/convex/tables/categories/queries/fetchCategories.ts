@@ -2,6 +2,9 @@
 import { v } from 'convex/values';
 import { query } from '../../../_generated/server.js';
 
+// MAPPERS
+import { toCategoryResult } from '../mappers/toCategoryResult.js';
+
 // VALIDATORS
 import { categoryResult } from '../validators/categoryValidators.js';
 
@@ -15,6 +18,7 @@ export const fetchCategories = query({
 			.withIndex('by_status', (query) => query.eq('status', 'active'))
 			.collect();
 
-		return categories.sort((left, right) => left.name.localeCompare(right.name));
+		const sorted = categories.sort((left, right) => left.name.localeCompare(right.name));
+		return Promise.all(sorted.map(toCategoryResult));
 	}
 });

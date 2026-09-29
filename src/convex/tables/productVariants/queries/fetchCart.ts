@@ -44,7 +44,7 @@ export const fetchCart = query({
 				continue;
 			}
 
-			const imageKey = productVariant.imageKeys[0] ?? (product.imageKeys ?? product.images)[0];
+			const imageKey = productVariant.imageKeys[0] ?? product.imageKeys[0];
 			const image = imageKey ? (await resolveStoredFileUrls([imageKey]))[0] : undefined;
 
 			items.push({

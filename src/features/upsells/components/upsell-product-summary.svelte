@@ -4,23 +4,24 @@
 	import { formatPrice } from '@/shared/utils/pricing.js';
 
 	// TYPES
-	import type { Doc } from '@convex/_generated/dataModel.js';
+	import type { ProductResult } from '@/shared/features/products/types/productsTypes.js';
 
 	let {
 		product,
 		thumbnailSize = 56
 	}: {
-		product: Doc<'products'>;
+		product: ProductResult;
 		/** Square thumbnail size in px. */
 		thumbnailSize?: 48 | 56;
 	} = $props();
 
 	const thumbnailClass = $derived(thumbnailSize === 48 ? 'size-12' : 'size-14');
+	const image = $derived(product.images?.[0]);
 </script>
 
-{#if product.images[0]}
+{#if image}
 	<img
-		src={product.images[0]}
+		src={image}
 		alt=""
 		width={thumbnailSize}
 		height={thumbnailSize}

@@ -21,18 +21,18 @@
 	import { isNewProductLabel } from '@/shared/features/products/utils/isNewProductLabel.js';
 
 	// TYPES
-	import type { Doc } from '@convex/_generated/dataModel';
+	import type { ProductResult } from '@/shared/features/products/types/productsTypes.js';
 	import type { ProductVariantSummary } from '@/shared/features/productVariants/types/productVariantTypes.js';
 
 	let {
 		product
 	}: {
-		product: Doc<'products'> & { productVariantSummary: ProductVariantSummary };
+		product: ProductResult & { productVariantSummary: ProductVariantSummary };
 	} = $props();
 
 	let failedImage = $state<string | null>(null);
 
-	const image = $derived(product.images[0]);
+	const image = $derived(product.images?.[0]);
 	const availability = $derived(
 		getProductAvailability({
 			trackInventory: product.trackInventory,

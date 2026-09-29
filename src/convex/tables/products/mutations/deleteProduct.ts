@@ -37,7 +37,7 @@ export const deleteProduct = adminMutation({
 
 		await removeProductOptionIndex(ctx, args.id);
 
-		const productImageKeys = product.imageKeys ?? product.images;
+		const productImageKeys = product.imageKeys;
 		await deleteStoredFiles(ctx, productImageKeys);
 
 		// Variant cleanup continues in bounded scheduled batches so deleting a

@@ -1239,5 +1239,19 @@
 			"wholesaleDescription": "Precios especiales para boutiques y tiendas de bautizo.",
 			"wholesaleCta": "Cotizar por WhatsApp"
 		}
+	},
+	"ContactPage": {
+		"pageTitle": "Contacto",
+		"description": "¿Dudas con tu pedido o de mayoreo? Escríbenos y te ayudamos.",
+		"ContactSection": {
+			"eyebrow": "Contacto",
+			"heading": "Hablemos de tu pedido o de tu tienda.",
+			"emailLabel": "Correo electrónico",
+			"phoneLabel": "Teléfono",
+			"whatsappLabel": "WhatsApp",
+			"whatsappLink": "Escríbenos directo",
+			"socialLabel": "Síguenos",
+			"cta": "Escríbenos por WhatsApp"
+		}
 	}
 }

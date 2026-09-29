@@ -12,7 +12,7 @@
 	import { UPSELLS_CONFIG } from '@/shared/features/upsells/config.js';
 
 	// TYPES
-	import type { Doc } from '@convex/_generated/dataModel.js';
+	import type { ProductResult } from '@/shared/features/products/types/productsTypes.js';
 
 	let {
 		product,
@@ -20,9 +20,9 @@
 		upsellProducts = $bindable(),
 		showChange = true
 	}: {
-		product: Doc<'products'>;
+		product: ProductResult;
 		onChange: () => void;
-		upsellProducts: Doc<'products'>[];
+		upsellProducts: ProductResult[];
 		showChange?: boolean;
 	} = $props();
 
@@ -32,13 +32,13 @@
 		...upsellProducts.map((upsellProduct) => upsellProduct._id)
 	]);
 
-	function addUpsell(upsellProduct: Doc<'products'>): void {
+	function addUpsell(upsellProduct: ProductResult): void {
 		const isUnavailableSelection = !canAddUpsell || excludedProductIds.includes(upsellProduct._id);
 		if (isUnavailableSelection) return;
 		upsellProducts = [...upsellProducts, upsellProduct];
 	}
 
-	function removeUpsell(productId: Doc<'products'>['_id']): void {
+	function removeUpsell(productId: ProductResult['_id']): void {
 		upsellProducts = upsellProducts.filter((upsellProduct) => upsellProduct._id !== productId);
 	}
 </script>

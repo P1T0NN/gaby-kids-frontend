@@ -18,7 +18,6 @@ export const tables = {
 		name: v.string(),
 		slug: v.string(),
 		status: literals('active', 'archived'),
-		image: v.optional(v.string()),
 		imageKey: v.optional(v.string())
 	})
 		.searchIndex('search_name', { searchField: 'name' })
@@ -35,7 +34,6 @@ export const tables = {
 		categoryId: v.id('categories'),
 		ageGroup: v.optional(productAgeGroup),
 		gender: v.optional(productGender),
-		images: v.array(v.string()),
 		imageKeys: v.array(v.string()),
 		storagePrefix: v.string(),
 		trackInventory: v.boolean(),

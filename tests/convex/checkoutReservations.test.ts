@@ -69,7 +69,6 @@ async function insertProductVariantFixture(
 			description: `${fixture.name} description`,
 			priceInCents: fixture.priceInCents,
 			categoryId,
-			images: [],
 			imageKeys: [],
 			storagePrefix: 'products',
 			trackInventory: fixture.trackInventory,

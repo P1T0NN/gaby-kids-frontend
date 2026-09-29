@@ -11,23 +11,24 @@
 	import { formatPrice } from '@/shared/utils/pricing.js';
 
 	// TYPES
-	import type { Doc, Id } from '@convex/_generated/dataModel';
+	import type { Id } from '@convex/_generated/dataModel';
+	import type { ProductResult } from '@/shared/features/products/types/productsTypes.js';
 
 	let {
 		product,
 		upsells
 	}: {
-		product: Doc<'products'>;
-		upsells: { productId: Id<'products'>; product: Doc<'products'> | null }[];
+		product: ProductResult;
+		upsells: { productId: Id<'products'>; product: ProductResult | null }[];
 	} = $props();
 </script>
 
 <article class="overflow-hidden rounded-xl border bg-card text-card-foreground">
 	<div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
 		<div class="flex min-w-0 items-center gap-4">
-			{#if product.images[0]}
+			{#if product.images?.[0]}
 				<img
-					src={product.images[0]}
+					src={product.images?.[0] ?? ''}
 					alt=""
 					width="64"
 					height="64"
@@ -73,9 +74,9 @@
 		<ul class="grid gap-2 sm:grid-cols-2">
 			{#each upsells as upsell (upsell.productId)}
 				<li class="flex min-w-0 items-center gap-3 rounded-lg bg-background p-2.5 shadow-xs">
-					{#if upsell.product?.images[0]}
+					{#if upsell.product?.images?.[0]}
 						<img
-							src={upsell.product.images[0]}
+							src={upsell.product?.images?.[0] ?? ''}
 							alt=""
 							width="40"
 							height="40"

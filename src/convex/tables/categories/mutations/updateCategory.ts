@@ -16,8 +16,11 @@ import { logAuditEvent } from '../../../auditLogs/helpers/logAuditEvent.js';
 // HELPERS
 import { getCategoryImageKey } from '../helpers/getCategoryImageKey.js';
 
+// MAPPERS
+import { toCategoryResult } from '../mappers/toCategoryResult.js';
+
 // STORAGE
-import { deleteStoredFiles, resolveStoredFileUrls } from '../../../storage/r2.js';
+import { deleteStoredFiles } from '../../../storage/r2.js';
 
 // UTILS
 import { generateSlug } from '../../../../shared/utils/generateSlug.js';
@@ -69,7 +72,6 @@ export const updateCategory = adminUploadMutation({
 			status: parsed.data.status
 		};
 		if (imageKey) {
-			nextCategory.image = (await resolveStoredFileUrls([imageKey]))[0];
 			nextCategory.imageKey = imageKey;
 		}
 		await ctx.db.replace(args.id, nextCategory);
@@ -84,6 +86,6 @@ export const updateCategory = adminUploadMutation({
 			severity: 'info'
 		});
 
-		return (await ctx.db.get(args.id))!;
+		return toCategoryResult((await ctx.db.get(args.id))!);
 	}
 });

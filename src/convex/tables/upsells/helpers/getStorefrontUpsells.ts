@@ -42,7 +42,7 @@ export async function getStorefrontUpsells(
 			priceInCents: upsell.priceInCents,
 			compareAtPriceInCents: upsell.compareAtPriceInCents,
 			hasPriceRange: upsell.hasPriceRange,
-			images: await resolveStoredFileUrls((upsell.imageKeys ?? upsell.images).slice(0, 1)),
+			images: await resolveStoredFileUrls(upsell.imageKeys.slice(0, 1)),
 			trackInventory: upsell.trackInventory,
 			productVariantSummary: await getProductVariantSummary(ctx, upsell._id)
 		}))

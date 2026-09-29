@@ -20,12 +20,15 @@ import { productVariantInput } from '../../productVariants/validators/productVar
 // HELPERS
 import { validateProductCategory } from '../../categories/helpers/validateProductCategory.js';
 import { logAuditEvent } from '../../../auditLogs/helpers/logAuditEvent.js';
-import { deleteStoredFiles, resolveStoredFileUrls } from '../../../storage/r2.js';
+import { deleteStoredFiles } from '../../../storage/r2.js';
 import { resolveProductVariants } from '../../productVariants/helpers/resolveProductVariants.js';
 import { generateSlug } from '../../../../shared/utils/generateSlug.js';
 
 // OPTIONS
 import { createProductOptionIndex } from '../../productOptionIndex/helpers/createProductOptionIndex.js';
+
+// MAPPERS
+import { toProductResult } from '../mappers/toProductResult.js';
 
 // TYPES
 import type { Doc } from '../../../_generated/dataModel.js';
@@ -110,7 +113,7 @@ export const saveProduct = adminUploadMutation({
 		);
 
 		const slug = await resolveProductSlug(ctx, input.name, product);
-		const currentKeys = product?.imageKeys ?? product?.images ?? [];
+		const currentKeys = product?.imageKeys ?? [];
 		const { retained, imageKeys } = resolveImageKeys({
 			retainedFiles: args.retainedFiles,
 			uploadedFiles: args.uploadedFiles,
@@ -146,7 +149,6 @@ export const saveProduct = adminUploadMutation({
 			categoryId: input.categoryId,
 			ageGroup: input.ageGroup,
 			gender: input.gender,
-			images: await resolveStoredFileUrls(imageKeys),
 			imageKeys,
 			storagePrefix: product?.storagePrefix ?? 'products',
 			trackInventory: input.trackInventory,
@@ -185,6 +187,6 @@ export const saveProduct = adminUploadMutation({
 			severity: 'info'
 		});
 
-		return (await ctx.db.get(productId))!;
+		return toProductResult((await ctx.db.get(productId))!);
 	}
 });

@@ -8,7 +8,7 @@
 	// TYPES
 	import type { Doc } from '@convex/_generated/dataModel';
 
-	type Category = Doc<'categories'>;
+	type Category = Doc<'categories'> & { image?: string };
 
 	let { category }: { category: Category } = $props();
 </script>
