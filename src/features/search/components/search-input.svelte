@@ -19,6 +19,8 @@
 		dropdown?: Snippet;
 		/** Controls whether the optional suggestion markup is visible. */
 		dropdownOpen?: boolean;
+		/** Extra classes for the input-group frame (size, shape, surface). */
+		groupClass?: string;
 	};
 
 	let {
@@ -29,6 +31,7 @@
 		dropdown,
 		dropdownOpen = true,
 		class: className,
+		groupClass,
 		disabled = false,
 		...restProps
 	}: Props = $props();
@@ -38,7 +41,7 @@
 </script>
 
 <div class={cn('relative w-full', className)}>
-	<InputGroup.Root class="group">
+	<InputGroup.Root class={cn('group', groupClass)}>
 		<InputGroup.Addon
 			align="inline-start"
 			class="transition-colors group-focus-within:text-foreground"

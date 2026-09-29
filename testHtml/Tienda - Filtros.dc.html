@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#D8D2C7;font-family:'DM Sans',system-ui,sans-serif;color:#1F1F1D;-webkit-font-smoothing:antialiased;}
+a{color:#7E9BA3;text-decoration:none;}
+a:hover{color:#1F1F1D;}
+*{box-sizing:border-box;}
+input::placeholder{color:#8A8680;}
+</style>
+</helmet>
+<div style="display:flex;flex-direction:column;align-items:center;background:#D8D2C7;">
+
+<div style="width:1440px;padding:20px 0;display:flex;align-items:center;gap:16px;">
+  <div style="font:600 13px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#1F1F1D;">Opciones de filtros</div>
+  <div style="display:flex;gap:6px;padding:5px;background:#F7F4EF;border-radius:999px;">
+    <sc-for list="{{ layouts }}" as="l" hint-placeholder-count="3">
+      <div onClick="{{ l.pick }}" style="height:38px;padding:0 18px;border-radius:999px;display:flex;align-items:center;gap:8px;cursor:pointer;font:500 14px/1 'DM Sans',sans-serif;background:{{ l.bg }};color:{{ l.fg }};">
+        <span style="font-weight:700;">{{ l.id }}</span><span>{{ l.name }}</span>
+      </div>
+    </sc-for>
+  </div>
+</div>
+
+<div style="width:1440px;flex:none;background:#F7F4EF;min-height:100vh;position:relative;margin-bottom:40px;">
+
+  <div style="height:36px;background:#1F1F1D;color:#F7F4EF;display:flex;align-items:center;justify-content:center;font:400 12px/1 'DM Sans',sans-serif;letter-spacing:.06em;">Envíos a todo México · Entrega estimada 3–5 días hábiles · Mayoreo disponible</div>
+
+  <div style="height:84px;border-bottom:1px solid rgba(126,155,163,.25);display:grid;grid-template-columns:260px 1fr 200px;align-items:center;padding:0 48px;gap:24px;">
+    <div style="font:400 27px/1 'Playfair Display',serif;color:#1F1F1D;">Gaby Kids<span style="font:400 9px/1 'DM Sans',sans-serif;color:#6E6B66;vertical-align:top;">®</span></div>
+    <div style="display:flex;gap:30px;justify-content:center;font:400 14px/1 'DM Sans',sans-serif;">
+      <span>Niña</span><span>Niño</span><span>Bautizo</span><span>Guayaberas</span><span>Accesorios</span><span>Mayoreo</span>
+    </div>
+    <div style="display:flex;gap:20px;justify-content:flex-end;align-items:center;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"></path></svg>
+      <div style="position:relative;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="1.5"><path d="M6 8h12l-1.2 12H7.2z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+        <div style="position:absolute;top:-6px;right:-8px;width:17px;height:17px;border-radius:999px;background:#D9694F;color:#F7F4EF;font:500 10px/17px 'DM Sans',sans-serif;text-align:center;">2</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:48px 48px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:32px;">
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="font:400 13px/1 'DM Sans',sans-serif;color:#6E6B66;">Inicio / Tienda</div>
+      <div style="display:flex;align-items:baseline;gap:16px;">
+        <div style="font:400 48px/1.1 'Playfair Display',serif;">Tienda</div>
+        <div style="font:400 15px/1 'DM Sans',sans-serif;color:#6E6B66;">{{ countLabel }}</div>
+      </div>
+    </div>
+    <div style="width:460px;display:flex;align-items:center;gap:12px;height:52px;padding:0 22px;background:#EAE7E1;border-radius:999px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6E6B66" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="16" y1="16" x2="21" y2="21"></line></svg>
+      <input value="{{ q }}" onChange="{{ onSearch }}" placeholder="Busca por nombre del producto..." style="flex:1;border:none;background:transparent;outline:none;font:400 16px/1 'DM Sans',sans-serif;color:#1F1F1D;" />
+    </div>
+  </div>
+
+  <!-- A · Sidebar -->
+  <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}">
+    <div style="padding:40px 48px 96px;display:grid;grid-template-columns:288px minmax(0,1fr);gap:48px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:36px;position:sticky;top:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font:400 24px/1 'Playfair Display',serif;">Filtros</div>
+          <sc-if value="{{ hasActive }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ clearAll }}" style="font:500 14px/1 'DM Sans',sans-serif;color:#B4523C;cursor:pointer;text-decoration:underline;text-underline-offset:4px;">Limpiar</div>
+          </sc-if>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="font:600 13px/1 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#6E6B66;">Categoría</div>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <sc-for list="{{ catOpts }}" as="o" hint-placeholder-count="7">
+              <div onClick="{{ o.pick }}" style="height:44px;padding:0 16px;margin:0 -16px;border-radius:999px;display:flex;align-items:center;gap:12px;cursor:pointer;font:{{ o.font }};background:{{ o.rowBg }};" style-hover="background:#EDE9E2;">
+                <div style="width:18px;height:18px;border-radius:999px;border:1.5px solid {{ o.ring }};display:flex;align-items:center;justify-content:center;">
+                  <div style="width:8px;height:8px;border-radius:999px;background:{{ o.dot }};"></div>
+                </div>
+                <span>{{ o.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="font:600 13px/1 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#6E6B66;">Género</div>
+          <div style="display:flex;padding:4px;background:#EAE7E1;border-radius:999px;">
+            <sc-for list="{{ genOpts }}" as="o" hint-placeholder-count="3">
+              <div onClick="{{ o.pick }}" style="flex:1;height:40px;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;font:500 15px/1 'DM Sans',sans-serif;background:{{ o.bg }};color:{{ o.fg }};">{{ o.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            <div style="font:600 13px/1 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#6E6B66;">Edad</div>
+            <div style="font:400 12px/1 'DM Sans',sans-serif;color:#6E6B66;">meses · años</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;">
+            <sc-for list="{{ edadOpts }}" as="o" hint-placeholder-count="18">
+              <div onClick="{{ o.pick }}" style="aspect-ratio:1;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;font:500 14px/1 'DM Sans',sans-serif;background:{{ o.bg }};color:{{ o.fg }};" style-hover="box-shadow:inset 0 0 0 1.5px #7E9BA3;">{{ o.short }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            <div style="font:600 13px/1 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#6E6B66;">Color</div>
+            <div style="font:400 13px/1 'DM Sans',sans-serif;color:#1F1F1D;">{{ colorName }}</div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <sc-for list="{{ colorOpts }}" as="o" hint-placeholder-count="6">
+              <div onClick="{{ o.pick }}" title="{{ o.label }}" style="width:36px;height:36px;border-radius:999px;cursor:pointer;background:{{ o.swatch }};border:1px solid rgba(31,31,29,.18);box-shadow:{{ o.ringShadow }};"></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 24px;">
+        <sc-for list="{{ results }}" as="p" hint-placeholder-count="6">
+          <div style="display:flex;flex-direction:column;gap:12px;cursor:pointer;">
+            <div style="position:relative;aspect-ratio:3/4;background:#FFFFFF;border:1px solid rgba(126,155,163,.25);border-radius:4px;overflow:hidden;">
+              <img src="{{ p.img }}" alt="{{ p.nombre }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;" />
+              <sc-if value="{{ p.badge }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;top:12px;left:12px;padding:6px 10px;border-radius:999px;font:500 10px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#F7F4EF;background:{{ p.badgeBg }};">{{ p.badge }}</div>
+              </sc-if>
+            </div>
+            <div style="font:500 11px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#6E6B66;">{{ p.meta }}</div>
+            <div style="font:400 21px/1.25 'Playfair Display',serif;">{{ p.nombre }}</div>
+            <div style="font:500 15px/1 'DM Sans',sans-serif;">{{ p.precio }}</div>
+            <div style="font:400 13px/1.4 'DM Sans',sans-serif;color:#6E6B66;">{{ p.tallas }}</div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+          <div style="grid-column:1/-1;padding:60px 0;font:400 28px/1.2 'Playfair Display',serif;">No encontramos productos con esos filtros</div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- B · Chip rows -->
+  <sc-if value="{{ isB }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:36px 48px 0;">
+      <div style="background:#EDE7DD;border-radius:28px;padding:28px 32px;display:flex;flex-direction:column;gap:20px;">
+        <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:20px;align-items:center;">
+          <div style="font:600 13px/1 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#6E6B66;">Categoría</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{ catOpts }}" as="o" hint-placeholder-count="7">
+              <div onClick="{{ o.pick }}" style="height:40px;padding:0 18px;border-radius:999px;display:flex;align-items:center;cursor:pointer;font:500 15px/1 'DM Sans',sans-serif;background:{{ o.pillBg }};color:{{ o.fg }};border:1px solid {{ o.pillBorder }};" style-hover="border-color:#7E9BA3;">{{ o.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:20px;align-items:center;">
+          <div style="font:600 13px/1 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#6E6B66;">Género</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{ genOpts }}" as="o" hint-placeholder-count="4">
+              <div onClick="{{ o.pick }}" style="height:40px;padding:0 18px;border-radius:999px;display:flex;align-items:center;cursor:pointer;font:500 15px/1 'DM Sans',sans-serif;background:{{ o.pillBg }};color:{{ o.fg }};border:1px solid {{ o.pillBorder }};" style-hover="border-color:#7E9BA3;">{{ o.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:20px;align-items:center;">
+          <div style="font:600 13px/1 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#6E6B66;">Edad</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <sc-for list="{{ edadAll }}" as="o" hint-placeholder-count="19">
+              <div onClick="{{ o.pick }}" style="height:40px;min-width:40px;padding:0 12px;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;font:500 14px/1 'DM Sans',sans-serif;background:{{ o.pillBg }};color:{{ o.fg }};border:1px solid {{ o.pillBorder }};" style-hover="border-color:#7E9BA3;">{{ o.short }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:20px;align-items:center;">
+          <div style="font:600 13px/1 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#6E6B66;">Color</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{ colorOpts }}" as="o" hint-placeholder-count="6">
+              <div onClick="{{ o.pick }}" style="height:40px;padding:0 16px 0 8px;border-radius:999px;display:flex;align-items:center;gap:10px;cursor:pointer;font:500 15px/1 'DM Sans',sans-serif;background:{{ o.pillBg }};color:{{ o.fg }};border:1px solid {{ o.pillBorder }};" style-hover="border-color:#7E9BA3;">
+                <div style="width:24px;height:24px;border-radius:999px;background:{{ o.swatch }};border:1px solid rgba(31,31,29,.18);"></div>
+                <span>{{ o.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 4px 0;min-height:56px;">
+        <div style="font:400 14px/1 'DM Sans',sans-serif;color:#6E6B66;">{{ summary }}</div>
+        <sc-if value="{{ hasActive }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ clearAll }}" style="font:500 14px/1 'DM Sans',sans-serif;color:#B4523C;cursor:pointer;text-decoration:underline;text-underline-offset:4px;">Limpiar filtros</div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- C · Category tabs + drawer -->
+  <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:36px 48px 0;display:flex;flex-direction:column;gap:18px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:1px solid rgba(126,155,163,.3);">
+        <div style="display:flex;gap:32px;">
+          <sc-for list="{{ catOpts }}" as="o" hint-placeholder-count="7">
+            <div onClick="{{ o.pick }}" style="padding:14px 0 16px;cursor:pointer;font:{{ o.font }};color:#1F1F1D;border-bottom:2px solid {{ o.tabLine }};margin-bottom:-1px;" style-hover="color:#7E9BA3;">{{ o.tabLabel }}</div>
+          </sc-for>
+        </div>
+        <div onClick="{{ openDrawer }}" style="height:44px;padding:0 20px;border-radius:999px;background:#1F1F1D;color:#F7F4EF;display:flex;align-items:center;gap:10px;cursor:pointer;font:500 14px/1 'DM Sans',sans-serif;margin-bottom:8px;" style-hover="background:#3A3936;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F7F4EF" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>
+          <span>Filtros</span>
+          <sc-if value="{{ drawerCount }}" hint-placeholder-val="{{ false }}">
+            <div style="width:20px;height:20px;border-radius:999px;background:#D9694F;font:600 11px/20px 'DM Sans',sans-serif;text-align:center;">{{ drawerCount }}</div>
+          </sc-if>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;min-height:36px;align-items:center;">
+        <sc-for list="{{ drawerChips }}" as="c" hint-placeholder-count="0">
+          <div onClick="{{ c.remove }}" style="height:36px;padding:0 12px 0 16px;border-radius:999px;background:#7E9BA3;color:#F7F4EF;display:flex;align-items:center;gap:8px;font:500 14px/1 'DM Sans',sans-serif;cursor:pointer;" style-hover="background:#6A8790;">
+            <span>{{ c.label }}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F7F4EF" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isBC }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:20px 48px 96px;">
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:40px 24px;">
+        <sc-for list="{{ results }}" as="p" hint-placeholder-count="8">
+          <div style="display:flex;flex-direction:column;gap:12px;cursor:pointer;">
+            <div style="position:relative;aspect-ratio:3/4;background:#FFFFFF;border:1px solid rgba(126,155,163,.25);border-radius:4px;overflow:hidden;">
+              <img src="{{ p.img }}" alt="{{ p.nombre }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;" />
+              <sc-if value="{{ p.badge }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;top:12px;left:12px;padding:6px 10px;border-radius:999px;font:500 10px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#F7F4EF;background:{{ p.badgeBg }};">{{ p.badge }}</div>
+              </sc-if>
+            </div>
+            <div style="font:500 11px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#6E6B66;">{{ p.meta }}</div>
+            <div style="font:400 21px/1.25 'Playfair Display',serif;">{{ p.nombre }}</div>
+            <div style="font:500 15px/1 'DM Sans',sans-serif;">{{ p.precio }}</div>
+            <div style="font:400 13px/1.4 'DM Sans',sans-serif;color:#6E6B66;">{{ p.tallas }}</div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+          <div style="grid-column:1/-1;padding:60px 0;font:400 28px/1.2 'Playfair Display',serif;">No encontramos productos con esos filtros</div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeDrawer }}" style="position:fixed;inset:0;background:rgba(31,31,29,.35);z-index:30;"></div>
+    <div style="position:fixed;top:0;right:0;bottom:0;width:460px;background:#F7F4EF;z-index:31;display:flex;flex-direction:column;border-radius:28px 0 0 28px;box-shadow:-12px 0 40px rgba(31,31,29,.18);">
+      <div style="padding:28px 32px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font:400 28px/1 'Playfair Display',serif;">Filtros</div>
+        <div onClick="{{ closeDrawer }}" style="width:44px;height:44px;border-radius:999px;background:#EAE7E1;display:flex;align-items:center;justify-content:center;cursor:pointer;" style-hover="background:#E0DCD4;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F1F1D" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+        </div>
+      </div>
+      <div style="flex:1;overflow:auto;padding:4px 32px 32px;display:flex;flex-direction:column;gap:32px;">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="font:500 17px/1 'DM Sans',sans-serif;">Género</div>
+          <div style="display:flex;padding:4px;background:#EAE7E1;border-radius:999px;">
+            <sc-for list="{{ genOpts }}" as="o" hint-placeholder-count="3">
+              <div onClick="{{ o.pick }}" style="flex:1;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;font:500 15px/1 'DM Sans',sans-serif;background:{{ o.bg }};color:{{ o.fg }};">{{ o.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            <div style="font:500 17px/1 'DM Sans',sans-serif;">Edad</div>
+            <div style="font:400 13px/1 'DM Sans',sans-serif;color:#6E6B66;">meses · años</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;">
+            <sc-for list="{{ edadOpts }}" as="o" hint-placeholder-count="18">
+              <div onClick="{{ o.pick }}" style="aspect-ratio:1;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;font:500 15px/1 'DM Sans',sans-serif;background:{{ o.bg }};color:{{ o.fg }};" style-hover="box-shadow:inset 0 0 0 1.5px #7E9BA3;">{{ o.short }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="font:500 17px/1 'DM Sans',sans-serif;">Color</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+            <sc-for list="{{ colorOpts }}" as="o" hint-placeholder-count="6">
+              <div onClick="{{ o.pick }}" style="height:48px;padding:0 14px 0 8px;border-radius:999px;display:flex;align-items:center;gap:10px;cursor:pointer;font:500 15px/1 'DM Sans',sans-serif;background:{{ o.pillBg }};color:{{ o.fg }};border:1px solid {{ o.pillBorder }};" style-hover="border-color:#7E9BA3;">
+                <div style="width:30px;height:30px;border-radius:999px;background:{{ o.swatch }};border:1px solid rgba(31,31,29,.18);"></div>
+                <span>{{ o.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="padding:20px 32px 28px;display:flex;gap:12px;border-top:1px solid rgba(126,155,163,.3);">
+        <div onClick="{{ clearDrawer }}" style="flex:1;height:52px;border-radius:999px;border:1px solid #1F1F1D;display:flex;align-items:center;justify-content:center;cursor:pointer;font:500 15px/1 'DM Sans',sans-serif;" style-hover="background:#EAE7E1;">Limpiar</div>
+        <div onClick="{{ closeDrawer }}" style="flex:2;height:52px;border-radius:999px;background:#D9694F;color:#F7F4EF;display:flex;align-items:center;justify-content:center;cursor:pointer;font:500 15px/1 'DM Sans',sans-serif;" style-hover="background:#B4523C;">{{ seeLabel }}</div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;},&quot;filterLayout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;A&quot;,&quot;B&quot;,&quot;C&quot;],&quot;default&quot;:&quot;A&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Filtros&quot;}}">
+const COLORS = {Blanco:'#FFFFFF', Beige:'#E6D8C0', Negro:'#2A2A27', 'Azul marino':'#1F2D4A', Arena:'#CDB691', Caqui:'#9C8F63'};
+const EDADES = [['3m','3 meses',3,'3m'],['6m','6 meses',6,'6m']].concat(Array.from({length:16},(_,i)=>[String(i+1),(i+1)+(i===0?' año':' años'),(i+1)*12,String(i+1)]));
+const P = (nombre, cat, gen, ages, color, precio, tallas, img, badge, badgeBg) => ({nombre, cat, gen, ages, color, precio, tallas, img, badge, badgeBg});
+const PRODUCTS = [
+  P('Ropón Guadalupe — encaje chantilly','Bautizo','Niña',[3,6,12],'Beige','$1,290 MXN','3m · 6m · 1 año','assets/cat-bautizos.png','Nuevo','#7E9BA3'),
+  P('Guayabera Yucatán niño','Guayaberas','Niño',[24,36,48,60,72],'Blanco','$1,150 MXN','2 a 6 años','assets/cat-guayaberas.png'),
+  P('Traje de Charro Jalisco','Trajes Tipicos','Niño',[36,48,60,72,84],'Negro','$2,450 MXN','3 a 7 años','assets/cat-tipicos.png','Últimas piezas','#D9694F'),
+  P('Vestido Ángeles — primera comunión','Primera Comunión','Niña',[84,96,108,120],'Blanco','$1,980 MXN','7 a 10 años','assets/cat-comunion.png'),
+  P('Conjunto formal lino','Formal','Niño',[12,24,36,48],'Caqui','$1,390 MXN','1 a 4 años','assets/cat-formal.png'),
+  P('Set veladora y rosario','Accesorios','Unisex',[3,6,12],'Blanco','$520 MXN','Talla única','assets/cat-accesorios.png'),
+  P('Batita Lucía — organza y satín','Bautizo','Unisex',[3,6],'Blanco','$980 MXN','3m · 6m','assets/cat-bautizos.png'),
+  P('Guayabera Mérida manga larga','Guayaberas','Niño',[96,120,144,168,192],'Azul marino','$1,290 MXN','8 a 16 años','assets/cat-guayaberas.png','Nuevo','#7E9BA3'),
+  P('Vestido China Poblana','Trajes Tipicos','Niña',[24,36,48,60,72,84],'Arena','$1,850 MXN','2 a 7 años','assets/cat-trajes.png'),
+  P('Traje Comunión niño — saco marfil','Primera Comunión','Niño',[84,96,108,120,132],'Arena','$2,190 MXN','7 a 11 años','assets/cat-comunion.png'),
+  P('Vestido formal tul rosa','Formal','Niña',[24,36,48,60,72,84,96],'Beige','$1,560 MXN','2 a 8 años','assets/cat-formal.png'),
+  P('Moño de raso y tirantes','Accesorios','Unisex',[12,24,36,48,60,72,84,96,108,120,132,144,156,168,180,192],'Azul marino','$340 MXN','1 a 16 años','assets/cat-accesorios.png')
+];
+const CATS = ['Accesorios','Bautizo','Formal','Guayaberas','Primera Comunión','Trajes Tipicos'];
+const LABELS = {cat:'Categoría', gen:'Género', edad:'Edad', color:'Color'};
+const EMPTY = {cat:null, gen:null, edad:null, color:null};
+const LAYOUTS = [['A','Barra lateral'],['B','Filas de opciones'],['C','Pestañas + panel']];
+
+class Component extends DCLogic {
+  state = {q:'', sel:{...EMPTY}, drawer:false, layout:null};
+  toggle(key, v) { this.setState(s => ({sel:{...s.sel, [key]: s.sel[key] === v ? null : v}})); }
+  force(key, v) { this.setState(s => ({sel:{...s.sel, [key]: v}})); }
+  opt(key, v, label, extra) {
+    const selected = this.state.sel[key] === v;
+    return Object.assign({label, selected,
+      bg: selected ? '#7E9BA3' : '#EAE7E1', fg: selected ? '#FFFFFF' : '#1F1F1D',
+      pillBg: selected ? '#7E9BA3' : '#F7F4EF', pillBorder: selected ? '#7E9BA3' : 'rgba(31,31,29,.12)',
+      rowBg: selected ? '#EDE9E2' : 'transparent',
+      font: selected ? "600 15px/1 'DM Sans',sans-serif" : "400 15px/1 'DM Sans',sans-serif",
+      ring: selected ? '#7E9BA3' : 'rgba(31,31,29,.3)', dot: selected ? '#7E9BA3' : 'transparent',
+      tabLine: selected ? '#D9694F' : 'transparent',
+      ringShadow: selected ? '0 0 0 3px #F7F4EF, 0 0 0 5px #1F1F1D' : 'none',
+      pick: () => v === null ? this.force(key, null) : this.toggle(key, v)}, extra || {});
+  }
+  renderVals() {
+    const {q, sel, drawer} = this.state;
+    const layout = this.state.layout || this.props.filterLayout || 'A';
+    const catOpts = [this.opt('cat', null, 'Todas', {tabLabel:'Todas'})].concat(CATS.map(c => this.opt('cat', c, c, {tabLabel:c})));
+    const genB = [this.opt('gen', null, 'Todos')].concat(['Niño','Niña','Unisex'].map(g => this.opt('gen', g, g)));
+    const genOpts = ['Niño','Niña','Unisex'].map(g => this.opt('gen', g, g));
+    const edadOpts = EDADES.map(([v,label,,short]) => this.opt('edad', v, label, {short}));
+    const edadAll = [this.opt('edad', null, 'Todas', {short:'Todas'})].concat(edadOpts);
+    const colorOpts = Object.keys(COLORS).map(c => this.opt('color', c, c, {swatch:COLORS[c]}));
+    const ageM = sel.edad ? EDADES.find(e => e[0] === sel.edad)[2] : null;
+    const ql = q.trim().toLowerCase();
+    const results = PRODUCTS.filter(p =>
+      (!sel.cat || p.cat === sel.cat) &&
+      (!sel.gen || p.gen === sel.gen || (sel.gen !== 'Unisex' && p.gen === 'Unisex')) &&
+      (!ageM || p.ages.includes(ageM)) &&
+      (!sel.color || p.color === sel.color) &&
+      (!ql || p.nombre.toLowerCase().includes(ql))
+    ).map(p => ({...p, meta:p.cat + ' · ' + p.gen}));
+    const val = k => k === 'edad' ? EDADES.find(e => e[0] === sel.edad)[1] : sel[k];
+    const drawerKeys = ['gen','edad','color'].filter(k => sel[k]);
+    const drawerChips = drawerKeys.map(k => ({label: LABELS[k] + ': ' + val(k), remove: () => this.force(k, null)}));
+    const activeKeys = Object.keys(EMPTY).filter(k => sel[k]);
+    const n = results.length;
+    return {
+      q, results, catOpts, genOpts: layout === 'B' ? genB : genOpts, edadOpts, edadAll, colorOpts,
+      layouts: LAYOUTS.map(([id,name]) => ({id, name, bg: layout === id ? '#1F1F1D' : 'transparent', fg: layout === id ? '#F7F4EF' : '#1F1F1D', pick: () => this.setState({layout:id, drawer:false})})),
+      isA: layout === 'A', isB: layout === 'B', isC: layout === 'C', isBC: layout !== 'A',
+      hasActive: activeKeys.length > 0 || !!ql, noResults: n === 0,
+      colorName: sel.color || '',
+      summary: activeKeys.length ? activeKeys.map(val).join(' · ') + ' — ' + n + (n === 1 ? ' producto' : ' productos') : 'Mostrando todo',
+      countLabel: n + (n === 1 ? ' producto' : ' productos'),
+      drawerChips, drawerCount: drawerKeys.length || null, drawerOpen: drawer,
+      seeLabel: 'Ver ' + n + (n === 1 ? ' producto' : ' productos'),
+      openDrawer: () => this.setState({drawer:true}),
+      closeDrawer: () => this.setState({drawer:false}),
+      clearDrawer: () => this.setState(s => ({sel:{...s.sel, gen:null, edad:null, color:null}})),
+      onSearch: e => this.setState({q:e.target.value}),
+      clearAll: () => this.setState({sel:{...EMPTY}, q:''})
+    };
+  }
+}
+</script>
+</body>
+</html>

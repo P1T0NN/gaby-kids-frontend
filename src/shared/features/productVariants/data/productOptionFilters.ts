@@ -11,18 +11,7 @@ export const PRODUCT_OPTION_FILTERS = [
 		key: 'color',
 		optionName: 'Color',
 		label: 'Color',
-		values: [
-			'Rojo',
-			'Azul',
-			'Verde',
-			'Negro',
-			'Blanco',
-			'Azul Marino',
-			'Beige',
-			'Dorado',
-			'Gris',
-			'Plateado'
-		]
+		values: ['Blanco', 'Beige', 'Negro', 'Azul marino', 'Arena', 'Caqui']
 	},
 	{
 		key: 'age',

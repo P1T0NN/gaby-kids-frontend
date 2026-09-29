@@ -2,16 +2,14 @@
 	// LIBRARIES
 	import { m } from '@/lib/paraglide/messages';
 
-	// COMPONENTS
-	import { Button } from '@/components/ui/button/index.js';
-	import * as Field from '@/components/ui/field/index.js';
-	import NativeSelect from '@/components/ui/native-components/native-select/native-select.svelte';
-	import { Spinner } from '@/components/ui/spinner/index.js';
-	import CategoryOptions from '@/features/categories/components/category-options/category-options.svelte';
-	import SearchInput from '@/features/search/components/search-input.svelte';
-
 	// CONFIG
-	import { SHOP_CATEGORY_FILTER_KEY } from '@/shared/features/filters/data/shopCategoryFilter.js';
+	import { UNPROTECTED_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
+
+	// COMPONENTS
+	import * as Breadcrumb from '@/components/ui/breadcrumb/index.js';
+	import Link from '@/components/ui/custom-components/link/link.svelte';
+	import { Spinner } from '@/components/ui/spinner/index.js';
+	import SearchInput from '@/features/search/components/search-input.svelte';
 
 	// TYPES
 	import type { SearchApi } from '@/features/search/types/searchTypes.js';
@@ -32,78 +30,58 @@
 	} = $props();
 
 	const filtered = $derived(search.isActive || filters.isFiltering);
-	// Search uses relevance order; keep the chosen date order for browsing.
-	const visibleFilters = $derived(filters.defs.filter((def) => !search.isActive || !def.isSort));
-
-	function clearFilters(): void {
-		search.clear();
-		filters.clearAll();
-	}
+	const countLabel = $derived(
+		total == null
+			? ''
+			: total === 1
+				? m['ShopPage.productCountOne']({ count: total })
+				: m['ShopPage.productCount']({ count: total })
+	);
 </script>
 
-<header class="flex flex-col gap-6">
-	<h1
-		class="flex flex-wrap items-baseline gap-x-2 text-2xl font-semibold tracking-tight sm:text-3xl"
-		aria-live="polite"
-		aria-atomic="true"
-	>
-		{m['ShopPage.products']()}
-		<span class="text-muted-foreground">-</span>
-		<span class="inline-flex items-baseline gap-2 text-lg font-normal text-muted-foreground">
-			{#if filtered}
-				{m['ShopPage.filtered']()}
-			{:else if error}
-				<span aria-hidden="true">?</span> {m['ShopPage.found']()}
-			{:else}
-				{#if total != null}
-					<span class="tabular-nums">{total}</span>
+<header class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
+	<div class="flex flex-col gap-2.5">
+		<Breadcrumb.Breadcrumb>
+			<Breadcrumb.BreadcrumbList>
+				<Breadcrumb.BreadcrumbItem>
+					<Link
+						href={UNPROTECTED_PAGE_ENDPOINTS.ROOT}
+						class="transition-colors hover:text-foreground">{m['Components.Header.home']()}</Link
+					>
+				</Breadcrumb.BreadcrumbItem>
+				<Breadcrumb.BreadcrumbSeparator />
+				<Breadcrumb.BreadcrumbItem>
+					<Breadcrumb.BreadcrumbPage>{m['ShopPage.pageTitle']()}</Breadcrumb.BreadcrumbPage>
+				</Breadcrumb.BreadcrumbItem>
+			</Breadcrumb.BreadcrumbList>
+		</Breadcrumb.Breadcrumb>
+
+		<div
+			class="flex flex-wrap items-baseline gap-x-4 gap-y-1"
+			aria-live="polite"
+			aria-atomic="true"
+		>
+			<h1 class="font-serif text-4xl sm:text-5xl">{m['ShopPage.pageTitle']()}</h1>
+			<p class="text-sm text-muted-foreground">
+				{#if filtered}
+					{m['ShopPage.filtered']()}
+				{:else if error}
+					<span aria-hidden="true">?</span>
+					{m['ShopPage.found']()}
+				{:else if total != null}
+					{countLabel}
 				{:else if loading}
 					<Spinner class="self-center" aria-label={m['ShopPage.loadingCount']()} />
 				{/if}
-				{m['ShopPage.found']()}
-			{/if}
-		</span>
-	</h1>
-
-	<div class="flex flex-col gap-4 border-b pb-6">
-		<SearchInput
-			bind:value={search.value}
-			label={m['ShopPage.searchLabel']()}
-			placeholder={m['ShopPage.searchPlaceholder']()}
-			class="sm:max-w-md"
-		/>
-		<Field.Group class="flex-row flex-wrap items-end gap-3">
-			{#each visibleFilters as def (def.key)}
-				<Field.Field class="w-auto min-w-40 flex-1 gap-2 sm:flex-none">
-					<Field.Label for={`shop-${def.key}`}>{def.label}</Field.Label>
-					{#if def.key === SHOP_CATEGORY_FILTER_KEY}
-						<CategoryOptions
-							id={`shop-${def.key}`}
-							label={def.label}
-							class="min-w-40"
-							categoryValue={filters.value(def.key)}
-							onCategoryChange={(value) => filters.set(def.key, value)}
-						/>
-					{:else}
-						<NativeSelect
-							id={`shop-${def.key}`}
-							label={def.label}
-							options={def.options}
-							value={filters.value(def.key)}
-							onchange={(value) => filters.set(def.key, value)}
-							class="min-w-40"
-						/>
-					{/if}
-				</Field.Field>
-			{/each}
-			<Button
-				type="button"
-				variant="ghost"
-				disabled={!filters.isActive && !search.value}
-				onclick={clearFilters}
-			>
-				{m['ShopPage.clearFilters']()}
-			</Button>
-		</Field.Group>
+			</p>
+		</div>
 	</div>
+
+	<SearchInput
+		bind:value={search.value}
+		label={m['ShopPage.searchLabel']()}
+		placeholder={m['ShopPage.searchPlaceholder']()}
+		class="lg:w-115 lg:shrink-0"
+		groupClass="h-13 rounded-full bg-secondary px-1"
+	/>
 </header>

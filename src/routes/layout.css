@@ -122,6 +122,13 @@
 	--radius-2xl: calc(var(--radius) * 1.8);
 	--radius-3xl: calc(var(--radius) * 2.2);
 	--radius-4xl: calc(var(--radius) * 2.6);
+	/* Product color-filter swatches; keep in sync with PRODUCT_OPTION_FILTERS. */
+	--color-swatch-blanco: #ffffff;
+	--color-swatch-beige: #e6d8c0;
+	--color-swatch-negro: #2a2a27;
+	--color-swatch-azul-marino: #1f2d4a;
+	--color-swatch-arena: #cdb691;
+	--color-swatch-caqui: #9c8f63;
 }
 
 @layer base {

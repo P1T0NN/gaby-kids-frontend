@@ -46,7 +46,7 @@
 </script>
 
 {#snippet productContent()}
-	<div class="relative aspect-square overflow-hidden bg-background">
+	<div class="relative aspect-3/4 overflow-hidden rounded-sm border border-border bg-white">
 		{#if image && failedImage !== image}
 			<img
 				src={image}
@@ -66,7 +66,9 @@
 		{/if}
 
 		{#if isNew}
-			<Badge class="absolute start-2 top-2">{m['ProductsFeature.ProductCard.new']()}</Badge>
+			<Badge class="absolute start-2 top-2 bg-accent text-accent-foreground"
+				>{m['ProductsFeature.ProductCard.new']()}</Badge
+			>
 		{/if}
 		{#if lowStockQuantity !== null}
 			<Badge
@@ -78,20 +80,25 @@
 		{/if}
 	</div>
 
-	<Card.Header>
+	<Card.Header class="px-0">
 		<Card.Title>
-			<h2 class="line-clamp-2 wrap-anywhere" title={product.name}>{product.name}</h2>
+			<h2
+				class="line-clamp-2 font-serif text-xl leading-snug font-normal wrap-anywhere"
+				title={product.name}
+			>
+				{product.name}
+			</h2>
 		</Card.Title>
 		<Card.Description class="line-clamp-3 wrap-anywhere">{product.description}</Card.Description>
 		<ProductPrice
 			priceInCents={product.priceInCents}
 			compareAtPriceInCents={product.compareAtPriceInCents}
-			priceClass="text-lg"
+			priceClass="text-base font-medium"
 		/>
 	</Card.Header>
 {/snippet}
 
-<Card.Root class="h-full gap-4 pt-0" size="sm">
+<Card.Root class="h-full gap-3 rounded-none bg-transparent pt-0 shadow-none ring-0" size="sm">
 	{#if PRODUCTS_CONFIG.HAS_PRODUCT_PAGE}
 		<Link
 			href={UNPROTECTED_PAGE_ENDPOINTS.PRODUCT(product.slug)}
@@ -103,7 +110,7 @@
 		<div class="flex flex-col gap-4">{@render productContent()}</div>
 	{/if}
 
-	<Card.Footer class="mt-auto">
+	<Card.Footer class="mt-auto px-0">
 		{#if defaultProductVariantId}
 			<AddToCartButton
 				item={{ productVariantId: defaultProductVariantId, image: image ?? '' }}
