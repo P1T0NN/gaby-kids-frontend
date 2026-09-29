@@ -75,7 +75,7 @@
 </script>
 
 <aside
-	class="flex flex-col gap-9 lg:sticky lg:top-30 lg:max-h-[calc(100dvh-32rem)] lg:overflow-y-auto lg:px-1"
+	class="flex flex-col gap-9 lg:sticky lg:top-30 lg:max-h-[calc(100dvh-28rem)] lg:overflow-y-auto lg:px-1"
 	aria-label={m['ShopPage.filters']()}
 >
 	<div class="flex items-baseline justify-between gap-4">
