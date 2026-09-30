@@ -125,22 +125,22 @@
 			"upsells": "Combina bien con"
 		},
 		"ProductSizeGuide": {
-			"title": "Gu?a de tallas",
-			"description": "Compara las medidas en cent?metros antes de elegir tu talla.",
-			"fullSize": "Ampliar tabla (abre otra pesta?a)",
+			"title": "Guía de tallas",
+			"description": "Compara las medidas en centímetros antes de elegir tu talla.",
+			"fullSize": "Ampliar tabla (abre otra pestaña)",
 			"textVersion": "Ver medidas en texto",
-			"centimeters": "Todas las medidas est?n en cent?metros.",
+			"centimeters": "Todas las medidas están en centímetros.",
 			"size": "Talla",
-			"ageSize": "Talla (a?os)",
+			"ageSize": "Talla (años)",
 			"backWidth": "Ancho de espalda",
 			"backLength": "Largo de espalda",
 			"sleeveLength": "Largo de manga",
-			"pantsCircumference": "Circunferencia de pantal?n (m?s el?stico)",
-			"pantsWidth": "Ancho de pantal?n",
-			"pantsLength": "Largo del pantal?n",
-			"guayaberasAlt": "Tabla de medidas de guayaberas en cent?metros, tallas 0 a 16. Las mismas medidas est?n disponibles en la versi?n en texto de abajo.",
-			"trajesAlt": "Tabla de medidas de traje charro en cent?metros, tallas 0 a 6, con medidas del sombrero. Las mismas medidas est?n disponibles en la versi?n en texto de abajo.",
-			"hatInstructions": "Sombrero charro: mide el contorno de la cabeza un dedo arriba del o?do con una cinta m?trica textil. Tallas 0?1: 50 cm; 2?3: 53 cm; 4?6: 54 cm."
+			"pantsCircumference": "Circunferencia de pantalón (más elástico)",
+			"pantsWidth": "Ancho de pantalón",
+			"pantsLength": "Largo del pantalón",
+			"guayaberasAlt": "Tabla de medidas de guayaberas en centímetros, tallas 0 a 16. Las mismas medidas están disponibles en la versión en texto de abajo.",
+			"trajesAlt": "Tabla de medidas de traje charro en centímetros, tallas 0 a 6, con medidas del sombrero. Las mismas medidas están disponibles en la versión en texto de abajo.",
+			"hatInstructions": "Sombrero charro: mide el contorno de la cabeza un dedo arriba del oído con una cinta métrica textil. Tallas 0-1: 50 cm; 2-3: 53 cm; 4-6: 54 cm."
 		},
 		"ProductVariantPicker": {
 			"notAvailableWith": "No disponible con {selection}"
