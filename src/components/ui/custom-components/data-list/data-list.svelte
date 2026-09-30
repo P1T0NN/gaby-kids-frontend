@@ -94,8 +94,10 @@
 		{@render emptyState()}
 	{/if}
 {:else if isPagePaginationState(pagination)}
-	{#if showPagination && placement === 'above' && pagination.data.length > 0}
-		<DataPagination {pagination} {total} />
+	{#if showPagination && (placement === 'above' || placement === 'both') && pagination.data.length > 0}
+		<div class="mb-8">
+			<DataPagination {pagination} {total} />
+		</div>
 	{/if}
 	{#if pagination.error}
 		{@render errorSnippet?.(pagination.error)}
@@ -110,7 +112,9 @@
 	{:else}
 		{@render emptyState()}
 	{/if}
-	{#if showPagination && placement === 'below' && pagination.data.length > 0}
-		<DataPagination {pagination} {total} />
+	{#if showPagination && (placement === 'below' || placement === 'both') && pagination.data.length > 0}
+		<div class="mt-8">
+			<DataPagination {pagination} {total} />
+		</div>
 	{/if}
 {/if}

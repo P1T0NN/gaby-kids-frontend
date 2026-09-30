@@ -7,6 +7,7 @@
 	import AddToCartButton from '@/features/cart/components/add-to-cart-button.svelte';
 	import ProductVariantPicker from '@/components/pages/(unprotected)/product/product-variant-picker/product-variant-picker.svelte';
 	import ProductUpsellItem from './product-upsell-item.svelte';
+	import ProductSizeGuide from './product-size-guide.svelte';
 
 	// CONFIG
 	import { UPSELLS_CONFIG } from '@/shared/features/upsells/config.js';
@@ -49,6 +50,9 @@
 
 <div class="flex min-w-0 flex-col gap-8 lg:col-start-2 lg:row-start-2">
 	<div class="flex flex-col gap-5">
+		{#key product.categoryId}
+			<ProductSizeGuide categoryId={product.categoryId} />
+		{/key}
 		{#if product.productVariantOptionNames.length > 0}
 			<ProductVariantPicker
 				{product}

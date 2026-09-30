@@ -17,6 +17,6 @@ export const PRODUCT_OPTION_FILTERS = [
 		key: 'age',
 		optionName: 'Size',
 		label: 'Age',
-		values: ['3M', '6M', '1', '2', '3', '4', '5', '6', '8', '10', '0', '3-6M']
+		values: ['3M', '0', '1', '2', '3', '4', '5', '6', '8', '10', '3-6M']
 	}
 ] as const;

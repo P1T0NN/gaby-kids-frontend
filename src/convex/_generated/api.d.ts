@@ -70,6 +70,7 @@ import type * as migrations_migrations from "../migrations/migrations.js";
 import type * as migrations_types_migrationTypes from "../migrations/types/migrationTypes.js";
 import type * as rateLimits_helpers_enforceRateLimit from "../rateLimits/helpers/enforceRateLimit.js";
 import type * as rateLimits_types_rateLimitTypes from "../rateLimits/types/rateLimitTypes.js";
+import type * as seed from "../seed.js";
 import type * as storage_getUploadByKey from "../storage/getUploadByKey.js";
 import type * as storage_r2 from "../storage/r2.js";
 import type * as stripe_actions_createStripeCheckout from "../stripe/actions/createStripeCheckout.js";
@@ -157,6 +158,7 @@ import type * as tables_productVariants_helpers_resolveProductVariantSku from ".
 import type * as tables_productVariants_helpers_resolveProductVariants from "../tables/productVariants/helpers/resolveProductVariants.js";
 import type * as tables_productVariants_mappers_toProductVariantResult from "../tables/productVariants/mappers/toProductVariantResult.js";
 import type * as tables_productVariants_migrations_backfillProductVariantSkus from "../tables/productVariants/migrations/backfillProductVariantSkus.js";
+import type * as tables_productVariants_migrations_backfillSixMonthsSizeToZero from "../tables/productVariants/migrations/backfillSixMonthsSizeToZero.js";
 import type * as tables_productVariants_mutations_deleteProductVariantsBatch from "../tables/productVariants/mutations/deleteProductVariantsBatch.js";
 import type * as tables_productVariants_queries_fetchCart from "../tables/productVariants/queries/fetchCart.js";
 import type * as tables_productVariants_validators_productVariantValidators from "../tables/productVariants/validators/productVariantValidators.js";
@@ -256,6 +258,7 @@ declare const fullApi: ApiFromModules<{
   "migrations/types/migrationTypes": typeof migrations_types_migrationTypes;
   "rateLimits/helpers/enforceRateLimit": typeof rateLimits_helpers_enforceRateLimit;
   "rateLimits/types/rateLimitTypes": typeof rateLimits_types_rateLimitTypes;
+  seed: typeof seed;
   "storage/getUploadByKey": typeof storage_getUploadByKey;
   "storage/r2": typeof storage_r2;
   "stripe/actions/createStripeCheckout": typeof stripe_actions_createStripeCheckout;
@@ -343,6 +346,7 @@ declare const fullApi: ApiFromModules<{
   "tables/productVariants/helpers/resolveProductVariants": typeof tables_productVariants_helpers_resolveProductVariants;
   "tables/productVariants/mappers/toProductVariantResult": typeof tables_productVariants_mappers_toProductVariantResult;
   "tables/productVariants/migrations/backfillProductVariantSkus": typeof tables_productVariants_migrations_backfillProductVariantSkus;
+  "tables/productVariants/migrations/backfillSixMonthsSizeToZero": typeof tables_productVariants_migrations_backfillSixMonthsSizeToZero;
   "tables/productVariants/mutations/deleteProductVariantsBatch": typeof tables_productVariants_mutations_deleteProductVariantsBatch;
   "tables/productVariants/queries/fetchCart": typeof tables_productVariants_queries_fetchCart;
   "tables/productVariants/validators/productVariantValidators": typeof tables_productVariants_validators_productVariantValidators;

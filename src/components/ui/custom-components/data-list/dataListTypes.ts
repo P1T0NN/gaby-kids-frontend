@@ -9,7 +9,7 @@ import type {
 
 type DataListCommonProps<T> = {
 	total?: number | null;
-	placement?: PaginationPlacement;
+	placement?: PaginationPlacement | 'both';
 	showPagination?: boolean;
 	header?: Snippet;
 	empty?: Snippet;

@@ -52,7 +52,7 @@
 		</span>
 		<PaginationItem>
 			<Button
-				variant="outline"
+				variant="default"
 				size="icon"
 				disabled={!hasPrevPage}
 				onclick={onPrev}
@@ -63,7 +63,7 @@
 		</PaginationItem>
 		<PaginationItem>
 			<Button
-				variant="outline"
+				variant="default"
 				size="icon"
 				disabled={!hasNextPage}
 				onclick={onNext}

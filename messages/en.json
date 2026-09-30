@@ -124,6 +124,24 @@
 			"description": "About this product",
 			"upsells": "Pairs well with"
 		},
+		"ProductSizeGuide": {
+			"title": "Size guide",
+			"description": "Compare the measurements in centimeters before choosing your size.",
+			"fullSize": "Open full-size chart (new tab)",
+			"textVersion": "View measurements as text",
+			"centimeters": "All measurements are in centimeters.",
+			"size": "Size",
+			"ageSize": "Size (years)",
+			"backWidth": "Back width",
+			"backLength": "Back length",
+			"sleeveLength": "Sleeve length",
+			"pantsCircumference": "Pants circumference (plus elastic)",
+			"pantsWidth": "Pants width",
+			"pantsLength": "Pants length",
+			"guayaberasAlt": "Guayabera size chart in centimeters, sizes 0 to 16. The same measurements are available in the text version below.",
+			"trajesAlt": "Charro suit size chart in centimeters, sizes 0 to 6, with hat measurements. The same measurements are available in the text version below.",
+			"hatInstructions": "Charro hat: measure around the head one finger above the ear with a fabric measuring tape. Sizes 0?1: 50 cm; 2?3: 53 cm; 4?6: 54 cm."
+		},
 		"ProductVariantPicker": {
 			"notAvailableWith": "Not available with {selection}"
 		},

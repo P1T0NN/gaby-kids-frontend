@@ -124,6 +124,24 @@
 			"description": "Acerca de este producto",
 			"upsells": "Combina bien con"
 		},
+		"ProductSizeGuide": {
+			"title": "Gu?a de tallas",
+			"description": "Compara las medidas en cent?metros antes de elegir tu talla.",
+			"fullSize": "Ampliar tabla (abre otra pesta?a)",
+			"textVersion": "Ver medidas en texto",
+			"centimeters": "Todas las medidas est?n en cent?metros.",
+			"size": "Talla",
+			"ageSize": "Talla (a?os)",
+			"backWidth": "Ancho de espalda",
+			"backLength": "Largo de espalda",
+			"sleeveLength": "Largo de manga",
+			"pantsCircumference": "Circunferencia de pantal?n (m?s el?stico)",
+			"pantsWidth": "Ancho de pantal?n",
+			"pantsLength": "Largo del pantal?n",
+			"guayaberasAlt": "Tabla de medidas de guayaberas en cent?metros, tallas 0 a 16. Las mismas medidas est?n disponibles en la versi?n en texto de abajo.",
+			"trajesAlt": "Tabla de medidas de traje charro en cent?metros, tallas 0 a 6, con medidas del sombrero. Las mismas medidas est?n disponibles en la versi?n en texto de abajo.",
+			"hatInstructions": "Sombrero charro: mide el contorno de la cabeza un dedo arriba del o?do con una cinta m?trica textil. Tallas 0?1: 50 cm; 2?3: 53 cm; 4?6: 54 cm."
+		},
 		"ProductVariantPicker": {
 			"notAvailableWith": "No disponible con {selection}"
 		},
@@ -1230,8 +1248,8 @@
 			"comunionDescription": "Vestidos largos, guayaberas y accesorios de altar."
 		},
 		"FeaturedSection": {
-			"heading": "Lino natural, bordado a mano",
-			"description": "Guayaberas de niño hechas en lino fresco, con alforzas cosidas una por una y bordado del nombre sin costo. Su propia etiqueta, la misma casa.",
+			"heading": "Guayaberas y conjuntos hechos a mano",
+			"description": "En manta y lino, con bordados artesanales y detalles que celebran la tradición mexicana.",
 			"cta": "Conocer gabybera"
 		},
 		"TrustSection": {
