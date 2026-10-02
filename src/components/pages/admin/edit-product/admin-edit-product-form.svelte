@@ -44,7 +44,7 @@
 	const initialProduct = untrack(() => product);
 
 	let submitting = $state(false);
-	let categoryId = $state<string>(initialProduct.categoryId);
+	let categoryIds = $state<string[]>([...initialProduct.categoryIds]);
 
 	let productVariantOptionNames = $state<string[]>([...initialProduct.productVariantOptionNames]);
 	let productVariants = $state<ProductVariantFormValue[]>(
@@ -76,8 +76,8 @@
 {#snippet categoryField({ field, disabled, error }: CustomFieldContext)}
 	<ProductCategorySelector
 		id={field.name}
-		bind:selectedId={categoryId}
-		initialCategory={initialProduct.categoryOption}
+		bind:selectedIds={categoryIds}
+		initialCategories={initialProduct.categoryOptions}
 		required
 		{disabled}
 		{error}
@@ -107,7 +107,7 @@
 	resetOnSuccess={false}
 	resolveExtraFields={({ uploadedFiles }) =>
 		buildSaveProductExtraFields({
-			categoryId,
+			categoryIds,
 			status: formChanges.values.active === true ? 'active' : 'draft',
 			productVariantOptionNames,
 			productVariants,

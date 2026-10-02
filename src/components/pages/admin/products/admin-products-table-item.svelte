@@ -29,7 +29,7 @@
 	import { toastMessage } from '@/utils/toastMessage.js';
 
 	type Product = ProductResult & {
-		categoryOption: { name: string };
+		categoryOptions: { name: string }[];
 		productVariantSummary: { count: number; inventory: number; reservedInventory: number };
 	};
 
@@ -125,7 +125,9 @@
 </TableCell>
 <TableCell class="max-w-48">
 	<div class="flex flex-col gap-1.5">
-		<span class="truncate">{product.categoryOption.name}</span>
+		<span class="truncate">
+			{product.categoryOptions.map((category) => category.name).join(', ')}
+		</span>
 		{#if PRODUCTS_CONFIG.HAS_AGE_GROUP || PRODUCTS_CONFIG.HAS_GENDER}
 			<div class="flex flex-wrap gap-1">
 				{#if PRODUCTS_CONFIG.HAS_AGE_GROUP && product.ageGroup}

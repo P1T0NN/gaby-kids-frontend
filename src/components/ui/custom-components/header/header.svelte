@@ -61,7 +61,10 @@
 				aria-label={m['Components.Header.primaryNavigation']()}
 			>
 				{#each navigation as item (item.label)}
-					<Link href={item.href} class="text-sm text-foreground transition-colors hover:text-accent">
+					<Link
+						href={item.href}
+						class="text-sm text-foreground transition-colors hover:text-accent"
+					>
 						{item.label}
 					</Link>
 				{/each}

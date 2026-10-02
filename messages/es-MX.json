@@ -499,7 +499,8 @@
 			"categoriesLoading": "Cargando categorías...",
 			"searchError": "No pudimos cargar las categorías.",
 			"noMatchingCategories": "No hay categorías que coincidan.",
-			"archivedCategory": "Archivada"
+			"archivedCategory": "Archivada",
+			"removeCategory": "Eliminar {name}"
 		},
 		"productAdded": "Producto agregado.",
 		"addError": "No pudimos agregar este producto.",
@@ -1167,6 +1168,7 @@
 		}
 	},
 	"ValidationMessages": {
+		"duplicateProductCategory": "Selecciona cada categoría solo una vez.",
 		"fallback": "Revisa este campo.",
 		"requiredValue": "Escribe un valor.",
 		"requiredField": "Completa este campo.",
@@ -1273,6 +1275,7 @@
 			"whatsappLabel": "WhatsApp",
 			"whatsappLink": "Escríbenos directo",
 			"socialLabel": "Síguenos",
+			"mapTitle": "Ubicación en el mapa",
 			"cta": "Escríbenos por WhatsApp"
 		}
 	}

@@ -108,7 +108,7 @@ Display text (the config's casing) is preserved separately. Two variants using
 | `name`             | Copied product name for full-text search; optional during migration |
 | `optionKey`        | Canonical selection key                                             |
 | `status`           | Copied from the product so the public range can eq it               |
-| `categoryId`       | Copied for the category-filtered range                              |
+| `categoryId`       | Category scope; absent for global selection queries                 |
 | `ageGroup`         | Copied for the age group filter                                     |
 | `gender`           | Copied for the gender filter                                        |
 | `productCreatedAt` | Copied `product._creationTime`, keeps the shop sort order           |
@@ -118,6 +118,7 @@ Indexes:
 - `search_name` searches `name` and equality-filters `status`, `optionKey`,
   `categoryId`, `ageGroup`, and `gender` before pagination.
 - `by_product_id` — rebuild/cleanup per product.
+- `by_category_id_and_option_key` ? bounded category membership reads for deletion.
 - `by_status_and_option_key_and_product_created_at` — selection only.
 - `by_status_and_category_id_and_option_key_and_product_created_at` — selection
   - category; avoids scanning a large selection range for a rare category.
@@ -146,14 +147,18 @@ one `optionKey` equality, so one paginate can serve it. Single value → single
 row; Red + L → combined row. Unrelated pairs never match because the key is
 exact. With k configured filters the bound is 2ᵏ−1 rows per variant.
 
-Products without any configured option values get no rows, so they simply never
-appear in option-filtered results.
+Write those deduplicated keys once for every assigned category and once for the
+global scope (absent categoryId). Each query selects exactly one scope, so
+multi-category products still appear once per page. Add an empty optionKey in
+every scope for category-only listings and category deletion checks. Products
+without options get only these membership rows. Saves allow up to 20 unique
+categories and 2,000 total projection rows per product.
 
 ## Write path
 
 `saveProduct` is the only writer of product variants and already runs in one
 transaction. After the variant writes it calls one helper,
-`createProductOptionIndex`, with the saved product's id, name, status, categoryId,
+`createProductOptionIndex`, with the saved product's id, name, status, categoryIds,
 ageGroup, gender, `_creationTime`, and the incoming variants' option sets. The
 helper:
 
@@ -161,7 +166,7 @@ helper:
 2. reads the product's existing `productOptionIndex` rows via `by_product_id`;
 3. deletes the old rows and inserts the new deduplicated keys.
 
-Per product this is a few small writes, independent of catalog size.
+Writes scale with unique selection keys times (category count + 1), independent of catalog size.
 
 `deleteProduct` removes the product's `productOptionIndex` rows in the same
 mutation through `removeProductOptionIndex`, alongside the existing variant
@@ -178,9 +183,8 @@ age-group or gender values return an empty page. Both search paths preserve the
 existing final-token prefix search behavior through `getProductSearchTerm`.
 
 - **Selection only** → `getProductOptionPage`:
-  - paginate `productOptionIndex` with `by_status_and_option_key_and_product_created_at`
-    (or the category composite when a category filter is active), eq `status`
-    and `optionKey`, ordered by `productCreatedAt` in the shop's direction;
+  - paginate `productOptionIndex` with `by_status_and_category_id_and_option_key_and_product_created_at`, eq `status`,
+    `categoryId` (absent for the global scope), and `optionKey`, ordered by `productCreatedAt` in the shop's direction;
   - `.filter()` the copied `ageGroup` and `gender` eqs when those filters are
     active;
   - `db.get` the page's products, drop missing ones, map through
@@ -188,9 +192,10 @@ existing final-token prefix search behavior through `getProductSearchTerm`.
 - **Search + selection** → `productOptionIndex.search_name`, matching the name
   and all selected attributes plus `optionKey` in the search index. Paginate
   once, then load those products. Selection keys already deduplicate products.
-- **Search without selection** → `products.search_name`, with category, age
+- **Search without selection or category** → `products.search_name`, with age
   group, gender, and public status applied in the search index.
-- **No selection, no search** → unchanged existing paths.
+- **Category without selection** ? same scoped option-index query with an empty `optionKey`, including search.
+- **No category, no selection, no search** → unchanged existing paths.
 
 `canCountTotal` becomes `!search && !hasAttributeFilters && !optionSelection`,
 so filtered pages keep omitting the total.
@@ -205,6 +210,31 @@ so filtered pages keep omitting the total.
   states are all unchanged.
 
 ## Migration
+
+Multi-category rollout uses `tables/products/migrations/backfillProductCategories:backfillProductCategories`.
+It copies legacy `categoryId` to `categoryIds`, removes the legacy value, and
+rebuilds scoped membership and option rows in the same transaction, one product
+per migration batch. Existing category aggregate entries remain compatible;
+new saves and the backfill update every category namespace through the product
+trigger. The optional schema fields and legacy read helper stay until every
+deployment has completed this migration.
+
+Deploy the backend and complete the backfill during a storefront maintenance
+window, before releasing the updated frontend: category and global option
+queries now require scoped rows and will omit unmigrated products. Do not run
+the catalog seeder. On the intended development deployment:
+
+```sh
+bunx convex dev --once
+bunx convex run migrations/migrations:run '{"fn":"tables/products/migrations/backfillProductCategories:backfillProductCategories","batchSize":1}'
+bunx convex run --component migrations lib:getStatus
+```
+
+Wait for migration status to report completion, then verify category-only,
+category + search, category + options, and global option listings. Production
+rollout requires a separately confirmed production target. If the migration
+has failed, fix the reported product and resume it; each converted product and
+its projection commit together.
 
 One migration, `backfillProductOptionIndex`, follows the existing
 `@convex-dev/migrations` pattern: per product, rebuild its `productOptionIndex`

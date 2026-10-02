@@ -82,7 +82,9 @@
 						onclick={() => void handleCancelOrder(close)}
 						disabled={pending}
 					>
-						{#if pending}<Spinner data-icon="inline-start" />{/if}
+						{#if pending}
+							<Spinner data-icon="inline-start" />
+						{/if}
 						{pending
 							? m['AdminEditOrderPage.AdminEditOrderCancelButton.processing']()
 							: m['AdminEditOrderPage.AdminEditOrderCancelButton.cancelOrder']()}

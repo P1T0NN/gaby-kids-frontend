@@ -48,6 +48,8 @@
 </script>
 
 <Button variant="outline" size="sm" disabled={pendingAction !== null} onclick={unbanUser}>
-	{#if pendingAction === 'unban'}<Spinner data-icon="inline-start" />{/if}
+	{#if pendingAction === 'unban'}
+		<Spinner data-icon="inline-start" />
+	{/if}
 	{m['AdminUserPage.UnbanUserButton.unbanUser']()}
 </Button>

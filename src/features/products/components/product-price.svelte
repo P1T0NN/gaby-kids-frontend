@@ -35,9 +35,11 @@
 
 <div class={cn('flex flex-wrap items-baseline gap-x-2 gap-y-1', className)}>
 	<span class={cn('font-semibold tabular-nums', priceClass)}>
-		{#if from}<span class="text-xs font-normal text-muted-foreground">
+		{#if from}
+			<span class="text-xs font-normal text-muted-foreground">
 				{m['ProductsFeature.ProductPrice.from']()}
-			</span>{/if}
+			</span>
+		{/if}
 		{formatPrice(priceInCents)}
 	</span>
 

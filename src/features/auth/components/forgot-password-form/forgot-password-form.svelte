@@ -85,24 +85,24 @@
 		<Field.Field>
 			<Field.Label for="password">{m['AuthFeature.ForgotPasswordForm.newPassword']()}</Field.Label>
 			<PasswordInput id="password" required bind:value={password} />
-			<Field.Description
-				>{m['AuthFeature.ForgotPasswordForm.passwordLengthDescription']()}</Field.Description
-			>
+			<Field.Description>
+				{m['AuthFeature.ForgotPasswordForm.passwordLengthDescription']()}
+			</Field.Description>
 		</Field.Field>
 
 		<Field.Field>
-			<Field.Label for="confirm-password"
-				>{m['AuthFeature.ForgotPasswordForm.confirmPassword']()}</Field.Label
-			>
+			<Field.Label for="confirm-password">
+				{m['AuthFeature.ForgotPasswordForm.confirmPassword']()}
+			</Field.Label>
 			<PasswordInput id="confirm-password" required bind:value={confirmPassword} />
 		</Field.Field>
 	{/if}
 	{#snippet footer()}
 		<Card.Footer class="flex justify-center">
 			<Field.Description>
-				<Link href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN} class="text-sm font-medium"
-					>{m['AuthFeature.ForgotPasswordForm.backToSignIn']()}</Link
-				>
+				<Link href={UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN} class="text-sm font-medium">
+					{m['AuthFeature.ForgotPasswordForm.backToSignIn']()}
+				</Link>
 			</Field.Description>
 		</Card.Footer>
 	{/snippet}

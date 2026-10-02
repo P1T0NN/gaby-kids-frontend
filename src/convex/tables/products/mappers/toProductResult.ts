@@ -1,3 +1,5 @@
+import { getProductCategoryIds } from '../helpers/getProductCategoryIds.js';
+
 // STORAGE
 import { resolveStoredFileUrls } from '../../../storage/r2.js';
 
@@ -21,7 +23,8 @@ export const toProductResult = async (product: Product): Promise<ProductResult> 
 		productVariantOptionNames: product.productVariantOptionNames,
 		priceInCents: product.priceInCents ?? 0,
 		hasPriceRange: product.hasPriceRange,
-		categoryId: product.categoryId,
+		categoryIds: getProductCategoryIds(product),
+		categoryId: getProductCategoryIds(product)[0],
 		ageGroup: product.ageGroup,
 		gender: product.gender,
 		images: await resolveStoredFileUrls(product.imageKeys),

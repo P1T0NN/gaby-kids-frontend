@@ -80,7 +80,9 @@
 					onclick={() => void handleRefundOrder(close)}
 					disabled={pending}
 				>
-					{#if pending}<Spinner data-icon="inline-start" />{/if}
+					{#if pending}
+						<Spinner data-icon="inline-start" />
+					{/if}
 					{pending
 						? m['AdminEditOrderPage.AdminEditOrderRefundButton.processing']()
 						: m['AdminEditOrderPage.AdminEditOrderRefundButton.refundOrder']()}

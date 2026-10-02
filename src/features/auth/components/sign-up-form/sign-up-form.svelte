@@ -100,11 +100,13 @@
 	</Field.Field>
 
 	<Field.Field>
-		<Field.Label for="confirm-password">{m['AuthFeature.SignUpForm.confirmPassword']()}</Field.Label
-		>
+		<Field.Label for="confirm-password">
+			{m['AuthFeature.SignUpForm.confirmPassword']()}
+		</Field.Label>
 		<PasswordInput id="confirm-password" required bind:value={confirmPassword} />
-		<Field.Description>{m['AuthFeature.SignUpForm.confirmPasswordDescription']()}</Field.Description
-		>
+		<Field.Description>
+			{m['AuthFeature.SignUpForm.confirmPasswordDescription']()}
+		</Field.Description>
 	</Field.Field>
 	{#snippet actionsFooter()}
 		<Field.Description class="px-6 text-center">

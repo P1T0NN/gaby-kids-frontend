@@ -491,15 +491,16 @@
 		"descriptionPlaceholder": "Describe the product",
 		"images": "Images",
 		"imagesDescription": "Upload every product image here, then assign them per variant. Each image must not exceed 20 MB.",
-		"categories": "Category",
-		"categoriesDescription": "Place this product in a storefront category.",
+		"categories": "Categories",
+		"categoriesDescription": "Place this product in one or more storefront categories.",
 		"ProductCategorySelector": {
 			"searchLabel": "Search product categories",
 			"searchPlaceholder": "Search categories...",
 			"categoriesLoading": "Loading categories...",
 			"searchError": "Couldn't load categories.",
 			"noMatchingCategories": "No matching categories.",
-			"archivedCategory": "Archived"
+			"archivedCategory": "Archived",
+			"removeCategory": "Remove {name}"
 		},
 		"productAdded": "Product added.",
 		"addError": "Couldn't add this product.",
@@ -1167,6 +1168,7 @@
 		}
 	},
 	"ValidationMessages": {
+		"duplicateProductCategory": "Select each category only once.",
 		"fallback": "Please check this field.",
 		"requiredValue": "Please enter a value.",
 		"requiredField": "Please fill this in.",
@@ -1273,6 +1275,7 @@
 			"whatsappLabel": "WhatsApp",
 			"whatsappLink": "Message us directly",
 			"socialLabel": "Follow us",
+			"mapTitle": "Location map",
 			"cta": "Message us on WhatsApp"
 		}
 	}

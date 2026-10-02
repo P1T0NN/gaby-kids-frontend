@@ -43,7 +43,7 @@ rental, manufacturing, or warehouse workflow at once.
 
 | Merchant intent                         | Representation                               | Example                               |
 | --------------------------------------- | -------------------------------------------- | ------------------------------------- |
-| Organize the catalog                    | One required `categoryId`                    | Clothing                              |
+| Organize the catalog                    | Non-empty `categoryIds` array                | Clothing                              |
 | Describe the common item                | Product fields                               | Classic T-Shirt, description, gallery |
 | Choose a finite version                 | Options and variant selections               | Color: Red; Size: Medium              |
 | Price/count an exact version            | Variant                                      | Red / Medium, EUR 24.99, 12 in stock  |
@@ -65,18 +65,23 @@ the same schema; changing category does not regenerate variants.
 
 ### `categories`
 
-Keep the existing flat table and required `products.categoryId`. Creation and
-publication require an active category. Archiving a category hides its category
+Keep the existing flat table and non-empty `products.categoryIds`. Creation and
+publication require active categories for new assignments; publication requires all assigned categories to be active. Archiving a category hides its category
 navigation page and prevents new assignments; it does not silently archive its
 products or prevent direct purchase. Existing products can retain it until
 reassigned. Hard deletion requires that no product references the category.
+
+During frontend rollout, API responses also expose the first assignment as
+`categoryId` and the first admin category as `categoryOption`. `saveProduct`
+accepts legacy `categoryId` inputs and preserves existing secondary assignments
+when an older form edits a product. New forms send `categoryIds`.
 
 ### `products`: shared content and bounded definitions
 
 | Field                            | Contract                                                                                                                                           |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `name`, `slug`, `description`    | Existing content; enforce slug uniqueness transactionally and keep it stable when the name changes.                                                |
-| `categoryId`                     | Exactly one existing category.                                                                                                                     |
+| `categoryIds`                    | One or more unique existing categories (maximum 20).                                                                                               |
 | `imageKeys`                      | Ordered gallery; first image is cover. Resolve delivery URLs in queries.                                                                           |
 | `status`                         | `draft`, `active`, `archived`. Only active products are public.                                                                                    |
 | `productType`                    | Keep existing `standard` or `bundle`. Stock composition, not category or presence of options.                                                      |
@@ -295,7 +300,7 @@ live stock. Allocation and release rules live in the order design.
 | Admin detail            | Product and bounded active rows; paginate retired rows and fetch recipes on demand.                                                                      |
 | Bundle dependency check | Indexed references by component ID; bounded existence check or pagination.                                                                               |
 
-Retain product indexes; add `[categoryId, status]` for category listings and
+Retain product indexes; use the scoped `productOptionIndex` for category listings and
 category/status filter fields to product search. Reuse pagination envelopes and
 aggregates. Maintain price summaries in the same mutation as variant catalog
 changes, reading at most 101 active rows to detect limit violations instead of

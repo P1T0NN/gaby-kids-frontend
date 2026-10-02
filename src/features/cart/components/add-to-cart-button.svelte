@@ -96,7 +96,10 @@
 	{:else if children}
 		{@render children()}
 	{:else}
-		<span class="icon-[lucide--shopping-cart] size-4" data-icon="inline-start" aria-hidden="true"
+		<span
+			class="icon-[lucide--shopping-cart] size-4"
+			data-icon="inline-start"
+			aria-hidden="true"
 		></span>
 		{m['CartFeature.Cart.addToCart']()}
 	{/if}

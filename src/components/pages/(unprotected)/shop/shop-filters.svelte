@@ -113,7 +113,8 @@
 							)}
 							aria-hidden="true"
 						>
-							<span class={cn('size-2 rounded-full', isSelected ? 'bg-accent' : 'bg-transparent')}
+							<span
+								class={cn('size-2 rounded-full', isSelected ? 'bg-accent' : 'bg-transparent')}
 							></span>
 						</span>
 						<span class="truncate">{option.label}</span>

@@ -8,39 +8,33 @@
  *
  * Prefer this over nested find/findIndex deduplication, which can become O(n²).
  */
-export function uniqueBy<T, K>(
-  items: readonly T[],
-  getKey: (item: T) => K,
-): T[] {
-  const seen = new Set<K>();
-  const result: T[] = [];
+export function uniqueBy<T, K>(items: readonly T[], getKey: (item: T) => K): T[] {
+	const seen = new Set<K>();
+	const result: T[] = [];
 
-  for (const item of items) {
-    const key = getKey(item);
-    if (seen.has(key)) continue;
+	for (const item of items) {
+		const key = getKey(item);
+		if (seen.has(key)) continue;
 
-    seen.add(key);
-    result.push(item);
-  }
+		seen.add(key);
+		result.push(item);
+	}
 
-  return result;
+	return result;
 }
 
 /**
  * O(n) average time, O(k) extra space.
  * Returns the number of distinct keys without creating a deduplicated array.
  */
-export function countDistinctBy<T, K>(
-  items: readonly T[],
-  getKey: (item: T) => K,
-): number {
-  const seen = new Set<K>();
+export function countDistinctBy<T, K>(items: readonly T[], getKey: (item: T) => K): number {
+	const seen = new Set<K>();
 
-  for (const item of items) {
-    seen.add(getKey(item));
-  }
+	for (const item of items) {
+		seen.add(getKey(item));
+	}
 
-  return seen.size;
+	return seen.size;
 }
 
 /**
@@ -48,18 +42,18 @@ export function countDistinctBy<T, K>(
  * Splits items into [matching, nonMatching] in a single pass.
  */
 export function partition<T>(
-  items: readonly T[],
-  predicate: (item: T, index: number) => boolean,
+	items: readonly T[],
+	predicate: (item: T, index: number) => boolean
 ): [matching: T[], nonMatching: T[]] {
-  const matching: T[] = [];
-  const nonMatching: T[] = [];
+	const matching: T[] = [];
+	const nonMatching: T[] = [];
 
-  for (let i = 0; i < items.length; i += 1) {
-    const item = items[i];
-    (predicate(item, i) ? matching : nonMatching).push(item);
-  }
+	for (let i = 0; i < items.length; i += 1) {
+		const item = items[i];
+		(predicate(item, i) ? matching : nonMatching).push(item);
+	}
 
-  return [matching, nonMatching];
+	return [matching, nonMatching];
 }
 
 /**
@@ -69,13 +63,13 @@ export function partition<T>(
  * Uses a Set instead of a nested loop, avoiding a common O(n*m) pattern.
  */
 export function intersectionBy<T, U, K>(
-  left: readonly T[],
-  right: readonly U[],
-  leftKey: (item: T) => K,
-  rightKey: (item: U) => K,
+	left: readonly T[],
+	right: readonly U[],
+	leftKey: (item: T) => K,
+	rightKey: (item: U) => K
 ): T[] {
-  const rightKeys = new Set(right.map(rightKey));
-  return left.filter((item) => rightKeys.has(leftKey(item)));
+	const rightKeys = new Set(right.map(rightKey));
+	return left.filter((item) => rightKeys.has(leftKey(item)));
 }
 
 /**
@@ -83,13 +77,13 @@ export function intersectionBy<T, U, K>(
  * Returns items from `left` whose key does NOT exist in `right`.
  */
 export function differenceBy<T, U, K>(
-  left: readonly T[],
-  right: readonly U[],
-  leftKey: (item: T) => K,
-  rightKey: (item: U) => K,
+	left: readonly T[],
+	right: readonly U[],
+	leftKey: (item: T) => K,
+	rightKey: (item: U) => K
 ): T[] {
-  const rightKeys = new Set(right.map(rightKey));
-  return left.filter((item) => !rightKeys.has(leftKey(item)));
+	const rightKeys = new Set(right.map(rightKey));
+	return left.filter((item) => !rightKeys.has(leftKey(item)));
 }
 
 /**
@@ -98,32 +92,29 @@ export function differenceBy<T, U, K>(
  * Useful for batching work, NOT as a replacement for database pagination.
  */
 export function chunk<T>(items: readonly T[], size: number): T[][] {
-  if (!Number.isInteger(size) || size <= 0) {
-    throw new RangeError("chunk size must be a positive integer");
-  }
+	if (!Number.isInteger(size) || size <= 0) {
+		throw new RangeError('chunk size must be a positive integer');
+	}
 
-  const result: T[][] = [];
+	const result: T[][] = [];
 
-  for (let i = 0; i < items.length; i += size) {
-    result.push(items.slice(i, i + size));
-  }
+	for (let i = 0; i < items.length; i += size) {
+		result.push(items.slice(i, i + size));
+	}
 
-  return result;
+	return result;
 }
 
 /**
  * O(n) time, O(1) extra space (excluding callback work).
  * Sums a numeric value derived from each item.
  */
-export function sumBy<T>(
-  items: readonly T[],
-  getValue: (item: T) => number,
-): number {
-  let total = 0;
+export function sumBy<T>(items: readonly T[], getValue: (item: T) => number): number {
+	let total = 0;
 
-  for (const item of items) {
-    total += getValue(item);
-  }
+	for (const item of items) {
+		total += getValue(item);
+	}
 
-  return total;
+	return total;
 }

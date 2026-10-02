@@ -19,6 +19,8 @@
 		dropdown?: Snippet;
 		/** Controls whether the optional suggestion markup is visible. */
 		dropdownOpen?: boolean;
+		/** Allows multiple selected options in the suggestion listbox. */
+		dropdownMultiple?: boolean;
 		/** Extra classes for the input-group frame (size, shape, surface). */
 		groupClass?: string;
 	};
@@ -30,6 +32,7 @@
 		onclear,
 		dropdown,
 		dropdownOpen = true,
+		dropdownMultiple = false,
 		class: className,
 		groupClass,
 		disabled = false,
@@ -88,6 +91,7 @@
 		<div
 			id={dropdownId}
 			role="listbox"
+			aria-multiselectable={dropdownMultiple || undefined}
 			class="absolute top-full right-0 left-0 z-50 mt-2 overflow-hidden rounded-xl border bg-popover p-1 text-popover-foreground shadow-lg"
 		>
 			{@render dropdown()}

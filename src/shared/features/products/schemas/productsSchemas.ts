@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // CONFIG
-import { DEFAULT_PRODUCT_AGE_GROUP, DEFAULT_PRODUCT_GENDER } from '../config.js';
+import { DEFAULT_PRODUCT_AGE_GROUP, DEFAULT_PRODUCT_GENDER, PRODUCTS_CONFIG } from '../config.js';
 import { PRODUCT_VARIANTS_CONFIG } from '../../productVariants/config.js';
 
 // ATTRIBUTES
@@ -33,14 +33,20 @@ export const saveProductSchema = z
 		name: z.string().trim().min(1).max(255),
 		description: z.string().trim().min(1).max(5_000),
 		trackInventory: z.boolean(),
-		categoryId: z
-			.string()
-			.trim()
+		categoryIds: z
+			.array(
+				z
+					.string()
+					.trim()
+					.min(1)
+					.transform((value) => {
+						// SAFETY: Convex validates category IDs at the mutation boundary.
+						return value as Id<'categories'>;
+					})
+			)
 			.min(1)
-			.transform((value) => {
-				// SAFETY: Convex's v.id('categories') validator remains authoritative at the mutation boundary.
-				return value as Id<'categories'>;
-			}),
+			.max(PRODUCTS_CONFIG.MAX_CATEGORIES)
+			.refine((ids) => new Set(ids).size === ids.length, 'DUPLICATE_PRODUCT_CATEGORY'),
 		productVariantOptionNames: z
 			.array(z.string().trim().min(1).max(PRODUCT_VARIANTS_CONFIG.MAX_OPTION_NAME_LENGTH))
 			.max(PRODUCT_VARIANTS_CONFIG.MAX_OPTION_COUNT),

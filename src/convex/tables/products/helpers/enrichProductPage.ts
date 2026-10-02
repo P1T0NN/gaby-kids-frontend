@@ -36,12 +36,18 @@ export function withProductCategoryAndVariantSummaries({
 }) {
 	return Promise.all(
 		items.map(async (product) => {
-			const category = await ctx.db.get(product.categoryId);
-			if (!category) throw new Error('Product category invariant violated.');
-			const { _id, name, slug, status } = category;
+			const categoryOptions = await Promise.all(
+				product.categoryIds.map(async (id) => {
+					const category = await ctx.db.get(id);
+					if (!category) throw new Error('Product category invariant violated.');
+					const { _id, name, slug, status } = category;
+					return { _id, name, slug, status };
+				})
+			);
 			return {
 				...product,
-				categoryOption: { _id, name, slug, status },
+				categoryOptions,
+				categoryOption: categoryOptions[0],
 				productVariantSummary: await getProductVariantSummary(ctx, product._id)
 			};
 		})

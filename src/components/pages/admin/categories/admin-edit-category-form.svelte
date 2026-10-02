@@ -118,7 +118,9 @@
 			{m['AdminEditCategoryPage.AdminEditCategoryForm.cancel']()}
 		</ButtonLink>
 		<Button type="submit" disabled={submitting}>
-			{#if submitting}<Spinner />{/if}
+			{#if submitting}
+				<Spinner />
+			{/if}
 			{m['AdminEditCategoryPage.AdminEditCategoryForm.saveChanges']()}
 		</Button>
 	</div>

@@ -97,7 +97,9 @@
 			onclick={() => void saveUpsells()}
 			disabled={!selectedProduct || !hasUpsells || isSaving}
 		>
-			{#if isSaving}<Spinner data-icon="inline-start" />{/if}
+			{#if isSaving}
+				<Spinner data-icon="inline-start" />
+			{/if}
 			{isSaving
 				? isEditing
 					? m['UpsellsFeature.ManageUpsellsDialog.savingUpsells']()

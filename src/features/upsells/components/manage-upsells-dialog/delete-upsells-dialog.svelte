@@ -79,7 +79,9 @@
 					onclick={() => void deleteUpsells(close)}
 					disabled={isDeleting}
 				>
-					{#if isDeleting}<Spinner data-icon="inline-start" />{/if}
+					{#if isDeleting}
+						<Spinner data-icon="inline-start" />
+					{/if}
 					{isDeleting
 						? m['UpsellsFeature.DeleteUpsellsDialog.deleting']()
 						: m['UpsellsFeature.DeleteUpsellsDialog.delete']()}

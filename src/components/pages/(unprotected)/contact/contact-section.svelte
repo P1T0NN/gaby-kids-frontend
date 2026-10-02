@@ -45,7 +45,9 @@
 			</div>
 
 			<div class="flex gap-4">
-				<span class="mt-1 icon-[lucide--message-circle] size-5 text-accent" aria-hidden="true"
+				<span
+					class="mt-1 icon-[lucide--message-circle] size-5 text-accent"
+					aria-hidden="true"
 				></span>
 				<div>
 					<dt class="font-sans text-xl font-medium tracking-widest text-muted-foreground uppercase">
@@ -101,5 +103,15 @@
 			{m['ContactPage.ContactSection.cta']()}
 			<span class="icon-[lucide--arrow-right] size-4" aria-hidden="true"></span>
 		</Button>
+
+		<div class="mt-12 aspect-video overflow-hidden rounded-sm border">
+			<iframe
+				title={m['ContactPage.ContactSection.mapTitle']()}
+				src="https://www.google.com/maps?q=5+de+Mayo+78,+Jalostotitl%C3%A1n,+Jalisco,+M%C3%A9xico&output=embed"
+				class="size-full"
+				loading="lazy"
+				referrerpolicy="no-referrer-when-downgrade"
+			></iframe>
+		</div>
 	</div>
 </Section>

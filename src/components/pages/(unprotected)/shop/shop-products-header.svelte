@@ -46,8 +46,10 @@
 				<Breadcrumb.BreadcrumbItem>
 					<Link
 						href={UNPROTECTED_PAGE_ENDPOINTS.ROOT}
-						class="transition-colors hover:text-foreground">{m['Components.Header.home']()}</Link
+						class="transition-colors hover:text-foreground"
 					>
+						{m['Components.Header.home']()}
+					</Link>
 				</Breadcrumb.BreadcrumbItem>
 				<Breadcrumb.BreadcrumbSeparator />
 				<Breadcrumb.BreadcrumbItem>

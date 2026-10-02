@@ -13,18 +13,16 @@
 	import StaticImage from '@/components/ui/custom-components/static-image/static-image.svelte';
 
 	// TYPES
-	import type { Doc } from '@convex/_generated/dataModel';
+	import type { Id } from '@convex/_generated/dataModel';
 
-	let { categoryId }: { categoryId: Doc<'products'>['categoryId'] } = $props();
+	let { categoryIds }: { categoryIds: Id<'categories'>[] } = $props();
 	const titleId = $props.id();
 	let opened = $state(false);
 	const categories = useQuery(
 		api.tables.categories.queries.fetchCategoryOptions.fetchCategoryOptions,
 		{}
 	);
-	const categorySlug = $derived(
-		categories.data?.find((category) => category._id === categoryId)?.slug
-	);
+
 	const guides = [
 		{
 			slug: 'guayaberas',
@@ -62,8 +60,15 @@
 			]
 		}
 	];
-	const guide = $derived(guides.find((guide) => guide.slug === categorySlug));
-	const isGuayabera = $derived(categorySlug === 'guayaberas');
+	const guide = $derived.by(() => {
+		for (const id of categoryIds) {
+			const slug = categories.data?.find((category) => category._id === id)?.slug;
+			const matchingGuide = guides.find((guide) => guide.slug === slug);
+			if (matchingGuide) return matchingGuide;
+		}
+		return undefined;
+	});
+	const isGuayabera = $derived(guide?.slug === 'guayaberas');
 	const headings = $derived([
 		isGuayabera
 			? m['ProductPage.ProductSizeGuide.size']()
@@ -128,8 +133,9 @@
 				<details class="rounded-lg border p-4">
 					<summary
 						class="min-h-11 cursor-pointer content-center text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-						>{m['ProductPage.ProductSizeGuide.textVersion']()}</summary
 					>
+						{m['ProductPage.ProductSizeGuide.textVersion']()}
+					</summary>
 					<!-- svelte-ignore a11y_no_noninteractive_tabindex (Keyboard users need to scroll the measurement table.) -->
 					<div
 						class="overflow-x-auto"
@@ -138,25 +144,26 @@
 						aria-label={m['ProductPage.ProductSizeGuide.textVersion']()}
 					>
 						<table class="w-full text-left text-sm">
-							<caption class="py-3 text-start text-muted-foreground"
-								>{m['ProductPage.ProductSizeGuide.centimeters']()}</caption
-							>
-							<thead
-								><tr
-									>{#each headings as heading (heading)}<th
-											scope="col"
-											class="border-b px-3 py-2 font-medium">{heading}</th
-										>{/each}</tr
-								></thead
-							>
-							<tbody
-								>{#each guide.rows as row (row[0])}<tr
-										><th scope="row" class="border-b px-3 py-2 font-medium">{row[0]}</th
-										>{#each row.slice(1) as value, index (index)}<td
-												class="border-b px-3 py-2 tabular-nums">{value}</td
-											>{/each}</tr
-									>{/each}</tbody
-							>
+							<caption class="py-3 text-start text-muted-foreground">
+								{m['ProductPage.ProductSizeGuide.centimeters']()}
+							</caption>
+							<thead>
+								<tr>
+									{#each headings as heading (heading)}
+										<th scope="col" class="border-b px-3 py-2 font-medium">{heading}</th>
+									{/each}
+								</tr>
+							</thead>
+							<tbody>
+								{#each guide.rows as row (row[0])}
+									<tr>
+										<th scope="row" class="border-b px-3 py-2 font-medium">{row[0]}</th>
+										{#each row.slice(1) as value, index (index)}
+											<td class="border-b px-3 py-2 tabular-nums">{value}</td>
+										{/each}
+									</tr>
+								{/each}
+							</tbody>
 						</table>
 					</div>
 					{#if !isGuayabera}
@@ -165,9 +172,9 @@
 						</p>
 					{/if}
 				</details>
-				<Button variant="outline" class="min-h-11 self-end" onclick={close}
-					>{m['Components.NativeDialog.close']()}</Button
-				>
+				<Button variant="outline" class="min-h-11 self-end" onclick={close}>
+					{m['Components.NativeDialog.close']()}
+				</Button>
 			</div>
 		{/snippet}
 	</NativeDialog>

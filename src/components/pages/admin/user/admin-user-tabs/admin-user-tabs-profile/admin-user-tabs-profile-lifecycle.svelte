@@ -25,11 +25,13 @@
 			<div class="absolute top-1.5 right-2 left-2 h-px bg-border" aria-hidden="true"></div>
 
 			<div class="relative flex flex-col gap-1.5">
-				<span class="size-3 rounded-full border-2 border-primary bg-background" aria-hidden="true"
+				<span
+					class="size-3 rounded-full border-2 border-primary bg-background"
+					aria-hidden="true"
 				></span>
-				<span class="text-xs font-medium tracking-wide text-muted-foreground uppercase"
-					>{m['AdminUserPage.AdminUserTabsProfileLifecycle.created']()}</span
-				>
+				<span class="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+					{m['AdminUserPage.AdminUserTabsProfileLifecycle.created']()}
+				</span>
 				<time datetime={new Date(createdAt).toISOString()} class="text-sm font-medium">
 					{formatDate(createdAt, getLocale())}
 				</time>
@@ -40,15 +42,15 @@
 					class="size-3 self-end rounded-full border-2 border-muted-foreground bg-background"
 					aria-hidden="true"
 				></span>
-				<span class="text-xs font-medium tracking-wide text-muted-foreground uppercase"
-					>{m['AdminUserPage.AdminUserTabsProfileLifecycle.lastUpdated']()}</span
-				>
+				<span class="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+					{m['AdminUserPage.AdminUserTabsProfileLifecycle.lastUpdated']()}
+				</span>
 				<time datetime={new Date(updatedAt).toISOString()} class="text-sm font-medium">
 					{formatDateTime(updatedAt, getLocale())}
 				</time>
-				<span class="text-xs text-muted-foreground"
-					>{formatRelativeTime(updatedAt, getLocale())}</span
-				>
+				<span class="text-xs text-muted-foreground">
+					{formatRelativeTime(updatedAt, getLocale())}
+				</span>
 			</div>
 		</div>
 	</Card.Content>

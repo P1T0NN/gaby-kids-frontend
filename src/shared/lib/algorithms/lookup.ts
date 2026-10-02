@@ -20,17 +20,14 @@
  * Bad idea if you fetched an entire database table only to build this Map.
  * Let the database/index narrow the data first.
  */
-export function indexBy<T, K>(
-  items: readonly T[],
-  getKey: (item: T) => K,
-): Map<K, T> {
-  const result = new Map<K, T>();
+export function indexBy<T, K>(items: readonly T[], getKey: (item: T) => K): Map<K, T> {
+	const result = new Map<K, T>();
 
-  for (const item of items) {
-    result.set(getKey(item), item);
-  }
+	for (const item of items) {
+		result.set(getKey(item), item);
+	}
 
-  return result;
+	return result;
 }
 
 /**
@@ -40,23 +37,20 @@ export function indexBy<T, K>(
  * Same as indexBy(), but throws if duplicate keys are found.
  * Useful when uniqueness is an invariant you want to enforce in memory.
  */
-export function uniqueIndexBy<T, K>(
-  items: readonly T[],
-  getKey: (item: T) => K,
-): Map<K, T> {
-  const result = new Map<K, T>();
+export function uniqueIndexBy<T, K>(items: readonly T[], getKey: (item: T) => K): Map<K, T> {
+	const result = new Map<K, T>();
 
-  for (const item of items) {
-    const key = getKey(item);
+	for (const item of items) {
+		const key = getKey(item);
 
-    if (result.has(key)) {
-      throw new Error(`Duplicate key encountered: ${String(key)}`);
-    }
+		if (result.has(key)) {
+			throw new Error(`Duplicate key encountered: ${String(key)}`);
+		}
 
-    result.set(key, item);
-  }
+		result.set(key, item);
+	}
 
-  return result;
+	return result;
 }
 
 /**
@@ -68,21 +62,18 @@ export function uniqueIndexBy<T, K>(
  * - products grouped by categoryId
  * - variants grouped by productId
  */
-export function groupBy<T, K>(
-  items: readonly T[],
-  getKey: (item: T) => K,
-): Map<K, T[]> {
-  const result = new Map<K, T[]>();
+export function groupBy<T, K>(items: readonly T[], getKey: (item: T) => K): Map<K, T[]> {
+	const result = new Map<K, T[]>();
 
-  for (const item of items) {
-    const key = getKey(item);
-    const group = result.get(key);
+	for (const item of items) {
+		const key = getKey(item);
+		const group = result.get(key);
 
-    if (group) group.push(item);
-    else result.set(key, [item]);
-  }
+		if (group) group.push(item);
+		else result.set(key, [item]);
+	}
 
-  return result;
+	return result;
 }
 
 /**
@@ -94,16 +85,13 @@ export function groupBy<T, K>(
  * - counts per category
  * - orders per customer inside an already-fetched bounded result set
  */
-export function countBy<T, K>(
-  items: readonly T[],
-  getKey: (item: T) => K,
-): Map<K, number> {
-  const result = new Map<K, number>();
+export function countBy<T, K>(items: readonly T[], getKey: (item: T) => K): Map<K, number> {
+	const result = new Map<K, number>();
 
-  for (const item of items) {
-    const key = getKey(item);
-    result.set(key, (result.get(key) ?? 0) + 1);
-  }
+	for (const item of items) {
+		const key = getKey(item);
+		result.set(key, (result.get(key) ?? 0) + 1);
+	}
 
-  return result;
+	return result;
 }

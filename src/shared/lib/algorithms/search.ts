@@ -20,14 +20,14 @@
  * - The data lives in the database. Query/index it there first.
  */
 export function linearFind<T>(
-  items: readonly T[],
-  predicate: (item: T, index: number) => boolean,
+	items: readonly T[],
+	predicate: (item: T, index: number) => boolean
 ): T | undefined {
-  for (let i = 0; i < items.length; i += 1) {
-    if (predicate(items[i], i)) return items[i];
-  }
+	for (let i = 0; i < items.length; i += 1) {
+		if (predicate(items[i], i)) return items[i];
+	}
 
-  return undefined;
+	return undefined;
 }
 
 /**
@@ -35,17 +35,17 @@ export function linearFind<T>(
  * Same idea as linearFind(), but returns the matching index.
  */
 export function linearFindIndex<T>(
-  items: readonly T[],
-  predicate: (item: T, index: number) => boolean,
+	items: readonly T[],
+	predicate: (item: T, index: number) => boolean
 ): number {
-  for (let i = 0; i < items.length; i += 1) {
-    if (predicate(items[i], i)) return i;
-  }
+	for (let i = 0; i < items.length; i += 1) {
+		if (predicate(items[i], i)) return i;
+	}
 
-  return -1;
+	return -1;
 }
 
-import type { Comparator } from "./types";
+import type { Comparator } from './types';
 
 /**
  * O(log n) search time, O(1) extra space.
@@ -58,12 +58,12 @@ import type { Comparator } from "./types";
  * Returns the matching item, or undefined if it does not exist.
  */
 export function binarySearch<T>(
-  items: readonly T[],
-  target: T,
-  compare: Comparator<T>,
+	items: readonly T[],
+	target: T,
+	compare: Comparator<T>
 ): T | undefined {
-  const index = binarySearchIndex(items, target, compare);
-  return index === -1 ? undefined : items[index];
+	const index = binarySearchIndex(items, target, compare);
+	return index === -1 ? undefined : items[index];
 }
 
 /**
@@ -71,23 +71,23 @@ export function binarySearch<T>(
  * Returns the index of a matching item in an already-sorted array.
  */
 export function binarySearchIndex<T>(
-  items: readonly T[],
-  target: T,
-  compare: Comparator<T>,
+	items: readonly T[],
+	target: T,
+	compare: Comparator<T>
 ): number {
-  let low = 0;
-  let high = items.length - 1;
+	let low = 0;
+	let high = items.length - 1;
 
-  while (low <= high) {
-    const mid = low + Math.floor((high - low) / 2);
-    const comparison = compare(items[mid], target);
+	while (low <= high) {
+		const mid = low + Math.floor((high - low) / 2);
+		const comparison = compare(items[mid], target);
 
-    if (comparison === 0) return mid;
-    if (comparison < 0) low = mid + 1;
-    else high = mid - 1;
-  }
+		if (comparison === 0) return mid;
+		if (comparison < 0) low = mid + 1;
+		else high = mid - 1;
+	}
 
-  return -1;
+	return -1;
 }
 
 /**
@@ -99,22 +99,18 @@ export function binarySearchIndex<T>(
  *
  * `items` MUST already be sorted according to `compare`.
  */
-export function lowerBound<T>(
-  items: readonly T[],
-  target: T,
-  compare: Comparator<T>,
-): number {
-  let low = 0;
-  let high = items.length;
+export function lowerBound<T>(items: readonly T[], target: T, compare: Comparator<T>): number {
+	let low = 0;
+	let high = items.length;
 
-  while (low < high) {
-    const mid = low + Math.floor((high - low) / 2);
+	while (low < high) {
+		const mid = low + Math.floor((high - low) / 2);
 
-    if (compare(items[mid], target) < 0) low = mid + 1;
-    else high = mid;
-  }
+		if (compare(items[mid], target) < 0) low = mid + 1;
+		else high = mid;
+	}
 
-  return low;
+	return low;
 }
 
 /**
@@ -123,20 +119,16 @@ export function lowerBound<T>(
  * Returns the first index strictly after `target` in a sorted array.
  * Together with lowerBound(), this can locate the full range of duplicates.
  */
-export function upperBound<T>(
-  items: readonly T[],
-  target: T,
-  compare: Comparator<T>,
-): number {
-  let low = 0;
-  let high = items.length;
+export function upperBound<T>(items: readonly T[], target: T, compare: Comparator<T>): number {
+	let low = 0;
+	let high = items.length;
 
-  while (low < high) {
-    const mid = low + Math.floor((high - low) / 2);
+	while (low < high) {
+		const mid = low + Math.floor((high - low) / 2);
 
-    if (compare(items[mid], target) <= 0) low = mid + 1;
-    else high = mid;
-  }
+		if (compare(items[mid], target) <= 0) low = mid + 1;
+		else high = mid;
+	}
 
-  return low;
+	return low;
 }

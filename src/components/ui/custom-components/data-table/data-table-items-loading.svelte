@@ -34,7 +34,7 @@
 {#if borderless}
 	<div class={className}>{@render skeleton()}</div>
 {:else}
-	<Card size="sm" class={cn('overflow-hidden rounded-none rounded-b-4xl', className)}
-		>{@render skeleton()}</Card
-	>
+	<Card size="sm" class={cn('overflow-hidden rounded-none rounded-b-4xl', className)}>
+		{@render skeleton()}
+	</Card>
 {/if}

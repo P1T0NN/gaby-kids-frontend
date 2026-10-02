@@ -26,9 +26,9 @@
 	const canAddOption = $derived(
 		productVariantOptionNames.length < PRODUCT_VARIANTS_CONFIG.MAX_OPTION_COUNT
 	);
-	// Suggested names are stored option data, so they stay in English like any typed name.
+	// Suggested names are stored option data, so they stay in Spanish like any typed name.
 	const hasColorOption = $derived(hasOptionNamed('Color'));
-	const hasSizeOption = $derived(hasOptionNamed('Size'));
+	const hasTallasOption = $derived(hasOptionNamed('Tallas'));
 
 	function hasOptionNamed(name: string): boolean {
 		return productVariantOptionNames.some(
@@ -64,13 +64,13 @@
 			</Button>
 		{/if}
 
-		{#if !hasSizeOption}
+		{#if !hasTallasOption}
 			<Button
 				type="button"
 				variant="secondary"
 				size="sm"
 				{disabled}
-				onclick={() => addProductVariantOption('Size')}
+				onclick={() => addProductVariantOption('Tallas')}
 			>
 				<span class="icon-[lucide--plus] size-4" data-icon="inline-start" aria-hidden="true"></span>
 				{m['ProductVariantsFeature.ProductVariantsEditorAddOptionButton.addSize']()}

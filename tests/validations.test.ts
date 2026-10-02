@@ -8,7 +8,7 @@ test('built-in schema issues use the existing validation message mapping', () =>
 	const parsed = saveProductSchema.safeParse({
 		name: '',
 		description: 'Details',
-		categoryId: 'category'
+		categoryIds: ['category']
 	});
 	expect(parsed.success).toBe(false);
 	if (parsed.success) throw new Error('Expected an empty name to fail validation');
@@ -23,7 +23,7 @@ test('original price must be higher than the variant price', () => {
 		name: 'Sale product',
 		description: 'Details',
 		trackInventory: true,
-		categoryId: 'category',
+		categoryIds: ['category'],
 		productVariantOptionNames: [],
 		productVariants: [
 			{
@@ -51,7 +51,7 @@ test('rejects duplicate option names and duplicate variant combinations', () => 
 		name: 'Variant product',
 		description: 'Details',
 		trackInventory: true,
-		categoryId: 'category'
+		categoryIds: ['category']
 	};
 
 	const duplicateOption = saveProductSchema.safeParse({
@@ -110,7 +110,7 @@ test.each([-1, 0.5, Number.MAX_SAFE_INTEGER + 1])('rejects invalid stock %s', (i
 			name: 'Product',
 			description: 'Description',
 			trackInventory: true,
-			categoryId: 'category',
+			categoryIds: ['category'],
 			productVariantOptionNames: [],
 			productVariants: [
 				{
@@ -131,7 +131,7 @@ test('requires at least one image per product variant', () => {
 		name: 'Image product',
 		description: 'Details',
 		trackInventory: true,
-		categoryId: 'category',
+		categoryIds: ['category'],
 		productVariantOptionNames: [],
 		productVariants: [{ options: [], sku: '', imageKeys: [], priceInCents: 100, inventory: 0 }]
 	});
@@ -147,7 +147,7 @@ test('requires an explicit inventory tracking choice', () => {
 	const input = {
 		name: 'Product',
 		description: 'Description',
-		categoryId: 'category',
+		categoryIds: ['category'],
 		productVariantOptionNames: [],
 		productVariants: [
 			{

@@ -18,11 +18,11 @@ test('builds one selection key per non-empty subset of a configured pair', () =>
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '5' }
+					{ name: 'Tallas', value: '5' }
 				]
 			}
 		])
-	).toEqual(['color:rojo', 'color:rojo|size:5', 'size:5']);
+	).toEqual(['color:rojo', 'color:rojo|tallas:5', 'tallas:5']);
 });
 
 test('deduplicates keys, normalizes names and values, and ignores unconfigured options', () => {
@@ -36,13 +36,13 @@ test('deduplicates keys, normalizes names and values, and ignores unconfigured o
 		{
 			options: [
 				{ name: ' color ', value: ' rojo ' },
-				{ name: 'Size', value: '4' }
+				{ name: 'Tallas', value: '4' }
 			]
 		},
-		{ options: [{ name: 'Size', value: '4' }] }
+		{ options: [{ name: 'Tallas', value: '4' }] }
 	]);
 
-	expect(keys).toEqual(['color:rojo', 'color:rojo|size:4', 'size:4']);
+	expect(keys).toEqual(['color:rojo', 'color:rojo|tallas:4', 'tallas:4']);
 });
 
 test('builds and parses canonical selection keys', () => {

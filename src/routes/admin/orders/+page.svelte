@@ -39,7 +39,10 @@
 
 <div class="flex min-h-full min-w-0 flex-1 flex-col gap-6">
 	<DataTable pagination={orders} key={(order) => order._id} placement="above">
-		{#snippet header()}<AdminOrdersHeader {filters} />{/snippet}
+		{#snippet header()}
+			<AdminOrdersHeader {filters} />
+		{/snippet}
+
 		{#snippet head()}
 			<TableHead>{m['AdminOrdersPage.orderColumn']()}</TableHead>
 			<TableHead class="min-w-56">{m['AdminOrdersPage.customerColumn']()}</TableHead>
@@ -47,13 +50,22 @@
 			<TableHead>{m['AdminOrdersPage.paymentColumn']()}</TableHead>
 			<TableHead>{m['AdminOrdersPage.fulfillmentColumn']()}</TableHead>
 			<TableHead class="hidden lg:table-cell">{m['AdminOrdersPage.createdColumn']()}</TableHead>
-			<TableHead class="w-24"
-				><span class="sr-only">{m['AdminOrdersPage.actionsColumn']()}</span></TableHead
-			>
+			<TableHead class="w-24">
+				<span class="sr-only">{m['AdminOrdersPage.actionsColumn']()}</span>
+			</TableHead>
 		{/snippet}
-		{#snippet row(order)}<AdminOrdersTableItem {order} />{/snippet}
-		{#snippet loadingSnippet()}<AdminOrdersTableLoading />{/snippet}
-		{#snippet errorSnippet()}<ErrorComponent message={m['AdminOrdersPage.loadError']()} />{/snippet}
+
+		{#snippet row(order)}
+			<AdminOrdersTableItem {order} />
+		{/snippet}
+
+		{#snippet loadingSnippet()}
+			<AdminOrdersTableLoading />
+		{/snippet}
+
+		{#snippet errorSnippet()}
+			<ErrorComponent message={m['AdminOrdersPage.loadError']()} />
+		{/snippet}
 		{#snippet empty()}
 			<EmptyData
 				title={filters.isActive

@@ -113,7 +113,7 @@ export function createProductFields(options: {
 				},
 				{
 					kind: 'custom',
-					name: 'categoryId',
+					name: 'categoryIds',
 					label: m['AddProductPage.categories'](),
 					description: m['AddProductPage.categoriesDescription'](),
 					required: true,
@@ -159,7 +159,7 @@ export function createProductFields(options: {
 
 /** Extra saveProduct payload: resolved upload keys and the trimmed variant rows. */
 export function buildSaveProductExtraFields(options: {
-	categoryId: string;
+	categoryIds: string[];
 	status: 'active' | 'draft';
 	productVariantOptionNames: string[];
 	productVariants: ProductVariantFormValue[];
@@ -173,7 +173,7 @@ export function buildSaveProductExtraFields(options: {
 
 	return {
 		// SAFETY: the shared schema and Convex validate the selected category ID.
-		categoryId: options.categoryId as Id<'categories'>,
+		categoryIds: options.categoryIds as Id<'categories'>[],
 		status: options.status,
 		// Client-only field; `saveProductFormSchema` validates it and strips it from the payload.
 		images: options.uploadFiles.map((preview) => preview.key ?? preview.id),

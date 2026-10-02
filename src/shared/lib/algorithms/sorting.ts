@@ -6,17 +6,14 @@
  * explicit for normal comparison sorting.
  */
 
-import type { Comparator } from "./types";
+import type { Comparator } from './types';
 
 /**
  * O(n log n) typical comparison-sort time, O(n) copy space here.
  * Returns a sorted COPY and does not mutate the original array.
  */
-export function sortCopy<T>(
-  items: readonly T[],
-  compare: Comparator<T>,
-): T[] {
-  return [...items].sort(compare);
+export function sortCopy<T>(items: readonly T[], compare: Comparator<T>): T[] {
+	return [...items].sort(compare);
 }
 
 /**
@@ -27,11 +24,11 @@ export function sortCopy<T>(
  * sortBy(products, p => p.price, (a, b) => a - b)
  */
 export function sortBy<T, K>(
-  items: readonly T[],
-  getKey: (item: T) => K,
-  compareKeys: Comparator<K>,
+	items: readonly T[],
+	getKey: (item: T) => K,
+	compareKeys: Comparator<K>
 ): T[] {
-  return [...items].sort((a, b) => compareKeys(getKey(a), getKey(b)));
+	return [...items].sort((a, b) => compareKeys(getKey(a), getKey(b)));
 }
 
 /**
@@ -41,14 +38,10 @@ export function sortBy<T, K>(
  * Fine for small/bounded in-memory arrays. For very large data sets, ask the
  * database to order + take N instead of fetching everything and sorting here.
  */
-export function topN<T>(
-  items: readonly T[],
-  count: number,
-  compare: Comparator<T>,
-): T[] {
-  if (!Number.isInteger(count) || count < 0) {
-    throw new RangeError("count must be a non-negative integer");
-  }
+export function topN<T>(items: readonly T[], count: number, compare: Comparator<T>): T[] {
+	if (!Number.isInteger(count) || count < 0) {
+		throw new RangeError('count must be a non-negative integer');
+	}
 
-  return [...items].sort(compare).slice(0, count);
+	return [...items].sort(compare).slice(0, count);
 }

@@ -86,8 +86,10 @@
 							variant="outline"
 							type="button"
 							disabled={submitting || !captcha.token}
-							onclick={google.onclick}>{google.label}</Button
+							onclick={google.onclick}
 						>
+							{google.label}
+						</Button>
 					{/if}
 					{@render actionsFooter?.()}
 				</Field.Field>

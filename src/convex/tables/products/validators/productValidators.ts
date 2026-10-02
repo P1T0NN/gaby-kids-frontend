@@ -29,6 +29,8 @@ export const productResult = v.object({
 	priceInCents: v.number(),
 	compareAtPriceInCents: v.optional(v.number()),
 	hasPriceRange: v.boolean(),
+	categoryIds: v.array(v.id('categories')),
+	/** Compatibility with frontend clients deployed before multi-category support. */
 	categoryId: v.id('categories'),
 	ageGroup: v.optional(productAgeGroup),
 	gender: v.optional(productGender),
@@ -49,11 +51,13 @@ export const productVariantSummary = v.object({
 });
 
 export const adminProductResult = productResult.extend({
+	categoryOptions: v.array(categoryOption),
 	categoryOption,
 	productVariantSummary
 });
 
 export const adminProductDetailResult = productResult.extend({
+	categoryOptions: v.array(categoryOption),
 	categoryOption,
 	productVariants: v.array(productVariantResult)
 });

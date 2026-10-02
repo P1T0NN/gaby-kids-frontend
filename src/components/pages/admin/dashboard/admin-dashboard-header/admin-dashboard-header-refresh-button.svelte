@@ -25,6 +25,8 @@
 	aria-busy={loading}
 	aria-label={m['AdminDashboardPage.AdminDashboardHeaderTimeranges.refresh']()}
 >
-	<span class={cn('icon-[lucide--refresh-cw] size-4', loading && 'animate-spin')} aria-hidden="true"
+	<span
+		class={cn('icon-[lucide--refresh-cw] size-4', loading && 'animate-spin')}
+		aria-hidden="true"
 	></span>
 </Button>

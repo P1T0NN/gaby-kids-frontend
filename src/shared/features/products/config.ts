@@ -3,6 +3,9 @@ import type { ProductAgeGroup, ProductGender } from './types/productsTypes.js';
 
 export const PRODUCTS_CONFIG = {
 	HAS_PRODUCT_PAGE: true,
+	MAX_CATEGORIES: 20,
+	/** Bound scoped projection rebuilds to a single Convex transaction. */
+	MAX_OPTION_INDEX_ROWS: 2_000,
 	NEW_PRODUCT_WINDOW_MS: 14 * 24 * 60 * 60 * 1000,
 	LOW_STOCK_THRESHOLD: 5,
 	/**

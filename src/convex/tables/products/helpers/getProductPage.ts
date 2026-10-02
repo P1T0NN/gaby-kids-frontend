@@ -1,9 +1,6 @@
 // HELPERS
 import { getPagination } from '../../../helpers/getPagination.js';
 
-// PAGINATION
-import { normalizePageSize } from '../../../../shared/features/pagination/utils/normalizePageSize.js';
-
 // MAPPERS
 import { toProductResult } from '../mappers/toProductResult.js';
 
@@ -66,14 +63,9 @@ function getProductQuery(
  */
 function applyProductAttributeFilters(
 	query: ProductQuery,
-	categoryId: Id<'categories'> | undefined,
 	attributeFilters: ProductAttributeFilters,
 	hasUpsells: boolean
 ): ProductQuery {
-	if (categoryId) {
-		const id = categoryId;
-		query = query.filter((q) => q.eq(q.field('categoryId'), id));
-	}
 	if (attributeFilters.ageGroup) {
 		const ageGroup = attributeFilters.ageGroup;
 		query = query.filter((q) => q.eq(q.field('ageGroup'), ageGroup));
@@ -105,20 +97,11 @@ export async function getProductPage({
 	order?: SortOrder;
 	hasUpsells?: boolean;
 }): Promise<ConvexPaginatedPage<Awaited<ReturnType<typeof toProductResult>>>> {
-	const pageSize = normalizePageSize(paginationOpts.numItems);
-	const categoryId = attributeFilters.categorySlug
-		? await getActiveCategoryId(ctx, attributeFilters.categorySlug)
-		: undefined;
-	if (attributeFilters.categorySlug && !categoryId) {
-		return { items: [], nextCursor: null, hasNextPage: false, pageSize };
-	}
-
 	let baseQuery: ProductQuery;
 	if (search) {
 		baseQuery = ctx.db.query('products').withSearchIndex('search_name', (query) => {
 			let matches = query.search('name', getProductSearchTerm(search));
 			if (status) matches = matches.eq('status', status);
-			if (categoryId) matches = matches.eq('categoryId', categoryId);
 			if (attributeFilters.ageGroup) matches = matches.eq('ageGroup', attributeFilters.ageGroup);
 			if (attributeFilters.gender) matches = matches.eq('gender', attributeFilters.gender);
 			return matches;
@@ -128,12 +111,7 @@ export async function getProductPage({
 	}
 
 	const page = await getPagination(
-		applyProductAttributeFilters(
-			baseQuery,
-			search ? undefined : categoryId,
-			search ? {} : attributeFilters,
-			hasUpsells
-		),
+		applyProductAttributeFilters(baseQuery, search ? {} : attributeFilters, hasUpsells),
 		{ paginationOpts }
 	);
 

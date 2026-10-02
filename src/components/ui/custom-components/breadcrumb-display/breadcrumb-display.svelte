@@ -106,9 +106,9 @@
 
 			<Breadcrumb.BreadcrumbItem>
 				{#if breadcrumb.href}
-					<Breadcrumb.BreadcrumbLink href={breadcrumb.href}
-						>{breadcrumb.label}</Breadcrumb.BreadcrumbLink
-					>
+					<Breadcrumb.BreadcrumbLink href={breadcrumb.href}>
+						{breadcrumb.label}
+					</Breadcrumb.BreadcrumbLink>
 				{:else}
 					<Breadcrumb.BreadcrumbPage>{breadcrumb.label}</Breadcrumb.BreadcrumbPage>
 				{/if}

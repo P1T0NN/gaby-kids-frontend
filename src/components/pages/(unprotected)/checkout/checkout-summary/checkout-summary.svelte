@@ -106,11 +106,14 @@
 			variant="outline"
 			class="h-auto min-h-11 whitespace-normal"
 			onclick={() => cart.removeInvalidItems(unavailableIds)}
-			>{m['CheckoutPage.CheckoutSummary.removeUnavailable']()}</Button
 		>
+			{m['CheckoutPage.CheckoutSummary.removeUnavailable']()}
+		</Button>
 	{:else}
 		<ul class="divide-y divide-border">
-			{#each items as item (item.productVariantId)}<CheckoutSummaryItem {item} />{/each}
+			{#each items as item (item.productVariantId)}
+				<CheckoutSummaryItem {item} />
+			{/each}
 		</ul>
 		{#if fulfillment === 'delivery'}
 			<FreeShippingNudge subtotalInCents={total} class="mt-5 mb-6" />

@@ -31,7 +31,9 @@ export const tables = {
 		priceInCents: v.number(),
 		compareAtPriceInCents: v.optional(v.number()),
 		hasPriceRange: v.boolean(),
-		categoryId: v.id('categories'),
+		/** Legacy field, removed from documents by backfillProductCategories. */
+		categoryId: v.optional(v.id('categories')),
+		categoryIds: v.optional(v.array(v.id('categories'))),
 		ageGroup: v.optional(productAgeGroup),
 		gender: v.optional(productGender),
 		imageKeys: v.array(v.string()),
@@ -67,10 +69,11 @@ export const tables = {
 		productId: v.id('products'),
 		/** Optional during rollout; backfillProductOptionNames fills existing rows. */
 		name: v.optional(v.string()),
-		/** Canonical selection key; one row per product and non-empty option subset. */
+		/** One row per product, category scope and selection; empty key = category membership. */
 		optionKey: v.string(),
 		status: productStatus,
-		categoryId: v.id('categories'),
+		/** Absent on the global scope; category queries select exactly one scope. */
+		categoryId: v.optional(v.id('categories')),
 		ageGroup: v.optional(productAgeGroup),
 		gender: v.optional(productGender),
 		productCreatedAt: v.number()
@@ -80,6 +83,7 @@ export const tables = {
 			filterFields: ['status', 'optionKey', 'categoryId', 'ageGroup', 'gender']
 		})
 		.index('by_product_id', ['productId'])
+		.index('by_category_id_and_option_key', ['categoryId', 'optionKey'])
 		.index('by_status_and_option_key_and_product_created_at', [
 			'status',
 			'optionKey',

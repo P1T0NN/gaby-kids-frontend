@@ -12,7 +12,8 @@
  * `static/logo/`) · DESCRIPTION · WHATSAPP_NUMBER · ADDRESS · HOURS · INSTAGRAM_URL · FACEBOOK_URL · PHONE ·
  * OG_IMAGE (replace the asset in `static/assets/`).
  */
-const WHATSAPP_NUMBER = '+1 555 555 0100';
+const WHATSAPP_NUMBER = '+52 431 105 7527';
+const WHATSAPP_DIAL_NUMBER = WHATSAPP_NUMBER.replace(/\D/g, '');
 
 export const COMPANY_DATA = {
 	NAME: 'Company Name',
@@ -27,15 +28,15 @@ export const COMPANY_DATA = {
 	CURRENCY: 'MXN',
 	/** IANA store timezone: every dashboard day boundary and bucket is computed in this zone. */
 	TIMEZONE: 'UTC',
-	LOGO: '/logo/opt/logo-1536w.webp',
+	LOGO: '/logo/opt/logo-2d-1280w.webp',
 	DESCRIPTION: 'Description',
 	WHATSAPP_NUMBER,
-	WHATSAPP_CONTACT_URL: `https://wa.me/${WHATSAPP_NUMBER}`,
+	WHATSAPP_CONTACT_URL: `https://wa.me/${WHATSAPP_DIAL_NUMBER}`,
 	INSTAGRAM_URL: 'https://www.instagram.com/gabykids_mex/',
 	FACEBOOK_URL: 'https://www.facebook.com/profile.php?id=100034975432904',
 	/** Display phone, INCLUDING the country code — structured data strips the spaces to build
 	 *  the E.164 `telephone`, so the country must live here rather than in code. */
-	PHONE: '+1 555 555 0100',
+	PHONE: WHATSAPP_NUMBER,
 	OG_IMAGE: '/assets/og-image.png',
 	OG_IMAGE_WIDTH: 1200,
 	OG_IMAGE_HEIGHT: 630

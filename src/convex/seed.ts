@@ -189,7 +189,7 @@ async function insertProduct(
 		productVariantOptionNames: [COLOR_FILTER.optionName, SIZE_FILTER.optionName],
 		priceInCents: Math.min(...prices),
 		hasPriceRange: Math.min(...prices) !== Math.max(...prices),
-		categoryId,
+		categoryIds: [categoryId],
 		ageGroup: randomItem(PRODUCT_AGE_GROUPS),
 		gender: randomItem(PRODUCT_GENDERS),
 		imageKeys: [],

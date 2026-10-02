@@ -29,16 +29,17 @@ notes are [`UpsellsSystemDesign.md`](./UpsellsSystemDesign.md) and
 
 `src/convex/schema.ts` owns these app tables:
 
-- `categories`: flat storefront taxonomy referenced by required
-  `products.categoryId`.
-- `products`: catalog name, slug, description, one category, an image library
+- `categories`: flat storefront taxonomy referenced by the non-empty
+  `products.categoryIds` array (up to 20 unique IDs). `categoryId` remains optional
+  only for legacy reads until `backfillProductCategories` completes.
+- `products`: catalog name, slug, description, multiple flat categories, an image library
   (`imageKeys`/`images`; covers for listings, upsells, and OG tags use its first
   image), status, `productVariantOptionNames`, and display caches
   (`priceInCents` is the lowest product variant price, `hasPriceRange`, and a
   shared `compareAtPriceInCents` when every product variant matches).
   `saveProduct` creates or edits product details, product variants, and the
   display caches in one transaction; new products default to draft and always
-  have at least one product variant. Publishing requires an active category.
+  have at least one product variant. Publishing requires every assigned category to be active; drafts may retain archived assignments.
   `ageGroup` (`kids`/`adults`) and `gender` (`unisex`/`male`/`female`) are the
   optional indexed storefront attributes: filterable alone or in any combination
   through a single indexed paginated query, with the remaining attributes
@@ -61,14 +62,20 @@ notes are [`UpsellsSystemDesign.md`](./UpsellsSystemDesign.md) and
   async iteration through `by_product_id` (never `.collect()`), and deleting a
   product queues bounded scheduled batches for its variants.
 - `productOptionIndex` is the storefront option-filter projection: one row per
-  product and selection key (every non-empty subset of a product variant's
+  product, category scope, and selection key (every non-empty subset of a product variant's
   configured option pairs from the static `PRODUCT_OPTION_FILTERS` config),
-  copying `name`, `status`, `categoryId`, `ageGroup`, `gender`, and `productCreatedAt`
-  so one indexed paginate answers a selection. Its name search index combines
-  search with option and attribute filters before pagination. `saveProduct` and
+  copying `name`, `status`, `ageGroup`, `gender`, and `productCreatedAt`;
+  `categoryId` is one membership scope, or absent for the global scope.
+  The empty selection key records category membership, including products without options,
+  so one indexed paginate answers a selection or category filter without duplicates.
+  Rebuilds are bounded to 2,000 rows. Category deletion reads membership rows
+  and the existing per-category aggregate; counts include all product statuses.
+  `product-category-selector.svelte` is the searchable multi-select used by both forms.
+  Its name search index combines search with option and attribute filters before pagination. `saveProduct` and
   `deleteProduct` keep the table current through `createProductOptionIndex` and
   `removeProductOptionIndex`; the `backfillProductOptionIndex` migration rebuilds
   it; `backfillProductOptionNames` adds search names to existing rows in place.
+- The product size guide uses the first assigned category with a supported guide.
 - Upsells use an optional, ordered `products.upsellProductIds` array (maximum
   four). `/admin/upsells` manages recommendations through `tables/upsells` admin
   queries and `saveProductUpsells`; the public query returns only active

@@ -32,7 +32,7 @@ If you need rows matching a field/range, use the database's index.
 If you need text search, use the database's search index.
 If the result can grow large, paginate or limit it.
 
-The algorithms here become useful *after* that database step, for example:
+The algorithms here become useful _after_ that database step, for example:
 
 - grouping 30 cart items by seller,
 - deduplicating 80 returned variants by SKU,

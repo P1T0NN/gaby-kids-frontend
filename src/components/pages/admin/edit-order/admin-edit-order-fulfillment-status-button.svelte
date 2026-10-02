@@ -125,7 +125,9 @@
 						}}
 						disabled={pending || selectedAction === null}
 					>
-						{#if pending}<Spinner data-icon="inline-start" />{/if}
+						{#if pending}
+							<Spinner data-icon="inline-start" />
+						{/if}
 						{pending
 							? m['AdminEditOrderPage.AdminEditOrderFulfillmentStatusButton.processing']()
 							: selectedAction === 'fulfill'

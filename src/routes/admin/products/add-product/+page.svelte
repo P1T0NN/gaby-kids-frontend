@@ -41,7 +41,7 @@
 	import type { ProductVariantFormValue } from '@/shared/features/productVariants/types/productVariantTypes.js';
 
 	let submitting = $state(false);
-	let categoryId = $state('');
+	let categoryIds = $state<string[]>([]);
 	let productVariantOptionNames = $state<string[]>([]);
 	let productVariants = $state<ProductVariantFormValue[]>([createProductVariantFormValue([])]);
 	let uploadFiles = $state<PreviewFile[]>([]);
@@ -61,7 +61,7 @@
 {#snippet categoryField({ field, disabled, error }: CustomFieldContext)}
 	<ProductCategorySelector
 		id={field.name}
-		bind:selectedId={categoryId}
+		bind:selectedIds={categoryIds}
 		required
 		{disabled}
 		{error}
@@ -93,7 +93,7 @@
 		uploadNamespace="products"
 		resolveExtraFields={({ uploadedFiles }) =>
 			buildSaveProductExtraFields({
-				categoryId,
+				categoryIds,
 				status: values.active === true ? 'active' : 'draft',
 				productVariantOptionNames,
 				productVariants,

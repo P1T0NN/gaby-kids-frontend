@@ -47,9 +47,9 @@
 					? m['MyOrdersPage.MyOrdersItem.delivery']()
 					: m['MyOrdersPage.MyOrdersItem.pickup']()}
 			</span>
-			<strong class="font-medium text-foreground tabular-nums"
-				>{formatPrice(order.totalInCents)}</strong
-			>
+			<strong class="font-medium text-foreground tabular-nums">
+				{formatPrice(order.totalInCents)}
+			</strong>
 		</div>
 	</div>
 

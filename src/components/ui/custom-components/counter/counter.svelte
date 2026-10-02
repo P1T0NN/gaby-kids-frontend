@@ -40,9 +40,9 @@
 		<span class="icon-[lucide--minus]" aria-hidden="true"></span>
 	</Button>
 
-	<span class="min-w-6 text-center text-sm font-medium tabular-nums" aria-live="polite"
-		>{value}</span
-	>
+	<span class="min-w-6 text-center text-sm font-medium tabular-nums" aria-live="polite">
+		{value}
+	</span>
 
 	<Button
 		variant="outline"

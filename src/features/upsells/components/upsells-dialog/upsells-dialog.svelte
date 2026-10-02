@@ -156,7 +156,10 @@
 					}}
 				>
 					{m['UpsellsFeature.UpsellsDialog.viewCart']()}
-					<span class="icon-[lucide--arrow-right] size-4" data-icon="inline-end" aria-hidden="true"
+					<span
+						class="icon-[lucide--arrow-right] size-4"
+						data-icon="inline-end"
+						aria-hidden="true"
 					></span>
 				</Button>
 			</footer>

@@ -18,6 +18,7 @@ import {
 import { productVariantInput } from '../../productVariants/validators/productVariantValidators.js';
 
 // HELPERS
+import { getProductCategoryIds } from '../helpers/getProductCategoryIds.js';
 import { validateProductCategory } from '../../categories/helpers/validateProductCategory.js';
 import { logAuditEvent } from '../../../auditLogs/helpers/logAuditEvent.js';
 import { deleteStoredFiles } from '../../../storage/r2.js';
@@ -87,7 +88,8 @@ export const saveProduct = adminUploadMutation({
 		name: v.string(),
 		description: v.string(),
 		trackInventory: v.boolean(),
-		categoryId: v.id('categories'),
+		categoryIds: v.optional(v.array(v.id('categories'))),
+		categoryId: v.optional(v.id('categories')),
 		ageGroup: v.optional(productAgeGroup),
 		gender: v.optional(productGender),
 		productVariantOptionNames: v.array(v.string()),
@@ -96,21 +98,30 @@ export const saveProduct = adminUploadMutation({
 	},
 	returns: productResult,
 	handler: async (ctx, args) => {
-		const parsed = saveProductSchema.safeParse(args);
+		const product = args.id ? await ctx.db.get(args.id) : null;
+		if (args.id && !product) throw new ConvexError<BackendErrorData>({ code: 'PRODUCT_NOT_FOUND' });
+		const currentCategoryIds = product ? getProductCategoryIds(product) : [];
+		// Older forms update the primary category while retaining secondary assignments.
+		const categoryIds =
+			args.categoryIds ??
+			(args.categoryId
+				? [args.categoryId, ...currentCategoryIds.slice(1).filter((id) => id !== args.categoryId)]
+				: undefined);
+		const parsed = saveProductSchema.safeParse({ ...args, categoryIds });
 		if (!parsed.success) {
 			throw new ConvexError<BackendErrorData>({ code: 'INVALID_PRODUCT_DATA' });
 		}
 
 		const input = parsed.data;
-		const product = args.id ? await ctx.db.get(args.id) : null;
-		if (args.id && !product) throw new ConvexError<BackendErrorData>({ code: 'PRODUCT_NOT_FOUND' });
 
 		const status = input.status ?? product?.status ?? 'draft';
-		await validateProductCategory(
-			ctx,
-			input.categoryId,
-			status === 'active' ? undefined : product?.categoryId
-		);
+		for (const categoryId of input.categoryIds) {
+			await validateProductCategory(
+				ctx,
+				categoryId,
+				status !== 'active' && currentCategoryIds.includes(categoryId) ? categoryId : undefined
+			);
+		}
 
 		const slug = await resolveProductSlug(ctx, input.name, product);
 		const currentKeys = product?.imageKeys ?? [];
@@ -146,7 +157,7 @@ export const saveProduct = adminUploadMutation({
 			priceInCents: caches.priceInCents,
 			compareAtPriceInCents: caches.compareAtPriceInCents,
 			hasPriceRange: caches.hasPriceRange,
-			categoryId: input.categoryId,
+			categoryIds: input.categoryIds,
 			ageGroup: input.ageGroup,
 			gender: input.gender,
 			imageKeys,
@@ -157,7 +168,7 @@ export const saveProduct = adminUploadMutation({
 		};
 
 		const productId = product?._id ?? (await ctx.db.insert('products', { ...fields, slug }));
-		if (product) await ctx.db.patch(productId, fields);
+		if (product) await ctx.db.patch(productId, { ...fields, categoryId: undefined });
 
 		for (const insert of writes.inserts) {
 			await ctx.db.insert('productVariants', { ...insert, productId });

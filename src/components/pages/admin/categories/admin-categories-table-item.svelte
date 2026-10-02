@@ -61,7 +61,9 @@
 		href={ADMIN_PAGE_ENDPOINTS.EDIT_CATEGORY(category._id)}
 		class="group inline-flex min-w-0 items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
 	>
-		<span class="icon-[lucide--folder] size-5 shrink-0 text-muted-foreground" aria-hidden="true"
+		<span
+			class="icon-[lucide--folder] size-5 shrink-0 text-muted-foreground"
+			aria-hidden="true"
 		></span>
 		<div class="min-w-0">
 			<p class="truncate font-medium group-hover:underline">{category.name}</p>

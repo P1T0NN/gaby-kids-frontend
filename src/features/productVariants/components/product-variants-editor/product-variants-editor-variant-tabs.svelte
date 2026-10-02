@@ -126,7 +126,7 @@
 			{/if}
 
 			<Tabs.List
-				class="min-w-0 justify-start [scrollbar-width:none] overflow-x-auto motion-safe:scroll-smooth [&::-webkit-scrollbar]:hidden"
+				class="min-w-0 [scrollbar-width:none] justify-start overflow-x-auto motion-safe:scroll-smooth [&::-webkit-scrollbar]:hidden"
 				{@attach captureProductVariantsListElement}
 			>
 				{#each productVariants as productVariant, index (index)}

@@ -30,10 +30,25 @@ export const deleteCategory = adminMutation({
 			throw new ConvexError<BackendErrorData>({ code: 'CATEGORY_NOT_FOUND' });
 		}
 
-		const products = await ctx.db
+		// Keep legacy references protected while the product backfill is running.
+		const legacyProducts = await ctx.db
 			.query('products')
 			.withIndex('by_category_id', (query) => query.eq('categoryId', args.id))
 			.take(CATEGORY_CONFIG.maxCategoryProductNames);
+		const memberships = await ctx.db
+			.query('productOptionIndex')
+			.withIndex('by_category_id_and_option_key', (query) =>
+				query.eq('categoryId', args.id).eq('optionKey', '')
+			)
+			.take(CATEGORY_CONFIG.maxCategoryProductNames);
+		const linkedProducts = await Promise.all(memberships.map((row) => ctx.db.get(row.productId)));
+		const products = [
+			...new Map(
+				[...legacyProducts, ...linkedProducts].flatMap((product) =>
+					product ? [[product._id, product] as const] : []
+				)
+			).values()
+		].slice(0, CATEGORY_CONFIG.maxCategoryProductNames);
 		if (products.length > 0) {
 			const productCount = Math.max(
 				products.length,

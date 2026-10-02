@@ -13,7 +13,7 @@
 	import { createAnalyticsDashboard } from '@/features/analytics/hooks/useAnalyticsDashboard.svelte.js';
 
 	const client = useConvexClient();
-	
+
 	createAnalyticsDashboard(client);
 </script>
 

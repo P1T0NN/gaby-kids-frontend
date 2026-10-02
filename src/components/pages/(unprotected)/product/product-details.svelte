@@ -50,8 +50,8 @@
 
 <div class="flex min-w-0 flex-col gap-8 lg:col-start-2 lg:row-start-2">
 	<div class="flex flex-col gap-5">
-		{#key product.categoryId}
-			<ProductSizeGuide categoryId={product.categoryId} />
+		{#key product.categoryIds.join()}
+			<ProductSizeGuide categoryIds={product.categoryIds} />
 		{/key}
 		{#if product.productVariantOptionNames.length > 0}
 			<ProductVariantPicker

@@ -59,10 +59,7 @@
 		{/snippet}
 
 		<div class="flex flex-col gap-4 p-3">
-			<nav
-				aria-label={m['Components.AdminSidebar.navigationLabel']()}
-				class="flex flex-col gap-1"
-			>
+			<nav aria-label={m['Components.AdminSidebar.navigationLabel']()} class="flex flex-col gap-1">
 				<NativeSidebarSection title={m['Components.AdminSidebar.generalSection']()}>
 					<NativeSidebarLink href="/admin/dashboard">
 						<span class="icon-[lucide--layout-dashboard] size-4" aria-hidden="true"></span>

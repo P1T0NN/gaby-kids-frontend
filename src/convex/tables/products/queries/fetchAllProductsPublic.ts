@@ -53,24 +53,25 @@ export const fetchAllProductsPublic = query({
 		const optionSelection = optionKey !== undefined;
 		const canCountTotal = !search && !hasAttributeFilters && !optionSelection;
 
-		const page = optionSelection
-			? await getProductOptionPage({
-					ctx,
-					paginationOpts: args.paginationOpts,
-					optionKey,
-					search,
-					attributeFilters,
-					status: 'active',
-					order: filters.sort === 'asc' ? 'asc' : 'desc'
-				})
-			: await getProductPage({
-					ctx,
-					paginationOpts: args.paginationOpts,
-					search,
-					attributeFilters,
-					status: 'active',
-					order: filters.sort === 'asc' ? 'asc' : 'desc'
-				});
+		const page =
+			optionSelection || Boolean(attributeFilters.categorySlug)
+				? await getProductOptionPage({
+						ctx,
+						paginationOpts: args.paginationOpts,
+						optionKey: optionKey ?? '',
+						search,
+						attributeFilters,
+						status: 'active',
+						order: filters.sort === 'asc' ? 'asc' : 'desc'
+					})
+				: await getProductPage({
+						ctx,
+						paginationOpts: args.paginationOpts,
+						search,
+						attributeFilters,
+						status: 'active',
+						order: filters.sort === 'asc' ? 'asc' : 'desc'
+					});
 
 		const items = await withProductVariantSummaries({ ctx, items: page.items });
 		const total = canCountTotal

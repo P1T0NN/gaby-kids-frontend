@@ -98,7 +98,9 @@
 							/>
 						{:else}
 							<span class="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted">
-								<span class="icon-[lucide--package] size-4 text-muted-foreground" aria-hidden="true"
+								<span
+									class="icon-[lucide--package] size-4 text-muted-foreground"
+									aria-hidden="true"
 								></span>
 							</span>
 						{/if}

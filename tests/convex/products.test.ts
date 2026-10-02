@@ -13,6 +13,7 @@ import { expect, test, vi } from 'vitest';
 
 import { api, components, internal } from '../../src/convex/_generated/api';
 import schema from '../../src/convex/schema';
+import { createProductOptionIndex } from '../../src/convex/tables/productOptionIndex/helpers/createProductOptionIndex.js';
 
 // TYPES
 import type { Id } from '../../src/convex/_generated/dataModel';
@@ -239,7 +240,12 @@ test('filters storefront products by age group and gender, alone and with a cate
 				Object.assign(product, { ageGroup: attributes.ageGroup });
 			}
 			if (attributes.gender !== undefined) Object.assign(product, { gender: attributes.gender });
-			await ctx.db.insert('products', product);
+			const productId = await ctx.db.insert('products', product);
+			await createProductOptionIndex({
+				ctx,
+				product: (await ctx.db.get(productId))!,
+				variants: []
+			});
 		});
 	}
 
@@ -311,8 +317,8 @@ test.each([undefined, 'Attribute'])(
 		);
 
 		for (let i = 0; i < 26; i++) {
-			await t.run((ctx) =>
-				ctx.db.insert('products', {
+			await t.run(async (ctx) => {
+				const id = await ctx.db.insert('products', {
 					name: `Attribute product ${i}`,
 					slug: `attribute-product-${i}`,
 					description: '',
@@ -327,8 +333,9 @@ test.each([undefined, 'Attribute'])(
 					hasPriceRange: false,
 					upsellProductIds: [],
 					status: 'active'
-				})
-			);
+				});
+				await createProductOptionIndex({ ctx, product: (await ctx.db.get(id))!, variants: [] });
+			});
 		}
 
 		const query = api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic;
@@ -394,7 +401,7 @@ test('saving a product without attributes defaults to kids and unisex', async ()
 		name: 'Defaults to adults unisex',
 		description: 'No attributes sent.',
 		trackInventory: true,
-		categoryId: category._id,
+		categoryIds: [category._id],
 		productVariantOptionNames: [],
 		productVariants: [defaultProductVariant(200, 1)],
 		uploadedFiles: [PRODUCT_IMAGE_KEY]
@@ -433,7 +440,7 @@ test('allows only admins to create and list valid products', async () => {
 			name: 'Forbidden product',
 			description: 'Users cannot create products.',
 			trackInventory: true,
-			categoryId: category._id,
+			categoryIds: [category._id],
 			productVariantOptionNames: [],
 			productVariants: [defaultProductVariant(100, 0)]
 		})
@@ -444,7 +451,7 @@ test('allows only admins to create and list valid products', async () => {
 			name: '',
 			description: 'A product name is required.',
 			trackInventory: true,
-			categoryId: category._id,
+			categoryIds: [category._id],
 			productVariantOptionNames: [],
 			productVariants: [defaultProductVariant(100, 0)]
 		})
@@ -455,7 +462,7 @@ test('allows only admins to create and list valid products', async () => {
 		name: 'Canvas backpack',
 		description: 'A durable everyday backpack.',
 		trackInventory: true,
-		categoryId: category._id,
+		categoryIds: [category._id],
 		productVariantOptionNames: [],
 		productVariants: [defaultProductVariant(100, 5)],
 		uploadedFiles: [PRODUCT_IMAGE_KEY]
@@ -503,7 +510,7 @@ test('allows only admins to create and list valid products', async () => {
 	expect(page.total).toBe(1);
 	expect(page.items).toHaveLength(1);
 	expect(page.items[0]?._id).toBe(created._id);
-	expect(page.items[0]?.categoryOption.name).toBe(category.name);
+	expect(page.items[0]?.categoryOptions[0]?.name).toBe(category.name);
 	const searchQuery = api.tables.products.queries.fetchProductsSearch.fetchProductsSearch;
 	await expect(user.query(searchQuery, { search: 'Canvas' })).rejects.toMatchObject({
 		data: { code: 'FORBIDDEN' }
@@ -526,7 +533,7 @@ test('allows only admins to create and list valid products', async () => {
 			name: created.name,
 			description: created.description,
 			trackInventory: false,
-			categoryId: category._id,
+			categoryIds: [category._id],
 			productVariantOptionNames: [],
 			productVariants: [{ ...defaultProductVariant(100, 0), id: createdProductVariant._id }]
 		})
@@ -539,7 +546,7 @@ test('allows only admins to create and list valid products', async () => {
 			name: created.name,
 			description: created.description,
 			trackInventory: true,
-			categoryId: category._id,
+			categoryIds: [category._id],
 			productVariantOptionNames: [],
 			productVariants: [{ ...defaultProductVariant(100, 0), id: createdProductVariant._id }]
 		})
@@ -551,7 +558,7 @@ test('allows only admins to create and list valid products', async () => {
 		name: 'Updated canvas backpack',
 		description: created.description,
 		trackInventory: false,
-		categoryId: category._id,
+		categoryIds: [category._id],
 		productVariantOptionNames: [],
 		productVariants: [
 			{
@@ -617,7 +624,7 @@ test('rejects invalid product details without creating products or consuming upl
 		name: 'Invalid product',
 		description: 'Must roll back',
 		trackInventory: true,
-		categoryId: category._id,
+		categoryIds: [category._id],
 		productVariantOptionNames: [],
 		productVariants: [{ ...defaultProductVariant(100, 0), imageKeys: [imageKey] }],
 		uploadedFiles: [imageKey]
@@ -668,7 +675,7 @@ test('rejects duplicate slugs, unavailable categories, foreign uploads, and unau
 		name: 'Same name',
 		description: 'Guarded product',
 		trackInventory: true,
-		categoryId: category._id,
+		categoryIds: [category._id],
 		productVariantOptionNames: [],
 		productVariants: [defaultProductVariant(100, 0)]
 	};
@@ -744,7 +751,7 @@ test('saves structured product variants, derives display caches, and guards rese
 		name: 'Variant shirt',
 		description: 'Two colors',
 		trackInventory: true,
-		categoryId: category._id,
+		categoryIds: [category._id],
 		productVariantOptionNames: ['Color'],
 		productVariants: [
 			{
@@ -797,7 +804,7 @@ test('saves structured product variants, derives display caches, and guards rese
 			name: created.name,
 			description: created.description,
 			trackInventory: true,
-			categoryId: category._id,
+			categoryIds: [category._id],
 			productVariantOptionNames: ['Color'],
 			productVariants: [
 				{
@@ -824,7 +831,7 @@ test('saves structured product variants, derives display caches, and guards rese
 			name: created.name,
 			description: created.description,
 			trackInventory: true,
-			categoryId: category._id,
+			categoryIds: [category._id],
 			productVariantOptionNames: ['Color'],
 			productVariants: [
 				{
@@ -851,7 +858,7 @@ test('saves structured product variants, derives display caches, and guards rese
 			name: created.name,
 			description: created.description,
 			trackInventory: true,
-			categoryId: category._id,
+			categoryIds: [category._id],
 			productVariantOptionNames: ['Color'],
 			productVariants: [
 				{
@@ -870,7 +877,7 @@ test('saves structured product variants, derives display caches, and guards rese
 		name: created.name,
 		description: created.description,
 		trackInventory: true,
-		categoryId: category._id,
+		categoryIds: [category._id],
 		productVariantOptionNames: ['Color'],
 		productVariants: [
 			{
@@ -916,7 +923,7 @@ test('saves structured product variants, derives display caches, and guards rese
 			name: created.name,
 			description: created.description,
 			trackInventory: true,
-			categoryId: category._id,
+			categoryIds: [category._id],
 			productVariantOptionNames: ['Color'],
 			productVariants: [
 				{
@@ -937,7 +944,7 @@ test('saves structured product variants, derives display caches, and guards rese
 		name: 'Plain mug',
 		description: 'No options',
 		trackInventory: true,
-		categoryId: category._id,
+		categoryIds: [category._id],
 		productVariantOptionNames: [],
 		productVariants: [defaultProductVariant(100, 0)],
 		uploadedFiles: [PRODUCT_IMAGE_KEY]
@@ -948,7 +955,7 @@ test('saves structured product variants, derives display caches, and guards rese
 			name: other.name,
 			description: other.description,
 			trackInventory: true,
-			categoryId: category._id,
+			categoryIds: [category._id],
 			productVariantOptionNames: ['Color'],
 			productVariants: [
 				{
@@ -1000,7 +1007,7 @@ async function saveOptionProduct(
 		name: input.name,
 		description: input.name,
 		trackInventory: true,
-		categoryId: input.categoryId,
+		categoryIds: [input.categoryId],
 		ageGroup: input.ageGroup ?? 'adults',
 		gender: input.gender ?? 'unisex',
 		productVariantOptionNames: input.variants[0]?.options.map((option) => option.name) ?? [],
@@ -1033,19 +1040,19 @@ test('keeps product option search names and variant selections current on save',
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '5' }
+					{ name: 'Tallas', value: '5' }
 				]
 			},
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '3' }
+					{ name: 'Tallas', value: '3' }
 				]
 			},
 			{
 				options: [
 					{ name: 'Color', value: 'ROJO' },
-					{ name: 'Size', value: '4' }
+					{ name: 'Tallas', value: '4' }
 				]
 			}
 		]
@@ -1059,18 +1066,26 @@ test('keeps product option search names and variant selections current on save',
 			.withIndex('by_product_id', (query) => query.eq('productId', productId))
 			.collect()
 	);
-	expect(indexRows.map((row) => row.optionKey).sort()).toEqual([
+	expect(
+		indexRows
+			.filter((row) => row.categoryId === category._id && row.optionKey)
+			.map((row) => row.optionKey)
+			.sort()
+	).toEqual([
 		'color:rojo',
-		'color:rojo|size:3',
-		'color:rojo|size:4',
-		'color:rojo|size:5',
-		'size:3',
-		'size:4',
-		'size:5'
+		'color:rojo|tallas:3',
+		'color:rojo|tallas:4',
+		'color:rojo|tallas:5',
+		'tallas:3',
+		'tallas:4',
+		'tallas:5'
 	]);
-	expect(indexRows.every((row) => row.status === 'active' && row.categoryId === category._id)).toBe(
-		true
-	);
+	expect(
+		indexRows.every(
+			(row) =>
+				row.status === 'active' && (row.categoryId === category._id || row.categoryId === undefined)
+		)
+	).toBe(true);
 	expect(indexRows.every((row) => row.productCreatedAt === product?._creationTime)).toBe(true);
 	expect(indexRows.every((row) => row.name === product?.name)).toBe(true);
 
@@ -1080,14 +1095,14 @@ test('keeps product option search names and variant selections current on save',
 		name: 'Renamed boots',
 		description: 'Two color option shirt',
 		trackInventory: true,
-		categoryId: category._id,
+		categoryIds: [category._id],
 		gender: 'unisex',
-		productVariantOptionNames: ['Color', 'Size'],
+		productVariantOptionNames: ['Color', 'Tallas'],
 		productVariants: [
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '5' }
+					{ name: 'Tallas', value: '5' }
 				],
 				sku: '',
 				imageKeys: [PRODUCT_IMAGE_KEY],
@@ -1104,11 +1119,12 @@ test('keeps product option search names and variant selections current on save',
 			.withIndex('by_product_id', (query) => query.eq('productId', productId))
 			.collect()
 	);
-	expect(updatedRows.map((row) => row.optionKey).sort()).toEqual([
-		'color:rojo',
-		'color:rojo|size:5',
-		'size:5'
-	]);
+	expect(
+		updatedRows
+			.filter((row) => row.categoryId === category._id && row.optionKey)
+			.map((row) => row.optionKey)
+			.sort()
+	).toEqual(['color:rojo', 'color:rojo|tallas:5', 'tallas:5']);
 	expect(updatedRows.every((row) => row.name === 'Renamed boots')).toBe(true);
 	const query = api.tables.products.queries.fetchAllProductsPublic.fetchAllProductsPublic;
 	const renamed = await t.query(query, {
@@ -1149,7 +1165,7 @@ test('filters storefront products by selected option values with category and at
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '5' }
+					{ name: 'Tallas', value: '5' }
 				]
 			}
 		]
@@ -1162,7 +1178,7 @@ test('filters storefront products by selected option values with category and at
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '3' }
+					{ name: 'Tallas', value: '3' }
 				]
 			}
 		]
@@ -1175,7 +1191,7 @@ test('filters storefront products by selected option values with category and at
 			{
 				options: [
 					{ name: 'Color', value: 'Azul' },
-					{ name: 'Size', value: '4' }
+					{ name: 'Tallas', value: '4' }
 				]
 			}
 		]
@@ -1188,7 +1204,7 @@ test('filters storefront products by selected option values with category and at
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '5' }
+					{ name: 'Tallas', value: '5' }
 				]
 			}
 		]
@@ -1202,7 +1218,7 @@ test('filters storefront products by selected option values with category and at
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '5' }
+					{ name: 'Tallas', value: '5' }
 				]
 			}
 		]
@@ -1297,7 +1313,7 @@ test.each([undefined, 'Boots'])(
 					variants: ['5', '3'].map((size) => ({
 						options: [
 							{ name: 'Color', value: 'Rojo' },
-							{ name: 'Size', value: size }
+							{ name: 'Tallas', value: size }
 						]
 					}))
 				})
@@ -1369,7 +1385,7 @@ test('combines search with option filters and requires all options on one varian
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '5' }
+					{ name: 'Tallas', value: '5' }
 				]
 			}
 		]
@@ -1381,7 +1397,7 @@ test('combines search with option filters and requires all options on one varian
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '3' }
+					{ name: 'Tallas', value: '3' }
 				]
 			}
 		]
@@ -1393,7 +1409,7 @@ test('combines search with option filters and requires all options on one varian
 			{
 				options: [
 					{ name: 'Color', value: 'Azul' },
-					{ name: 'Size', value: '4' }
+					{ name: 'Tallas', value: '4' }
 				]
 			}
 		]
@@ -1422,13 +1438,13 @@ test('combines search with option filters and requires all options on one varian
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '3' }
+					{ name: 'Tallas', value: '3' }
 				]
 			},
 			{
 				options: [
 					{ name: 'Color', value: 'Azul' },
-					{ name: 'Size', value: '5' }
+					{ name: 'Tallas', value: '5' }
 				]
 			}
 		]
@@ -1485,7 +1501,7 @@ test('removes product option index rows when a product is deleted', async () => 
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '5' }
+					{ name: 'Tallas', value: '5' }
 				]
 			}
 		]
@@ -1498,7 +1514,7 @@ test('removes product option index rows when a product is deleted', async () => 
 			{
 				options: [
 					{ name: 'Color', value: 'Rojo' },
-					{ name: 'Size', value: '3' }
+					{ name: 'Tallas', value: '3' }
 				]
 			}
 		]
@@ -1508,7 +1524,7 @@ test('removes product option index rows when a product is deleted', async () => 
 		id: firstId
 	});
 	const remainingRows = await t.run((ctx) => ctx.db.query('productOptionIndex').collect());
-	expect(remainingRows).toHaveLength(3);
+	expect(remainingRows).toHaveLength(8); // 4 keys (including membership) in 2 scopes.
 	expect(remainingRows.every((row) => row.productId === secondId)).toBe(true);
 
 	await admin.mutation(api.tables.products.mutations.deleteProduct.deleteProduct, {

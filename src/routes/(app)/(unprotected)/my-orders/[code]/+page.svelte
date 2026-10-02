@@ -58,9 +58,9 @@
 			/>
 
 			<div class="flex justify-center">
-				<ButtonLink href={UNPROTECTED_PAGE_ENDPOINTS.MY_ORDERS}
-					>{m['MyOrderPage.back']()}</ButtonLink
-				>
+				<ButtonLink href={UNPROTECTED_PAGE_ENDPOINTS.MY_ORDERS}>
+					{m['MyOrderPage.back']()}
+				</ButtonLink>
 			</div>
 		</div>
 	{:else}

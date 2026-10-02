@@ -37,14 +37,22 @@
 {#snippet label()}
 	{#if field.label}
 		<FieldLabel for={field.name}>
-			{field.label}{#if field.required}<span class="text-destructive"> *</span>{/if}
+			{field.label}
+			{#if field.required}
+				<span class="text-destructive">*</span>
+			{/if}
 		</FieldLabel>
 	{/if}
-	{#if field.description}<FieldDescription>{field.description}</FieldDescription>{/if}
+
+	{#if field.description}
+		<FieldDescription>{field.description}</FieldDescription>
+	{/if}
 {/snippet}
 
 {#snippet errorMessage()}
-	{#if error}<FieldError id={`${field.name}-error`}>{error}</FieldError>{/if}
+	{#if error}
+		<FieldError id={`${field.name}-error`}>{error}</FieldError>
+	{/if}
 {/snippet}
 
 <Field

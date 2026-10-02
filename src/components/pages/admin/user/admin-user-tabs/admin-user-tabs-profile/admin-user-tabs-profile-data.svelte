@@ -62,9 +62,9 @@
 								{m['AdminUserPage.AdminUserTabsProfileData.verified']()}
 							</span>
 						{:else}
-							<Badge variant="outline"
-								>{m['AdminUserPage.AdminUserTabsProfileData.unverified']()}</Badge
-							>
+							<Badge variant="outline">
+								{m['AdminUserPage.AdminUserTabsProfileData.unverified']()}
+							</Badge>
 						{/if}
 					</div>
 				</div>

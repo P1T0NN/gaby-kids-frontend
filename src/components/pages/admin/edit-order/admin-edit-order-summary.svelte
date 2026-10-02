@@ -70,9 +70,9 @@
 	</Card.Root>
 
 	<Card.Root>
-		<Card.Header
-			><Card.Title>{m['AdminEditOrderPage.AdminEditOrderSummary.items']()}</Card.Title></Card.Header
-		>
+		<Card.Header>
+			<Card.Title>{m['AdminEditOrderPage.AdminEditOrderSummary.items']()}</Card.Title>
+		</Card.Header>
 		<Card.Content>
 			<OrderLineItems
 				{items}

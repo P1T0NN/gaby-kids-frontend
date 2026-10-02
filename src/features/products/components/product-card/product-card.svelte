@@ -66,9 +66,9 @@
 		{/if}
 
 		{#if isNew}
-			<Badge class="absolute start-2 top-2 bg-accent text-accent-foreground"
-				>{m['ProductsFeature.ProductCard.new']()}</Badge
-			>
+			<Badge class="absolute start-2 top-2 bg-accent text-accent-foreground">
+				{m['ProductsFeature.ProductCard.new']()}
+			</Badge>
 		{/if}
 		{#if lowStockQuantity !== null}
 			<Badge

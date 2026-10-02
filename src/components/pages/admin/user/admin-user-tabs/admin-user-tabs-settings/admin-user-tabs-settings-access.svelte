@@ -46,9 +46,9 @@
 <Card.Root>
 	<Card.Header>
 		<Card.Title>{m['AdminUserPage.AdminUserTabsSettingsAccess.access']()}</Card.Title>
-		<Card.Description
-			>{m['AdminUserPage.AdminUserTabsSettingsAccess.description']()}</Card.Description
-		>
+		<Card.Description>
+			{m['AdminUserPage.AdminUserTabsSettingsAccess.description']()}
+		</Card.Description>
 	</Card.Header>
 
 	<Card.Content>

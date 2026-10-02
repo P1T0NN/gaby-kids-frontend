@@ -363,3 +363,16 @@ are live subscriptions, not SvelteKit stream responses.
 - After every change run `bunx --bun oxlint`. For Convex or pagination changes,
   also run `bun run check` and `npx convex dev --once`; run
   `bun run test:convex` for the relevant behavior.
+
+## Formatting conventions
+
+Prettier owns formatting; `prettier.config.js` sets
+`htmlWhitespaceSensitivity: 'ignore'`, so every element or component puts its
+children on indented lines instead of hugging `>`, `</tag>`, or `{/snippet}`.
+
+- Author `{#snippet}`, `{#each}`, `{#if}`, and `{#await}` blocks with the first
+  tag on its own indented line, and close with `{/...}` on its own line.
+  Prettier preserves the authored form for block content, so it cannot expand a
+  one-line block for you.
+- Run `bun run format` after changes; `prettier --check .` must pass. Generated
+  Paraglide output and caches are ignored in `.prettierignore`.

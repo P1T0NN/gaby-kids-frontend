@@ -142,7 +142,9 @@
 	{/if}
 
 	<div class="flex items-start gap-3 border-t pt-6">
-		<span class="mt-0.5 icon-[lucide--credit-card] size-5 text-muted-foreground" aria-hidden="true"
+		<span
+			class="mt-0.5 icon-[lucide--credit-card] size-5 text-muted-foreground"
+			aria-hidden="true"
 		></span>
 
 		<div class="flex flex-col gap-1">

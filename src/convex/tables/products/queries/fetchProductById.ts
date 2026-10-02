@@ -4,6 +4,8 @@ import { ConvexError, v } from 'convex/values';
 // BUILDERS
 import { adminQuery } from '../../../builders/convexFunctionBuilders.js';
 
+import { getProductCategoryIds } from '../helpers/getProductCategoryIds.js';
+
 // MAPPERS
 import { toProductResult } from '../mappers/toProductResult.js';
 import { toProductVariantResult } from '../../productVariants/mappers/toProductVariantResult.js';
@@ -23,10 +25,14 @@ export const fetchProductById = adminQuery({
 			throw new ConvexError<BackendErrorData>({ code: 'PRODUCT_NOT_FOUND' });
 		}
 
-		const category = await ctx.db.get(product.categoryId);
-
-		if (!category) throw new Error('Product category invariant violated.');
-		const { _id, name, slug, status } = category;
+		const categoryOptions = await Promise.all(
+			getProductCategoryIds(product).map(async (id) => {
+				const category = await ctx.db.get(id);
+				if (!category) throw new Error('Product category invariant violated.');
+				const { _id, name, slug, status } = category;
+				return { _id, name, slug, status };
+			})
+		);
 
 		const productVariants: Awaited<ReturnType<typeof toProductVariantResult>>[] = [];
 		for await (const productVariant of ctx.db
@@ -39,7 +45,8 @@ export const fetchProductById = adminQuery({
 		return {
 			...(await toProductResult(product)),
 			productVariants,
-			categoryOption: { _id, name, slug, status }
+			categoryOptions,
+			categoryOption: categoryOptions[0]
 		};
 	}
 });

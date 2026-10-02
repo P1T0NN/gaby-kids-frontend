@@ -37,7 +37,9 @@
 				/>
 			{:else}
 				<div class="flex size-16 shrink-0 items-center justify-center rounded-xl bg-muted">
-					<span class="icon-[lucide--package] size-6 text-muted-foreground" aria-hidden="true"
+					<span
+						class="icon-[lucide--package] size-6 text-muted-foreground"
+						aria-hidden="true"
 					></span>
 				</div>
 			{/if}
@@ -48,11 +50,11 @@
 				<div class="flex flex-wrap items-center gap-2">
 					<h2 class="text-base font-semibold wrap-break-word">{product.name}</h2>
 					{#if product.status !== 'active'}
-						<Badge variant="outline"
-							>{product.status === 'draft'
+						<Badge variant="outline">
+							{product.status === 'draft'
 								? m['AdminUpsellsPage.AdminUpsellsProductItem.draft']()
-								: m['AdminUpsellsPage.AdminUpsellsProductItem.archived']()}</Badge
-						>
+								: m['AdminUpsellsPage.AdminUpsellsProductItem.archived']()}
+						</Badge>
 					{/if}
 				</div>
 				<p class="text-sm text-muted-foreground">{formatPrice(product.priceInCents)}</p>
@@ -66,7 +68,9 @@
 
 	<div class="border-t bg-muted/30 p-5">
 		<div class="mb-3 flex items-center gap-2 text-sm font-medium">
-			<span class="icon-[lucide--corner-right-down] size-4 text-muted-foreground" aria-hidden="true"
+			<span
+				class="icon-[lucide--corner-right-down] size-4 text-muted-foreground"
+				aria-hidden="true"
 			></span>
 			{m['AdminUpsellsPage.AdminUpsellsProductItem.upsellProducts']()}
 		</div>
@@ -85,7 +89,9 @@
 						/>
 					{:else}
 						<div class="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted">
-							<span class="icon-[lucide--package] size-4 text-muted-foreground" aria-hidden="true"
+							<span
+								class="icon-[lucide--package] size-4 text-muted-foreground"
+								aria-hidden="true"
 							></span>
 						</div>
 					{/if}
@@ -101,11 +107,11 @@
 							{/if}
 						</div>
 						{#if upsell.product && upsell.product.status !== 'active'}
-							<Badge variant="outline"
-								>{upsell.product.status === 'draft'
+							<Badge variant="outline">
+								{upsell.product.status === 'draft'
 									? m['AdminUpsellsPage.AdminUpsellsProductItem.draft']()
-									: m['AdminUpsellsPage.AdminUpsellsProductItem.archived']()}</Badge
-							>
+									: m['AdminUpsellsPage.AdminUpsellsProductItem.archived']()}
+							</Badge>
 						{/if}
 					</div>
 				</li>

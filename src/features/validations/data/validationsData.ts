@@ -4,6 +4,7 @@ import { m } from '@/lib/paraglide/messages';
 export const FALLBACK = () => m['ValidationMessages.fallback']();
 
 export const MESSAGES: [RegExp, () => string][] = [
+	[/^DUPLICATE_PRODUCT_CATEGORY$/, () => m['ValidationMessages.duplicateProductCategory']()],
 	[
 		/^COMPARE_AT_PRICE_MUST_EXCEED_PRICE$/,
 		() => m['ValidationMessages.compareAtPriceMustExceedPrice']()

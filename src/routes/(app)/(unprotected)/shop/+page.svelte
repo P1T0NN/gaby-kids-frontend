@@ -105,8 +105,9 @@
 								}
 							: undefined}
 					>
-						{#snippet icon()}<span class="icon-[lucide--search] size-5" aria-hidden="true"
-							></span>{/snippet}
+						{#snippet icon()}
+							<span class="icon-[lucide--search] size-5" aria-hidden="true"></span>
+						{/snippet}
 					</EmptyData>
 				{/snippet}
 			</DataList>

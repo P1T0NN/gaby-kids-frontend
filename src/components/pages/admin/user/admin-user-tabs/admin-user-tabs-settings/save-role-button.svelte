@@ -64,6 +64,8 @@
 	disabled={selectedRole === currentRole || pendingAction !== null}
 	onclick={saveRole}
 >
-	{#if pendingAction === 'role'}<Spinner data-icon="inline-start" />{/if}
+	{#if pendingAction === 'role'}
+		<Spinner data-icon="inline-start" />
+	{/if}
 	{m['AdminUserPage.SaveRoleButton.saveRole']()}
 </Button>

@@ -20,7 +20,10 @@
 <Field class="flex-col gap-2" data-disabled={disabled} data-invalid={Boolean(error)}>
 	<div class="flex items-center gap-2">
 		<FieldLabel for={field.name}>
-			{field.label}{#if field.required}<span class="text-destructive"> *</span>{/if}
+			{field.label}
+			{#if field.required}
+				<span class="text-destructive">*</span>
+			{/if}
 		</FieldLabel>
 		<Switch
 			id={field.name}
@@ -33,6 +36,12 @@
 			{onCheckedChange}
 		/>
 	</div>
-	{#if field.description}<FieldDescription>{field.description}</FieldDescription>{/if}
-	{#if error}<FieldError id={`${field.name}-error`}>{error}</FieldError>{/if}
+
+	{#if field.description}
+		<FieldDescription>{field.description}</FieldDescription>
+	{/if}
+
+	{#if error}
+		<FieldError id={`${field.name}-error`}>{error}</FieldError>
+	{/if}
 </Field>

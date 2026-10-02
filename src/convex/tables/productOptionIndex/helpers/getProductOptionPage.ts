@@ -26,7 +26,7 @@ type SortOrder = 'asc' | 'desc';
 
 /**
  * Search and option selection share one indexed query before pagination.
- * Each selection key has one row per product, so pages need no deduplication.
+ * Each category scope and selection key has one row per product, so pages need no deduplication.
  */
 export async function getProductOptionPage({
 	ctx,
@@ -60,23 +60,17 @@ export async function getProductOptionPage({
 				.search('name', getProductSearchTerm(search))
 				.eq('status', status)
 				.eq('optionKey', optionKey);
-			if (categoryId) matches = matches.eq('categoryId', categoryId);
+			matches = matches.eq('categoryId', categoryId);
 			if (attributeFilters.ageGroup) matches = matches.eq('ageGroup', attributeFilters.ageGroup);
 			if (attributeFilters.gender) matches = matches.eq('gender', attributeFilters.gender);
 			return matches;
 		});
 	} else {
-		const baseQuery = categoryId
-			? ctx.db
-					.query('productOptionIndex')
-					.withIndex('by_status_and_category_id_and_option_key_and_product_created_at', (query) =>
-						query.eq('status', status).eq('categoryId', categoryId).eq('optionKey', optionKey)
-					)
-			: ctx.db
-					.query('productOptionIndex')
-					.withIndex('by_status_and_option_key_and_product_created_at', (query) =>
-						query.eq('status', status).eq('optionKey', optionKey)
-					);
+		const baseQuery = ctx.db
+			.query('productOptionIndex')
+			.withIndex('by_status_and_category_id_and_option_key_and_product_created_at', (query) =>
+				query.eq('status', status).eq('categoryId', categoryId).eq('optionKey', optionKey)
+			);
 		const orderedQuery = baseQuery.order(order);
 		const gender = attributeFilters.gender;
 		const ageGroup = attributeFilters.ageGroup;

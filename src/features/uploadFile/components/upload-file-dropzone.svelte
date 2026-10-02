@@ -116,9 +116,9 @@
 		onchange={onSelect}
 	/>
 	<span class="icon-[lucide--upload] size-6 text-muted-foreground"></span>
-	<span class="text-sm font-medium"
-		>{m['UploadFileFeature.UploadFileDropzone.clickOrDragAndDrop']()}</span
-	>
+	<span class="text-sm font-medium">
+		{m['UploadFileFeature.UploadFileDropzone.clickOrDragAndDrop']()}
+	</span>
 	<span class="text-xs text-muted-foreground">
 		{#if allowMultiple}
 			{m['UploadFileFeature.UploadFileDropzone.addOneOrMoreImages']()}
