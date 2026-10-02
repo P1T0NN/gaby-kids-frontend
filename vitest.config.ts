@@ -13,6 +13,10 @@ export default defineConfig({
 		env: {
 			RESEND_API_KEY: 'test-resend-key',
 			STORAGE_BUCKET_NAME: 'test-bucket',
+			STORAGE_TEMP_BUCKET_NAME: 'test-private-uploads',
+			STORAGE_TEMP_ENDPOINT: 'https://test-temp-account.r2.cloudflarestorage.com',
+			STORAGE_TEMP_ACCESS_KEY_ID: 'test-temp-access-key',
+			STORAGE_TEMP_SECRET_ACCESS_KEY: 'test-temp-secret-key',
 			STORAGE_ENDPOINT: 'https://test-account.r2.cloudflarestorage.com',
 			STORAGE_ACCESS_KEY_ID: 'test-access-key',
 			STORAGE_SECRET_ACCESS_KEY: 'test-secret-key',

@@ -108,8 +108,21 @@ notes are [`UpsellsSystemDesign.md`](./UpsellsSystemDesign.md) and
   order write made an email's scan stale, so the email pass only reruns when
   there is something new, and a device transfer of an order addressed to a
   different email marks that email pending again for its real owner.
-- `storageUploads`: owner, object key, `pending`/`uploaded` status, timestamp,
-  and key/created-at indexes. It tracks uploads until a mutation claims them.
+- `storageUploads`: owner, object key, optional private bucket/original key,
+  `pending`/`processing`/`uploaded`/`deleting` status and cleanup indexes.
+  The browser uploads originals directly to a separate private R2 bucket
+  (`STORAGE_TEMP_BUCKET_NAME`), with a 20 MiB per-file and 50 MiB per-submission
+  limit. Both original and final keys are tracked before upload URLs are returned.
+  A Node action fetches originals by key and validates/optimizes every image with
+  `sharp` before storing final WebPs in the public bucket. Optimization errors
+  stop submission. The product/category mutation claims only `uploaded` final
+  records. Originals are deleted before processing returns; their records remain
+  until the signed upload URLs and in-flight actions have expired. Failed saves,
+  interrupted uploads and failed deletions remain in the ledger for the five-minute
+  cron, which removes records only after physical R2 deletion succeeds and the
+  one-hour grace period passes. The private bucket's `originals/` lifecycle rule
+  expires files after one day as an independent fallback. Never use Convex file
+  storage for uploads. See `docs/ImageUploads.md` for bucket setup and verification.
 - Better Auth owns its component tables (`user`, `session`, `account`,
   `verification`, rate-limit/JWKS tables) under `betterAuth/component`.
 
@@ -124,7 +137,8 @@ Current app-facing functions are:
   `api.analytics.queries.fetchRevenueSeries` (zero-filled daily revenue) read the
   `dailySales` rollup for the admin dashboard;
 - admin product listing/detail, product saving, and deletion restricted to drafts;
-- `api.storage.r2.generateUploadUrl`, `syncMetadata`, and `deleteObject`;
+- `api.storage.r2.generateUploadUrls`, `deleteObject`, and
+  `api.storage.actions.processUploads`;
 - `api.search.queries.fetchSearchSuggestions` (public, normalized, minimum two
   characters, max seven results);
 - admin users/profile/settings/sessions/logs queries and

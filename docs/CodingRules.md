@@ -180,14 +180,14 @@ imported directly.
 
 ## Feature components and hooks
 
-| Area       | Existing pieces and intended use                                                                                                                                                                                                                         |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Auth       | `SignInForm`, `SignUpForm`, `ForgotPasswordForm`, `VerifyEmailForm`, and `LogoutButton`; `useAuth` centralizes Better Auth calls, error codes, pending state, OTP/password/social flows, and redirects. Keep wording in components via `ERROR_MESSAGES`. |
-| Search     | `SearchInput` is an InputGroup with clear button and optional listbox snippet. `useSearch` owns raw value, debounce, trim, minimum two-character gate, and `state`/`url` mode. Pass only `search.term` to a query.                                       |
-| Filters    | Filter defs define symbolic options. `useFilters` owns state/URL mode, active values, count, clear methods, and stable `identity`.                                                                                                                       |
-| Pagination | `useConvexPagination` owns page/cursor sessions; `useConvexInfinitePagination` owns accumulated pages, duplicate protection, retry, and reset. `createConvexPaginationQuery` is their shared subscription builder.                                       |
-| Uploads    | `UploadFile`, `UploadFileDropzone`, `UploadFilePreviewItem`, and `useUpload` manage previews, object-URL cleanup, multiple-file ordering, cover selection, and removal. `optimizeToWebp` is the browser compression step.                                |
-| Validation | `validationsData` and `toHumanMessage` map validator text to safe UI copy.                                                                                                                                                                               |
+| Area       | Existing pieces and intended use                                                                                                                                                                                                                          |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth       | `SignInForm`, `SignUpForm`, `ForgotPasswordForm`, `VerifyEmailForm`, and `LogoutButton`; `useAuth` centralizes Better Auth calls, error codes, pending state, OTP/password/social flows, and redirects. Keep wording in components via `ERROR_MESSAGES`.  |
+| Search     | `SearchInput` is an InputGroup with clear button and optional listbox snippet. `useSearch` owns raw value, debounce, trim, minimum two-character gate, and `state`/`url` mode. Pass only `search.term` to a query.                                        |
+| Filters    | Filter defs define symbolic options. `useFilters` owns state/URL mode, active values, count, clear methods, and stable `identity`.                                                                                                                        |
+| Pagination | `useConvexPagination` owns page/cursor sessions; `useConvexInfinitePagination` owns accumulated pages, duplicate protection, retry, and reset. `createConvexPaginationQuery` is their shared subscription builder.                                        |
+| Uploads    | `UploadFile`, `UploadFileDropzone`, `UploadFilePreviewItem`, and `useUpload` manage previews and ordering. `Form` uploads originals to private R2; `storage/actions.processUploads` validates and optimizes them on the server before saving final WebPs. |
+| Validation | `validationsData` and `toHumanMessage` map validator text to safe UI copy.                                                                                                                                                                                |
 
 The admin page components are intentionally page-specific: user list/header
 rows, user profile/settings/sessions/logs tabs, ban/unban/role actions, and

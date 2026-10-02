@@ -16,7 +16,7 @@ crons.interval(
 crons.interval(
 	'clean up abandoned R2 uploads',
 	{ minutes: STORAGE_CONFIG.cleanupIntervalMinutes },
-	internal.storage.r2.cleanupStaleUploads
+	internal.storage.actions.cleanupStaleUploads
 );
 
 crons.interval(

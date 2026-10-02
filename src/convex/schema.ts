@@ -203,13 +203,18 @@ export const tables = {
 	storageUploads: defineTable({
 		ownerId: v.string(),
 		key: v.string(),
+		/** Set only for private originals; absent means the public final-image bucket. */
+		bucket: v.optional(v.string()),
+		/** Final-image records point to the separately tracked original. */
+		temporaryKey: v.optional(v.string()),
 		expectedSize: v.number(),
 		expectedContentType: v.string(),
-		status: literals('pending', 'uploaded'),
+		status: literals('pending', 'processing', 'uploaded', 'deleting'),
 		createdAt: v.number()
 	})
 		.index('by_key', ['key'])
 		.index('by_owner_id_created_at', ['ownerId', 'createdAt'])
+		.index('by_owner_id_and_status_and_created_at', ['ownerId', 'status', 'createdAt'])
 		.index('by_created_at', ['createdAt'])
 };
 

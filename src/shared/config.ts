@@ -28,7 +28,7 @@ export const COMPANY_DATA = {
 	CURRENCY: 'MXN',
 	/** IANA store timezone: every dashboard day boundary and bucket is computed in this zone. */
 	TIMEZONE: 'UTC',
-	LOGO: '/logo/opt/logo-2d-1280w.webp',
+	LOGO: '/logo/opt/logo-2d-transparent-569w.webp',
 	DESCRIPTION: 'Description',
 	WHATSAPP_NUMBER,
 	WHATSAPP_CONTACT_URL: `https://wa.me/${WHATSAPP_DIAL_NUMBER}`,

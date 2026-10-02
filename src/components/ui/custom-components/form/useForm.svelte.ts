@@ -7,7 +7,6 @@ import { toast } from 'svelte-sonner';
 import { m } from '@/lib/paraglide/messages';
 
 // UTILS
-import { optimizeToWebp } from '@/features/storage/utils/optimizeToWebp.js';
 import { aggregateUploadProgress } from '@/features/uploadFile/utils/aggregateUploadProgress.js';
 import { uploadWithProgress } from '@/features/uploadFile/utils/uploadWithProgress.js';
 import { linearFind } from '@/shared/lib/algorithms/index.js';
@@ -106,8 +105,8 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 			: useMutation(convexFunction as FunctionReference<'mutation'>)
 	) as (args: FunctionArgs<Mutation>) => Promise<FunctionReturnType<Mutation>>;
 
-	const generateUploadUrl = useMutation(api.storage.r2.generateUploadUrl);
-	const syncUploadMetadata = useAction(api.storage.r2.syncMetadata);
+	const generateUploadUrls = useMutation(api.storage.r2.generateUploadUrls);
+	const processUploads = useAction(api.storage.actions.processUploads);
 	const deleteUpload = useMutation(api.storage.r2.deleteObject);
 
 	const getValue = (name: string) => getFormValue(bindings.values, name);
@@ -153,48 +152,14 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 		await Promise.allSettled(keys.map((key) => deleteUpload({ key })));
 	};
 
-	const uploadFile = async (file: File, onProgress: (loaded: number, total: number) => void) => {
-		const upload = await generateUploadUrl({
-			namespace: options.uploadNamespace || undefined,
-			size: file.size,
-			contentType: file.type
-		});
-
-		try {
-			await uploadWithProgress(
-				upload.url,
-				file,
-				({ loaded, total }) => onProgress(loaded, total),
-				options.uploadErrorMessage,
-				options.uploadCancelledMessage
-			);
-
-			if (!(await syncUploadMetadata({ key: upload.key }))) {
-				throw new Error(options.uploadErrorMessage);
-			}
-
-			return upload.key;
-		} catch (error) {
-			await deleteUpload({ key: upload.key }).catch(() => {});
-			throw error;
-		}
-	};
-
 	const uploadSelectedFiles = async () => {
 		const uploadFiles = bindings.uploadFiles;
-		const localFiles = uploadFiles.flatMap((preview) => (preview.file ? [preview.file] : []));
-
-		preparingUpload = true;
+		const files = uploadFiles.flatMap((preview) => (preview.file ? [preview.file] : []));
 		uploadProgress = 0;
 		uploadProgressBytes = 0;
-
-		const files = await Promise.all(
-			localFiles.map(async (file) =>
-				file.type.startsWith('image/') ? optimizeToWebp(file).catch(() => file) : file
-			)
-		);
-
-		preparingUpload = false;
+		if (files.some((file) => file.size === 0 || file.size > STORAGE_CONFIG.maxFileSizeBytes)) {
+			throw new ConvexError<BackendErrorData>({ code: 'INVALID_UPLOAD' });
+		}
 		if (exceedsUploadBatchLimit(files.map((file) => file.size))) {
 			throw new ConvexError<BackendErrorData>({
 				code: 'UPLOAD_BATCH_TOO_LARGE',
@@ -203,25 +168,38 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 		}
 
 		const progress = files.map((file) => ({ loaded: 0, total: file.size }));
-
-		const results = await Promise.allSettled(
-			files.map((file, index) =>
-				uploadFile(file, (loaded, total) => {
-					progress[index] = { loaded, total };
-					uploadProgress = aggregateUploadProgress(progress);
-					uploadProgressBytes = progress.reduce((sum, item) => sum + item.loaded, 0);
-				})
-			)
-		);
-
-		const keys = results.flatMap((result) => (result.status === 'fulfilled' ? [result.value] : []));
-		const failed = linearFind(results, (result) => result.status === 'rejected');
-
-		if (failed?.status === 'rejected') {
+		const uploads = await generateUploadUrls({
+			namespace: options.uploadNamespace || undefined,
+			files: files.map((file) => ({ size: file.size, contentType: file.type }))
+		});
+		const keys = uploads.map((upload) => upload.key);
+		try {
+			// Wait for every transfer to settle before cleaning up partial success.
+			const results = await Promise.allSettled(
+				files.map((file, index) =>
+					uploadWithProgress(
+						uploads[index].url,
+						file,
+						({ loaded, total }) => {
+							progress[index] = { loaded, total };
+							uploadProgress = aggregateUploadProgress(progress);
+							uploadProgressBytes = progress.reduce((sum, item) => sum + item.loaded, 0);
+						},
+						options.uploadErrorMessage,
+						options.uploadCancelledMessage
+					)
+				)
+			);
+			const failed = linearFind(results, (result) => result.status === 'rejected');
+			if (failed?.status === 'rejected') throw failed.reason;
+			preparingUpload = true;
+			return await processUploads({ keys });
+		} catch (error) {
 			await removeUploads(keys);
-			throw failed.reason;
+			throw error;
+		} finally {
+			preparingUpload = false;
 		}
-		return keys;
 	};
 
 	async function submit(

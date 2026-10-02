@@ -1,26 +1,26 @@
 // LIBRARIES
 import { R2 } from '@convex-dev/r2';
-import { makeFunctionReference } from 'convex/server';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { ConvexError, v } from 'convex/values';
 
 // CONVEX
-import { components } from '../_generated/api.js';
-import {
-	authenticatedAction,
-	authenticatedMutation,
-	internalMutation
-} from '../builders/convexFunctionBuilders.js';
+import { components, internal } from '../_generated/api.js';
+import { internalQuery } from '../_generated/server.js';
+import { authenticatedMutation, internalMutation } from '../builders/convexFunctionBuilders.js';
 import { getOwnerId, requireIdentity } from '../betterAuth/helpers/requireIdentity.js';
+import schema from '../schema.js';
 
 // STORAGE
 import { getUploadByKey } from './getUploadByKey.js';
 
 // CONFIG
-import { STORAGE_CONFIG } from '../../shared/features/storage/config.js';
+import { STORAGE_CONFIG, STORAGE_OPTIMIZE_CONFIG } from '../../shared/features/storage/config.js';
+import { exceedsUploadBatchLimit } from '../../shared/features/storage/utils/exceedsUploadBatchLimit.js';
 
 // TYPES
-import type { DataModel } from '../_generated/dataModel.js';
 import type { MutationCtx } from '../_generated/server.js';
+import type { Doc } from '../_generated/dataModel.js';
 import type { BackendErrorData } from '../../shared/types/types.js';
 
 export const r2 = new R2(components.r2, {
@@ -30,221 +30,258 @@ export const r2 = new R2(components.r2, {
 	secretAccessKey: process.env.STORAGE_SECRET_ACCESS_KEY
 });
 
-const clientApi = r2.clientApi<DataModel>({
-	checkDelete: async (ctx, _bucket, key) => {
-		const identity = await requireIdentity(ctx);
-		const upload = await getUploadByKey(ctx, key);
-		const isUnavailableUpload = !upload || upload.ownerId !== getOwnerId(identity);
-		if (isUnavailableUpload) {
-			throw new ConvexError<BackendErrorData>({ code: 'UPLOAD_NOT_FOUND' });
-		}
-	},
-	onDelete: async (ctx, _bucket, key) => {
-		const upload = await getUploadByKey(ctx, key);
-		if (upload) await ctx.db.delete(upload._id);
-	}
-});
-
-export const deleteObject = clientApi.deleteObject;
-
-const checkPendingUploadReference = makeFunctionReference<
-	'mutation',
-	{ key: string; ownerId: string },
-	boolean
->('storage/r2:checkPendingUpload');
-const validateUploadReference = makeFunctionReference<
-	'mutation',
-	{ key: string; ownerId: string; detectedContentType?: string },
-	boolean
->('storage/r2:validateUpload');
-
-export function detectImageContentType(bytes: Uint8Array): string | undefined {
-	const hasPngSignature =
-		bytes.length >= 8 &&
-		bytes[0] === 0x89 &&
-		bytes[1] === 0x50 &&
-		bytes[2] === 0x4e &&
-		bytes[3] === 0x47 &&
-		bytes[4] === 0x0d &&
-		bytes[5] === 0x0a &&
-		bytes[6] === 0x1a &&
-		bytes[7] === 0x0a;
-	if (hasPngSignature) {
-		return 'image/png';
-	}
-	const hasJpegSignature =
-		bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
-	if (hasJpegSignature) {
-		return 'image/jpeg';
-	}
-	// Preserve byte offsets: RIFF's binary size field is not UTF-8 text.
-	const header = String.fromCharCode(...bytes.subarray(0, 12));
-	const hasGifSignature = header.startsWith('GIF87a') || header.startsWith('GIF89a');
-	if (hasGifSignature) return 'image/gif';
-	const hasWebpSignature = header.startsWith('RIFF') && header.slice(8, 12) === 'WEBP';
-	if (hasWebpSignature) return 'image/webp';
-	return undefined;
+/** Never fall back to the public image bucket for unvalidated originals. */
+export function getTemporaryR2(bucket = process.env.STORAGE_TEMP_BUCKET_NAME): R2 {
+	if (!bucket || bucket === r2.config.bucket)
+		throw new Error('A separate private STORAGE_TEMP_BUCKET_NAME is required.');
+	const endpoint = process.env.STORAGE_TEMP_ENDPOINT;
+	const accessKeyId = process.env.STORAGE_TEMP_ACCESS_KEY_ID;
+	const secretAccessKey = process.env.STORAGE_TEMP_SECRET_ACCESS_KEY;
+	if (!endpoint || !accessKeyId || !secretAccessKey)
+		throw new Error(
+			'STORAGE_TEMP_ENDPOINT, STORAGE_TEMP_ACCESS_KEY_ID and STORAGE_TEMP_SECRET_ACCESS_KEY are required.'
+		);
+	return new R2(components.r2, { bucket, endpoint, accessKeyId, secretAccessKey });
 }
 
 function normalizeUploadNamespace(namespace: string | undefined): string | undefined {
 	if (namespace === undefined) return undefined;
-
 	const normalized = namespace.trim().replace(/^\/+|\/+$/g, '');
 	if (!normalized) return undefined;
-
-	const segments = normalized.split('/');
-	const hasInvalidSegment = segments.some((segment) => {
-		const isUnsafePathSegment =
+	const hasInvalidSegment = normalized.split('/').some((segment) => {
+		const unsafePath =
 			segment === '' || segment === '.' || segment === '..' || segment.includes('\\');
-		if (isUnsafePathSegment) {
-			return true;
-		}
-		return [...segment].some((character) => {
-			const code = character.charCodeAt(0);
-			return code <= 0x1f || code === 0x7f;
-		});
+		return (
+			unsafePath ||
+			[...segment].some(
+				(character) => character.charCodeAt(0) <= 0x1f || character.charCodeAt(0) === 0x7f
+			)
+		);
 	});
-	if (hasInvalidSegment) {
+	if (hasInvalidSegment)
 		throw new ConvexError<BackendErrorData>({ code: 'INVALID_UPLOAD_NAMESPACE' });
-	}
-
-	return segments.join('/');
+	return normalized;
 }
 
-export const generateUploadUrl = authenticatedMutation({
+export const generateUploadUrls = authenticatedMutation({
 	rateLimit: { name: 'storage:upload' },
 	args: {
 		namespace: v.optional(v.string()),
-		size: v.number(),
-		contentType: v.string()
+		files: v.array(v.object({ size: v.number(), contentType: v.string() }))
 	},
-	returns: v.object({ key: v.string(), url: v.string() }),
+	returns: v.array(v.object({ key: v.string(), url: v.string() })),
 	handler: async (ctx, args) => {
-		const hasInvalidSize =
-			!Number.isInteger(args.size) || args.size <= 0 || args.size > STORAGE_CONFIG.maxFileSizeBytes;
-		const hasUnsupportedContentType = !STORAGE_CONFIG.allowedImageTypes.some(
-			(type) => type === args.contentType
-		);
-		const hasInvalidUpload = hasInvalidSize || hasUnsupportedContentType;
-		if (hasInvalidUpload) {
-			throw new ConvexError<BackendErrorData>({ code: 'INVALID_UPLOAD' });
-		}
-		const namespace = normalizeUploadNamespace(args.namespace);
-		const customKey = namespace ? `${namespace}/${crypto.randomUUID()}` : undefined;
-		const upload = await r2.generateUploadUrl(customKey);
-		await ctx.db.insert('storageUploads', {
-			ownerId: getOwnerId(ctx.identity),
-			key: upload.key,
-			expectedSize: args.size,
-			expectedContentType: args.contentType,
-			status: 'pending',
-			createdAt: Date.now()
-		});
-		return upload;
-	}
-});
-
-export const checkPendingUpload = internalMutation({
-	args: { key: v.string(), ownerId: v.string() },
-	returns: v.boolean(),
-	handler: async (ctx, args) => {
-		const upload = await ctx.db
-			.query('storageUploads')
-			.withIndex('by_key', (query) => query.eq('key', args.key))
-			.unique();
-		return upload?.ownerId === args.ownerId && upload.status === 'pending';
-	}
-});
-
-export const validateUpload = internalMutation({
-	args: { key: v.string(), ownerId: v.string(), detectedContentType: v.optional(v.string()) },
-	returns: v.boolean(),
-	handler: async (ctx, args) => {
-		const upload = await ctx.db
-			.query('storageUploads')
-			.withIndex('by_key', (query) => query.eq('key', args.key))
-			.unique();
-		const isUnavailablePendingUpload =
-			!upload || upload.ownerId !== args.ownerId || upload.status !== 'pending';
-		if (isUnavailablePendingUpload) return false;
-
-		const metadata = await r2.getMetadata(ctx, args.key);
-		const valid =
-			metadata !== null &&
-			metadata.size !== undefined &&
-			metadata.size === upload.expectedSize &&
-			metadata.size <= STORAGE_CONFIG.maxFileSizeBytes &&
-			metadata.contentType === upload.expectedContentType &&
-			args.detectedContentType === upload.expectedContentType;
-		if (valid) {
-			await ctx.db.patch(upload._id, { status: 'uploaded' });
-			return true;
-		}
-
-		await r2.deleteObject(ctx, args.key);
-		await ctx.db.delete(upload._id);
-		return false;
-	}
-});
-
-export const syncMetadata = authenticatedAction({
-	rateLimit: { name: 'storage:upload' },
-	args: { key: v.string() },
-	returns: v.boolean(),
-	handler: async (ctx, args) => {
-		const ownerId = getOwnerId(ctx.identity);
-		const pending = await ctx.runMutation(checkPendingUploadReference, {
-			key: args.key,
-			ownerId
-		});
-		if (!pending) return false;
-
-		await r2.syncMetadata(ctx, args.key);
-		const metadata = await r2.getMetadata(ctx, args.key);
-		let detectedContentType: string | undefined;
-		const canInspectFileSignature =
-			metadata?.size !== undefined && metadata.size <= STORAGE_CONFIG.maxFileSizeBytes;
-		if (canInspectFileSignature) {
-			const response = await fetch(await r2.getUrl(args.key, { expiresIn: 60 }), {
-				headers: { Range: 'bytes=0-11' }
+		const invalidFiles =
+			args.files.length === 0 ||
+			args.files.some((file) => {
+				const invalidSize =
+					!Number.isInteger(file.size) ||
+					file.size <= 0 ||
+					file.size > STORAGE_CONFIG.maxFileSizeBytes;
+				return (
+					invalidSize || !STORAGE_CONFIG.allowedImageTypes.some((type) => type === file.contentType)
+				);
 			});
-			if (response.ok) {
-				detectedContentType = detectImageContentType(new Uint8Array(await response.arrayBuffer()));
-			}
+		if (invalidFiles) throw new ConvexError<BackendErrorData>({ code: 'INVALID_UPLOAD' });
+		if (exceedsUploadBatchLimit(args.files.map((file) => file.size))) {
+			throw new ConvexError<BackendErrorData>({
+				code: 'UPLOAD_BATCH_TOO_LARGE',
+				maxSizeMB: STORAGE_CONFIG.maxTotalUploadBytes / (1024 * 1024)
+			});
 		}
-		return ctx.runMutation(validateUploadReference, {
-			key: args.key,
-			ownerId,
-			detectedContentType
-		});
+		const temporary = getTemporaryR2();
+		const namespace = normalizeUploadNamespace(args.namespace);
+		const uploads: { key: string; url: string }[] = [];
+		for (const file of args.files) {
+			const id = crypto.randomUUID();
+			const key = namespace ? `${namespace}/${id}.webp` : `${id}.webp`;
+			const temporaryKey = `originals/${id}`;
+			const record = {
+				ownerId: getOwnerId(ctx.identity),
+				expectedSize: file.size,
+				expectedContentType: file.contentType,
+				status: 'pending' as const,
+				createdAt: Date.now()
+			};
+			// Both keys are tracked before the browser can upload, including a failed final PUT.
+			await ctx.db.insert('storageUploads', { ...record, key, temporaryKey });
+			await ctx.db.insert('storageUploads', {
+				...record,
+				key: temporaryKey,
+				bucket: temporary.config.bucket
+			});
+			const url = await getSignedUrl(
+				temporary.client,
+				new PutObjectCommand({
+					Bucket: temporary.config.bucket,
+					Key: temporaryKey,
+					ContentType: file.contentType,
+					ContentLength: file.size
+				}),
+				{ expiresIn: STORAGE_CONFIG.uploadUrlExpiresSeconds }
+			);
+			uploads.push({ key, url });
+		}
+		return uploads;
 	}
 });
 
-export const cleanupStaleUploads = internalMutation({
-	args: {},
-	returns: v.number(),
-	handler: async (ctx) => {
-		const staleUploads = await ctx.db
-			.query('storageUploads')
-			.withIndex('by_created_at', (query) =>
-				query.lt('createdAt', Date.now() - STORAGE_CONFIG.uploadTtlMinutes * 60_000)
-			)
-			.take(STORAGE_CONFIG.cleanupBatchSize);
+/** Keep deletion records until the object is gone and late uploads/actions have expired. */
+export async function queueUploadDeletion(
+	ctx: MutationCtx,
+	uploads: Doc<'storageUploads'>[]
+): Promise<void> {
+	if (uploads.length === 0) return;
+	const keys = new Set(uploads.map((upload) => upload.key));
+	for (const upload of uploads) {
+		if (upload.temporaryKey) keys.add(upload.temporaryKey);
+	}
+	for (const key of keys) {
+		const upload = await getUploadByKey(ctx, key);
+		if (upload) await ctx.db.patch(upload._id, { status: 'deleting' });
+	}
+	await ctx.scheduler.runAfter(0, internal.storage.actions.cleanupUploads, { keys: [...keys] });
+}
 
-		for (const upload of staleUploads) {
-			await r2.deleteObject(ctx, upload.key);
-			await ctx.db.delete(upload._id);
+export const deleteObject = authenticatedMutation({
+	args: { key: v.string() },
+	returns: v.null(),
+	handler: async (ctx, { key }) => {
+		const upload = await getUploadByKey(ctx, key);
+		if (!upload) return null;
+		if (upload.ownerId !== getOwnerId(ctx.identity))
+			throw new ConvexError<BackendErrorData>({ code: 'UPLOAD_NOT_FOUND' });
+		await queueUploadDeletion(ctx, [upload]);
+		return null;
+	}
+});
+
+export const beginProcessing = internalMutation({
+	args: { keys: v.array(v.string()) },
+	returns: v.array(schema.doc('storageUploads')),
+	handler: async (ctx, { keys }) => {
+		const ownerId = getOwnerId(await requireIdentity(ctx));
+		if (keys.length === 0 || new Set(keys).size !== keys.length)
+			throw new ConvexError<BackendErrorData>({ code: 'DUPLICATE_UPLOAD_KEY' });
+		const uploads: Doc<'storageUploads'>[] = [];
+		for (const key of keys) {
+			const upload = await getUploadByKey(ctx, key);
+			const temporaryKey = upload?.temporaryKey;
+			const unavailable =
+				!upload ||
+				upload.ownerId !== ownerId ||
+				upload.status !== 'pending' ||
+				!temporaryKey ||
+				upload.bucket !== undefined;
+			if (unavailable) throw new ConvexError<BackendErrorData>({ code: 'UPLOAD_NOT_FOUND' });
+			const original = await getUploadByKey(ctx, temporaryKey);
+			if (
+				!original ||
+				original.ownerId !== ownerId ||
+				original.status !== 'pending' ||
+				!original.bucket
+			)
+				throw new ConvexError<BackendErrorData>({ code: 'UPLOAD_NOT_FOUND' });
+			await ctx.db.patch(upload._id, { status: 'processing', createdAt: Date.now() });
+			await ctx.db.patch(original._id, { status: 'processing', createdAt: Date.now() });
+			uploads.push(upload);
 		}
-		return staleUploads.length;
+		if (exceedsUploadBatchLimit(uploads.map((upload) => upload.expectedSize)))
+			throw new ConvexError<BackendErrorData>({
+				code: 'UPLOAD_BATCH_TOO_LARGE',
+				maxSizeMB: STORAGE_CONFIG.maxTotalUploadBytes / (1024 * 1024)
+			});
+		return uploads;
+	}
+});
+
+export const completeProcessing = internalMutation({
+	args: { files: v.array(v.object({ key: v.string(), size: v.number() })) },
+	returns: v.null(),
+	handler: async (ctx, { files }) => {
+		const ownerId = getOwnerId(await requireIdentity(ctx));
+		for (const file of files) {
+			const upload = await getUploadByKey(ctx, file.key);
+			if (
+				!upload ||
+				upload.ownerId !== ownerId ||
+				upload.status !== 'processing' ||
+				!upload.temporaryKey
+			)
+				throw new ConvexError<BackendErrorData>({ code: 'UPLOAD_NOT_FOUND' });
+			const metadata = await r2.getMetadata(ctx, file.key);
+			const valid =
+				metadata?.size === file.size &&
+				file.size > 0 &&
+				file.size <= STORAGE_OPTIMIZE_CONFIG.maxSizeMB * 1024 * 1024 &&
+				metadata?.contentType === 'image/webp';
+			if (!valid) throw new ConvexError<BackendErrorData>({ code: 'INVALID_UPLOAD' });
+			const original = await getUploadByKey(ctx, upload.temporaryKey);
+			if (!original || original.status !== 'processing')
+				throw new ConvexError<BackendErrorData>({ code: 'UPLOAD_NOT_FOUND' });
+			await ctx.db.patch(original._id, { status: 'deleting' });
+			await ctx.db.patch(upload._id, { status: 'uploaded' });
+		}
+		return null;
+	}
+});
+
+export const getUpload = internalQuery({
+	args: { key: v.string() },
+	returns: v.union(schema.doc('storageUploads'), v.null()),
+	handler: (ctx, { key }) => getUploadByKey(ctx, key)
+});
+
+export const getStaleUploads = internalQuery({
+	args: { cutoff: v.number() },
+	returns: v.array(schema.doc('storageUploads')),
+	handler: (ctx, { cutoff }) =>
+		ctx.db
+			.query('storageUploads')
+			.withIndex('by_created_at', (query) => query.lt('createdAt', cutoff))
+			.take(STORAGE_CONFIG.cleanupBatchSize)
+});
+
+export const markDeleting = internalMutation({
+	args: { keys: v.array(v.string()) },
+	returns: v.null(),
+	handler: async (ctx, { keys }) => {
+		const uploads: Doc<'storageUploads'>[] = [];
+		for (const key of keys) {
+			const upload = await getUploadByKey(ctx, key);
+			if (upload) uploads.push(upload);
+		}
+		await queueUploadDeletion(ctx, uploads);
+		return null;
+	}
+});
+
+export const recordDeletionResult = internalMutation({
+	args: { key: v.string(), deleted: v.boolean() },
+	returns: v.null(),
+	handler: async (ctx, { key, deleted }) => {
+		const upload = await getUploadByKey(ctx, key);
+		const safeToForget =
+			upload?.status === 'deleting' &&
+			upload.createdAt < Date.now() - STORAGE_CONFIG.uploadTtlMinutes * 60_000;
+		if (safeToForget) {
+			if (deleted) await ctx.db.delete(upload._id);
+			// Move expired failures behind other stale entries so one bad object cannot block cleanup.
+			else
+				await ctx.db.patch(upload._id, {
+					createdAt:
+						Date.now() -
+						(STORAGE_CONFIG.uploadTtlMinutes - STORAGE_CONFIG.cleanupIntervalMinutes) * 60_000
+				});
+		}
+		return null;
 	}
 });
 
 export async function deleteStoredFiles(ctx: MutationCtx, keys: string[]): Promise<void> {
 	for (const key of keys) {
-		// Preserve legacy public URLs; new R2 uploads are stored as object keys.
-		if (!key.startsWith('http://') && !key.startsWith('https://')) {
+		if (!key.startsWith('http://') && !key.startsWith('https://'))
 			await ctx.runMutation(components.r2.lib.deleteObject, { ...r2.config, key });
-		}
 	}
 }
 
@@ -253,9 +290,7 @@ export async function resolveStoredFileUrls(keys: string[]): Promise<string[]> {
 	return Promise.all(
 		keys.map((key) => {
 			if (key.startsWith('http://') || key.startsWith('https://')) return key;
-			if (publicUrl) {
-				return `${publicUrl}/${key.split('/').map(encodeURIComponent).join('/')}`;
-			}
+			if (publicUrl) return `${publicUrl}/${key.split('/').map(encodeURIComponent).join('/')}`;
 			return r2.getUrl(key, { expiresIn: 60 * 60 });
 		})
 	);

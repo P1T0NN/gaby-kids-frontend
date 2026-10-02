@@ -71,6 +71,7 @@ import type * as migrations_types_migrationTypes from "../migrations/types/migra
 import type * as rateLimits_helpers_enforceRateLimit from "../rateLimits/helpers/enforceRateLimit.js";
 import type * as rateLimits_types_rateLimitTypes from "../rateLimits/types/rateLimitTypes.js";
 import type * as seed from "../seed.js";
+import type * as storage_actions from "../storage/actions.js";
 import type * as storage_getUploadByKey from "../storage/getUploadByKey.js";
 import type * as storage_r2 from "../storage/r2.js";
 import type * as stripe_actions_createStripeCheckout from "../stripe/actions/createStripeCheckout.js";
@@ -261,6 +262,7 @@ declare const fullApi: ApiFromModules<{
   "rateLimits/helpers/enforceRateLimit": typeof rateLimits_helpers_enforceRateLimit;
   "rateLimits/types/rateLimitTypes": typeof rateLimits_types_rateLimitTypes;
   seed: typeof seed;
+  "storage/actions": typeof storage_actions;
   "storage/getUploadByKey": typeof storage_getUploadByKey;
   "storage/r2": typeof storage_r2;
   "stripe/actions/createStripeCheckout": typeof stripe_actions_createStripeCheckout;

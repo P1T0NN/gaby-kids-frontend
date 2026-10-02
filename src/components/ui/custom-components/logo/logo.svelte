@@ -21,7 +21,7 @@
 
 <div class={cn('flex items-center gap-2', className)} {...restProps}>
 	<StaticImage
-		src="/logo/opt/logo-2d-640w.webp"
+		src="/logo/opt/logo-2d-transparent-569w.webp"
 		alt={COMPANY_DATA.NAME}
 		class="-my-4 h-16 w-auto"
 	/>
