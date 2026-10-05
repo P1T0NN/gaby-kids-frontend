@@ -38,13 +38,15 @@
 	type Props = {
 		values?: MutationValues<CreateStripeCheckoutAction>;
 		submitting?: boolean;
+		couponCode?: string;
 	};
 
 	let {
 		values = $bindable<MutationValues<CreateStripeCheckoutAction>>({
 			fulfillmentMethod: 'delivery'
 		}),
-		submitting = $bindable(false)
+		submitting = $bindable(false),
+		couponCode
 	}: Props = $props();
 
 	const authenticated = $derived(page.data.authState.isAuthenticated);
@@ -109,6 +111,10 @@
 	extraFields={{
 		get customerRef() {
 			return getCustomerIdLocal();
+		},
+		get couponCode() {
+			// The reservation re-validates and prices the code server-side.
+			return couponCode || undefined;
 		},
 		get items() {
 			return cart.items.map((item) => ({

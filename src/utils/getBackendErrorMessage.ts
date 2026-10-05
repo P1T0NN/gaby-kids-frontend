@@ -4,6 +4,9 @@ import { ConvexError } from 'convex/values';
 // COMPONENTS
 import { m } from '../lib/paraglide/messages.js';
 
+// UTILS
+import { formatPrice } from '../shared/utils/pricing.js';
+
 // TYPES
 import { backendErrorDataSchema } from '../shared/types/types.js';
 
@@ -72,6 +75,26 @@ export function getBackendErrorMessage(error: Error): string | undefined {
 				productNames: parsed.data.productNames.join(', '),
 				productCount: parsed.data.productCount
 			});
+		case 'INVALID_COUPON_DATA':
+			return m['BackendMessages.invalidCouponData']();
+		case 'COUPON_CODE_TAKEN':
+			return m['BackendMessages.couponCodeTaken']();
+		case 'COUPON_NOT_FOUND':
+			return m['BackendMessages.couponNotFound']();
+		case 'COUPON_INACTIVE':
+			return m['BackendMessages.couponInactive']();
+		case 'COUPON_EXPIRED':
+			return m['BackendMessages.couponExpired']();
+		case 'COUPON_MIN_SUBTOTAL':
+			return m['BackendMessages.couponMinSubtotal']({
+				amount: formatPrice(parsed.data.minSubtotalInCents)
+			});
+		case 'COUPON_USAGE_LIMIT_REACHED':
+			return m['BackendMessages.couponUsageLimitReached']();
+		case 'COUPON_ALREADY_USED':
+			return m['BackendMessages.couponAlreadyUsed']();
+		case 'COUPON_SIGN_IN_REQUIRED':
+			return m['BackendMessages.couponSignInRequired']();
 		case 'INVALID_RETAINED_IMAGE':
 			return m['BackendMessages.invalidRetainedImage']();
 		case 'DUPLICATE_RETAINED_IMAGE':

@@ -9,21 +9,25 @@
 		items,
 		subtotalInCents,
 		shippingInCents,
+		discountInCents,
 		totalInCents,
 		quantityLabel,
 		subtotalLabel,
 		shippingLabel,
 		freeShippingLabel,
+		discountLabel,
 		totalLabel
 	}: {
 		items: Doc<'orderItems'>[];
 		subtotalInCents: number;
 		shippingInCents?: number;
+		discountInCents?: number;
 		totalInCents: number;
 		quantityLabel: (quantity: number) => string;
 		subtotalLabel: string;
 		shippingLabel?: string;
 		freeShippingLabel?: string;
+		discountLabel?: string;
 		totalLabel: string;
 	} = $props();
 </script>
@@ -58,6 +62,12 @@
 			<dd class="tabular-nums">
 				{shippingInCents === 0 ? freeShippingLabel : formatPrice(shippingInCents)}
 			</dd>
+		</div>
+	{/if}
+	{#if discountInCents !== undefined && discountInCents > 0 && discountLabel}
+		<div class="flex justify-between text-success">
+			<dt>{discountLabel}</dt>
+			<dd class="font-medium tabular-nums">−{formatPrice(discountInCents)}</dd>
 		</div>
 	{/if}
 	<div class="flex justify-between text-base font-semibold">

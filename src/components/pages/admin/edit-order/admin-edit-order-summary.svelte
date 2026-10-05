@@ -78,12 +78,16 @@
 				{items}
 				subtotalInCents={order.subtotalInCents}
 				shippingInCents={order.shippingInCents ?? 0}
+				discountInCents={order.discountInCents ?? 0}
 				totalInCents={order.totalInCents}
 				quantityLabel={(quantity) =>
 					m['AdminEditOrderPage.AdminEditOrderSummary.quantity']({ quantity })}
 				subtotalLabel={m['AdminEditOrderPage.AdminEditOrderSummary.subtotal']()}
 				shippingLabel={m['AdminEditOrderPage.AdminEditOrderSummary.shipping']()}
 				freeShippingLabel={m['AdminEditOrderPage.AdminEditOrderSummary.freeShipping']()}
+				discountLabel={order.couponCode
+					? m['AdminEditOrderPage.AdminEditOrderSummary.discount']({ code: order.couponCode })
+					: undefined}
 				totalLabel={m['AdminEditOrderPage.AdminEditOrderSummary.total']()}
 			/>
 		</Card.Content>

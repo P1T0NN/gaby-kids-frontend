@@ -31,7 +31,8 @@ function readShippingInCents(lines: Stripe.LineItem[], currency: string | null):
 		lines.length !== 1 ||
 		unitPriceInCents == null ||
 		line.quantity !== 1 ||
-		line.amount_total !== unitPriceInCents ||
+		// Session discounts reduce `amount_total`; the pre-discount identity must use `amount_subtotal`.
+		line.amount_subtotal !== unitPriceInCents ||
 		line.currency !== currency ||
 		line.price?.currency !== currency;
 	if (hasInvalidShippingLine) throw new Error('Invalid paid Checkout shipping line item.');
@@ -67,7 +68,8 @@ export function readPaidCheckout(
 			quantity === null ||
 			line.currency !== session.currency ||
 			price.currency !== session.currency ||
-			line.amount_total !== unitPriceInCents * quantity;
+			// Session discounts reduce `amount_total`; the pre-discount identity must use `amount_subtotal`.
+			line.amount_subtotal !== unitPriceInCents * quantity;
 		if (hasInvalidLine) throw new Error('Invalid paid Checkout line item.');
 		return {
 			// SAFETY: the internal mutation checks this Stripe-owned value with v.id('products').
@@ -99,12 +101,20 @@ export function readPaidCheckout(
 		(sum, item) => sum + item.unitPriceInCents * item.quantity,
 		0
 	);
+	const discountInCents = Number(metadata.discountInCents ?? 0);
+	if (!Number.isSafeInteger(discountInCents) || discountInCents < 0) {
+		throw new Error('Invalid paid Checkout discount.');
+	}
+	const couponId = metadata.couponId || undefined;
 
 	return {
 		...customer,
 		items,
 		customerId: metadata.customerId || undefined,
 		currency: metadata.currency,
+		// SAFETY: the internal mutation checks this Stripe-owned value with v.id('coupons').
+		couponId: couponId as Id<'coupons'> | undefined,
+		discountInCents,
 		subtotalInCents,
 		shippingInCents: readShippingInCents(shippingLines, session.currency),
 		totalInCents: Number(metadata.totalInCents)

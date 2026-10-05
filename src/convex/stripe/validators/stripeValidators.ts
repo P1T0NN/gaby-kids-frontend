@@ -29,6 +29,8 @@ export const checkoutSnapshot = createOrderArgs.omit('items').extend({
 	items: v.array(checkoutItem),
 	customerId: v.optional(v.string()),
 	currency: v.string(),
+	couponId: v.optional(v.id('coupons')),
+	discountInCents: v.number(),
 	subtotalInCents: v.number(),
 	shippingInCents: v.number(),
 	totalInCents: v.number()

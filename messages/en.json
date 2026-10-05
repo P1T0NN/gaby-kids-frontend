@@ -192,6 +192,14 @@
 			"pickup": "Pick up",
 			"subtotal": "Subtotal",
 			"youSave": "Total savings",
+			"couponCode": "Discount code",
+			"couponPlaceholder": "Enter code",
+			"applyCoupon": "Apply",
+			"checkingCoupon": "Checking...",
+			"couponApplied": "{code} applied",
+			"removeCoupon": "Remove {code}",
+			"couponError": "We couldn't apply that discount code.",
+			"discount": "Discount ({code})",
 			"shipping": "Shipping",
 			"freeShipping": "Free shipping",
 			"free": "Free",
@@ -229,6 +237,7 @@
 			"subtotal": "Subtotal",
 			"shipping": "Shipping",
 			"freeShipping": "Free shipping",
+			"discount": "Discount ({code})",
 			"total": "Total"
 		},
 		"CheckoutSuccessOrderDetails": {
@@ -900,6 +909,7 @@
 			"subtotal": "Subtotal",
 			"shipping": "Shipping",
 			"freeShipping": "Free shipping",
+			"discount": "Discount ({code})",
 			"total": "Total"
 		},
 		"AdminEditOrderActions": {
@@ -1063,6 +1073,7 @@
 			"backToShop": "Back to shop",
 			"generalSection": "General",
 			"productsSection": "Products",
+			"marketingSection": "Marketing",
 			"securitySection": "Security",
 			"dashboard": "Dashboard",
 			"users": "Users",
@@ -1167,6 +1178,90 @@
 			"deleted": "Deleted product"
 		}
 	},
+	"CouponsFeature": {
+		"AddCouponDialog": {
+			"addCoupon": "Add Coupon",
+			"title": "Add coupon",
+			"description": "Create a discount code customers can enter at checkout.",
+			"name": "Coupon name",
+			"namePlaceholder": "e.g. Summer sale",
+			"code": "Code",
+			"codePlaceholder": "e.g. SAVE10",
+			"codeHint": "Customers enter this code at checkout. It is stored uppercase.",
+			"percentOff": "Percent off",
+			"percentOffHint": "Applies to the merchandise subtotal, not shipping.",
+			"onePerCustomer": "Limit to one use per customer",
+			"onePerCustomerHint": "Turn off to let the same customer redeem the code repeatedly.",
+			"active": "Active",
+			"activeHint": "Only active coupons can be redeemed.",
+			"expiresAt": "Expiry date",
+			"expiresAtHint": "Optional. The code expires at the end of this day (UTC).",
+			"pickExpiryDate": "Pick a date",
+			"clearExpiry": "Clear",
+			"minSubtotal": "Minimum order value",
+			"minSubtotalHint": "Optional. Minimum merchandise subtotal before the code applies.",
+			"maxRedemptions": "Usage limit",
+			"maxRedemptionsHint": "Optional. Maximum number of paid orders that can use this code.",
+			"cancel": "Cancel",
+			"create": "Create Coupon",
+			"creating": "Creating Coupon...",
+			"couponCreated": "Coupon created.",
+			"createError": "Couldn't create this coupon."
+		},
+		"CheckoutCoupon": {
+			"label": "Discount code",
+			"placeholder": "Enter code",
+			"apply": "Apply",
+			"applying": "Checking...",
+			"applied": "{code} applied",
+			"remove": "Remove {code}",
+			"signInRequired": "Sign in to use discount codes.",
+			"signIn": "Sign in",
+			"error": "We couldn't apply that discount code."
+		}
+	},
+	"AdminCouponsPage": {
+		"pageTitle": "Coupons",
+		"loadError": "We couldn't load the coupons. Please try again.",
+		"noCoupons": "No coupons yet",
+		"noCouponsDescription": "Create a discount code to use at checkout.",
+		"nameColumn": "Name",
+		"codeColumn": "Code",
+		"discountColumn": "Discount",
+		"statusColumn": "Status",
+		"expiryColumn": "Expires",
+		"redemptionsColumn": "Used",
+		"AdminCouponsHeader": {
+			"adminLabel": "Marketing",
+			"title": "Coupons",
+			"description": "Create and manage discount codes customers can redeem at checkout."
+		},
+		"AdminCouponsTableItem": {
+			"active": "Active",
+			"disabled": "Disabled",
+			"expired": "Expired",
+			"noExpiry": "Never",
+			"percentOff": "{percent}% off",
+			"used": "{count} used",
+			"usedOfLimit": "{count} / {limit} used",
+			"openActions": "Open actions for {code}"
+		},
+		"AdminCouponsTableItemStatusButton": {
+			"enableCoupon": "Enable",
+			"disableCoupon": "Disable",
+			"couponEnabled": "Coupon enabled.",
+			"couponDisabled": "Coupon disabled.",
+			"statusError": "Couldn't update this coupon."
+		},
+		"AdminCouponsTableItemDelete": {
+			"deleteCoupon": "Delete",
+			"deleteConfirmationTitle": "Delete this coupon?",
+			"deleteConfirmationDescription": "{code} will stop working immediately. Orders that already used it keep their discount.",
+			"cancel": "Cancel",
+			"couponDeleted": "Coupon deleted.",
+			"deleteError": "Couldn't delete this coupon."
+		}
+	},
 	"ValidationMessages": {
 		"duplicateProductCategory": "Select each category only once.",
 		"fallback": "Please check this field.",
@@ -1219,6 +1314,15 @@
 		"categoryNotFound": "This category could not be found.",
 		"categorySlugTaken": "That category slug is already in use.",
 		"categoryHasProducts": "This category cannot be deleted because it is assigned to {productCount} product(s): {productNames}. Remove the category from those products first.",
+		"invalidCouponData": "Check the coupon details and try again.",
+		"couponCodeTaken": "That coupon code is already in use.",
+		"couponNotFound": "That discount code is not valid.",
+		"couponInactive": "That discount code is no longer available.",
+		"couponExpired": "That discount code has expired.",
+		"couponMinSubtotal": "This code needs a minimum order of {amount}.",
+		"couponUsageLimitReached": "That discount code has reached its usage limit.",
+		"couponAlreadyUsed": "You have already used this discount code.",
+		"couponSignInRequired": "Sign in to use this discount code.",
 		"invalidRetainedImage": "One of the selected images is no longer valid.",
 		"duplicateRetainedImage": "The same image cannot be selected more than once.",
 		"duplicateUploadKey": "The same upload cannot be submitted more than once.",

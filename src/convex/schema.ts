@@ -105,6 +105,19 @@ export const tables = {
 	})
 		.index('by_stripe_checkout_session_id', ['stripeCheckoutSessionId'])
 		.index('by_status_and_expires_at', ['status', 'expiresAt']),
+	coupons: defineTable({
+		name: v.string(),
+		/** Normalized (trimmed, uppercased) code customers redeem at checkout. */
+		code: v.string(),
+		percentOff: v.number(),
+		active: v.boolean(),
+		expiresAt: v.optional(v.number()),
+		minSubtotalInCents: v.optional(v.number()),
+		maxRedemptions: v.optional(v.number()),
+		onePerCustomer: v.boolean(),
+		/** Incremented when a reservation completes into a paid order. */
+		redemptionCount: v.number()
+	}).index('by_code', ['code']),
 	orders: defineTable({
 		customerId: v.optional(v.string()),
 		code: v.string(),
@@ -125,6 +138,9 @@ export const tables = {
 				country: v.string()
 			})
 		),
+		couponId: v.optional(v.id('coupons')),
+		couponCode: v.optional(v.string()),
+		discountInCents: v.optional(v.number()),
 		subtotalInCents: v.number(),
 		shippingInCents: v.optional(v.number()),
 		totalInCents: v.number(),
@@ -145,6 +161,8 @@ export const tables = {
 		.index('by_stripeCheckoutSessionId', ['stripeCheckoutSessionId'])
 		.index('by_stripePaymentIntentId', ['stripePaymentIntentId'])
 		.index('by_customer_id', ['customerId'])
+		.index('by_coupon_id_and_customer_id', ['couponId', 'customerId'])
+		.index('by_coupon_id_and_email', ['couponId', 'email'])
 		.index('by_email', ['email'])
 		.index('by_payment_status', ['paymentStatus'])
 		.index('by_fulfillment_status', ['fulfillmentStatus'])

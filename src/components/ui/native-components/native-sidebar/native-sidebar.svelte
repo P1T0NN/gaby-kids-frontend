@@ -33,19 +33,6 @@
 	} = $props();
 
 	const isMobile = new IsMobile();
-	let hoverSuppressed = $state(false);
-
-	function closeOpenPopover(sidebar: HTMLElement): void {
-		sidebar.querySelector<HTMLElement>('[popover]:popover-open')?.hidePopover();
-	}
-
-	function suppressHover(event: PointerEvent): void {
-		const target = event.target;
-		if (target instanceof Element && target.closest('a')) {
-			hoverSuppressed = true;
-			if (event.currentTarget instanceof HTMLElement) closeOpenPopover(event.currentTarget);
-		}
-	}
 </script>
 
 {#if isMobile.current}
@@ -93,9 +80,6 @@
 	<aside
 		aria-label={label}
 		data-side={side}
-		data-hover-suppressed={hoverSuppressed}
-		onpointerup={suppressHover}
-		onpointerleave={() => (hoverSuppressed = false)}
 		class={cn('pointer-events-auto sticky top-0 z-10 hidden h-screen shrink-0 md:block', className)}
 	>
 		<div
@@ -159,8 +143,7 @@
 		clip-path: inset(0 0 0 calc(100% - var(--native-sidebar-width-collapsed)));
 	}
 
-	aside:not([data-hover-suppressed='true']):is(:hover, :focus-within)
-		> [data-native-sidebar-panel] {
+	aside:is(:hover, :focus-within) > [data-native-sidebar-panel] {
 		clip-path: inset(0);
 	}
 
@@ -169,7 +152,7 @@
 		clip-path: inset(0);
 	}
 
-	aside:not([data-hover-suppressed='true']):is(:hover, :focus-within) {
+	aside:is(:hover, :focus-within) {
 		inline-size: var(--native-sidebar-width);
 	}
 
@@ -222,11 +205,9 @@
 		text-align: end;
 	}
 
-	aside:not([data-hover-suppressed='true']):is(:hover, :focus-within)
-		[data-native-sidebar-header-label],
-	aside:not([data-hover-suppressed='true']):is(:hover, :focus-within)
-		:global([data-native-sidebar-section-title]),
-	aside:not([data-hover-suppressed='true']):is(:hover, :focus-within)
+	aside:is(:hover, :focus-within) [data-native-sidebar-header-label],
+	aside:is(:hover, :focus-within) :global([data-native-sidebar-section-title]),
+	aside:is(:hover, :focus-within)
 		:global([data-native-sidebar-link] > span:not([aria-hidden='true'])) {
 		opacity: 1;
 	}

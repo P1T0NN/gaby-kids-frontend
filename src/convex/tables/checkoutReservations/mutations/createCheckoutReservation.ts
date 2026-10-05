@@ -17,6 +17,7 @@ import { getProductVariantLabel } from '../../../../shared/features/productVaria
 import { buildCheckoutLine, type CheckoutLine } from '../../orders/helpers/buildCheckoutLine.js';
 import { loadSellableProductVariant } from '../../productVariants/helpers/loadSellableProductVariant.js';
 import { mergeItemQuantities } from '../../orders/helpers/mergeItemQuantities.js';
+import { getCouponForCheckout } from '../../coupons/helpers/getCouponForCheckout.js';
 
 // SCHEMAS
 import { createOrderSchema } from '../../../../shared/features/orders/schemas/ordersSchemas.js';
@@ -115,7 +116,24 @@ export const createCheckoutReservation = internalMutation({
 			throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
 		}
 		const shippingInCents = calculateShippingInCents(subtotalInCents, data.fulfillmentMethod);
-		const totalInCents = subtotalInCents + shippingInCents;
+
+		const identity = await ctx.auth.getUserIdentity();
+		// Guests keep their anonymous device id so the order can be claimed after signing in.
+		const customerId = identity?.subject ?? args.customerRef;
+		const coupon = data.couponCode
+			? await getCouponForCheckout(ctx, {
+					code: data.couponCode,
+					subtotalInCents,
+					isSignedIn: identity !== null,
+					customerId,
+					email: data.email
+				})
+			: undefined;
+		const discountInCents = coupon?.discountInCents ?? 0;
+		const totalInCents = subtotalInCents + shippingInCents - discountInCents;
+		if (!Number.isSafeInteger(totalInCents) || totalInCents <= 0) {
+			throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
+		}
 
 		for (const update of inventoryUpdates) {
 			await ctx.db.patch(update.productVariantId, {
@@ -123,12 +141,13 @@ export const createCheckoutReservation = internalMutation({
 			});
 		}
 
-		const identity = await ctx.auth.getUserIdentity();
 		const checkout = {
 			...data,
 			items: checkoutItems,
-			// Guests keep their anonymous device id so the order can be claimed after signing in.
-			customerId: identity?.subject ?? args.customerRef,
+			customerId,
+			couponId: coupon?.coupon._id,
+			couponCode: coupon?.coupon.code,
+			discountInCents,
 			shippingAddress: data.fulfillmentMethod === 'delivery' ? data.shippingAddress : undefined,
 			currency: COMPANY_DATA.CURRENCY,
 			subtotalInCents,

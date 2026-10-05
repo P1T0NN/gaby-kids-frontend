@@ -18,6 +18,7 @@ export const UNPROTECTED_PAGE_ENDPOINTS = {
 
 export const ADMIN_PAGE_ENDPOINTS = {
 	UPSELLS: resolve('/admin/upsells'),
+	COUPONS: resolve('/admin/coupons'),
 	PRODUCTS: resolve('/admin/products'),
 	ADD_PRODUCT: resolve('/admin/products/add-product'),
 	EDIT_PRODUCT: (id: string) => resolve('/admin/products/edit-product/[id]', { id }),

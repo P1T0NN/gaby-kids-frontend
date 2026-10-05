@@ -27,8 +27,15 @@ export const createOrderArgs = v.object({
 	email: v.string(),
 	phone: v.string(),
 	fulfillmentMethod,
+	couponCode: v.optional(v.string()),
 	shippingAddress: v.optional(shippingAddress)
 });
+
+export const orderCoupon = {
+	couponId: v.optional(v.id('coupons')),
+	couponCode: v.optional(v.string()),
+	discountInCents: v.optional(v.number())
+};
 
 export const orderResult = v.object({
 	_id: v.id('orders'),
@@ -44,6 +51,7 @@ export const orderResult = v.object({
 	phone: v.string(),
 	fulfillmentMethod,
 	shippingAddress: v.optional(shippingAddress),
+	...orderCoupon,
 	subtotalInCents: v.number(),
 	shippingInCents: v.optional(v.number()),
 	totalInCents: v.number(),
@@ -114,6 +122,7 @@ export const customerOrderResult = v.object({
 	phone: v.string(),
 	fulfillmentMethod,
 	shippingAddress: v.optional(shippingAddress),
+	...orderCoupon,
 	subtotalInCents: v.number(),
 	shippingInCents: v.optional(v.number()),
 	totalInCents: v.number(),

@@ -55,9 +55,11 @@ export const fetchCheckoutOrder = internalQuery({
 		const quantities = mergeItemQuantities(data.items);
 		const items = await buildCheckoutItems(ctx, quantities);
 		const subtotalInCents = calculateOrderTotalInCents(items);
+
 		if (!Number.isSafeInteger(subtotalInCents) || subtotalInCents <= 0) {
 			throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
 		}
+
 		const shippingInCents = calculateShippingInCents(subtotalInCents, data.fulfillmentMethod);
 
 		const identity = await ctx.auth.getUserIdentity();
@@ -68,6 +70,7 @@ export const fetchCheckoutOrder = internalQuery({
 			customerId: identity?.subject,
 			shippingAddress: data.fulfillmentMethod === 'delivery' ? data.shippingAddress : undefined,
 			currency: COMPANY_DATA.CURRENCY,
+			discountInCents: 0,
 			subtotalInCents,
 			shippingInCents,
 			totalInCents: subtotalInCents + shippingInCents

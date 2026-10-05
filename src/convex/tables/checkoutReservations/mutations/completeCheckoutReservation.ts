@@ -123,7 +123,7 @@ export const completeCheckoutReservation = internalMutation({
 		const subtotal = calculateOrderTotalInCents(checkout.items);
 		const hasInvalidSnapshot = hasInvalidCheckoutSnapshot(checkout, subtotal);
 		if (hasInvalidSnapshot) throw new Error('Stripe order snapshot invariant violated.');
-		const total = subtotal + checkout.shippingInCents;
+		const total = subtotal + checkout.shippingInCents - checkout.discountInCents;
 
 		const reservation = await ctx.db.get(reservationId);
 		if (!reservation) {
@@ -169,6 +169,9 @@ export const completeCheckoutReservation = internalMutation({
 			code,
 			lineFingerprint: JSON.stringify(checkout.items),
 			currency: checkout.currency,
+			couponId: checkout.couponId,
+			couponCode: checkout.couponCode,
+			discountInCents: checkout.discountInCents,
 			subtotalInCents: subtotal,
 			shippingInCents: checkout.shippingInCents,
 			totalInCents: total,
@@ -184,6 +187,14 @@ export const completeCheckoutReservation = internalMutation({
 		await markEmailClaimPending(ctx, order.email);
 		await insertOrderItems(ctx, orderId, reservation.items);
 		await ctx.db.patch(reservation._id, { status: 'completed' });
+
+		// Replayed webhooks returned before this point, so the counter increments once per paid order.
+		if (checkout.couponId) {
+			const coupon = await ctx.db.get(checkout.couponId);
+			if (coupon) {
+				await ctx.db.patch(coupon._id, { redemptionCount: coupon.redemptionCount + 1 });
+			}
+		}
 
 		await sendOrderCreatedEmails(ctx, { ...order, _id: orderId }, checkout.items);
 

@@ -11,6 +11,7 @@
 	import SvelteHead from '@/components/ui/custom-components/svelte-head/svelte-head.svelte';
 
 	// TYPES
+	import type { AppliedCoupon } from '@/shared/features/coupons/types/couponTypes.js';
 	import type { MutationValues } from '@/components/ui/custom-components/form/formTypes.js';
 
 	type CreateStripeCheckoutAction =
@@ -20,6 +21,7 @@
 		fulfillmentMethod: 'delivery'
 	});
 
+	let coupon = $state<AppliedCoupon | null>(null);
 	let submitting = $state(false);
 </script>
 
@@ -33,7 +35,7 @@
 	<CheckoutHeader />
 
 	<div class="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_23rem] lg:gap-16">
-		<CheckoutForm bind:values bind:submitting />
-		<CheckoutSummary {values} {submitting} />
+		<CheckoutForm bind:values bind:submitting couponCode={coupon?.code} />
+		<CheckoutSummary {values} {submitting} bind:applied={coupon} />
 	</div>
 </Section>

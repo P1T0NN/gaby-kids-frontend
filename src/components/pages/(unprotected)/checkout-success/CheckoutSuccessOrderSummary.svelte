@@ -10,7 +10,10 @@
 	import type { Doc } from '@convex/_generated/dataModel';
 
 	type Props = {
-		order: Pick<Doc<'orders'>, 'subtotalInCents' | 'shippingInCents' | 'totalInCents'>;
+		order: Pick<
+			Doc<'orders'>,
+			'subtotalInCents' | 'shippingInCents' | 'discountInCents' | 'couponCode' | 'totalInCents'
+		>;
 		items: Doc<'orderItems'>[];
 	};
 
@@ -26,12 +29,18 @@
 			{items}
 			subtotalInCents={order.subtotalInCents}
 			shippingInCents={order.shippingInCents ?? 0}
+			discountInCents={order.discountInCents ?? 0}
 			totalInCents={order.totalInCents}
 			quantityLabel={(quantity) =>
 				m['CheckoutSuccessPage.CheckoutSuccessOrderSummary.quantity']({ quantity })}
 			subtotalLabel={m['CheckoutSuccessPage.CheckoutSuccessOrderSummary.subtotal']()}
 			shippingLabel={m['CheckoutSuccessPage.CheckoutSuccessOrderSummary.shipping']()}
 			freeShippingLabel={m['CheckoutSuccessPage.CheckoutSuccessOrderSummary.freeShipping']()}
+			discountLabel={order.couponCode
+				? m['CheckoutSuccessPage.CheckoutSuccessOrderSummary.discount']({
+						code: order.couponCode
+					})
+				: undefined}
 			totalLabel={m['CheckoutSuccessPage.CheckoutSuccessOrderSummary.total']()}
 		/>
 	</Card.Content>

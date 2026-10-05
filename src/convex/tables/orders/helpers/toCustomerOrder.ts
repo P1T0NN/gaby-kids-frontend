@@ -13,6 +13,8 @@ export function toCustomerOrder(order: Doc<'orders'>) {
 		phone: order.phone,
 		fulfillmentMethod: order.fulfillmentMethod,
 		shippingAddress: order.shippingAddress,
+		couponCode: order.couponCode,
+		discountInCents: order.discountInCents,
 		subtotalInCents: order.subtotalInCents,
 		shippingInCents: order.shippingInCents,
 		totalInCents: order.totalInCents,

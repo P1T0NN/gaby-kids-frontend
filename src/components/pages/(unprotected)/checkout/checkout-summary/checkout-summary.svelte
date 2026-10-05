@@ -7,6 +7,7 @@
 	// COMPONENTS
 	import CheckoutSummaryItem from '@/components/pages/(unprotected)/checkout/checkout-summary-item.svelte';
 	import CheckoutSummaryLoading from '@/components/pages/(unprotected)/checkout/loading/checkout-summary-loading.svelte';
+	import CheckoutCoupon from '@/features/coupons/components/checkout-coupon/checkout-coupon.svelte';
 	import FreeShippingNudge from '@/features/orders/components/free-shipping-nudge.svelte';
 	import { Button } from '@/components/ui/button/index.js';
 	import EmptyData from '@/components/ui/custom-components/empty-data/empty-data.svelte';
@@ -21,10 +22,13 @@
 		calculateOrderTotalInCents,
 		formatPrice
 	} from '@/shared/utils/pricing.js';
+	import { calculateCouponDiscountInCents } from '@/shared/features/coupons/utils/calculateCouponDiscountInCents.js';
 	import { calculateShippingInCents } from '@/shared/features/orders/utils/calculateShippingInCents.js';
 	import { getProductAvailability } from '@/shared/features/products/utils/getProductAvailability.js';
+	import { cn } from '@/utils/utils.js';
 
 	// TYPES
+	import type { AppliedCoupon } from '@/shared/features/coupons/types/couponTypes.js';
 	import type { MutationValues } from '@/components/ui/custom-components/form/formTypes.js';
 
 	type CreateStripeCheckoutAction =
@@ -33,9 +37,10 @@
 	type Props = {
 		values: MutationValues<CreateStripeCheckoutAction>;
 		submitting: boolean;
+		applied?: AppliedCoupon | null;
 	};
 
-	let { values, submitting }: Props = $props();
+	let { values, submitting, applied = $bindable<AppliedCoupon | null>(null) }: Props = $props();
 
 	const fulfillment = $derived(values.fulfillmentMethod === 'pickup' ? 'pickup' : 'delivery');
 
@@ -66,7 +71,10 @@
 	const total = $derived(calculateOrderTotalInCents(pricingItems));
 	const totalSavingsInCents = $derived(calculateOrderSavingsInCents(pricingItems));
 	const shippingInCents = $derived(calculateShippingInCents(total, fulfillment));
-	const orderTotalInCents = $derived(total + shippingInCents);
+	const discountInCents = $derived(
+		applied ? calculateCouponDiscountInCents(total, applied.percentOff) : 0
+	);
+	const orderTotalInCents = $derived(total + shippingInCents - discountInCents);
 
 	const loading = $derived(!cart.loaded || productVariants.isLoading || productVariants.isStale);
 
@@ -115,6 +123,9 @@
 				<CheckoutSummaryItem {item} />
 			{/each}
 		</ul>
+		<div class={cn('mt-5', fulfillment !== 'delivery' && 'mb-6')}>
+			<CheckoutCoupon subtotalInCents={total} email={String(values.email ?? '')} bind:applied />
+		</div>
 		{#if fulfillment === 'delivery'}
 			<FreeShippingNudge subtotalInCents={total} class="mt-5 mb-6" />
 		{/if}
@@ -143,6 +154,12 @@
 						: m['CheckoutPage.CheckoutSummary.free']()}
 				</dd>
 			</div>
+			{#if applied && discountInCents > 0}
+				<div class="flex justify-between gap-4 text-success">
+					<dt>{m['CheckoutPage.CheckoutSummary.discount']({ code: applied.code })}</dt>
+					<dd class="font-medium tabular-nums">−{formatPrice(discountInCents)}</dd>
+				</div>
+			{/if}
 			<div class="mt-2 flex items-baseline justify-between gap-4 border-t pt-5 font-semibold">
 				<dt>{m['CheckoutPage.CheckoutSummary.total']()}</dt>
 				<dd class="text-2xl tracking-tight tabular-nums">{formatPrice(orderTotalInCents)}</dd>

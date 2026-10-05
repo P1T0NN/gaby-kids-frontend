@@ -18,6 +18,7 @@ type CheckoutSnapshot = {
 	fulfillmentMethod: 'delivery' | 'pickup';
 	subtotalInCents: number;
 	shippingInCents: number;
+	discountInCents: number;
 	totalInCents: number;
 };
 
@@ -34,7 +35,12 @@ export function hasInvalidCheckoutSnapshot(
 		checkout.shippingInCents < 0 ||
 		checkout.shippingInCents !==
 			calculateShippingInCents(subtotalInCents, checkout.fulfillmentMethod) ||
-		checkout.totalInCents !== subtotalInCents + checkout.shippingInCents ||
+		!Number.isSafeInteger(checkout.discountInCents) ||
+		checkout.discountInCents < 0 ||
+		checkout.discountInCents > subtotalInCents ||
+		checkout.totalInCents !==
+			subtotalInCents + checkout.shippingInCents - checkout.discountInCents ||
+		checkout.totalInCents <= 0 ||
 		new Set(checkout.items.map((item) => item.productVariantId)).size !== checkout.items.length ||
 		checkout.items.some((item) => !item.name.trim() || item.quantity > ORDER_CONFIG.maxQuantity)
 	);

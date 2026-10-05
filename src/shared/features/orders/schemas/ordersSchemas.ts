@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 // CONFIG
 import { ORDER_CONFIG } from '../config.js';
+import { COUPONS_CONFIG } from '../../coupons/config.js';
 
 // TYPES
 import type { Id } from '../../../../convex/_generated/dataModel.js';
@@ -74,6 +75,7 @@ export const checkoutSchema = z
 		email: z.string().trim().toLowerCase().email().max(MAX_EMAIL_LENGTH),
 		phone: z.string().trim().min(1).max(MAX_PHONE_LENGTH),
 		fulfillmentMethod: z.enum(['delivery', 'pickup']),
+		couponCode: optionalTrimmedString(COUPONS_CONFIG.maxCodeLength),
 		shippingAddress: shippingAddressSchema.optional()
 	})
 	.refine((value) => value.fulfillmentMethod !== 'delivery' || value.shippingAddress, {

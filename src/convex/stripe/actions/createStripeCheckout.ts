@@ -57,6 +57,9 @@ function buildCheckoutMetadata(options: {
 		city: address?.city ?? '',
 		country: address?.country ?? '',
 		currency: checkout.currency,
+		couponId: checkout.couponId ?? '',
+		couponCode: checkout.couponCode ?? '',
+		discountInCents: String(checkout.discountInCents),
 		subtotalInCents: String(checkout.subtotalInCents),
 		shippingInCents: String(checkout.shippingInCents),
 		totalInCents: String(checkout.totalInCents),
@@ -90,6 +93,7 @@ export const createStripeCheckout = action({
 		});
 
 		let session: Awaited<ReturnType<typeof stripe.checkout.sessions.create>> | undefined;
+		let stripeCouponId: string | undefined;
 		try {
 			if (Object.values(metadata).some((value) => value.length > 500)) {
 				throw new ConvexError<BackendErrorData>({ code: 'INVALID_ORDER_DATA' });
@@ -98,6 +102,19 @@ export const createStripeCheckout = action({
 				Math.ceil(reservation.expiresAt / 1000),
 				Math.floor(Date.now() / 1000) + ORDER_CONFIG.checkoutReservationMinutes * 60
 			);
+
+			// Stripe rejects negative line items, so the trusted discount is applied
+			// as a one-off coupon for exactly the server-computed amount.
+			if (checkout.discountInCents > 0) {
+				const stripeCoupon = await stripe.coupons.create({
+					amount_off: checkout.discountInCents,
+					currency: checkout.currency.toLowerCase(),
+					duration: 'once',
+					name: (checkout.couponCode ?? 'Discount').slice(0, 40),
+					metadata: { reservationId: reservation.reservationId }
+				});
+				stripeCouponId = stripeCoupon.id;
+			}
 
 			session = await stripe.checkout.sessions.create({
 				mode: 'payment',
@@ -109,6 +126,7 @@ export const createStripeCheckout = action({
 					checkout.items,
 					checkout.shippingInCents
 				),
+				discounts: stripeCouponId ? [{ coupon: stripeCouponId }] : undefined,
 				expires_at: stripeExpiresAt,
 				metadata,
 				success_url: successUrl.toString() + '&session_id={CHECKOUT_SESSION_ID}',
@@ -139,6 +157,9 @@ export const createStripeCheckout = action({
 				.catch(() => undefined);
 			if (session?.status === 'open') {
 				await stripe.checkout.sessions.expire(session.id).catch(() => undefined);
+			}
+			if (stripeCouponId) {
+				await stripe.coupons.del(stripeCouponId).catch(() => undefined);
 			}
 			throw error;
 		}

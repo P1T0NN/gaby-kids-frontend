@@ -9,6 +9,7 @@
 	// CONFIG
 	import { COMPANY_DATA } from '@/shared/config';
 	import { ADMIN_PAGE_ENDPOINTS } from '@/shared/constants/pageEndpoints.js';
+	import { COUPONS_CONFIG } from '@/shared/features/coupons/config.js';
 	import { UPSELLS_CONFIG } from '@/shared/features/upsells/config.js';
 	import { m } from '@/lib/paraglide/messages';
 
@@ -88,6 +89,15 @@
 						<NativeSidebarLink href={ADMIN_PAGE_ENDPOINTS.UPSELLS}>
 							<span class="icon-[lucide--list-plus] size-4" aria-hidden="true"></span>
 							<span>{m['AdminUpsellsPage.pageTitle']()}</span>
+						</NativeSidebarLink>
+					{/if}
+				</NativeSidebarSection>
+
+				<NativeSidebarSection title={m['Components.AdminSidebar.marketingSection']()}>
+					{#if COUPONS_CONFIG.HAS_COUPONS}
+						<NativeSidebarLink href={ADMIN_PAGE_ENDPOINTS.COUPONS}>
+							<span class="icon-[lucide--ticket-percent] size-4" aria-hidden="true"></span>
+							<span>{m['AdminCouponsPage.pageTitle']()}</span>
 						</NativeSidebarLink>
 					{/if}
 				</NativeSidebarSection>
