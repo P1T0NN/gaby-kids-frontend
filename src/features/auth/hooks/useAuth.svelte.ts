@@ -146,16 +146,6 @@ export function useAuth() {
 					}),
 				() => gotoParaglide(UNPROTECTED_PAGE_ENDPOINTS.SIGN_IN)
 			);
-		},
-		signInWithGoogle(captchaToken: string) {
-			return run(() =>
-				authClient.signIn.social({
-					...captchaFetchOptions(captchaToken),
-					provider: 'google',
-					callbackURL: UNPROTECTED_PAGE_ENDPOINTS.ROOT,
-					errorCallbackURL: UNPROTECTED_PAGE_ENDPOINTS.AUTH_ERROR
-				})
-			);
 		}
 	};
 }

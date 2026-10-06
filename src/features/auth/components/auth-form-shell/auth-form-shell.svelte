@@ -27,7 +27,6 @@
 		submitLabel: string;
 		/** Extra condition that keeps the submit button disabled (e.g. an incomplete OTP). */
 		submitDisabled?: boolean;
-		google?: { label: string; onclick: () => void | Promise<void> };
 		/** Form-specific fields rendered above the captcha field. */
 		children: Snippet;
 		/** Rendered after the action buttons, inside the same field (e.g. a footer link). */
@@ -45,7 +44,6 @@
 		onsubmit,
 		submitLabel,
 		submitDisabled = false,
-		google,
 		children,
 		actionsFooter,
 		footer,
@@ -81,16 +79,6 @@
 						{/if}
 						{submitLabel}
 					</Button>
-					{#if google}
-						<Button
-							variant="outline"
-							type="button"
-							disabled={submitting || !captcha.token}
-							onclick={google.onclick}
-						>
-							{google.label}
-						</Button>
-					{/if}
 					{@render actionsFooter?.()}
 				</Field.Field>
 			</Field.Group>

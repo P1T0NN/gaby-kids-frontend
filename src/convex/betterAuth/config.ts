@@ -117,12 +117,6 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
 			errorURL: '/auth/error'
 		},
 		database: authComponent.adapter(ctx),
-		socialProviders: {
-			google: {
-				clientId: process.env.GOOGLE_CLIENT_ID!,
-				clientSecret: process.env.GOOGLE_CLIENT_SECRET!
-			}
-		},
 		emailVerification: {
 			sendOnSignUp: true,
 			sendOnSignIn: true,
@@ -152,7 +146,6 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
 				endpoints: [
 					'/sign-up/email',
 					'/sign-in/email',
-					'/sign-in/social',
 					'/email-otp/send-verification-otp',
 					'/email-otp/verify-email',
 					'/email-otp/request-password-reset',

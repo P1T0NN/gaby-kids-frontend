@@ -49,15 +49,6 @@
 			captcha.reset();
 		}
 	}
-
-	async function handleGoogleSignIn() {
-		if (!captcha.token) return;
-		try {
-			await auth.signInWithGoogle(captcha.token);
-		} finally {
-			captcha.reset();
-		}
-	}
 </script>
 
 <AuthFormShell
@@ -69,10 +60,6 @@
 	{captcha}
 	onsubmit={handleSubmit}
 	submitLabel={m['AuthFeature.SignUpForm.createAccount']()}
-	google={{
-		label: m['AuthFeature.SignUpForm.continueWithGoogle'](),
-		onclick: handleGoogleSignIn
-	}}
 >
 	<Field.Field>
 		<Field.Label for="name">{m['AuthFeature.SignUpForm.fullName']()}</Field.Label>

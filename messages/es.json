@@ -333,7 +333,6 @@
 			"rememberSession": "Recuerda tu sesión.",
 			"forgotYourPassword": "¿Olvidaste tu contraseña?",
 			"signIn": "Iniciar sesión",
-			"continueWithGoogle": "Continuar con Google",
 			"noAccount": "¿No tienes una cuenta?",
 			"signUp": "Regístrate"
 		},
@@ -348,7 +347,6 @@
 			"passwordLengthDescription": "Debe tener al menos 8 caracteres.",
 			"confirmPassword": "Confirmar contraseña",
 			"confirmPasswordDescription": "Confirma tu contraseña.",
-			"continueWithGoogle": "Continuar con Google",
 			"alreadyHaveAccount": "¿Ya tienes una cuenta?",
 			"signIn": "Iniciar sesión",
 			"verificationCodeToast": "Revisa tu correo para encontrar el código de verificación."

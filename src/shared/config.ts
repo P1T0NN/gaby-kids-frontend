@@ -16,14 +16,14 @@ const WHATSAPP_NUMBER = '+52 431 105 7527';
 const WHATSAPP_DIAL_NUMBER = WHATSAPP_NUMBER.replace(/\D/g, '');
 
 export const COMPANY_DATA = {
-	NAME: 'Company Name',
+	NAME: 'Gaby Kids',
 	EMAIL: 'gabykids13@yahoo.com',
-	RESEND_EMAIL: 'onboarding@resend.dev',
+	RESEND_EMAIL: 'info@gabykids.com',
 	EMAIL_COPY: {
 		FOOTER_NOTICE: 'You are receiving this email because of activity on your account.',
 		IGNORE_NOTICE: 'If you did not request this email, you can safely ignore it.'
 	},
-	DOMAIN: 'companyname.com',
+	DOMAIN: 'gabykids.com',
 	/** Currency code used by storefront price formatting. Replace for the project. */
 	CURRENCY: 'MXN',
 	/** IANA store timezone: every dashboard day boundary and bucket is computed in this zone. */
