@@ -17,7 +17,7 @@ const WHATSAPP_DIAL_NUMBER = WHATSAPP_NUMBER.replace(/\D/g, '');
 
 export const COMPANY_DATA = {
 	NAME: 'Company Name',
-	EMAIL: 'ognjen.tapuskovic@gmail.com',
+	EMAIL: 'gabykids13@yahoo.com',
 	RESEND_EMAIL: 'onboarding@resend.dev',
 	EMAIL_COPY: {
 		FOOTER_NOTICE: 'You are receiving this email because of activity on your account.',

@@ -192,6 +192,14 @@
 			"pickup": "Recoger en tienda",
 			"subtotal": "Subtotal",
 			"youSave": "Ahorro total",
+			"couponCode": "Código de descuento",
+			"couponPlaceholder": "Escribe el código",
+			"applyCoupon": "Aplicar",
+			"checkingCoupon": "Verificando...",
+			"couponApplied": "{code} aplicado",
+			"removeCoupon": "Quitar {code}",
+			"couponError": "No pudimos aplicar ese código de descuento.",
+			"discount": "Descuento ({code})",
 			"shipping": "Envío",
 			"freeShipping": "Envío gratis",
 			"free": "Gratis",
@@ -229,6 +237,7 @@
 			"subtotal": "Subtotal",
 			"shipping": "Envío",
 			"freeShipping": "Envío gratis",
+			"discount": "Descuento ({code})",
 			"total": "Total"
 		},
 		"CheckoutSuccessOrderDetails": {
@@ -900,6 +909,7 @@
 			"subtotal": "Subtotal",
 			"shipping": "Envío",
 			"freeShipping": "Envío gratis",
+			"discount": "Descuento ({code})",
 			"total": "Total"
 		},
 		"AdminEditOrderActions": {
@@ -1046,7 +1056,7 @@
 			"home": "Inicio",
 			"shop": "Tienda",
 			"primaryNavigation": "Navegación principal",
-			"announcement": "Envíos gratis a partir de $799 en toda la República Mexicana · Mayoreo disponible",
+			"announcement": "Envíos gratis a partir de $1,199 en toda la República Mexicana · Mayoreo disponible",
 			"navShop": "Comprar",
 			"navBaptism": "Bautizo",
 			"navFirstCommunion": "Primera Comunión",
@@ -1063,6 +1073,7 @@
 			"backToShop": "Volver a la tienda",
 			"generalSection": "General",
 			"productsSection": "Productos",
+			"marketingSection": "Marketing",
 			"securitySection": "Seguridad",
 			"dashboard": "Panel",
 			"users": "Usuarios",
@@ -1167,6 +1178,90 @@
 			"deleted": "Producto eliminado"
 		}
 	},
+	"CouponsFeature": {
+		"AddCouponDialog": {
+			"addCoupon": "Agregar cupón",
+			"title": "Agregar cupón",
+			"description": "Crea un código de descuento que los clientes puedan ingresar al pagar.",
+			"name": "Nombre del cupón",
+			"namePlaceholder": "p. ej. Venta de verano",
+			"code": "Código",
+			"codePlaceholder": "p. ej. VERANO10",
+			"codeHint": "Los clientes ingresan este código al pagar. Se guarda en mayúsculas.",
+			"percentOff": "Porcentaje de descuento",
+			"percentOffHint": "Se aplica al subtotal de los productos, no al envío.",
+			"onePerCustomer": "Limitar a un uso por cliente",
+			"onePerCustomerHint": "Desactívalo para permitir que el mismo cliente canjee el código varias veces.",
+			"active": "Activo",
+			"activeHint": "Solo los cupones activos se pueden canjear.",
+			"expiresAt": "Fecha de vencimiento",
+			"expiresAtHint": "Opcional. El código vence al final de este día (UTC).",
+			"pickExpiryDate": "Selecciona una fecha",
+			"clearExpiry": "Limpiar",
+			"minSubtotal": "Monto mínimo del pedido",
+			"minSubtotalHint": "Opcional. Subtotal mínimo de productos para que se aplique el código.",
+			"maxRedemptions": "Límite de uso",
+			"maxRedemptionsHint": "Opcional. Número máximo de pedidos pagados que pueden usar este código.",
+			"cancel": "Cancelar",
+			"create": "Crear cupón",
+			"creating": "Creando cupón...",
+			"couponCreated": "Cupón creado.",
+			"createError": "No pudimos crear este cupón."
+		},
+		"CheckoutCoupon": {
+			"label": "Código de descuento",
+			"placeholder": "Escribe el código",
+			"apply": "Aplicar",
+			"applying": "Verificando...",
+			"applied": "{code} aplicado",
+			"remove": "Quitar {code}",
+			"signInRequired": "Inicia sesión para usar códigos de descuento.",
+			"signIn": "Iniciar sesión",
+			"error": "No pudimos aplicar ese código de descuento."
+		}
+	},
+	"AdminCouponsPage": {
+		"pageTitle": "Cupones",
+		"loadError": "No pudimos cargar los cupones. Inténtalo de nuevo.",
+		"noCoupons": "Aún no hay cupones",
+		"noCouponsDescription": "Crea un código de descuento para usar al pagar.",
+		"nameColumn": "Nombre",
+		"codeColumn": "Código",
+		"discountColumn": "Descuento",
+		"statusColumn": "Estado",
+		"expiryColumn": "Vence",
+		"redemptionsColumn": "Usos",
+		"AdminCouponsHeader": {
+			"adminLabel": "Marketing",
+			"title": "Cupones",
+			"description": "Crea y gestiona códigos de descuento que los clientes puedan canjear al pagar."
+		},
+		"AdminCouponsTableItem": {
+			"active": "Activo",
+			"disabled": "Desactivado",
+			"expired": "Vencido",
+			"noExpiry": "Nunca",
+			"percentOff": "{percent}% de descuento",
+			"used": "{count} usos",
+			"usedOfLimit": "{count} / {limit} usos",
+			"openActions": "Abrir acciones para {code}"
+		},
+		"AdminCouponsTableItemStatusButton": {
+			"enableCoupon": "Activar",
+			"disableCoupon": "Desactivar",
+			"couponEnabled": "Cupón activado.",
+			"couponDisabled": "Cupón desactivado.",
+			"statusError": "No pudimos actualizar este cupón."
+		},
+		"AdminCouponsTableItemDelete": {
+			"deleteCoupon": "Eliminar",
+			"deleteConfirmationTitle": "¿Eliminar este cupón?",
+			"deleteConfirmationDescription": "{code} dejará de funcionar de inmediato. Los pedidos que ya lo usaron conservan su descuento.",
+			"cancel": "Cancelar",
+			"couponDeleted": "Cupón eliminado.",
+			"deleteError": "No pudimos eliminar este cupón."
+		}
+	},
 	"ValidationMessages": {
 		"duplicateProductCategory": "Selecciona cada categoría solo una vez.",
 		"fallback": "Revisa este campo.",
@@ -1219,6 +1314,15 @@
 		"categoryNotFound": "No se encontró esta categoría.",
 		"categorySlugTaken": "Ese slug de categoría ya está en uso.",
 		"categoryHasProducts": "No se puede eliminar esta categoría porque está asignada a {productCount} producto(s): {productNames}. Primero quita la categoría de esos productos.",
+		"invalidCouponData": "Revisa los datos del cupón e inténtalo de nuevo.",
+		"couponCodeTaken": "Ese código de cupón ya está en uso.",
+		"couponNotFound": "Ese código de descuento no es válido.",
+		"couponInactive": "Ese código de descuento ya no está disponible.",
+		"couponExpired": "Ese código de descuento venció.",
+		"couponMinSubtotal": "Este código requiere un pedido mínimo de {amount}.",
+		"couponUsageLimitReached": "Ese código de descuento alcanzó su límite de uso.",
+		"couponAlreadyUsed": "Ya usaste este código de descuento.",
+		"couponSignInRequired": "Inicia sesión para usar este código de descuento.",
 		"invalidRetainedImage": "Una de las imágenes seleccionadas ya no es válida.",
 		"duplicateRetainedImage": "No se puede seleccionar la misma imagen más de una vez.",
 		"duplicateUploadKey": "No se puede enviar la misma subida más de una vez.",
@@ -1269,7 +1373,7 @@
 		"description": "¿Dudas con tu pedido o de mayoreo? Escríbenos y te ayudamos.",
 		"ContactSection": {
 			"eyebrow": "Contacto",
-			"heading": "Hablemos de tu pedido o de tu tienda.",
+			"heading": "Precios Exclusivos y Promociones para tu tienda:",
 			"emailLabel": "Correo electrónico",
 			"phoneLabel": "Teléfono",
 			"whatsappLabel": "WhatsApp",

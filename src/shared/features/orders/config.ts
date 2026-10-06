@@ -10,5 +10,5 @@ export const ORDER_CONFIG = {
 	/** Flat delivery fee in minor units (cents). Pickup orders never pay it. */
 	shippingFeeInCents: 3_000, // 30.00
 	/** Delivery merchandise subtotal at or above this amount ships free. */
-	freeShippingThresholdInCents: 79_900 // 799.00
+	freeShippingThresholdInCents: 119_900 // 1,199.00
 } as const;
