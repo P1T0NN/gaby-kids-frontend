@@ -63,32 +63,12 @@ export async function sendEmail(
 	ctx: EmailContext,
 	{ to, subject, content, text, previewText, idempotencyKey }: SendEmailOptions
 ): Promise<void> {
-	const from = `${COMPANY_DATA.NAME} <${COMPANY_DATA.RESEND_EMAIL}>`;
-	try {
-		const emailId = await resend.sendEmail(ctx, {
-			from,
-			to,
-			subject,
-			html: renderEmailDocument({ subject, content, previewText }),
-			text: text ?? previewText ?? subject,
-			idempotencyKey
-		});
-		console.log('Email enqueued', {
-			emailId,
-			from,
-			to,
-			subject,
-			idempotencyKey
-		});
-	} catch (error) {
-		console.error('Email enqueue failed', {
-			from,
-			to,
-			subject,
-			idempotencyKey,
-			apiKeyConfigured: Boolean(process.env.RESEND_API_KEY),
-			error
-		});
-		throw error;
-	}
+	await resend.sendEmail(ctx, {
+		from: `${COMPANY_DATA.NAME} <${COMPANY_DATA.RESEND_EMAIL}>`,
+		to,
+		subject,
+		html: renderEmailDocument({ subject, content, previewText }),
+		text: text ?? previewText ?? subject,
+		idempotencyKey
+	});
 }
