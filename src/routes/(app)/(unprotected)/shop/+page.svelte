@@ -55,6 +55,7 @@
 	as="main"
 	size="sm"
 	width="wide"
+	class="min-h-dvh min-h-screen"
 	containerClass="flex max-w-screen-2xl flex-col gap-8 lg:gap-12"
 >
 	<ShopProductsHeader
