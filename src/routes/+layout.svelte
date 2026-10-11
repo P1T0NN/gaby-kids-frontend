@@ -1,6 +1,5 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
 
 	// LIBRARIES
 	import { onMount } from 'svelte';
@@ -28,7 +27,7 @@
 	});
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:head><link rel="icon" href="/logo/opt/logo-2d-transparent-569w.webp" /></svelte:head>
 
 {@render children()}
 <Toaster richColors />
