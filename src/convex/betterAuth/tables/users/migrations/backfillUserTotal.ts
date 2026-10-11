@@ -19,7 +19,7 @@ export const backfillUserTotal = internalMutation({
 		});
 
 		for (const user of page.items) {
-			await userTotalAggregate.inc(ctx, 1, user.id);
+			await userTotalAggregate.insertIfDoesNotExist(ctx, { key: null, id: user.id });
 		}
 
 		if (page.nextCursor !== null) {

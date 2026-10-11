@@ -125,6 +125,9 @@ notes are [`UpsellsSystemDesign.md`](./UpsellsSystemDesign.md) and
   storage for uploads. See `docs/ImageUploads.md` for bucket setup and verification.
 - Better Auth owns its component tables (`user`, `session`, `account`,
   `verification`, rate-limit/JWKS tables) under `betterAuth/component`.
+  The `usersAggregate` component maintains the exact admin user total by user ID;
+  Better Auth create/delete triggers update it idempotently. The paginated
+  `backfillUserTotal` migration inserts existing users without double-counting.
 
 ## App-facing functions
 

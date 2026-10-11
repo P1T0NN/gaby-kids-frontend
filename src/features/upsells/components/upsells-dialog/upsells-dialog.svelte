@@ -6,7 +6,7 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 
 	// LIBRARIES
-	import { useConvexClient, useMutation } from 'convex-svelte';
+	import { useConvexClient } from 'convex-svelte';
 	import { m } from '@/lib/paraglide/messages';
 	import { api } from '@convex/_generated/api';
 
@@ -16,12 +16,9 @@
 	import NativeDialog from '@/components/ui/native-components/native-dialog/native-dialog.svelte';
 	import UpsellsDialogItem from './upsells-dialog-item.svelte';
 
-	// HOOKS
-	import { useAnalytics } from '@/features/analytics/hooks/useAnalytics.svelte.js';
-
 	// TYPES
 	import type { FunctionReturnType } from 'convex/server';
-	import type { Doc, Id } from '@convex/_generated/dataModel.js';
+	import type { Doc } from '@convex/_generated/dataModel.js';
 
 	type Upsell = FunctionReturnType<
 		typeof api.tables.upsells.queries.fetchProductUpsells.fetchProductUpsells
@@ -30,38 +27,18 @@
 	const titleId = $props.id();
 
 	const client = useConvexClient();
-	const analytics = useAnalytics();
-	const trackUpsellEvent = useMutation(
-		api.tables.upsells.mutations.trackUpsellEvent.trackUpsellEvent
-	);
 
 	let dialog: NativeDialog;
 	let latestRequest = 0;
 	let productName = $state('');
-	let sourceProductId: Id<'products'> | undefined;
 	let upsells = $state<Upsell[]>([]);
-	let viewCartSelected = false;
 
 	function openCart(): void {
 		window.dispatchEvent(new Event('cart:open'));
 	}
 
 	function removeUpsell(id: Doc<'products'>['_id']): void {
-		if (sourceProductId) {
-			analytics.track(trackUpsellEvent, {
-				event: 'product_added',
-				sourceProductId,
-				upsellProductId: id
-			});
-		}
 		upsells = upsells.filter((upsell) => upsell._id !== id);
-	}
-
-	function handleClose(): void {
-		if (!viewCartSelected && sourceProductId) {
-			analytics.track(trackUpsellEvent, { event: 'dialog_dismissed', sourceProductId });
-		}
-		viewCartSelected = false;
 	}
 
 	export async function open(
@@ -83,18 +60,12 @@
 			}
 
 			productName = product.name;
-			sourceProductId = product._id;
 			upsells = result;
-			viewCartSelected = false;
 
 			await tick();
 
 			if (request === latestRequest) {
 				dialog.open();
-				analytics.track(trackUpsellEvent, {
-					event: 'dialog_viewed',
-					sourceProductId: product._id
-				});
 			}
 		} catch {
 			const shouldOpenCart = request === latestRequest && openCartIfEmpty;
@@ -105,7 +76,7 @@
 	onDestroy(() => latestRequest++);
 </script>
 
-<NativeDialog bind:this={dialog} aria-labelledby={titleId} onClose={handleClose} class="max-w-2xl">
+<NativeDialog bind:this={dialog} aria-labelledby={titleId} class="max-w-2xl">
 	{#snippet children({ close })}
 		<Toaster id="upsells-dialog" richColors position="bottom-right" />
 		<div class="flex flex-col gap-5 p-5 sm:p-6">
@@ -147,10 +118,6 @@
 				<Button
 					size="lg"
 					onclick={() => {
-						viewCartSelected = true;
-						if (sourceProductId) {
-							analytics.track(trackUpsellEvent, { event: 'view_cart_clicked', sourceProductId });
-						}
 						close();
 						openCart();
 					}}

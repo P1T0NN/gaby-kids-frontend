@@ -8,11 +8,9 @@
  * @module
  */
 
-import type * as aggregates_helpers_createCounterAggregate from "../aggregates/helpers/createCounterAggregate.js";
 import type * as aggregates_helpers_getFilteredTotalAggregate from "../aggregates/helpers/getFilteredTotalAggregate.js";
 import type * as aggregates_helpers_getTotalSizeAggregate from "../aggregates/helpers/getTotalSizeAggregate.js";
 import type * as aggregates_triggersAggregate from "../aggregates/triggersAggregate.js";
-import type * as aggregates_types_aggregateTypes from "../aggregates/types/aggregateTypes.js";
 import type * as aggregates_utils_getPrefixRangeBoundsAggregate from "../aggregates/utils/getPrefixRangeBoundsAggregate.js";
 import type * as analytics_helpers_applyOrderToDailySales from "../analytics/helpers/applyOrderToDailySales.js";
 import type * as analytics_helpers_assertDateRange from "../analytics/helpers/assertDateRange.js";
@@ -189,7 +187,6 @@ import type * as tables_products_validators_productValidators from "../tables/pr
 import type * as tables_upsells_helpers_enrichUpsellPage from "../tables/upsells/helpers/enrichUpsellPage.js";
 import type * as tables_upsells_helpers_getStorefrontUpsells from "../tables/upsells/helpers/getStorefrontUpsells.js";
 import type * as tables_upsells_mutations_saveProductUpsells from "../tables/upsells/mutations/saveProductUpsells.js";
-import type * as tables_upsells_mutations_trackUpsellEvent from "../tables/upsells/mutations/trackUpsellEvent.js";
 import type * as tables_upsells_queries_fetchProductUpsells from "../tables/upsells/queries/fetchProductUpsells.js";
 import type * as tables_upsells_queries_fetchUpsellForEdit from "../tables/upsells/queries/fetchUpsellForEdit.js";
 import type * as tables_upsells_queries_fetchUpsellsAdmin from "../tables/upsells/queries/fetchUpsellsAdmin.js";
@@ -207,11 +204,9 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  "aggregates/helpers/createCounterAggregate": typeof aggregates_helpers_createCounterAggregate;
   "aggregates/helpers/getFilteredTotalAggregate": typeof aggregates_helpers_getFilteredTotalAggregate;
   "aggregates/helpers/getTotalSizeAggregate": typeof aggregates_helpers_getTotalSizeAggregate;
   "aggregates/triggersAggregate": typeof aggregates_triggersAggregate;
-  "aggregates/types/aggregateTypes": typeof aggregates_types_aggregateTypes;
   "aggregates/utils/getPrefixRangeBoundsAggregate": typeof aggregates_utils_getPrefixRangeBoundsAggregate;
   "analytics/helpers/applyOrderToDailySales": typeof analytics_helpers_applyOrderToDailySales;
   "analytics/helpers/assertDateRange": typeof analytics_helpers_assertDateRange;
@@ -388,7 +383,6 @@ declare const fullApi: ApiFromModules<{
   "tables/upsells/helpers/enrichUpsellPage": typeof tables_upsells_helpers_enrichUpsellPage;
   "tables/upsells/helpers/getStorefrontUpsells": typeof tables_upsells_helpers_getStorefrontUpsells;
   "tables/upsells/mutations/saveProductUpsells": typeof tables_upsells_mutations_saveProductUpsells;
-  "tables/upsells/mutations/trackUpsellEvent": typeof tables_upsells_mutations_trackUpsellEvent;
   "tables/upsells/queries/fetchProductUpsells": typeof tables_upsells_queries_fetchProductUpsells;
   "tables/upsells/queries/fetchUpsellForEdit": typeof tables_upsells_queries_fetchUpsellForEdit;
   "tables/upsells/queries/fetchUpsellsAdmin": typeof tables_upsells_queries_fetchUpsellsAdmin;
@@ -431,10 +425,10 @@ export declare const components: {
   migrations: import("@convex-dev/migrations/_generated/component.js").ComponentApi<"migrations">;
   rateLimiter: import("@convex-dev/rate-limiter/_generated/component.js").ComponentApi<"rateLimiter">;
   resend: import("@convex-dev/resend/_generated/component.js").ComponentApi<"resend">;
-  analytics: import("@vllnt/convex-analytics/_generated/component.js").ComponentApi<"analytics">;
   productsAggregate: import("@convex-dev/aggregate/_generated/component.js").ComponentApi<"productsAggregate">;
   categoriesAggregate: import("@convex-dev/aggregate/_generated/component.js").ComponentApi<"categoriesAggregate">;
   ordersAggregate: import("@convex-dev/aggregate/_generated/component.js").ComponentApi<"ordersAggregate">;
+  usersAggregate: import("@convex-dev/aggregate/_generated/component.js").ComponentApi<"usersAggregate">;
   r2: import("@convex-dev/r2/_generated/component.js").ComponentApi<"r2">;
   auditLog: import("convex-audit-log/_generated/component.js").ComponentApi<"auditLog">;
 };

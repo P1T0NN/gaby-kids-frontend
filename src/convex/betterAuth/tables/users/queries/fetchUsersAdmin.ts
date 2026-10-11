@@ -44,7 +44,7 @@ export const fetchUsersAdmin = adminQuery({
 
 		return {
 			...page,
-			total: await userTotalAggregate.read(ctx)
+			total: await userTotalAggregate.count(ctx)
 		};
 	}
 });

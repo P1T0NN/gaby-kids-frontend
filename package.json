@@ -66,7 +66,6 @@
 		"@iconify/tailwind4": "^1.2.3",
 		"@lucide/svelte": "^1.46.0",
 		"@mmailaender/convex-better-auth-svelte": "^0.8.2",
-		"@vllnt/convex-analytics": "^0.1.0-canary.55667b0",
 		"better-auth": "~1.6.15",
 		"bits-ui": "^2.18.0",
 		"clsx": "^2.1.1",

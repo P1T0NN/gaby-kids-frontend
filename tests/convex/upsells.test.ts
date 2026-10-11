@@ -2,11 +2,11 @@
 
 import aggregateTest from '@convex-dev/aggregate/test';
 import rateLimiterTest from '@convex-dev/rate-limiter/test';
-import analyticsTest from '@vllnt/convex-analytics/test';
+
 import { convexTest } from 'convex-test';
 import { expect, test } from 'vitest';
 
-import { api, components } from '../../src/convex/_generated/api';
+import { api } from '../../src/convex/_generated/api';
 import schema from '../../src/convex/schema';
 
 const modules = import.meta.glob('../../src/convex/**/*.ts');
@@ -188,69 +188,4 @@ test('admins manage ordered upsells and edit data stays consistent', async () =>
 	await expect(
 		admin.mutation(save, { productId: first, upsellProductIds: [] })
 	).rejects.toMatchObject({ data: { code: 'PRODUCT_NOT_FOUND' } });
-});
-
-test('storefront upsell events track only valid product relationships', async () => {
-	const t = convexTest(schema, modules);
-	analyticsTest.register(t);
-	const [sourceProductId, upsellProductId, unrelatedProductId] = await t.run(async (ctx) => {
-		const categoryId = await ctx.db.insert('categories', {
-			name: 'Accessories',
-			slug: 'analytics-accessories',
-			status: 'active'
-		});
-		const productIds = await Promise.all(
-			['Source', 'Upsell', 'Unrelated'].map((name, index) =>
-				ctx.db.insert('products', {
-					name,
-					slug: `analytics-${index}`,
-					description: 'Description',
-					priceInCents: 1200 + index,
-					categoryId,
-					imageKeys: [],
-					storagePrefix: 'products',
-					trackInventory: true,
-					productVariantOptionNames: [],
-					hasPriceRange: false,
-					upsellProductIds: [],
-					status: 'active'
-				})
-			)
-		);
-		await ctx.db.patch('products', productIds[0], { upsellProductIds: [productIds[1]] });
-		return productIds;
-	});
-	const track = api.tables.upsells.mutations.trackUpsellEvent.trackUpsellEvent;
-	const sessionRef = 'test-upsell-session';
-	const customerRef = '00000000-0000-4000-8000-000000000003';
-
-	await t.mutation(track, { event: 'dialog_viewed', sourceProductId, sessionRef, customerRef });
-	await t.mutation(track, {
-		event: 'product_added',
-		sourceProductId,
-		upsellProductId,
-		sessionRef,
-		customerRef
-	});
-	await t.mutation(track, {
-		event: 'product_added',
-		sourceProductId,
-		upsellProductId: unrelatedProductId,
-		sessionRef,
-		customerRef
-	});
-
-	expect(
-		await t.query(components.analytics.queries.metric, {
-			scope: 'default',
-			name: 'upsell:dialog_viewed'
-		})
-	).toBe(1);
-	expect(
-		await t.query(components.analytics.queries.metric, {
-			scope: 'default',
-			name: 'upsell:product_added',
-			where: { dim: 'upsellProductId', val: upsellProductId }
-		})
-	).toBe(1);
 });

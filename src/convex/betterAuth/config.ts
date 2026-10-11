@@ -91,10 +91,12 @@ export const authComponent = createClient<DataModel, typeof authSchema>(componen
 	authFunctions,
 	triggers: {
 		user: {
-			onCreate: async (ctx, doc) => userTotalAggregate.inc(ctx, 1, String(doc._id)),
+			onCreate: async (ctx, doc) => {
+				await userTotalAggregate.insertIfDoesNotExist(ctx, { key: null, id: String(doc._id) });
+			},
 			onDelete: async (ctx, doc) => {
 				const ownerId = String(doc._id);
-				await userTotalAggregate.inc(ctx, -1, ownerId);
+				await userTotalAggregate.deleteIfExists(ctx, { key: null, id: ownerId });
 				await ctx.scheduler.runAfter(
 					0,
 					internal.betterAuth.cleanupDeletedUserData.cleanupDeletedUserData,

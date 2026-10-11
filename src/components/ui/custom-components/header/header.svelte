@@ -88,16 +88,6 @@
 						<Separator class="my-1" />
 
 						<Link
-							href={UNPROTECTED_PAGE_ENDPOINTS.MY_ORDERS}
-							class="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
-						>
-							<span class="icon-[lucide--package] size-4" aria-hidden="true"></span>
-							{m['Components.Header.myOrders']()}
-						</Link>
-
-						<Separator class="my-1" />
-
-						<Link
 							href={ADMIN_PAGE_ENDPOINTS.DASHBOARD}
 							class="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
 						>

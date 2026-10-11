@@ -2,7 +2,6 @@
 import type { PresetTimeRange } from './types/analyticsTypes.js';
 
 export const ANALYTICS_CONFIG = {
-	sessionStorageKey: 'analytics:session',
 	customerIdStorageKey: 'analytics:customerId'
 } as const;
 
