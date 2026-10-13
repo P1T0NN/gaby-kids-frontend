@@ -15,6 +15,7 @@
 
 <Link
 	href={`${UNPROTECTED_PAGE_ENDPOINTS.SHOP}?category=${category.slug}`}
+	draggable={false}
 	class="flex w-54 flex-none flex-col items-center gap-4"
 >
 	<div class="size-50 overflow-hidden rounded-full border border-accent bg-background">
@@ -24,6 +25,7 @@
 				alt=""
 				loading="lazy"
 				decoding="async"
+				draggable={false}
 				class="size-full scale-110 object-cover"
 			/>
 		{:else}

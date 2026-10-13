@@ -73,6 +73,7 @@
 		"convex-audit-log": "^0.2.0",
 		"convex-helpers": "^0.1.123",
 		"convex-svelte": "^0.14.0",
+		"embla-carousel-auto-scroll": "8.6.0",
 		"embla-carousel-svelte": "^8.6.0",
 		"layerchart": "^2.5.0",
 		"mode-watcher": "^1.1.0",

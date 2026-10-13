@@ -1338,7 +1338,9 @@
 			"guayaberasCta": "Guayaberas gabybera"
 		},
 		"CategorySection": {
-			"eyebrow": "Compra por categoría"
+			"eyebrow": "Compra por categoría",
+			"previousCategory": "Categoría anterior",
+			"nextCategory": "Siguiente categoría"
 		},
 		"OccasionsSection": {
 			"eyebrow": "Compra por ocasión",
