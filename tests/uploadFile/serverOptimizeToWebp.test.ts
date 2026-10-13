@@ -24,6 +24,22 @@ test('server decodes originals, pads without cropping, resizes and strips metada
 	}
 });
 
+test('server accepts transparent, palette and interlaced PNGs', async () => {
+	for (const options of [{}, { palette: true }, { progressive: true }]) {
+		const original = await sharp({
+			create: { width: 32, height: 16, channels: 4, background: '#ff000080' }
+		})
+			.png(options)
+			.toBuffer();
+		const output = await optimizeToWebp(original);
+		expect(await sharp(output).metadata()).toMatchObject({
+			format: 'webp',
+			width: 32,
+			height: 32
+		});
+	}
+});
+
 test('server rejects invalid, oversized, excessive-pixel and SVG inputs', async () => {
 	const tooManyPixels = await sharp({
 		create: { width: 6500, height: 6500, channels: 3, background: 'white' }

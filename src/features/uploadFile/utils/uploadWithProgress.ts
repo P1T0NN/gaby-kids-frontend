@@ -1,6 +1,13 @@
 // TYPES
 import type { FileUploadProgress } from '../types/uploadFileTypes.js';
 
+export function getUploadContentType(file: File): string {
+	const unspecifiedType = !file.type || file.type === 'application/octet-stream';
+	const isPng = file.type === 'image/x-png' || (unspecifiedType && /\.png$/i.test(file.name));
+	// Browsers can omit the MIME type; the server still validates the actual image bytes.
+	return isPng ? 'image/png' : file.type;
+}
+
 export function uploadWithProgress(
 	url: string,
 	file: File,
@@ -11,7 +18,7 @@ export function uploadWithProgress(
 	return new Promise((resolve, reject) => {
 		const request = new XMLHttpRequest();
 		request.open('PUT', url);
-		request.setRequestHeader('Content-Type', file.type);
+		request.setRequestHeader('Content-Type', getUploadContentType(file));
 		request.upload.addEventListener('progress', (event) => {
 			onProgress({ loaded: event.loaded, total: event.lengthComputable ? event.total : file.size });
 		});

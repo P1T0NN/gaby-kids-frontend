@@ -65,7 +65,8 @@ function buildProductVariantImageKeyMap(
 			keyByPreviewId.set(preview.id, preview.key);
 			continue;
 		}
-		const key = uploadedFiles[uploadedIndex];
+		// Pre-upload validation still needs references to images currently in the library.
+		const key = uploadedFiles[uploadedIndex] ?? preview.id;
 		uploadedIndex += 1;
 		if (key) keyByPreviewId.set(preview.id, key);
 	}
@@ -190,8 +191,8 @@ export function buildSaveProductExtraFields(options: {
 			imageKeys: [
 				...new Set(
 					productVariant.imageKeys.flatMap((imageId) => {
-						// Pending previews keep their id until the upload assigns the stored key.
-						const key = imageKeyByPreviewId.get(imageId) ?? imageId;
+						// Removed library images must not survive as hidden variant assignments.
+						const key = imageKeyByPreviewId.get(imageId);
 						return key ? [key] : [];
 					})
 				)

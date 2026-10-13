@@ -67,6 +67,7 @@
 					{preview}
 					{index}
 					{allowMultiple}
+					{disabled}
 					total={files.length}
 					onRemove={upload.remove}
 					onMove={upload.move}

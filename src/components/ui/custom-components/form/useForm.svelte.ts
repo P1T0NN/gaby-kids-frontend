@@ -8,7 +8,10 @@ import { m } from '@/lib/paraglide/messages';
 
 // UTILS
 import { aggregateUploadProgress } from '@/features/uploadFile/utils/aggregateUploadProgress.js';
-import { uploadWithProgress } from '@/features/uploadFile/utils/uploadWithProgress.js';
+import {
+	getUploadContentType,
+	uploadWithProgress
+} from '@/features/uploadFile/utils/uploadWithProgress.js';
 import { linearFind } from '@/shared/lib/algorithms/index.js';
 import { exceedsUploadBatchLimit } from '@/shared/features/storage/utils/exceedsUploadBatchLimit.js';
 import { STORAGE_CONFIG } from '@/shared/features/storage/config.js';
@@ -170,7 +173,7 @@ export function useForm<Mutation extends FunctionReference<'mutation' | 'action'
 		const progress = files.map((file) => ({ loaded: 0, total: file.size }));
 		const uploads = await generateUploadUrls({
 			namespace: options.uploadNamespace || undefined,
-			files: files.map((file) => ({ size: file.size, contentType: file.type }))
+			files: files.map((file) => ({ size: file.size, contentType: getUploadContentType(file) }))
 		});
 		const keys = uploads.map((upload) => upload.key);
 		try {

@@ -144,6 +144,7 @@
 							{index}
 							total={appliedProductVariantImages.length}
 							allowMultiple
+							{disabled}
 							onRemove={removeProductVariantImage}
 							onMove={moveProductVariantImage}
 							onSetCover={setProductVariantCoverImage}

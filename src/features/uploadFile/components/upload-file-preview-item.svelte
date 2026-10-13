@@ -2,6 +2,7 @@
 	// UTILS
 	import { cn } from '@/utils/utils.js';
 	import { m } from '@/lib/paraglide/messages';
+	import { getUploadContentType } from '../utils/uploadWithProgress.js';
 
 	// TYPES
 	import type { PreviewFile } from '@/features/uploadFile/types/uploadFileTypes.js';
@@ -11,6 +12,7 @@
 		index,
 		total,
 		allowMultiple = false,
+		disabled = false,
 		onRemove,
 		onMove,
 		onSetCover,
@@ -20,6 +22,7 @@
 		index: number;
 		total: number;
 		allowMultiple?: boolean;
+		disabled?: boolean;
 		onRemove: (index: number) => void;
 		onMove: (index: number, direction: -1 | 1) => void;
 		onSetCover: (index: number) => void;
@@ -33,7 +36,7 @@
 		className
 	)}
 >
-	{#if !preview.file || preview.file.type.startsWith('image/')}
+	{#if !preview.file || getUploadContentType(preview.file).startsWith('image/')}
 		<img
 			src={preview.url}
 			alt={preview.file?.name ?? m['UploadFileFeature.UploadFilePreviewItem.uploadedImage']()}
@@ -59,6 +62,7 @@
 			title={m['UploadFileFeature.UploadFilePreviewItem.setAsCover']()}
 			class="absolute top-1.5 left-1.5 inline-flex items-center gap-1 rounded-full bg-background/80 px-2 py-1 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-background"
 			onclick={() => onSetCover(index)}
+			{disabled}
 		>
 			<span class="icon-[lucide--star] size-3"></span>
 			{m['UploadFileFeature.UploadFilePreviewItem.cover']()}
@@ -70,6 +74,7 @@
 		title={m['UploadFileFeature.UploadFilePreviewItem.remove']()}
 		class="absolute top-1.5 right-1.5 flex items-center justify-center rounded-full bg-destructive/10 p-1 text-destructive shadow-sm transition-colors hover:bg-destructive/20"
 		onclick={() => onRemove(index)}
+		{disabled}
 	>
 		<span class="icon-[lucide--x] size-3.5"></span>
 	</button>
@@ -78,7 +83,7 @@
 		<button
 			type="button"
 			title={m['UploadFileFeature.UploadFilePreviewItem.moveLeft']()}
-			disabled={index === 0}
+			disabled={disabled || index === 0}
 			class="absolute bottom-1.5 left-1.5 flex items-center justify-center rounded-full bg-background/80 p-1 text-foreground shadow-sm transition-colors hover:bg-background disabled:pointer-events-none disabled:opacity-40"
 			onclick={() => onMove(index, -1)}
 		>
@@ -87,7 +92,7 @@
 		<button
 			type="button"
 			title={m['UploadFileFeature.UploadFilePreviewItem.moveRight']()}
-			disabled={index === total - 1}
+			disabled={disabled || index === total - 1}
 			class="absolute right-1.5 bottom-1.5 flex items-center justify-center rounded-full bg-background/80 p-1 text-foreground shadow-sm transition-colors hover:bg-background disabled:pointer-events-none disabled:opacity-40"
 			onclick={() => onMove(index, 1)}
 		>
