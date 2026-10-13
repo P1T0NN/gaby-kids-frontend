@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SVELTE IMPORTS
+	import { prefersReducedMotion } from 'svelte/motion';
+
 	// LIBRARIES
 	import { api } from '@convex/_generated/api';
 	import AutoScroll from 'embla-carousel-auto-scroll';
@@ -19,9 +22,14 @@
 
 	const autoScroll = AutoScroll({
 		speed: 0.7,
+		stopOnInteraction: false,
 		stopOnMouseEnter: true,
+		rootNode: (viewport) => viewport.parentElement,
 		breakpoints: { '(prefers-reduced-motion: reduce)': { active: false } }
 	});
+
+	// Six 240px slides keep looping possible at the section's widest viewport.
+	const categoryCopies = $derived(Math.ceil(6 / Math.max(categories.data?.length ?? 0, 1)));
 </script>
 
 <Section
@@ -42,7 +50,13 @@
 			class="flex min-w-0 flex-col gap-7"
 			aria-label={m['HomePage.CategorySection.eyebrow']()}
 			onfocusin={() => autoScroll.stop()}
-			onpointerdown={() => autoScroll.stop()}
+			onfocusout={(event) => {
+				const canResume =
+					!event.currentTarget.contains(event.relatedTarget as Node | null) &&
+					!event.currentTarget.matches(':hover') &&
+					!prefersReducedMotion.current;
+				if (canResume) autoScroll.play();
+			}}
 		>
 			<div class="flex items-center justify-between gap-4">
 				<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
@@ -60,10 +74,12 @@
 				</div>
 			</div>
 			<Carousel.Content class="-ms-6 cursor-grab touch-pan-y active:cursor-grabbing">
-				{#each categories.data as category (category._id)}
-					<Carousel.Item class="basis-auto py-1 ps-6">
-						<CategorySectionItem {category} />
-					</Carousel.Item>
+				{#each Array.from({ length: categoryCopies }) as _, copy (copy)}
+					{#each categories.data as category (category._id)}
+						<Carousel.Item class="basis-auto py-1 ps-6">
+							<CategorySectionItem {category} />
+						</Carousel.Item>
+					{/each}
 				{/each}
 			</Carousel.Content>
 		</Carousel.Root>
