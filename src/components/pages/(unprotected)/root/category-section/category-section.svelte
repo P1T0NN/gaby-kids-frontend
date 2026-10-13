@@ -1,5 +1,6 @@
 <script lang="ts">
 	// SVELTE IMPORTS
+	import { onDestroy } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 
 	// LIBRARIES
@@ -22,15 +23,52 @@
 
 	const autoScroll = AutoScroll({
 		speed: 0.7,
-		stopOnInteraction: false,
-		stopOnMouseEnter: true,
-		rootNode: (viewport) => viewport.parentElement,
+		stopOnInteraction: true,
+		stopOnFocusIn: false,
 		breakpoints: { '(prefers-reduced-motion: reduce)': { active: false } }
 	});
+
+	let resumeTimer: ReturnType<typeof setTimeout>;
+	let isHovering = false;
+	let isPointerDown = false;
+
+	function pauseAutoScroll() {
+		clearTimeout(resumeTimer);
+		autoScroll.stop();
+	}
+
+	function handleInteraction() {
+		pauseAutoScroll();
+		resumeTimer = setTimeout(() => {
+			const canResume = !isHovering && !isPointerDown && !prefersReducedMotion.current;
+			if (canResume) autoScroll.play(0);
+		}, 1000);
+	}
+
+	function handleHover(event: PointerEvent) {
+		if (event.pointerType === 'touch') return;
+		isHovering = event.type === 'pointerenter';
+		handleInteraction();
+	}
+
+	function handlePointerDown() {
+		isPointerDown = true;
+		pauseAutoScroll();
+	}
+
+	function handlePointerEnd() {
+		if (!isPointerDown) return;
+		isPointerDown = false;
+		handleInteraction();
+	}
+
+	onDestroy(() => clearTimeout(resumeTimer));
 
 	// Six 240px slides keep looping possible at the section's widest viewport.
 	const categoryCopies = $derived(Math.ceil(6 / Math.max(categories.data?.length ?? 0, 1)));
 </script>
+
+<svelte:window onpointerup={handlePointerEnd} onpointercancel={handlePointerEnd} />
 
 <Section
 	class="overflow-hidden pt-16 pb-15"
@@ -49,14 +87,14 @@
 			plugins={[autoScroll]}
 			class="flex min-w-0 flex-col gap-7"
 			aria-label={m['HomePage.CategorySection.eyebrow']()}
-			onfocusin={() => autoScroll.stop()}
-			onfocusout={(event) => {
-				const canResume =
-					!event.currentTarget.contains(event.relatedTarget as Node | null) &&
-					!event.currentTarget.matches(':hover') &&
-					!prefersReducedMotion.current;
-				if (canResume) autoScroll.play();
-			}}
+			onpointerenter={handleHover}
+			onpointerleave={handleHover}
+			onpointerdown={handlePointerDown}
+			onfocusin={handleInteraction}
+			onfocusout={handleInteraction}
+			onkeydown={handleInteraction}
+			onclick={handleInteraction}
+			onwheel={handleInteraction}
 		>
 			<div class="flex items-center justify-between gap-4">
 				<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
